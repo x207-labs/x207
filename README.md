@@ -224,7 +224,15 @@ The product repos are nested in this repo and are not yet submodules (UM-005). W
 
 ## 6. How x207 uses NEAR
 
-To be written (UM-044).
+| NEAR resource | Feature | Code | Demo step |
+| --- | --- | --- | --- |
+| USDT NEP-141 (`ft_transfer_call`) | F1 stake and F4 residual payment | `contracts/x207-circle/src/stake.rs`, `contracts/x207-circle/src/settlement.rs`; client builders in `sdk/packages/core/src/contract/` | [Run the sandbox demo](#run-the-sandbox-demo): F1 and F4 rows. In sandbox the token is a NEP-141 mock. |
+| x402 `exact` on NEAR (`@x402/near`) | Fallback payment for non-members, advertised next to the x207 entry | `sdk/apps/facilitator/src/service.ts`, `sdk/examples/seller` | F2 row: the 402 lists `exact@near:mainnet`. A real `exact` payment is not part of the demo yet; the sdk tests use a stub signer. |
+| NEAR Intents and 1Click | Pay a residual from another asset, withdraw a claim to another chain | `backend/src/settlement/`, `frontend/src/components/DepositBranch.tsx` | Not in the sandbox demo. Needs a mainnet run (UM-035, UM-040), not done. |
+| Sputnik DAO | `set_params` through a proposal | `contracts/dao/`, `contracts/x207-circle/src/params.rs` | The demo calls `set_params` from the owner account only; a DAO proposal and vote are not part of it yet (UM-036). |
+| NEAR AI Cloud | Inference for the six demo agents | `agents/shared/nearai.ts` | The demo runs the agents in mock mode (ADR-33); live inference waits for the account top-up. |
+
+The NEAR pages on [agentic payments](https://www.near.org/agentic-payments) and [NEAR AI](https://www.near.org/ai) are the references for the first and last rows. Links for NEAR Intents and "currency of agents" are to be added once they are confirmed.
 
 ## 7. Mechanism and invariants
 
