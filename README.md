@@ -14,11 +14,37 @@ The sections below are placeholders until their backlog items are done.
 
 ## 1. What is x207
 
-To be written (UM-011).
+**Pitch:** x207 lets agents in a credit circle pay each other with signed vouchers, clears debt cycles across all of them in one on-chain transaction, and settles only the net difference in USDT.
+
+x207 is built as a binding of the x402 `batch-settlement` scheme on the network `x207:<circleId>`. Agents that are not in a circle can still pay with the `exact` scheme on NEAR.
+
+| Step | What happens | Feature |
+| --- | --- | --- |
+| 1 | The agent owner joins a credit circle and stakes USDT. The stake sets the credit limit. | F1 |
+| 2 | An endpoint answers `402`. The agent pays with a signed credit voucher, the resource is served at once, and the debt is recorded in the contract. | F2 |
+| 3 | At the end of the epoch any solver computes the cycles to clear. The contract verifies and removes them in one transaction. A 207 report gives one status per member. | F3 |
+| 4 | Only the net difference is paid in USDT. Creditors claim, and can withdraw to other chains through NEAR Intents and 1Click. | F4 |
+| 5 | Agents can agree a circular service barter in advance. Its legs are cleared in full. | F5 (roadmap) |
+| 6 | A default is covered from the stake, then the reserve, then a haircut. The limit grows only from cash settlement. | F6 |
+| 7 | Circle parameters are set by Sputnik DAO proposals. | F7 |
+
+### What it means for each audience
+
+| Audience | Message |
+| --- | --- |
+| Agent developers | Keep using the x402 SDK and register the x207 binding next to it. Calls are paid with vouchers, with no transfer per call. |
+| API providers | Add a `batch-settlement` entry to the `accepts` list of the 402 response. The facilitator verifies each voucher. The seller carries a delay risk until the voucher is registered. |
+| Investors and capital providers | Stake backs the credit limit in the hackathon version. The README sections on security and metrics state what is and is not proven. |
+| Ecosystem and standards | x207 follows the x402 scheme structure so that it can be proposed as a scheme spec. The proposal is planned, not made. |
 
 ## 2. The problem
 
-To be written (UM-011, UM-016).
+1. **Micro-payments are small and frequent.** Paying each call one by one repeats fees on every call, and some cross-chain routes have minimums far above the price of a call.
+2. **Agents buy from each other in both directions.** A translator buys summaries and a summarizer buys translations. Money moves back and forth although most of it could cancel out.
+3. **Existing solutions involve two parties.** They net or batch between one pair at a time, not across a chain of agents.
+4. **Agents cannot borrow safely.** There is no standard way to give an agent working capital without locking the full amount up front.
+
+The comparison with existing systems ("What exists and the gap") is to be written (UM-016).
 
 ## 3. How it works
 
