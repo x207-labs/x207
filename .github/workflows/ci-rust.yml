@@ -1,0 +1,61 @@
+# Reusable CI for the `contracts` repository. Usage:
+#
+#   name: CI
+#   on: { push: { branches: [main] }, pull_request: {} }
+#   permissions: { contents: read }
+#   jobs:
+#     ci:
+#       uses: x207-labs/.github/.github/workflows/ci-rust.yml@<pinned-ref>
+#
+# The Rust version and the wasm target come from the caller's rust-toolchain.toml (K-57).
+name: CI Rust
+
+on:
+  workflow_call:
+    inputs:
+      cargo-near-version:
+        description: cargo-near version (ADR-11).
+        type: string
+        default: "0.22.0"
+      working-directory:
+        description: Folder that holds Cargo.toml and rust-toolchain.toml.
+        type: string
+        default: "."
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install toolchain from rust-toolchain.toml
+        run: rustup toolchain install
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/bin/cargo-near
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ inputs.working-directory }}/target
+          key: rust-${{ runner.os }}-near${{ inputs.cargo-near-version }}-${{ hashFiles(format('{0}/rust-toolchain.toml', inputs.working-directory), format('{0}/Cargo.lock', inputs.working-directory)) }}
+          restore-keys: |
+            rust-${{ runner.os }}-near${{ inputs.cargo-near-version }}-
+      - name: Install cargo-near
+        env:
+          CARGO_NEAR_VERSION: ${{ inputs.cargo-near-version }}
+        run: |
+          if ! cargo near --version 2>/dev/null | grep -qF "$CARGO_NEAR_VERSION"; then
+            sudo apt-get update
+            sudo apt-get install -y libudev-dev pkg-config
+            cargo install cargo-near --version "$CARGO_NEAR_VERSION" --locked --force
+          fi
+      - name: Build contract
+        run: cargo near build non-reproducible-wasm
+      - name: Test
+        run: cargo test --locked

@@ -1,0 +1,53 @@
+# Reusable CI for the TypeScript repositories. Usage from a product repository:
+#
+#   name: CI
+#   on: { push: { branches: [main] }, pull_request: {} }
+#   permissions: { contents: read }
+#   jobs:
+#     ci:
+#       uses: x207-labs/.github/.github/workflows/ci-node.yml@<pinned-ref>
+name: CI Node
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node version. The default is the floor set by ADR-11.
+        type: string
+        default: "22.22.2"
+      working-directory:
+        description: Folder that holds package.json.
+        type: string
+        default: "."
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ inputs.node-version }}
+          # The built-in npm cache fails on a repository without a lockfile.
+          package-manager-cache: false
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+      - name: Lint
+        run: npm run lint --if-present
+      - name: Build
+        run: npm run build --if-present
+      # Not --if-present: a repository without tests must fail here, not pass silently.
+      - name: Test
+        run: npm test
