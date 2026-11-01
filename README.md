@@ -22,7 +22,24 @@ To be written (UM-011, UM-016).
 
 ## 3. How it works
 
-To be written (UM-010, UM-012).
+One credit circle, one contract (`x207-circle`) on NEAR. The 207 report is a separate read endpoint outside the x402 payment cycle.
+
+```mermaid
+flowchart LR
+  B[Buyer agent] -- "1. request" --> S[Seller agent]
+  S -- "2. HTTP 402: x207 batch-settlement + exact USDT" --> B
+  B -- "3. signed cumulative voucher" --> S
+  S -- "4. verify / settle" --> F[Facilitator]
+  F -- "5. register_cumulative per pair" --> C[(x207-circle contract)]
+  V[Any solver] -- "6. submit_clearing (cycles only)" --> C
+  C -- "7. HTTP 207 report per member" --> R[Read API / dashboard]
+  D[Net debtor] -- "8. USDT ft_transfer_call" --> C
+  C -- "9. claim" --> K[Net creditor]
+  K -- "10. optional withdraw via NEAR Intents / 1Click" --> X[Other chain]
+  G[Sputnik DAO] -- "set_params within coded ranges" --> C
+```
+
+To be completed with the feature table (UM-012).
 
 ## 4. Try it: do X - see Y
 
@@ -30,7 +47,47 @@ To be written (UM-031, UM-039, UM-040).
 
 ## 5. Architecture and repositories
 
-To be written (UM-010, UM-013).
+### Seven layers
+
+| Layer | Contents | Modules |
+| --- | --- | --- |
+| Agent interaction | HTTP and x402 v2 (`PAYMENT-REQUIRED`, `PAYMENT-SIGNATURE`, `PAYMENT-RESPONSE`) | M7, M2 |
+| Commitment | Credit voucher as a `batch-settlement` commitment on `x207:<circleId>` | M2, M3 |
+| Accounting | Obligation ledger, limits, and epochs in the `x207-circle` contract | M1 |
+| Clearing | Open solver, O(n) verification on-chain | M4, M1 |
+| Settlement | USDT NEP-141, NEAR Intents, 1Click | M5, M1 |
+| Risk and governance | Stake, reserve, haircut; Sputnik DAO | M1, M9 |
+| Observability | Indexer, dashboard, 207 report | M6, M8 |
+
+### Modules
+
+| ID | Module | Stack |
+| --- | --- | --- |
+| M1 | `x207-circle` contract | Rust, `near-sdk` 5.29.1 |
+| M2 | `@x207/scheme`, the x402 binding | TypeScript |
+| M3 | Facilitator | TypeScript |
+| M4 | Clearing solver | TypeScript |
+| M5 | Settlement worker | TypeScript |
+| M6 | Indexer | TypeScript |
+| M7 | Six demo agents | TypeScript |
+| M8 | Dashboard | React, Vite |
+| M9 | Governance | Sputnik DAO |
+
+### Repositories
+
+| Repo | Modules | Features | Contents |
+| --- | --- | --- | --- |
+| `x207` | | | This umbrella repo: README, docs, scripts |
+| `contracts` | M1, M9 | F1–F7 | `x207-circle` contract (Rust), near-sandbox tests, Sputnik DAO proposal scripts |
+| `sdk` | M2, M3 | F2, F4, F5 | `@x207/core`, `@x207/scheme`, binding spec, test vectors, reference facilitator |
+| `backend` | M5, M6 | F1–F7, P8 | Indexer, read API, HTTP 207 report, 1Click settlement worker |
+| `frontend` | M8 | F1, F3, F4, F6, F7 | Dashboard |
+| `solver` | M4 | F3, F5 | Open clearing solver (min-cost flow) |
+| `agents` | M7 | F2, F5 | Six demo agents and scenarios |
+| `.github` | | | Organization profile, templates, reusable CI |
+| `vault` | | | Design notes. Private, not a submodule, not linked from here |
+
+The product repos are nested in this repo and are not yet submodules (UM-005). While work is local, this repo ignores them.
 
 ## 6. How x207 uses NEAR
 
