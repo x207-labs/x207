@@ -1,0 +1,7 @@
+{
+  "name": "x207",
+  "version": "0.0.0",
+  "description": "Mutual credit settlement layer for x402 agent payments on NEAR",
+  "license": "Apache-2.0",
+  "private": true
+}
