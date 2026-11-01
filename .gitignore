@@ -15,3 +15,6 @@ dist/
 
 # Account keys written by scripts/create-accounts.mjs
 /.keys/
+
+# Keluaran demo
+.demo/

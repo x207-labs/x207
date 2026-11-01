@@ -112,7 +112,34 @@ Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–
 
 ## 4. Try it: do X - see Y
 
-The steps to run the demo and the recorded transaction hashes are to be written (UM-039, UM-040).
+### Run the sandbox demo
+
+The demo runs one epoch against a local `near-sandbox` node: a real `x207-circle` contract, six agents, the facilitator, the indexer and read API, the solver and a keeper. It needs the built contract wasm (`cargo near build` in `contracts`) and a near-sandbox binary (`cargo test` once in `contracts` downloads it, or set `X207_SANDBOX_BIN`).
+
+```bash
+npm install
+npm run demo:sandbox
+```
+
+Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. Mainnet runs and recorded mainnet hashes are not part of this yet (UM-026, UM-040).
+
+| Do | See |
+| --- | --- |
+| F1: six agents `join` and stake | Twelve transactions (`join`, then `ft_transfer_call` with `{"action":"stake"}`) with hashes and durations |
+| F2: call a paid endpoint without paying | HTTP 402 whose `accepts` lists `batch-settlement@x207:agents-main` and `exact@near:mainnet` |
+| F2: agents buy from each other | Paid calls with vouchers; the facilitator registers each pair on-chain (12 registrations for 120 calls in the `medium` run) |
+| F3: keeper closes the epoch, the solver clears it, the keeper commits | `close_epoch`, `submit_clearing`, `commit_epoch` hashes and the 207 report with each member's net |
+| F4: debtors pay the residual, the keeper finalizes, creditors claim | `settle`, `finalize_epoch` and `claim` hashes |
+| Metrics | Voucher count, residual payments, cleared ratio, transfer savings and a line "N payments became M", all read from the epoch metrics |
+
+Two real runs (output seen on 2026-11-02, sandbox, different graph density, so the numbers differ):
+
+| Run | Paid calls | Residual payments | Cleared ratio | Transfer savings | Clearing transactions |
+| --- | --- | --- | --- | --- | --- |
+| `medium`, 120 calls | 120 | 6 | 0.6333 | 20 | 1 |
+| `low`, 60 calls | 60 | 5 | 0.5 | 12 | 1 |
+
+The log also marks which Level 0 external interfaces appeared: E1 (buyer), E2 (seller 402), E3 (owner stake), E4 (solver) and E5 (`set_params` by the owner account) were observed. E6 (NEAR Intents and 1Click) is not observable in sandbox mode and stays unchecked until a mainnet run. Steps for the F4 Intents payment, the cross-chain withdrawal, the DAO vote on `set_params`, the dashboard views and a sample 207 response from the real epoch are still to be written.
 
 ### Epoch timeline of the demo
 

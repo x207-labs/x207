@@ -13,6 +13,7 @@
     "agents"
   ],
   "scripts": {
-    "test:integration": "X207_SANDBOX=1 vitest run"
+    "test:integration": "X207_SANDBOX=1 vitest run",
+    "demo:sandbox": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts"
   }
 }
