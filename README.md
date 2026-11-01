@@ -112,7 +112,31 @@ Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–
 
 ## 4. Try it: do X - see Y
 
-To be written (UM-031, UM-039, UM-040).
+The steps to run the demo and the recorded transaction hashes are to be written (UM-039, UM-040).
+
+### Epoch timeline of the demo
+
+These are the default circle parameters (ADR-25). They match the defaults in `contracts/x207-circle/src/params.rs`. `set_params` can change them only inside the ranges coded in the contract (ADR-20). They have not yet been checked in a full near-sandbox epoch (UM-025); this table is updated if that test changes them.
+
+| Parameter | Value | Where it applies |
+| --- | --- | --- |
+| `epoch_length` | 1 hour | From the start of the epoch to the cutoff |
+| `proposal_window` | 10 minutes | After the cutoff, any solver can submit a clearing proposal |
+| `payment_window` | 30 minutes | After `commit_epoch`, net debtors pay the residual |
+| DAO proposal period | 1 hour | A Sputnik DAO proposal for `set_params` is open for voting. This is a DAO setting, not a contract parameter. |
+
+T0 is the moment the demo epoch `<epoch N>` opens.
+
+| Time | Stage | What happens |
+| --- | --- | --- |
+| T+0:00 | Epoch open | Agents pay with vouchers, and the facilitator registers each pair before the cutoff |
+| T+1:00 | Cutoff | A keeper calls `close_epoch`. The obligations are frozen and the next epoch opens |
+| T+1:00 to T+1:10 | `proposal_window` | A solver simulates and submits the clearing |
+| T+1:10 | Commit | A keeper calls `commit_epoch`. The 207 report is available |
+| T+1:10 to T+1:40 | `payment_window` | Net debtors pay. A debtor that does not pay will default |
+| T+1:40 | Finalize | A keeper calls `finalize_epoch`. Defaults are covered by stake, and creditor positions become claimable |
+
+One full cycle takes 1 hour 40 minutes from the opening of the epoch to finalization, plus the time to claim. It fits in one demo session.
 
 ## 5. Architecture and repositories
 
