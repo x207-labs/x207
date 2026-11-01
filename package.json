@@ -11,5 +11,8 @@
     "frontend",
     "solver",
     "agents"
-  ]
+  ],
+  "scripts": {
+    "test:integration": "X207_SANDBOX=1 vitest run"
+  }
 }
