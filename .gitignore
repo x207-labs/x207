@@ -21,3 +21,6 @@ dist/
 
 # Output of scripts/relief-curve.mjs
 /scripts/out/
+
+# Account keys written by scripts/create-accounts.mjs
+/.keys/
