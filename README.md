@@ -65,7 +65,21 @@ flowchart LR
   G[Sputnik DAO] -- "set_params within coded ranges" --> C
 ```
 
-To be completed with the feature table (UM-012).
+The 207 report is a read endpoint, outside the x402 payment cycle. It is not an x402 wire behaviour.
+
+### Features
+
+| Feature | Process | Modules | NEAR tracks | Status |
+| --- | --- | --- | --- | --- |
+| F1 Onboarding and stake | P1 | M1, M5, M6, M7, M9 | Agent Economy, Real-World Money | MVP |
+| F2 Pay with credit | P2 | M1, M2, M3, M7 | Agent Economy, AI Swarms | MVP |
+| F3 Multi-party clearing | P3 | M1, M4, M6, M8 | AI Swarms, Unstoppable DeFi | MVP |
+| F4 Residual settlement | P4 | M1, M5, M6 | Real-World Money, Unstoppable DeFi | MVP |
+| F5 Barter bundle | P5 | M1, M2, M4, M7 | AI Swarms, Agent Economy | Roadmap |
+| F6 Risk and credit limit | P6 | M1, M6, M8 | AI Security & Defense, Social Money | MVP (core: default and limit) |
+| F7 Governance | P7 | M1, M6, M8, M9 | Social Money | MVP (`set_params` only) |
+
+Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–M9 are defined in section 5.
 
 ## 4. Try it: do X - see Y
 
@@ -147,7 +161,17 @@ Results from a real demo epoch are not yet available (UM-034, UM-038).
 
 ## 10. Roadmap
 
-To be written (UM-012, UM-061).
+### Scope: MVP and roadmap
+
+| MVP (1–14 Nov 2026) | Roadmap |
+| --- | --- |
+| F1–F4 in full, F6 core (default and limit), F7 `set_params` | F5 barter bundle in full |
+| One circle, six demo agents, small amounts on mainnet | Many circles, clearing across circles |
+| Cumulative voucher per pair (ADR-17); per-request registration only as a demo mode | Registration of many pairs in one transaction |
+| Own facilitator | Proposal of the scheme spec to the x402 Foundation (`scheme_batch_settlement_x207.md`) |
+| Public ledger | Confidential settlement with Confidential Intents |
+
+The F8 adapter for access assets is not described here yet (UM-061).
 
 ## 11. Team
 
