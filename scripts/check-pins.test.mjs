@@ -1,4 +1,4 @@
-// Tests for scripts/check-pins.mjs (UM-007). Run: node --test scripts/
+// Tests for scripts/check-pins.mjs (UM-007). Run: node --test scripts/check-pins.test.mjs
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
