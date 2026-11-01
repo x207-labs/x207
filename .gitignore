@@ -3,15 +3,6 @@
 .env.*
 !.env.example
 
-# Product repositories nested here, each with its own git history.
-# Remove these lines when UM-005 turns them into submodules.
-/contracts/
-/sdk/
-/backend/
-/frontend/
-/solver/
-/agents/
-
 # Dependencies and build output
 node_modules/
 dist/

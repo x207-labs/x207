@@ -1,3 +1,18 @@
-# Intentionally empty while the project is in local mode.
-# UM-005 adds contracts, sdk, backend, frontend, solver, and agents here,
-# using their GitHub URLs, once the owner has recreated the repositories.
+[submodule "contracts"]
+	path = contracts
+	url = https://github.com/x207-labs/contracts.git
+[submodule "sdk"]
+	path = sdk
+	url = https://github.com/x207-labs/sdk.git
+[submodule "backend"]
+	path = backend
+	url = https://github.com/x207-labs/backend.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/x207-labs/frontend.git
+[submodule "solver"]
+	path = solver
+	url = https://github.com/x207-labs/solver.git
+[submodule "agents"]
+	path = agents
+	url = https://github.com/x207-labs/agents.git
