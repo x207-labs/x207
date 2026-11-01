@@ -208,7 +208,21 @@ To be written (UM-043).
 
 Seller delay risk is limited to the vouchers not yet registered on-chain (ADR-23). Secrets live only in `.env`, which is not committed.
 
-Links from each risk to a passing test, and the sections on impact and sustainability, are not written yet (UM-042, UM-045).
+Links from each risk to a passing test are not written yet (UM-042).
+
+### Impact, security, and sustainability
+
+**Impact and volume.** Real agent payment volume is small. Reports on x402 say the same: Chainalysis counted more than 100 million agentic transactions on Base up to Q1 2026 and concluded that mass adoption remains distant. Analyses that filter wash trading and non-agent payments (a16z, TRM Labs) reduce the headline figures sharply. A study on arXiv (2607.12575) finds that settlement counts measure how easily transactions can be produced, not adoption. Payment graphs in practice are star-shaped and have few cycles, so the relief from clearing there is close to zero (ADR-16). x207 does not create demand. It lowers the cost of small payments between agents that already trade with each other. Savings figures in this README come from the relief curve in section 9 and from the demo epoch once it has run. Neither gives a market estimate.
+
+**Voucher key and `exact` key.** The `exact` scheme on NEAR signs a `SignedDelegateAction` for one `ft_transfer`, and its client needs a full-access key; function-call keys are rejected. An x207 agent signs only vouchers (ed25519, verified in the contract). The voucher key cannot transfer funds, so a leaked voucher key cannot drain the account. It can create vouchers up to the credit limit of the member. The facilitator relays vouchers and cannot forge one (ADR-06).
+
+**The 207 report is outside the x402 cycle.** The report is a read endpoint of the backend. It does not take part in `402`, `PAYMENT-SIGNATURE`, or `PAYMENT-RESPONSE`, and it is not x402 wire behaviour (ADR-10).
+
+**Loss order.** If a debtor does not pay, the loss is covered in this order: the stake of the debtor, then the reserve fund, then a haircut to the direct creditors of the debtor, with no cascade (ADR-18). In the hackathon version `limit ≤ stake`, so the stake covers the whole amount.
+
+**Who pays the clearing fee, and where it goes.** `fee_total = cleared_total × (clearing_fee_bps + solver_fee_bps) / 10000`. It is charged to members pro rata to their cleared outflow and taken from their stake. The `clearing_fee_bps` part goes to the reserve fund. The `solver_fee_bps` part goes to the fee balance of the winning solver. Sputnik DAO sets both parameters with `set_params`, each within 0–100 bps. Both default to 0 in this version, so no fee is charged unless the DAO sets one (ADR-18, ADR-20).
+
+**Roadmap.** Several circles, one per ecosystem or community, and clearing between circles. Credit above stake with a reserve fund and haircut. Confidential settlement (ADR-15). See section 10.
 
 ## 9. Metrics
 
