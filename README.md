@@ -170,7 +170,21 @@ To be written (UM-043).
 
 ## 8. Security and limits
 
-To be written (UM-017, UM-042, UM-045).
+### Risks and limitations
+
+| Risk | What it means | Mitigation | Status |
+| --- | --- | --- | --- |
+| Star graphs | Real x402 payment graphs are star-shaped, so debt cycles are rare. Clearing removes little there (ADR-16). | The demo circle is closed and dense, and the metrics show relief against graph density, including a star graph. See section 9. | Limitation. Relief on star graphs stays near zero. |
+| Credit risk | Credit that exceeds collateral can default. | The hackathon version is economically fully collateralized: `limit ≤ stake` for every member at all times (ADR-18). The limit grows only from cash settlement. For the later phase with `limit > stake`, the loss order is stake, then reserve fund, then haircut to the direct creditors of the debtor, with no cascade. | MVP: invariant in the contract. Roadmap: true undercollateralized credit. |
+| Public ledger | Who trades with whom is visible on-chain. | Accepted for the MVP. | Roadmap: confidential settlement with Confidential Intents (ADR-15). Not in the MVP. |
+| Dependency on NEAR Intents | A fault in Intents affects the withdrawal to other chains. The deposit incident of 1 Oct 2026 is the context for this risk. | Intents is used only for the residual payment and the creditor withdrawal. Clearing runs in the x207 contract and does not depend on Intents (ADR-01, ADR-02). | MVP: separation in place. Cross-chain withdrawal is affected if Intents has a problem. |
+| Cash collusion | Members can trade for cash to raise limits. | Cycle clearing does not count as history, stake is required, and the limit has a cap (`limit_cap`). | Limitation. Collusion paid in cash stays possible within the cap. |
+| Real demand is not proven | Agents do not yet pay each other at scale. x207 makes small payments between agents cheaper but does not create demand. | The demo shows savings, not volume. | Open. Needs a dense community of agents. |
+| Competitors | 4Mica could add multi-party aggregation. Others can copy the mechanism. | x207 follows the official `batch-settlement` scheme and uses an open solver and on-chain verification. | Open. |
+
+Seller delay risk is limited to the vouchers not yet registered on-chain (ADR-23). Secrets live only in `.env`, which is not committed.
+
+Links from each risk to a passing test, and the sections on impact and sustainability, are not written yet (UM-042, UM-045).
 
 ## 9. Metrics
 
