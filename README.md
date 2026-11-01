@@ -190,7 +190,15 @@ To be written (UM-044).
 
 ## 7. Mechanism and invariants
 
-To be written (UM-043).
+Every claim below links to the test in the `contracts` repo that checks it. The tests were written and run locally; the GitHub CI has not run yet (no remote), so none of the links is backed by a CI result.
+
+| Claim | What the contract does | Test |
+| --- | --- | --- |
+| **Clearing is O(n) in the number of obligations.** | The contract never searches for cycles. A solver submits a cleared amount per edge, and one pass over the edges checks that each `cleared` is at most its obligation and that every member's cleared inflow equals its cleared outflow (`ERR_CLEARED_EXCEEDS_OBLIGATION`, `ERR_UNBALANCED_MEMBER`). Net positions do not change, so the residual to settle is the same before and after clearing. | [`ct030_clearing_property.rs`](contracts/tests/ct030_clearing_property.rs) (random cycle graphs), [`ct029_clearing_flow.rs`](contracts/tests/ct029_clearing_flow.rs) (competing solvers) |
+| **Default model.** | A debtor that has not paid when `finalize_epoch` runs defaults: the shortfall is taken from that debtor's own stake first, then from the reserve. Creditors of the epoch are claimable in full. A defaulted member is `suspended`. | [`ct037_default_flow.rs`](contracts/tests/ct037_default_flow.rs) |
+| **Limits come from cash settlement.** | A member's credit limit grows only from residual paid in cash (`settled_history`), through `limit_growth`, and never above the stake. | [`ct034_limits.rs`](contracts/tests/ct034_limits.rs) |
+| **Cycle clearing is not history (ADR-08).** | A cycle that clears completely leaves no settlement record, `settled_history` stays 0, and the limit does not move. Clearing cannot be used to raise limits. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`cycle_clearing_does_not_raise_limits`) |
+| **Anti-sybil: stake is required.** | A member with no stake can be neither payer nor payee, and the growth term is clamped to the stake, so extra accounts without capital add no credit. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`member_without_stake_cannot_register`) |
 
 ## 8. Security and limits
 
