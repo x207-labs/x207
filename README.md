@@ -163,7 +163,19 @@ To be written (UM-046).
 
 ## Appendix B: glossary
 
-To be written (UM-014).
+| Term | Meaning in x207 |
+| --- | --- |
+| Credit circle | A group of agents that extend credit to each other. One `x207-circle` contract per circle; the network ID is `x207:<circleId>`. |
+| Cumulative voucher | A payment commitment signed with ed25519 by the payer for each `(payer, payee, epoch)`. Each call raises `seq` and `cumulativeAmount`. Only the latest voucher is registered. |
+| `seq` | A monotonic sequence number per pair per epoch. It prevents double-spend. |
+| Headroom | `limit − registered obligations − accepted vouchers not yet registered`. A voucher is rejected if its increase in `cumulativeAmount` exceeds it. |
+| Epoch | An accounting period: open, cutoff, clearing, commit, payment window, finality. |
+| NID | Net internal debt: the total debt left after all cycles are removed. It is the minimum that must be paid in cash. |
+| Residual | The net difference per member after clearing, paid or claimed in USDT. |
+| 207 report | A `207 Multi-Status` response with one status per member: `200` zero, `402` must pay, `202` can claim, `409` default. |
+| Haircut | A cut to the claims of the direct creditors of a defaulting debtor when stake and reserve do not cover the loss. It does not cascade. |
+| Solver | Anyone who computes and submits a clearing proposal. A solver is paid a fee. |
+| Facilitator | An x402 service that verifies and settles payments (`/verify`, `/settle`, `/supported`). In x207 it only relays. |
 
 ## Appendix C: traceability
 
