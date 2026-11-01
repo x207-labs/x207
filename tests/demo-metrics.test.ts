@@ -17,3 +17,10 @@ describe("UM-034 metrik demo dari data epoch", () => {
     }
   });
 });
+
+describe("UM-033 respons 402 di demo", () => {
+  it("demo mencetak kedua entri accepts dari respons 402 nyata", () => {
+    expect(demo).toMatch(/402 accepts: \$\{required\.accepts\.map/);
+    expect(demo).toContain("PAYMENT-REQUIRED");
+  });
+});
