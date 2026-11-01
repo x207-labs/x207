@@ -1,5 +1,6 @@
 // UM-032: demo end-to-end satu epoch di near-sandbox. Satu perintah dari akar payung:
-//   npm run demo:sandbox            (variabel opsional: DEMO_PAYMENTS=120, DEMO_DENSITY=low|medium|high|star)
+//   npm run demo:sandbox            (variabel opsional: DEMO_PAYMENTS=120, DEMO_DENSITY=low|medium|high|star,
+//                                    DEMO_DEFAULT=<nama agent> agar debtor itu tidak melunasi: skenario gagal bayar AG-011)
 // Tahap: F1 join + stake enam agent, 402 dengan entri x207 dan exact (UM-033), F2 pembayaran voucher, F3 close/submit/commit
 // dengan laporan 207, F4 pelunasan residual/finalize/claim, lalu metrik dari data epoch (UM-034). Log ditulis ke .demo/.
 // Mode mainnet tidak ada di skrip ini (UM-026, UM-040 menunggu pemilik); target mainnet tidak dijalankan.
@@ -161,11 +162,13 @@ describe("demo near-sandbox", () => {
       for (const m of report.members ?? []) out(`     ${m.account} status=${m.status} net=${m.net}`);
     });
 
-    await timed("F4 settlement residual: bayar, finalize_epoch, claim", async () => {
+    const defaulter = process.env.DEMO_DEFAULT;
+    if (defaulter && !AGENT_NAMES.includes(defaulter as (typeof AGENT_NAMES)[number])) throw new Error(`DEMO_DEFAULT harus salah satu dari ${AGENT_NAMES.join(", ")}`);
+    await timed(`F4 settlement residual: bayar, finalize_epoch, claim${defaulter ? ` (${defaulter} tidak membayar)` : ""}`, async () => {
       const positions = await fx.sandbox.view<Array<{ account_id: string; role: string; amount: string; status: string }>>(fx.circle.accountId, "list_positions", { epoch, from_index: 0, limit: 100 });
       for (const name of AGENT_NAMES) {
         const position = positions.find((p) => p.account_id === identity[name].accountId && p.role === "debtor" && p.status === "due");
-        if (!position) continue;
+        if (!position || name === defaulter) continue;
         const account = fx.members.get(name)!;
         await send(`${name}.settle`, account, buildSettleTransferCall({ circleContract: fx.circle.accountId, amount: position.amount, epoch, usdtTokenId: fx.usdt.accountId }));
       }
@@ -178,6 +181,14 @@ describe("demo near-sandbox", () => {
         await send(`${name}.claim`, fx.members.get(name)!, buildClaimCall({ circleContract: fx.circle.accountId, epoch, destination: "near" }));
       }
       await catchUp(() => phaseOf(epoch) === "finalized");
+      if (defaulter) {
+        const member = await fx.sandbox.view<ContractAbi.MemberView>(fx.circle.accountId, "member", { account_id: identity[defaulter as (typeof AGENT_NAMES)[number]].accountId });
+        out(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
+        out(`   event member_defaulted: ${events.some((e) => e.event === "member_defaulted") ? "terlihat" : "TIDAK terlihat"}`);
+        // AG-011: debtor yang suspended membayar dengan voucher dan ditolak.
+        const refused = await createAgentBuyer(identity[defaulter as (typeof AGENT_NAMES)[number]], { rpcUrls: [rpcUrl] })(`${urls.gpu}/api/compute?input=halo`).catch((e: Error) => e);
+        out(`   voucher ${defaulter} setelah suspended: ${refused instanceof Error ? `ditolak klien (${refused.message.slice(0, 60)})` : `HTTP ${refused.status} ${refused.headers.get("PAYMENT-REQUIRED") ? decode(refused.headers.get("PAYMENT-REQUIRED")).error : ""}`}`);
+      }
     });
 
     // Metrik dari data epoch nyata (UM-034): tidak ada angka tetap di skrip.
