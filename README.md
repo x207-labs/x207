@@ -265,7 +265,26 @@ The chart marks the Sardex benchmark of 23% of value per monthly batch (Fleischm
 | Own facilitator | Proposal of the scheme spec to the x402 Foundation (`scheme_batch_settlement_x207.md`) |
 | Public ledger | Confidential settlement with Confidential Intents |
 
-The F8 adapter for access assets is not described here yet (UM-061).
+### Access Asset Adapter (F8)
+
+Principle: hand over access, not secrets. A circle member lends or swaps access to an account, a credential, or an on-chain asset. The buyer gets limited, metered, revocable access and never sees the secret. Usage is paid with ordinary credit vouchers, so it is cleared by F3 like any other payment. A `defaulted` buyer loses access.
+
+| Class | What it covers | How access is handed over | Status |
+| --- | --- | --- | --- |
+| A | Assets that transfer natively: NFT, token, named NEAR account | Atomic escrow. The asset moves when the buyer's voucher is registered. Final once moved. | Roadmap |
+| B | Limited derived credentials | A NEAR function-call key restricted by contract, methods, and allowance, added after payment and deleted on expiry, non-payment, or default | Stretch goal. No demo has been built. |
+| C | A single secret that cannot be split | A broker in a trusted execution environment (TEE) holds the secret and proxies calls. The buyer never receives it. | Roadmap |
+| D | Resources the member owns: a server, a GPU, storage | A paid x402 endpoint. This is F2 as it is. | MVP |
+
+Every adapter implements five functions: `price`, `prove`, `deliver`, `meter`, and `revoke`. `meter` always produces an ordinary voucher.
+
+**Asset class registry (D10).** The circle accepts only asset types that the provider's terms allow to be transferred or delegated. Sputnik DAO sets the registry through F7. A type marked class `X` is rejected by the contract.
+
+**Limits set by providers.** Being technically able to share access is not permission to share it. Consumer plans that forbid sharing or resale are class `X`, and the broker is not used for them even though it could be.
+
+**Lawful paths for subscription accounts.** A team seat that an admin assigns and revokes (class B). A member of an organization or workspace with a per-member spending limit (class B). An official OAuth app with limited scope and revocable tokens (class B). A broker (class C) only where the provider's terms allow managed or delegated access.
+
+The F8 methods and endpoints are proposals and are not in the contract interface spec yet.
 
 ## 11. Team
 
