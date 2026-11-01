@@ -224,7 +224,20 @@ x207 is measured by value, not by transaction count. A circle that clears a larg
 
 The read API serves these per epoch at `GET /x207/circles/<circleId>/epochs/<epoch>/metrics`.
 
-Results from a real demo epoch are not yet available (UM-034, UM-038).
+Results from a real demo epoch are not yet available (UM-034).
+
+### Relief against graph density
+
+How much value clearing removes depends on how many debt cycles the graph has. `scripts/relief-curve.mjs` runs the solver on synthetic graphs of increasing density and on a star graph, and writes the curve. See [docs/relief-curve.md](docs/relief-curve.md).
+
+```bash
+npm run build -w @x207/solver
+node scripts/relief-curve.mjs
+```
+
+Chart: `<path gambar kurva relief>`. The values from the run recorded for this README are to be added after the final run.
+
+The chart marks the Sardex benchmark of 23% of value per monthly batch (Fleischman, Dini, Littera, JRFM 2020). A star graph, where every member owes one hub, has no cycle and shows no relief. The demo circle is dense on purpose (ADR-16). Two columns of the script are open: payable mass and cost per payment.
 
 ## 10. Roadmap
 
