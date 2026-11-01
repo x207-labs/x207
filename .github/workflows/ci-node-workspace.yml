@@ -1,0 +1,79 @@
+# Reusable CI for a TypeScript repository that depends on another repository of the product, such as
+# `backend` on `@x207/core` from `sdk`. `@x207/core` is not published, so a lone checkout cannot run
+# `npm ci`. This job checks out the umbrella with all submodules, puts the commit under test into its
+# submodule folder, and runs the install, build and test at the umbrella root, where npm workspaces
+# resolve `@x207/core` from `sdk/packages/core`.
+#
+#   name: CI
+#   on: { push: { branches: [main] }, pull_request: {} }
+#   permissions: { contents: read }
+#   jobs:
+#     ci:
+#       uses: x207-labs/x207/.github/workflows/ci-node-workspace.yml@<pinned-ref>
+#       with: { path: backend, package: backend }
+#       secrets: { checkout-token: "${{ secrets.X207_CHECKOUT_TOKEN }}" }
+#
+# `X207_CHECKOUT_TOKEN` is a token with read access to every private repository of the organization
+# (the default `GITHUB_TOKEN` reads only the repository that runs the workflow).
+name: CI Node Workspace
+
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: Submodule folder of the repository under test at the umbrella root, such as backend.
+        type: string
+        required: true
+      package:
+        description: npm workspace name of that repository.
+        type: string
+        required: true
+      build-first:
+        description: Workspaces built before the tests (space separated), the dependencies of the package.
+        type: string
+        default: "@x207/core"
+      node-version:
+        description: Node version. The default is the floor set by ADR-11.
+        type: string
+        default: "22.22.2"
+    secrets:
+      checkout-token:
+        description: Read access to the umbrella and all submodules.
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: x207-labs/x207
+          ref: main
+          submodules: recursive
+          token: ${{ secrets.checkout-token }}
+      - name: Put the commit under test into its submodule folder
+        run: |
+          git -C "${{ inputs.path }}" fetch --no-tags origin "${{ github.sha }}"
+          git -C "${{ inputs.path }}" checkout --detach "${{ github.sha }}"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ inputs.node-version }}
+          package-manager-cache: false
+      - name: Install dependencies
+        run: npm ci
+      - name: Build the packages it depends on
+        run: |
+          for workspace in ${{ inputs.build-first }}; do
+            npm run build --workspace "$workspace" --if-present
+          done
+      - name: Lint
+        run: npm run lint --workspace "${{ inputs.package }}" --if-present
+      - name: Build
+        run: npm run build --workspace "${{ inputs.package }}" --if-present
+      # Not --if-present: a repository without tests must fail here, not pass silently.
+      - name: Test
+        run: npm test --workspace "${{ inputs.package }}"
