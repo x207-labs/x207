@@ -113,6 +113,8 @@ To be written (UM-031, UM-039, UM-040).
 | `.github` | | | Organization profile, templates, reusable CI |
 | `vault` | | | Design notes. Private, not a submodule, not linked from here |
 
+External interfaces E1–E8 and their fourteen data flows are in [docs/external-interfaces.md](docs/external-interfaces.md).
+
 The product repos are nested in this repo and are not yet submodules (UM-005). While work is local, this repo ignores them.
 
 ## 6. How x207 uses NEAR
