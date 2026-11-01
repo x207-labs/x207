@@ -103,7 +103,19 @@ To be written (UM-017, UM-042, UM-045).
 
 ## 9. Metrics
 
-To be written (UM-015, UM-034, UM-038).
+x207 is measured by value, not by transaction count. A circle that clears a large value in few transactions scores well; a circle with many small transactions that clears little does not.
+
+| Metric | Definition | API field |
+| --- | --- | --- |
+| Cleared ratio | Value removed by clearing ÷ total voucher value per epoch | `clearedRatio` |
+| Transfer savings | Number of vouchers ÷ number of residual payments | `transferSavings` |
+| Net debt reduction | Net internal debt before clearing vs after clearing (the approach of the Sardex research) | `debtReduction` |
+| Default rate | Defaulted value ÷ total residual | `defaultRate` |
+| Clearing time | Duration from `close_epoch` to `commit_epoch` | `clearingTimeSeconds` |
+
+The read API serves these per epoch at `GET /x207/circles/<circleId>/epochs/<epoch>/metrics`.
+
+Results from a real demo epoch are not yet available (UM-034, UM-038).
 
 ## 10. Roadmap
 
