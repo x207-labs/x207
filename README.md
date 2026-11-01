@@ -44,7 +44,36 @@ x207 is built as a binding of the x402 `batch-settlement` scheme on the network 
 3. **Existing solutions involve two parties.** They net or batch between one pair at a time, not across a chain of agents.
 4. **Agents cannot borrow safely.** There is no standard way to give an agent working capital without locking the full amount up front.
 
-The comparison with existing systems ("What exists and the gap") is to be written (UM-016).
+### What exists and the gap
+
+| System | Multi-party clearing | Mutual credit | Open solver | Chain reach |
+| --- | --- | --- | --- | --- |
+| x207 | Yes. Cycles across all members are removed in one transaction, and the contract checks the proposal in O(n). | Yes. The limit comes from stake and cash settlement history. In the hackathon version `limit ≤ stake`. | Yes. Any solver can submit, and the proposal with the largest cleared total is kept. | Residuals leave to other chains through NEAR Intents and 1Click. |
+| 4Mica | Bilateral. Its docs mention aggregating many participants without detail. | No. Credit is backed by collateral. | Not documented. | Base mainnet and test networks when we checked. |
+| x402 `batch-settlement` | No. One buyer to one seller. | No. The capital-backed model uses escrow or channels. | No. There is no clearing step. | Chains that have a binding. NEAR had no facilitator when we checked. |
+| AgentPay Barter | No. A swap between two parties. | No. Both sides deposit first. | No. | Base only. |
+| Central clearing (Sardex, human brokers) | Yes, run by the operator. | Yes. | No. The operator clears. | Not applicable. It is a closed ledger of one operator. |
+| Competitors locked to one network | None found in our research that clears many parties. | Varies: collateral, prepaid credit, or lender underwriting. | No. | One network each. |
+| Proprietary schemes (for example `4mica-credit`) | Not specified publicly. | Not specified publicly. | Not specified publicly. | Per vendor network. |
+
+x207 is the binding of the official `batch-settlement` scheme on a new network, `x207:<circleId>`. It does not define a new scheme.
+
+### Why this works: Sardex 2019
+
+The mechanism has been measured outside agents. Fleischman, Dini and Littera (JRFM 2020) studied Sardex, a mutual credit circuit of 3,199 firms and 138,378 transactions in 2019.
+
+| Measure | Result in the paper |
+| --- | --- |
+| Value removed by clearing alone, per monthly batch | About 23–25% (23.1% of value, range 18.6–26.3%) |
+| Net internal debt removed by clearing and mutual credit together, in simulation | About 50% (about 25% with clearing alone) |
+
+These are results of other researchers on human firms, not results of x207. The simulation forced 100% participation.
+
+### FAQ
+
+**Why not 4Mica?** 4Mica nets between two parties, and its credit is backed by collateral. x207 clears across many parties, and its limit grows from cash settlement history. 4Mica could add multi-party aggregation later. Its scheme `4mica-credit` has no public spec, while x207 follows the official `batch-settlement` scheme.
+
+**Why does clearing not run directly in NEAR Intents?** The Intents Verifier contract (`intents.near`) does not support negative balances and cannot restrict where tokens move inside it. It has no native mint on mainnet. It also needs a fresh signature from every party in each round. Clearing therefore runs in the x207 contract, and Intents is used only for the residual payment and the creditor withdrawal (ADR-01, ADR-02).
 
 ## 3. How it works
 
