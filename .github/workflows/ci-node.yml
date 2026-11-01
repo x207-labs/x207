@@ -5,7 +5,7 @@
 #   permissions: { contents: read }
 #   jobs:
 #     ci:
-#       uses: x207-labs/.github/.github/workflows/ci-node.yml@<pinned-ref>
+#       uses: x207-labs/x207/.github/workflows/ci-node.yml@<pinned-ref>
 name: CI Node
 
 on:

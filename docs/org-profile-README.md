@@ -18,6 +18,5 @@ Start at the umbrella repository: **[x207-labs/x207](https://github.com/x207-lab
 | [`solver`](https://github.com/x207-labs/solver) | Open clearing solver: min-cost flow, `simulate`, `submit_clearing` |
 | [`agents`](https://github.com/x207-labs/agents) | Six demo agents and scenarios, built only on the public SDK |
 | `vault` | Design notes (private) |
-| [`.github`](https://github.com/x207-labs/.github) | This organization profile, issue and PR templates, reusable CI workflows |
 
 Licensed under Apache-2.0.
