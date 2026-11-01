@@ -139,7 +139,18 @@ Two real runs (output seen on 2026-11-02, sandbox, different graph density, so t
 | `medium`, 120 calls | 120 | 6 | 0.6333 | 20 | 1 |
 | `low`, 60 calls | 60 | 5 | 0.5 | 12 | 1 |
 
-The log also marks which Level 0 external interfaces appeared: E1 (buyer), E2 (seller 402), E3 (owner stake), E4 (solver) and E5 (`set_params` by the owner account) were observed. E6 (NEAR Intents and 1Click) is not observable in sandbox mode and stays unchecked until a mainnet run. Steps for the F4 Intents payment, the cross-chain withdrawal, the DAO vote on `set_params`, the dashboard views and a sample 207 response from the real epoch are still to be written.
+The log also marks which Level 0 external interfaces appeared: E1 (buyer), E2 (seller 402), E3 (owner stake), E4 (solver) and E5 (`set_params` by the owner account) were observed. E6 (NEAR Intents and 1Click) is not observable in sandbox mode and stays unchecked until a mainnet run. Report members from the `medium` run above (HTTP 207, `cleared` 1520000 in 6-decimal units, i.e. 1.52 credit; status 402 means the member owes a residual, 202 means the member is owed):
+
+| Member | Status | Net (6 decimals) |
+| --- | --- | --- |
+| `translator` | 402 | -300000 |
+| `scraper` | 402 | -140000 |
+| `cleaner` | 402 | -40000 |
+| `summarizer` | 202 | +20000 |
+| `gpu` | 202 | +160000 |
+| `image` | 202 | +300000 |
+
+Net positions add up to zero. Steps for the F4 Intents payment, the cross-chain withdrawal, the DAO vote on `set_params`, the dashboard views and a sample 207 response from the real epoch are still to be written.
 
 ### Epoch timeline of the demo
 
