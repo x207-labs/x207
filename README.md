@@ -153,6 +153,26 @@ The log also marks which Level 0 external interfaces appeared: E1 (buyer), E2 (s
 
 Net positions add up to zero. Steps for the F7 DAO vote, the F4 Intents payment, the cross-chain withdrawal, the DAO vote on `set_params`, the dashboard views and a sample 207 response from the real epoch are still to be written.
 
+### Business and invoice blocks (tracks `business` and `realworld`)
+
+Two more sandbox blocks run from the root; each starts its own `near-sandbox` node and takes about 80 seconds.
+
+```bash
+npm run demo:business     # procurement agent buys on credit inside the owner's limits
+npm run demo:realworld    # three businesses, invoices as vouchers, F3 netting, F4 residual
+```
+
+| Do | See |
+| --- | --- |
+| `business`: the `gpu` agent buys `translate` (on the owner's list, price 0.02) | HTTP 200 and a signed voucher; spent this epoch 20000 |
+| `business`: it asks for `summarize` (quoted 0.02 above the 0.01 limit) and `image` (not on the list) | Refused before payment: `price_above_service_limit`, `service_not_allowed`; no voucher signed |
+| `business`: it keeps buying until the 0.06 epoch budget is spent, then asks once more | `over_epoch_budget`; the contract shows `gpu -> translator` 40000 and `gpu -> cleaner` 20000, no edge to `summarizer`: on-chain debt equals the approved purchases (3 approved, 3 refused in the run) |
+| `realworld`: three businesses owe each other 100, 60 and 80 credit; each invoice becomes a voucher with `resource = invoice:<sha256>` | Three vouchers; the invoice text stays off-chain, only its hash is signed |
+| `realworld`: close the epoch, run the solver, commit | Contract obligation 240 credit equals the invoice total; cleared 180 credit (60 around the ring on three edges); residual edges `maker -> supplier` 40 and `retailer -> maker` 20 |
+| `realworld`: read the F4 positions | Debtors owe 40 credit, creditors claim 40 credit; net cash is 40 of the 240 credit of invoices |
+
+The run on 2026-11-02 asserts these numbers against the contract (`obligation`, `get_clearing_proposal`, `list_positions`, `net_position`), so the printed totals before and after netting are the contract's. No new contract is involved: invoices are ordinary cumulative vouchers and the existing clearing. The `business` limits are enforced by the agent before it signs anything; the contract enforces its own credit headroom independently. What these blocks do not show: real-world invoice disputes, tax or legal status of an invoice, and payment of the residual through 1Click.
+
 ### Epoch timeline of the demo
 
 These are the default circle parameters (ADR-25). They match the defaults in `contracts/x207-circle/src/params.rs`. `set_params` can change them only inside the ranges coded in the contract (ADR-20). They have not yet been checked in a full near-sandbox epoch (UM-025); this table is updated if that test changes them.
