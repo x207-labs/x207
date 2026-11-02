@@ -85,7 +85,7 @@ The sandbox circle is dense on purpose (ADR-16). These are properties of the mec
 | Publish `@x207/core` and `@x207/scheme` | Others can integrate without cloning (SD-045, pending) |
 | Propose the scheme spec to the x402 Foundation | Move from a binding to a shared standard |
 | Many circles and clearing across circles | One circle is a prototype |
-| Delivery adapters for assets other than services (access, TEE broker) | Barter beyond service calls; classes A to C are roadmap |
+| Delivery adapters for assets other than services (access, TEE broker) | Barter beyond service calls. Class B (function-call keys) runs in sandbox; class A (NFT escrow) and the class C proxy (mock provider, no TEE) run in sandbox only; the TEE and real providers are roadmap |
 | Confidential settlement | The public ledger shows who owes whom |
 
 ---
