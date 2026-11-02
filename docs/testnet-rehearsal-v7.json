@@ -81,7 +81,7 @@
       "hash": "FaGbYAJuipsweEtswoffuRu3aydMFUZKvykJhZqT7okr"
     },
     {
-      "step": "keeper finalize_epoch",
+      "step": "keeper finalize_epoch, epoch 1",
       "account": "x207-circle-v7.testnet",
       "method": "finalize_epoch",
       "hash": "AnS71Lx1huXpZwXchJK65zfdG6R96T9BghFW8CesECQz"
@@ -117,19 +117,19 @@
       "hash": "CDddV4BN66XeW1bNWi56DiUH2YDy6EZdwxXk3qY4kaKb"
     },
     {
-      "step": "keeper finalize_epoch",
+      "step": "keeper finalize_epoch, epoch 2",
       "account": "x207-circle-v7.testnet",
       "method": "finalize_epoch",
       "hash": "149GfatSwAZXsCdQs3srHdwXbbQwjPfLoHSaA1Eh1oQe"
     },
     {
-      "step": "keeper finalize_epoch",
+      "step": "keeper finalize_epoch, epoch 3",
       "account": "x207-circle-v7.testnet",
       "method": "finalize_epoch",
       "hash": "GWojr6Qk4XaivXAZ1bvmTyramSo9XLidnE1Rsf9W2qdp"
     },
     {
-      "step": "keeper finalize_epoch",
+      "step": "keeper finalize_epoch, epoch 4 (the rehearsal epoch)",
       "account": "x207-circle-v7.testnet",
       "method": "finalize_epoch",
       "hash": "42VKJkP4bgaveMCz7P3meKot9VnXc1grHECEvWQqh4fs"
@@ -165,7 +165,7 @@
       "hash": "-"
     }
   ],
-  "note": "Gladi of contract 0.0.7 (tag v0.0.7, 2c8c0ec) on testnet, epoch 4. Hashes of deploy, new, account creation and onboarding were not recorded. Hashes only; no keys.",
+  "note": "Gladi of contract 0.0.7 (tag v0.0.7, 2c8c0ec) on testnet, epoch 4. Hashes of deploy, new, account creation and onboarding were not recorded. Hashes only; no keys. The keeper pass at the end finalized epochs 2, 3 and 4 one after the other; the finalize of the rehearsal epoch 4 is 42VKJkP4bgaveMCz7P3meKot9VnXc1grHECEvWQqh4fs. Epoch labels of the other keeper steps were not checked.",
   "network": "testnet",
   "agents": [
     "andi.x207-circle-v7.testnet",
