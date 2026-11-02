@@ -21,19 +21,19 @@ import type { AddressInfo } from "node:net";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
 import { describe, it } from "vitest";
-import { buildClaimCall, buildSettleTransferCall, signBundle, termsHash, type BundleTerms, type ContractAbi } from "@x207/core";
+import { buildClaimCall, buildSettleTransferCall, type ContractAbi } from "@x207/core";
 import { createNearSender, createNearView } from "@x207/core/signer";
 import { NearRegistrationChain, NearRpc, PendingStore, RegistrationScheduler, createApp, createFacilitatorService } from "@x207/facilitator";
 import { defineCircleConfig } from "@x207/scheme";
 import { onboardAgents } from "../agents/onboarding/onboard.ts";
 import { planDensity, type Density } from "../agents/scenario/density.ts";
-import { LEG_AMOUNT, RING_MEMBERS, payLegs } from "../agents/scenario/ring.ts";
 import { buildActProposalArgs, buildAddProposalArgs, parseParamsJson } from "../contracts/dao/lib.mjs";
 import { createAgentServer } from "../agents/shared/agent-server.ts";
 import { loadSpendPolicy, type AgentIdentity } from "../agents/shared/identity.ts";
 import { createNearAiClient } from "../agents/shared/nearai.ts";
 import { AGENT_NAMES, AGENTS, type AgentName } from "../agents/shared/registry.ts";
 import { createAgentBuyer, createSellerPaywall } from "../agents/shared/x207.ts";
+import { runBarterRing } from "./barter-step.ts";
 import { keeperPass } from "../scripts/lib/keeper.mjs";
 import { serveWeb } from "../agents/test/helpers.ts";
 
@@ -201,35 +201,11 @@ describe("demo jaringan nyata", () => {
     if (resume) log(`== Melanjutkan epoch ${epoch} (pembayaran dan registrasi sudah dilakukan di putaran sebelumnya)`);
     if (!resume) scheduler.start(2_000);
     if (!resume && process.env.DEMO_BARTER === "yes") {
-      log(`== F5 barter bundle (epoch ${epoch}, cincin ${RING_MEMBERS.join(" -> ")})`);
-      // get_bundle ada sejak antarmuka 0.0.4; kontrak lama menolak panggilan view itu, jadi langkah dilewati.
-      const supported = await view("get_bundle", { bundle_id: 1 }).then(() => true, () => false);
-      if (!supported) log(`   dilewati: ${contract} belum punya get_bundle (antarmuka sebelum 0.0.4). Isi CIRCLE_CONTRACT dengan alamat 0.0.4.`);
-      else {
-        const legs = RING_MEMBERS.map((buyer, i) => ({ payer: accounts[buyer], payee: accounts[RING_MEMBERS[(i + 1) % RING_MEMBERS.length]!], max_amount: String(LEG_AMOUNT) }))
-          .sort((a, b) => (a.payer !== b.payer ? (a.payer < b.payer ? -1 : 1) : a.payee < b.payee ? -1 : 1));
-        const terms: BundleTerms = { circle: contract, epoch, legs };
-        const signatures = RING_MEMBERS.map((n) => {
-          const signed = signBundle(terms, accounts[n], identity[n].voucherSecretKey);
-          return { account_id: signed.account, signature: signed.signature };
-        });
-        log(`   terms_hash ${termsHash(terms)}, ${legs.length} leg masing-masing ${LEG_AMOUNT}`);
-        const solverId = env("SOLVER_ACCOUNT_ID");
-        const bundleId = Number(
-          await createNearSender({ rpcUrl, accountId: solverId, secretKey: operatorKey("SOLVER", solverId), onTx: stamp("solver") })({
-            receiverId: contract, methodName: "commit_bundle", args: { bundle: { epoch, legs }, signatures }, deposit: 0n, gas: 200_000_000_000_000n,
-          }),
-        );
-        log(`   bundle ${bundleId} di-commit`);
-        // facilitator membaca blok final: tunggu bundle terlihat sebelum membayar leg
-        for (let i = 0; i < 60 && !(await view("get_bundle", { bundle_id: bundleId })); i++) await sleep(1_000);
-        const pairs = new Set(legs.map((l) => `${l.payer}>${l.payee}`));
-        const buyers = Object.fromEntries(
-          RING_MEMBERS.map((n) => [n, createAgentBuyer(identity[n], { rpcUrls: [rpcUrl], bundleFor: (payee, e) => (e === epoch && pairs.has(`${accounts[n]}>${payee}`) ? bundleId : undefined) })]),
-        );
-        const paid = await payLegs((buyer, seller) => buyers[buyer]!(`${urls[seller]}/api/${AGENTS[seller].verb}?input=halo`));
-        for (const [pair, amount] of Object.entries(paid)) log(`   leg ${pair} dibayar ${amount}`);
-      }
+      const solverId = env("SOLVER_ACCOUNT_ID");
+      await runBarterRing({
+        view, rpcUrl, contract, epoch, accounts, identity, urls, log,
+        send: createNearSender({ rpcUrl, accountId: solverId, secretKey: operatorKey("SOLVER", solverId), onTx: stamp("solver") }),
+      });
     }
     if (!resume) log(`== F2 pembayaran voucher (epoch ${epoch})`);
     for (const { buyer, seller } of resume ? [] : planDensity(density, payments, Number(process.env.DEMO_SEED ?? 20261102))) {
