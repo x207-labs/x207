@@ -217,6 +217,25 @@ npm run demo:marketplace   # about 2.5 minutes; real contract, indexer, solver a
 
 The amounts are small on purpose so that each leg is a whole number of 0.02 calls. The seeker leg is named in the signed terms (`search_leg`) and the contract caps it at `max_search_share_bps` (default 500, 5%) of the sum of the legs of the bundle; a 10% share made the first version of this demo fail on the 0.0.5 contract, so the run uses a 4% share of a 0.5 listing (the seeker leg is 0.02 of 0.42 on the pay path); the 100 / 10 / 3 example of the F9 note is computed by the same functions with other parameters (`sdk/spec/marketplace.md`). The listing book, negotiation and seeker are off-chain (backend module M11); the contract only checks a bundle: one signature per participant over its `terms_hash` and the reserved headroom of each leg. Run on 2026-11-02; the test `tests/marketplace.sandbox.test.ts` asserts the same figures. Not shown: quality of goods or disputes (the protocol does not judge them), asset classes A to C with real delivery adapters, and the on-chain `post_intent` hash (the demo posts intents to the book only).
 
+### Access asset block, class B (feature F8)
+
+```bash
+npm run demo:classb   # about 2 minutes; real contract, indexer, facilitator and broker in near-sandbox
+```
+
+| Do | See |
+| --- | --- |
+| `scraper` offers a rental of the asset type `near-rpc:access` (method `get_params`, 0.05 credit a day, operator = the broker) | Grant 1, status `offered` |
+| `translator` accepts with its own function-call key as `delivery_pubkey` | Status `active`; the secret key stays with `translator` |
+| `translator` asks the broker for the lease without paying | HTTP 402 whose x207 entry has `payTo` = `scraper` (the grantor, not the broker) and `extra.grantId` |
+| `translator` pays one day with an ordinary x402 voucher | HTTP 200, the key is installed on the lease sub-account and `paidUntil` is one day ahead (capped at `expires_at`); the node shows a function-call key with the receiver, the method and the allowance of the grant |
+| `translator` calls `get_params` with the key | The call succeeds |
+| `translator` calls `get_epoch`, and `get_params` with 1 yoctoNEAR attached | Both are refused by the NEAR protocol itself ("Access key does not allow method", "Deposit is not allowed with function call") |
+| `translator` does not pay its residual; the keeper finalizes the epoch | `translator` is `suspended`; the broker reads `member_defaulted` from the read API and deletes the key about 3 seconds later; the grant is `revoked`; the same key is refused |
+| Another member asks for the lease of that grant | HTTP 403 `grant_revoked` |
+
+The rent is an ordinary voucher from the lessee to the grantor, so the broker never writes the obligation ledger and the rent is cleared by F3 like any other payment. The run is a sandbox run: no TEE, no testnet or mainnet transaction, class C is not built, and the quality of what the key is used for is not judged. The test `tests/broker-class-b.sandbox.test.ts` covers the same flow plus renewal and expiry.
+
 ### Barter bundle block (feature F5)
 
 ```bash
@@ -245,6 +264,8 @@ Contract rules behind the rows: `contracts/x207-circle/src/bundle.rs` (`commit_b
 | `business` and `realworld` blocks | Run (`npm run demo:business`, `npm run demo:realworld`) | Not run | No transaction sent. `realworld` is a demo scenario of invoices as vouchers, not a deployment with real businesses |
 | Exit and withdraw stake from the dashboard | Run: the page against the real read API and contract, with a sandbox account as the wallet (`frontend/src/test/exit.sandbox.test.tsx`) | Not run. A real wallet through NEAR Connect has not been tried | No transaction sent |
 | Parallel registration with a gas key (NEP-611) | Run (`sdk/apps/facilitator/test/gas-key.sandbox.test.ts`: four registrations on four lanes) | Not run with a funded key | No transaction sent |
+| F8 class B (function-call key rental, revoke on default) | Run (`npm run demo:classb`, `tests/broker-class-b.sandbox.test.ts`). No TEE | Not run | No transaction sent |
+| F8 class C (secret behind a TEE broker) | Not built | Not built | Not built |
 | NEAR AI inference for agents | Mock mode (ADR-33) | Not run | Waits for the account top-up |
 
 ### Epoch timeline of the demo
@@ -459,8 +480,8 @@ Principle: hand over access, not secrets. A circle member lends or swaps access 
 | Class | What it covers | How access is handed over | Status |
 | --- | --- | --- | --- |
 | A | Assets that transfer natively: NFT, token, named NEAR account | Atomic escrow. The asset moves when the buyer's voucher is registered. Final once moved. | Roadmap |
-| B | Limited derived credentials | A NEAR function-call key restricted by contract, methods, and allowance, added after payment and deleted on expiry, non-payment, or default | Stretch goal. No demo has been built. |
-| C | A single secret that cannot be split | A broker in a trusted execution environment (TEE) holds the secret and proxies calls. The buyer never receives it. | Roadmap |
+| B | Limited derived credentials | A NEAR function-call key restricted by contract, methods, and allowance, added after payment and deleted on expiry, non-payment, or default | Built and run in `near-sandbox` (`npm run demo:classb`). Not on testnet or mainnet, no TEE. |
+| C | A single secret that cannot be split | A broker in a trusted execution environment (TEE) holds the secret and proxies calls. The buyer never receives it. | Roadmap. Not built: no proxy, no attestation. |
 | D | Resources the member owns: a server, a GPU, storage | A paid x402 endpoint. This is F2 as it is. | MVP |
 
 Every adapter implements five functions: `price`, `prove`, `deliver`, `meter`, and `revoke`. `meter` always produces an ordinary voucher.
@@ -471,7 +492,7 @@ Every adapter implements five functions: `price`, `prove`, `deliver`, `meter`, a
 
 **Lawful paths for subscription accounts.** A team seat that an admin assigns and revokes (class B). A member of an organization or workspace with a per-member spending limit (class B). An official OAuth app with limited scope and revocable tokens (class B). A broker (class C) only where the provider's terms allow managed or delegated access.
 
-The F8 methods and endpoints are proposals and are not in the contract interface spec yet.
+The F8 methods are in the contract (interface 0.0.6: `set_asset_class`, `offer_grant`, `accept_grant`, `revoke_grant` and the views `get_asset_class`, `get_grant`, `grants_of`). The broker for class B is in `backend/broker/`; the adapter types, the key proof and the grant voucher format are in `sdk/` (`@x207/core` `access.ts` and `access-key.ts`, `EndpointAdapter` in `@x207/scheme`).
 
 ## 11. Team
 

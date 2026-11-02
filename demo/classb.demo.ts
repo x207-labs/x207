@@ -12,7 +12,8 @@ import { createViewAccessKeyFn, signVoucher, type AccessGrant, type ContractAbi,
 import { createNearSender } from "@x207/core/signer";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
 import { startBroker, type RunningBroker } from "../backend/broker/src/index.ts";
-import { RENTAL_DAY_MS, acceptRental, assertProbe, offerRental, payLease, probeKey, rentalScope, type CallWithKey } from "../agents/scenario/classb.ts";
+import { acceptRental, offerRental } from "../agents/onboarding/rental.ts";
+import { RENTAL_DAY_MS, assertProbe, payLease, probeKey, rentalScope, type CallWithKey } from "../agents/scenario/classb.ts";
 import { createAgentBuyer } from "../agents/shared/x207.ts";
 import { startStack, type Stack } from "../agents/test/stack.ts";
 import { keeperPass } from "../scripts/lib/keeper.mjs";
@@ -120,7 +121,7 @@ describe("demo F8 kelas B: sewa function-call key dan cabut saat gagal bayar", (
     const probe = await probeKey(callWithKey, key, "get_params", "get_epoch");
     assertProbe(probe);
     step("translator calls get_params with the key", `ok (${probe.allowed.ok})`);
-    step("translator calls get_epoch (not on the list) and get_params with 1 yoctoNEAR deposit", `refused by the NEAR protocol: ${probe.otherMethod.ok ? "" : probe.otherMethod.error.split("\n")[0]} | ${probe.withDeposit.ok ? "" : probe.withDeposit.error.split("\n")[0]}`);
+    step("translator calls get_epoch (not on the list) and get_params with 1 yoctoNEAR deposit", `refused by the NEAR protocol: ${probe.otherMethod.ok ? "" : probe.otherMethod.error.split("\n")[0]} | ${probe.withFunds.ok ? "" : probe.withFunds.error.split("\n")[0]}`);
 
     // penyewa berutang 3 credit ke image dan tidak membayar: defaulted saat epoch difinalisasi
     const epoch = (await view<ContractAbi.EpochView>("get_epoch")).epoch;
