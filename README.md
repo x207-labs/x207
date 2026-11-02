@@ -147,7 +147,7 @@ npm install
 npm run demo:sandbox
 ```
 
-Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. `npm run demo:testnet` and `npm run demo:mainnet` (`demo/network.demo.ts`) run the same stages against a real network; without `X207_CONFIRM_REAL_TX=yes` they only print the plan, and mainnet also needs `X207_CONFIRM_MAINNET=yes`. A testnet rehearsal ran on 2026-11-02 against a rehearsal contract `x207r-circle.testnet` with 5-minute epochs (twenty paid calls, twelve pair registrations, one clearing proposal, 0.28 of 0.40 credit cleared, two residual payments, one default, claims to `near`); its hashes are in `vault/00 Log/Progress/Progress Main B.md`. The testnet run reads the clearing snapshot from contract views instead of the indexer, because the public testnet endpoints rate-limit a block backfill. No mainnet transaction has been sent (UM-026, UM-040).
+Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. `npm run demo:testnet` and `npm run demo:mainnet` (`demo/network.demo.ts`) run the same stages against a real network; without `X207_CONFIRM_REAL_TX=yes` they only print the plan, and mainnet also needs `X207_CONFIRM_MAINNET=yes`. A testnet rehearsal ran on 2026-11-02 against a rehearsal contract `x207r-circle.testnet` with 5-minute epochs (twenty paid calls, twelve pair registrations, one clearing proposal, 0.28 of 0.40 credit cleared, two residual payments, one default, claims to `near`); its hashes are in `vault/00 Log/Progress/Progress Main B.md`. The testnet run reads the clearing snapshot from contract views instead of the indexer, because the public testnet endpoints rate-limit a block backfill. Two optional steps of the network demo are skipped with a message when their prerequisite is missing: `DEMO_BARTER=yes` runs the F5 ring (three signatures, `commit_bundle`, fifteen leg payments with `bundleId`) and needs a contract at interface 0.0.4, set through `CIRCLE_CONTRACT`; `DEMO_DAO_ACCOUNT`, `DEMO_DAO_COUNCIL` and `DEMO_DAO_PARAMS_FILE` run a `set_params` proposal through a Sputnik DAO and need a circle contract that the DAO owns. Neither step has run on a real network yet; the barter flow is the one tested in `tests/barter.sandbox.test.ts`, and the DAO step is checked only through `contracts/dao/dao.test.mjs`. No mainnet transaction has been sent (UM-026, UM-040).
 
 | Do | See |
 | --- | --- |
@@ -217,6 +217,34 @@ npm run demo:marketplace   # about 2.5 minutes; real contract, indexer, solver a
 | Close the epoch, run the solver, commit, read the 207 report | Cleared 1.08 credit; `image` and `gpu` (ring only) have status 200 and net 0; the seeker nets 0.04; every net equals the registered obligations |
 
 The amounts are small on purpose so that each leg is a whole number of 0.02 calls; the 100 / 10 / 3 example of the F9 note is computed by the same functions with other parameters (`sdk/spec/marketplace.md`). The listing book, negotiation and seeker are off-chain (backend module M11); the contract only checks a bundle: one signature per participant over its `terms_hash` and the reserved headroom of each leg. Run on 2026-11-02; the test `tests/marketplace.sandbox.test.ts` asserts the same figures. Not shown: quality of goods or disputes (the protocol does not judge them), asset classes A to C with real delivery adapters, and the on-chain `post_intent` hash (the demo posts intents to the book only).
+### Barter bundle block (feature F5)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/barter.sandbox.test.ts   # real contract, facilitator, indexer, book, solver and keeper in near-sandbox
+```
+
+| Do | See |
+| --- | --- |
+| `translator`, `summarizer` and `scraper` each post an intent (offer one service, need the next) | Three open intents in the book; no match is stored for any single pair |
+| The solver finds the ring and the three agents sign the same `terms_hash` | One bundle of three legs; the server, the client and the contract compute the same hash from the legs |
+| Anyone calls `commit_bundle` with the three signatures | `bundle_committed` with the `terms_hash`; each payer's headroom is reserved for its leg |
+| Each leg is paid with an ordinary x402 call whose voucher carries `bundleId` | Facilitator `verify` checks the leg with `get_bundle`, and the scheduler registers it with `register_in_bundle`; cumulative equals the leg amount on all three edges |
+| Close the epoch, run the solver, commit, read the 207 report | Cleared equals the obligation of the three legs; all three members have status 200 and net 0; no position to claim |
+
+Contract rules behind the rows: `contracts/x207-circle/src/bundle.rs` (`commit_bundle` checks the epoch phase, the shape of the legs, active participants, one valid signature per participant over the NEP-413 style `terms_hash`, and headroom of every payer; nothing is written before the last check passes) and `contracts/tests/ct065_bundle.rs`. The test run is the source of the figures; the printed form for the whole flow with a seeker is the marketplace block above.
+
+### What has and has not run
+
+| Piece | `near-sandbox` | Testnet | Mainnet |
+| --- | --- | --- | --- |
+| F1 to F4, F6 | Run (`npm run demo:sandbox`) | Rehearsal on 2026-11-02 against a rehearsal contract | No transaction sent |
+| F5 barter ring | Run (`tests/barter.sandbox.test.ts`, `npm run demo:marketplace`) | Not run. The interface 0.0.4 testnet address is pending; the testnet demo has an optional barter step (`DEMO_BARTER=yes`) that needs it | No transaction sent |
+| F9 marketplace, seeker, referral inbox | Run (`tests/marketplace.sandbox.test.ts`, `npm run demo:marketplace`) | Not run | No transaction sent |
+| F7 DAO vote on `set_params` | Not run; the demo calls `set_params` from the owner account | Not run | No transaction sent |
+| NEAR Intents and 1Click (residual payment, withdrawal, `defi` track) | Not observable in sandbox | Not run | Needs a mainnet run (UM-027, UM-035); not done |
+| `business` and `realworld` blocks | Run (`npm run demo:business`, `npm run demo:realworld`) | Not run | No transaction sent. `realworld` is a demo scenario of invoices as vouchers, not a deployment with real businesses |
+| NEAR AI inference for agents | Mock mode (ADR-33) | Not run | Waits for the account top-up |
+
 
 ### Epoch timeline of the demo
 
