@@ -138,7 +138,7 @@ describe("demo jaringan nyata", () => {
     const db = openDatabase(":memory:");
     const start = Number(env("DEMO_START_BLOCK"));
     const indexer = new Indexer({
-      db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), contract, start), circleId: "agents-main",
+      db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl], timeoutMs: 30_000 })), contract, start), circleId: "agents-main",
       contractId: contract, startBlock: start, fetchParams: () => view("get_params", {}) as Promise<ContractAbi.Params>,
     });
     await indexer.bootstrap();
@@ -157,21 +157,30 @@ describe("demo jaringan nyata", () => {
           return methodName;
         },
       }) as Promise<Array<{ method: string; epoch: number }>>;
+    // RPC publik kadang lambat; indexer dicoba lagi pada putaran berikutnya.
+    const safeDrain = async () => {
+      try {
+        await indexer.drain();
+      } catch (error) {
+        log(`   indexer: ${(error as Error).message.slice(0, 120)}; diulang`);
+      }
+    };
     const phase = async (epoch: number) => ((await view("get_epoch", { epoch })) as ContractAbi.EpochView).phase;
     const waitFor = async (what: string, done: () => Promise<boolean>) => {
       for (;;) {
         await pass();
-        await indexer.drain();
+        await safeDrain();
         if (await done()) return;
         await sleep(15_000);
         log(`   menunggu ${what}`);
       }
     };
 
+    const resume = process.env.DEMO_RESUME_EPOCH ? Number(process.env.DEMO_RESUME_EPOCH) : undefined;
     // Pilih epoch yang masih punya waktu: tutup epoch yang sudah lewat cutoff, tunggu bila sisa waktu terlalu pendek.
     const MIN_REMAINING_MS = 240_000;
-    let current: ContractAbi.EpochView;
-    for (;;) {
+    let current: ContractAbi.EpochView = (await view("get_epoch", resume ? { epoch: resume } : {})) as ContractAbi.EpochView;
+    while (!resume) {
       await pass();
       current = (await view("get_epoch", {})) as ContractAbi.EpochView;
       const remaining = Number(BigInt(current.cutoff_at) / 1_000_000n) - (await chainNowMs());
@@ -180,16 +189,28 @@ describe("demo jaringan nyata", () => {
       await sleep(15_000);
     }
     const epoch = current.epoch;
-    log(`== F2 pembayaran voucher (epoch ${epoch})`);
-    scheduler.start(2_000);
-    for (const { buyer, seller } of planDensity(density, payments, Number(process.env.DEMO_SEED ?? 20261102))) {
+    if (resume) {
+      log(`== Melanjutkan epoch ${epoch} (pembayaran dan registrasi sudah dilakukan di putaran sebelumnya)`);
+      // Indexer menyusul dulu sebelum keeper menutup epoch, supaya jendela proposal tidak terbuang.
+      for (let i = 0; i < 200; i++) {
+        await safeDrain();
+        const row = db.prepare("select last_block_height as h, head_block_height as head from indexer_cursor").get() as { h: number; head: number } | undefined;
+        if (row && row.head - row.h < 5) break;
+        await sleep(2_000);
+      }
+    }
+    if (!resume) log(`== F2 pembayaran voucher (epoch ${epoch})`);
+    if (!resume) scheduler.start(2_000);
+    for (const { buyer, seller } of resume ? [] : planDensity(density, payments, Number(process.env.DEMO_SEED ?? 20261102))) {
       const response = await createAgentBuyer(identity[buyer], { rpcUrls: [rpcUrl] })(`${urls[seller]}/api/${AGENTS[seller].verb}?input=halo`);
       if (response.status !== 200) throw new Error(`${buyer} -> ${seller}: HTTP ${response.status}`);
     }
-    log(`   ${payments} panggilan berbayar selesai`);
-    while (pending.listOpen(contract).length > 0) await sleep(2_000);
-    scheduler.stop();
-    log("   semua pasangan teregistrasi on-chain");
+    if (!resume) {
+      log(`   ${payments} panggilan berbayar selesai`);
+      while (pending.listOpen(contract).length > 0) await sleep(2_000);
+      scheduler.stop();
+      log("   semua pasangan teregistrasi on-chain");
+    }
 
     log("== F3 kliring");
     await waitFor("close_epoch", async () => !["open", "cutoff"].includes(await phase(epoch)) && (db.prepare("select phase from epochs where epoch = ?").get(epoch) as { phase?: string } | undefined)?.phase !== "open");
