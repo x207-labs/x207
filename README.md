@@ -58,6 +58,23 @@ x207 is built as a binding of the x402 `batch-settlement` scheme on the network 
 
 x207 is the binding of the official `batch-settlement` scheme on a new network, `x207:<circleId>`. It does not define a new scheme.
 
+### x207 as an evolution of x402, not a replacement
+
+x207 keeps the x402 flow (HTTP 402, a payment requirement, a signed payload, a facilitator) and registers a binding for the official `batch-settlement` scheme on a new network. Each row below names a limit of x402 as published, what x207 adds on top, and where the repository proves it. A row with no proof is not claimed.
+
+What we checked on 2026-11-02 in the public x402 repository (`coinbase/x402`, `specs/schemes`): the schemes `exact`, `upto`, `batch-settlement` and `auth-capture` exist. The `batch-settlement` document describes an EVM escrow channel with cumulative off-chain vouchers claimed in batches, one payer and one receiver per channel. It does not mention credit or netting between several parties, and it covers EVM only. We did not read the other scheme documents in detail and x402 changes, so recheck before relying on a row.
+
+| x402 today (as checked) | What x207 adds | Proof in this repository |
+| --- | --- | --- |
+| Settlement per request on `exact`; `batch-settlement` batches claims but needs funds escrowed in a channel first | A cumulative voucher per payer and payee backed by a credit limit from stake, not an escrow per seller; the facilitator holds the latest voucher and registers one transaction per pair | `npm run demo:sandbox`: 120 paid calls became 12 registrations; verify tests in `sdk/packages/scheme/test/verify.test.ts` |
+| One payer and one receiver per channel; no netting between several parties | Clearing across all members in one transaction; cycles of debt cancel and only the residual is paid | `tests/f3.sandbox.test.ts` and the F3 rows of the sandbox demo (cleared ratio read from the epoch metrics) |
+| The scheme document covers EVM only | The same scheme name bound on NEAR as `x207:<circleId>` with a NEAR contract and facilitator | `agents/test/ring.sandbox.test.ts` (402 offers `batch-settlement@x207:agents-main` and `exact@near:mainnet`); testnet rehearsal in `demo/network.demo.ts` |
+| The scheme documents we read describe payment in a token, not goods-for-goods | Barter bundles: several parties sign one `terms_hash`, the contract checks the signatures and a reserved headroom per leg, then the legs clear like any debt | `tests/barter.sandbox.test.ts` (three intents, solver ring, leg vouchers with a bundle id, zero residual) |
+| Negotiating a price or a swap between agents is outside the payment scheme (we did not evaluate other x402 layers such as discovery) | An off-chain listing book, signed offers per round, discount barter, and a seeker that is paid a share as a leg of the same bundle | `tests/marketplace.sandbox.test.ts` and `npm run demo:marketplace` |
+| Funds must be deposited into the channel before paying | A voucher over the free headroom is refused with `insufficient_credit` and the client falls back to the `exact` entry that stays in the same 402 | `sdk/packages/scheme/test/select.test.ts`, `verify.test.ts` |
+
+Not claimed: that x402 lacks anything beyond what the table says (for example, discovery services around x402 were not evaluated), that x207 is audited, safer or cheaper in every case, or that it is used widely. Wide use is a goal, not a result. Goods are not judged by the protocol: a barter bundle fixes who pays whom, not whether the goods were good.
+
 ### Why this works: Sardex 2019
 
 The mechanism has been measured outside agents. Fleischman, Dini and Littera (JRFM 2020) studied Sardex, a mutual credit circuit of 3,199 firms and 138,378 transactions in 2019.
