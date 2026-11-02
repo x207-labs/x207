@@ -1,0 +1,67 @@
+{
+  "factory": "sputnikv2.testnet",
+  "dao": "x207v8.sputnikv2.testnet",
+  "circle": "x207-circle-v8.testnet",
+  "council": [
+    "x207-dao-v8.testnet",
+    "b.x207-dao-v8.testnet"
+  ],
+  "steps": [
+    {
+      "step": "council member",
+      "account": "x207-dao-v8.testnet",
+      "method": "create_account",
+      "hash": "Duqwwkf29UM1bT3Qg2qTT1WkWeAh7P2f6BTsEnDmm1Y2"
+    },
+    {
+      "step": "create DAO",
+      "account": "x207-dao-v8.testnet",
+      "method": "create",
+      "hash": "6zqU2rBS4L4f59JJrtG1YZPpPcwZ6187emYJG2MTndjF"
+    },
+    {
+      "step": "deploy circle",
+      "account": "x207-circle-v8.testnet",
+      "method": "deploy_contract",
+      "hash": "9vmPvsg4MJzcpDHFRfYvCHRBeWAwu6Npm4xVqh3YKjST"
+    },
+    {
+      "step": "init circle",
+      "account": "x207-circle-v8.testnet",
+      "method": "new",
+      "hash": "AmZsomuKnuMi8k3yuwJqDsoatXK34SEYgFw1jNythe3L"
+    },
+    {
+      "step": "add_proposal",
+      "account": "x207-dao-v8.testnet",
+      "method": "add_proposal",
+      "hash": "D67CWsjhDG2GtmLXBGetJAEFLMTELVGWgBMkQQujgkN2"
+    },
+    {
+      "step": "vote A",
+      "account": "x207-dao-v8.testnet",
+      "method": "act_proposal",
+      "hash": "Bb3GDV5ngmWw8aLssfUezhJhvVtVUr3X4ykitV3BCRcz"
+    },
+    {
+      "step": "vote B",
+      "account": "b.x207-dao-v8.testnet",
+      "method": "act_proposal",
+      "hash": "D6X4m28e6Qy6Cz25BxJByp5X7QtRLT5yrKoUnALVv9C8"
+    },
+    {
+      "step": "close_epoch (keeper)",
+      "account": "x207-circle-v8.testnet",
+      "method": "close_epoch",
+      "hash": "9y3edcs3ELuTyFNiqDTzMFD8pfhJ31iYJD42FcQMZbV8"
+    },
+    {
+      "step": "summary",
+      "account": "x207v8.sputnikv2.testnet",
+      "method": "proposal 0 approved, get_params.limit_decay = 100 from epoch 2",
+      "hash": "-"
+    }
+  ],
+  "network": "testnet",
+  "note": "CT-045 and CT-050 on testnet: DAO created through sputnikv2.testnet, circle 0.0.7 (tag v0.0.7, 2c8c0ec) deployed with the DAO as owner_id, one set_params proposal (limit_decay 0 -> 100) voted by two council members, effective from epoch 2. Hashes only; no keys. Mainnet was not touched."
+}
