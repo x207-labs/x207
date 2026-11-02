@@ -2,13 +2,9 @@
 //   DEMO_NETWORK=testnet npm run demo:testnet        (hanya mencetak rencana)
 //   DEMO_NETWORK=testnet X207_CONFIRM_REAL_TX=yes npm run demo:testnet
 //   DEMO_NETWORK=mainnet X207_CONFIRM_REAL_TX=yes X207_CONFIRM_MAINNET=yes npm run demo:mainnet
-// Tanpa X207_CONFIRM_REAL_TX=yes skrip hanya mencetak rencana dan tidak mengirim apa pun. Transaksi mainnet dikonfirmasi manusia.
-//
-// Variabel (nama saja; nilai di .env, tidak pernah dicetak): DEMO_NETWORK, RPC_URL, CIRCLE_CONTRACT, USDT_TOKEN_ID, KEYS_DIR,
-// TERMS_HASH, STAKE_AMOUNT, DEMO_PAYMENTS, SPEND_POLICY_FILE,
-// KEEPER_ACCOUNT_ID, SOLVER_ACCOUNT_ID, RELAYER_ACCOUNT_ID (kunci dari <NAMA>_SECRET_KEY atau berkas kunci di KEYS_DIR),
-// AGENT_ACCOUNT_TEMPLATE (default `{name}.<CIRCLE_CONTRACT>`, mis. `x207r-{name}.testnet`), DEMO_MINT_USDT=yes (mint USDT tiruan, hanya testnet),
-// DEMO_DEFAULT=<agent> (debtor itu tidak melunasi). Kunci pemilik di KEYS_DIR/<network>/<akun>.json (format scripts/create-accounts.mjs).
+// Langkah opsional (UM-032, UM-036), dilewati dengan pesan bila prasyaratnya belum ada:
+//   DEMO_BARTER=yes      F5: cincin tiga agent, commit_bundle, leg dibayar dengan voucher ber-bundleId. Butuh kontrak antarmuka 0.0.4:
+//                        isi CIRCLE_CONTRACT dengan alamat 0.0.4 (view get_bundle harus ada, bila tidak langkah dilewati).
 import { execFile } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, writeSync } from "node:fs";
 import { createServer, type Server } from "node:http";
@@ -16,12 +12,13 @@ import type { AddressInfo } from "node:net";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
 import { describe, it } from "vitest";
-import { buildClaimCall, buildSettleTransferCall, type ContractAbi } from "@x207/core";
+import { buildClaimCall, buildSettleTransferCall, signBundle, termsHash, type BundleTerms, type ContractAbi } from "@x207/core";
 import { createNearSender, createNearView } from "@x207/core/signer";
 import { NearRegistrationChain, NearRpc, PendingStore, RegistrationScheduler, createApp, createFacilitatorService } from "@x207/facilitator";
 import { defineCircleConfig } from "@x207/scheme";
 import { onboardAgents } from "../agents/onboarding/onboard.ts";
 import { planDensity, type Density } from "../agents/scenario/density.ts";
+import { LEG_AMOUNT, RING_MEMBERS, payLegs } from "../agents/scenario/ring.ts";
 import { createAgentServer } from "../agents/shared/agent-server.ts";
 import { loadSpendPolicy, type AgentIdentity } from "../agents/shared/identity.ts";
 import { createNearAiClient } from "../agents/shared/nearai.ts";
@@ -61,6 +58,7 @@ describe("demo jaringan nyata", () => {
     for (const step of [
       "F1 onboarding: 6 agent join + stake (12 transaksi, ditandatangani kunci pemilik)",
       `F2 ${payments} panggilan berbayar dengan voucher (kepadatan ${density}); registrasi on-chain oleh relayer`,
+      ...(process.env.DEMO_BARTER === "yes" ? ["F5 (DEMO_BARTER=yes) cincin translator -> summarizer -> scraper: tiga tanda tangan, commit_bundle, 15 panggilan leg dengan bundleId; dilewati bila kontrak belum 0.0.4"] : []),
       "set_params dari akun pemilik tidak dijalankan di jaringan nyata (lewat proposal DAO, UM-036)",
       "F3 keeper close_epoch (setelah cutoff_at), solver submit_clearing, keeper commit_epoch; laporan 207",
       "F4 debtor melunasi residual, keeper finalize_epoch setelah payment_deadline, kreditor claim(epoch, near)",
@@ -189,8 +187,39 @@ describe("demo jaringan nyata", () => {
     }
     const epoch = current.epoch;
     if (resume) log(`== Melanjutkan epoch ${epoch} (pembayaran dan registrasi sudah dilakukan di putaran sebelumnya)`);
-    if (!resume) log(`== F2 pembayaran voucher (epoch ${epoch})`);
     if (!resume) scheduler.start(2_000);
+    if (!resume && process.env.DEMO_BARTER === "yes") {
+      log(`== F5 barter bundle (epoch ${epoch}, cincin ${RING_MEMBERS.join(" -> ")})`);
+      // get_bundle ada sejak antarmuka 0.0.4; kontrak lama menolak panggilan view itu, jadi langkah dilewati.
+      const supported = await view("get_bundle", { bundle_id: 1 }).then(() => true, () => false);
+      if (!supported) log(`   dilewati: ${contract} belum punya get_bundle (antarmuka sebelum 0.0.4). Isi CIRCLE_CONTRACT dengan alamat 0.0.4.`);
+      else {
+        const legs = RING_MEMBERS.map((buyer, i) => ({ payer: accounts[buyer], payee: accounts[RING_MEMBERS[(i + 1) % RING_MEMBERS.length]!], max_amount: String(LEG_AMOUNT) }))
+          .sort((a, b) => (a.payer !== b.payer ? (a.payer < b.payer ? -1 : 1) : a.payee < b.payee ? -1 : 1));
+        const terms: BundleTerms = { circle: contract, epoch, legs };
+        const signatures = RING_MEMBERS.map((n) => {
+          const signed = signBundle(terms, accounts[n], identity[n].voucherSecretKey);
+          return { account_id: signed.account, signature: signed.signature };
+        });
+        log(`   terms_hash ${termsHash(terms)}, ${legs.length} leg masing-masing ${LEG_AMOUNT}`);
+        const solverId = env("SOLVER_ACCOUNT_ID");
+        const bundleId = Number(
+          await createNearSender({ rpcUrl, accountId: solverId, secretKey: operatorKey("SOLVER", solverId), onTx: stamp("solver") })({
+            receiverId: contract, methodName: "commit_bundle", args: { bundle: { epoch, legs }, signatures }, deposit: 0n, gas: 200_000_000_000_000n,
+          }),
+        );
+        log(`   bundle ${bundleId} di-commit`);
+        // facilitator membaca blok final: tunggu bundle terlihat sebelum membayar leg
+        for (let i = 0; i < 60 && !(await view("get_bundle", { bundle_id: bundleId })); i++) await sleep(1_000);
+        const pairs = new Set(legs.map((l) => `${l.payer}>${l.payee}`));
+        const buyers = Object.fromEntries(
+          RING_MEMBERS.map((n) => [n, createAgentBuyer(identity[n], { rpcUrls: [rpcUrl], bundleFor: (payee, e) => (e === epoch && pairs.has(`${accounts[n]}>${payee}`) ? bundleId : undefined) })]),
+        );
+        const paid = await payLegs((buyer, seller) => buyers[buyer]!(`${urls[seller]}/api/${AGENTS[seller].verb}?input=halo`));
+        for (const [pair, amount] of Object.entries(paid)) log(`   leg ${pair} dibayar ${amount}`);
+      }
+    }
+    if (!resume) log(`== F2 pembayaran voucher (epoch ${epoch})`);
     for (const { buyer, seller } of resume ? [] : planDensity(density, payments, Number(process.env.DEMO_SEED ?? 20261102))) {
       const response = await createAgentBuyer(identity[buyer], { rpcUrls: [rpcUrl] })(`${urls[seller]}/api/${AGENTS[seller].verb}?input=halo`);
       if (response.status !== 200) throw new Error(`${buyer} -> ${seller}: HTTP ${response.status}`);
