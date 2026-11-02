@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="brand/x207-logo-dark.svg">
+    <img src="brand/x207-logo-light.svg" alt="x207" height="48">
+  </picture>
+</p>
+
 # x207
 
 x402 lets agents pay. x207 lets many agents settle at once.
