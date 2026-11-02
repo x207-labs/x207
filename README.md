@@ -121,7 +121,7 @@ npm install
 npm run demo:sandbox
 ```
 
-Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. `npm run demo:testnet` and `npm run demo:mainnet` (`demo/network.demo.ts`) are written but have never sent a transaction: without `X207_CONFIRM_REAL_TX=yes` they only print the plan, and mainnet also needs `X207_CONFIRM_MAINNET=yes`. No testnet or mainnet hashes are recorded yet (UM-026, UM-040).
+Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. `npm run demo:testnet` and `npm run demo:mainnet` (`demo/network.demo.ts`) run the same stages against a real network; without `X207_CONFIRM_REAL_TX=yes` they only print the plan, and mainnet also needs `X207_CONFIRM_MAINNET=yes`. A testnet rehearsal ran on 2026-11-02 against a rehearsal contract `x207r-circle.testnet` with 5-minute epochs (twenty paid calls, twelve pair registrations, one clearing proposal, 0.28 of 0.40 credit cleared, two residual payments, one default, claims to `near`); its hashes are in `vault/00 Log/Progress/Progress Main B.md`. The testnet run reads the clearing snapshot from contract views instead of the indexer, because the public testnet endpoints rate-limit a block backfill. No mainnet transaction has been sent (UM-026, UM-040).
 
 | Do | See |
 | --- | --- |
