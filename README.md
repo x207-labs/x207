@@ -130,6 +130,7 @@ Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|mediu
 | F2: agents buy from each other | Paid calls with vouchers; the facilitator registers each pair on-chain (12 registrations for 120 calls in the `medium` run) |
 | F3: keeper closes the epoch, the solver clears it, the keeper commits | `close_epoch`, `submit_clearing`, `commit_epoch` hashes and the 207 report with each member's net |
 | F4: debtors pay the residual, the keeper finalizes, creditors claim | `settle`, `finalize_epoch` and `claim` hashes |
+| F6: a debtor does not pay (`DEMO_DEFAULT=scraper npm run demo:sandbox`) | `finalize_epoch` emits `member_defaulted`; the member is `suspended` with limit 0 and its stake cut by the due amount; `/verify` answers `member_not_active` for a new voucher of that member; the 207 report lists it with status 409, settlement `defaulted` and `haircut` 0; creditors still claim in full |
 | Metrics | Voucher count, residual payments, cleared ratio, transfer savings and a line "N payments became M", all read from the epoch metrics |
 
 Two real runs (output seen on 2026-11-02, sandbox, different graph density, so the numbers differ):
@@ -150,7 +151,7 @@ The log also marks which Level 0 external interfaces appeared: E1 (buyer), E2 (s
 | `gpu` | 202 | +160000 |
 | `image` | 202 | +300000 |
 
-Net positions add up to zero. Steps for the F4 Intents payment, the cross-chain withdrawal, the DAO vote on `set_params`, the dashboard views and a sample 207 response from the real epoch are still to be written.
+Net positions add up to zero. Steps for the F7 DAO vote, the F4 Intents payment, the cross-chain withdrawal, the DAO vote on `set_params`, the dashboard views and a sample 207 response from the real epoch are still to be written.
 
 ### Epoch timeline of the demo
 
