@@ -139,10 +139,23 @@ Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–
 
 ### Run the sandbox demo
 
-The demo runs one epoch against a local `near-sandbox` node: a real `x207-circle` contract, six agents, the facilitator, the indexer and read API, the solver and a keeper. It needs the built contract wasm (`cargo near build` in `contracts`) and a near-sandbox binary (`cargo test` once in `contracts` downloads it, or set `X207_SANDBOX_BIN`).
+The demo runs one epoch against a local `near-sandbox` node: a real `x207-circle` contract, six agents, the facilitator, the indexer and read API, the solver and a keeper.
+
+Needs: Node 22.22.2 or newer, Rust 1.99.1 with the `wasm32-unknown-unknown` target (pinned by `contracts/rust-toolchain.toml`) and `cargo-near` 0.22.0. One-time setup from the root of this repository, tried on 2026-11-02 from a clean checkout:
 
 ```bash
-npm install
+cd contracts
+cargo near build non-reproducible-wasm                                            # the contract, about 30 seconds
+cargo near build non-reproducible-wasm --manifest-path probes/mock_ft/Cargo.toml  # the mock USDT token used by every sandbox run
+cargo test --no-run --test ct043_gas                                              # compiles one small test; the build script of near-workspaces downloads the near-sandbox binary (or set X207_SANDBOX_BIN)
+cd ..
+npm ci
+npm run build --workspaces --if-present                                           # the demos import the built TypeScript packages
+```
+
+The `cargo test --no-run` step is the slow one: 17 minutes in the clean-checkout run, on a laptop that was compiling other Rust code at the same time. It compiles only; no Rust test runs. Then:
+
+```bash
 npm run demo:sandbox
 ```
 
@@ -265,10 +278,12 @@ Contract rules behind the rows: `contracts/x207-circle/src/bundle.rs` (`commit_b
 | Exit and withdraw stake from the dashboard | Run: the page against the real read API and contract, with a sandbox account as the wallet (`frontend/src/test/exit.sandbox.test.tsx`) | Not run. A real wallet through NEAR Connect has not been tried | No transaction sent |
 | Parallel registration with a gas key (NEP-611) | Run (`sdk/apps/facilitator/test/gas-key.sandbox.test.ts`: four registrations on four lanes) | Not run with a funded key | No transaction sent |
 | F8 class B (function-call key rental, revoke on default) | Run (`npm run demo:classb`, `tests/broker-class-b.sandbox.test.ts`). No TEE | Not run | No transaction sent |
-| F8 class C (secret behind a TEE broker) | Not built | Not built | Not built |
+| F8 class A (NFT escrow) | Run: contract tests (`contracts/tests/ct075_escrow.rs`), the SDK (`sdk/packages/core/test/sandbox/escrow.sandbox.test.ts`, real `escrow_held` and `escrow_failed` logs) and the indexer (`tests/escrow-d9.sandbox.test.ts`). NFT only, mock NFT contract | Not run | No transaction sent |
+| F8 class C (secret behind a broker) | Proxy run (`tests/broker-class-c.sandbox.test.ts`) against a local mock provider; the secret sits in the environment of the broker. **No TEE and no attestation** | Not run | Not built for a real provider; no transaction sent |
+| Residual of several debtors in one `execute_intents` (BE-034) | Plan and checks only, in `dry` and `mock` modes (`backend/src/settlement/residual/batch.ts`, 9 tests, no network). A live run needs `mt_on_transfer` in the circle, which does not exist | Not run | Needs the owner; not run |
 | NEAR AI inference for agents | Mock mode (ADR-33) | Not run | Waits for the account top-up |
 
-The whole set of sandbox tests (`npm run test:integration`, among them `e2e`, `barter`, `marketplace` and `broker-class-b`) can also run on GitHub: the workflow `.github/workflows/e2e-sandbox.yml` runs on a manual dispatch and on every push to `main`. It builds the contract, the mock token and the near-sandbox binary on the runner and runs the files one at a time. That workflow has not run yet; this README cites no CI result.
+The whole set of sandbox tests (`npm run test:integration`, among them `e2e`, `barter`, `marketplace`, `broker-class-b`, `broker-class-c` and `escrow-d9`) can also run on GitHub: the workflow `.github/workflows/e2e-sandbox.yml` runs on a manual dispatch and on every push to `main`. It builds the contract, the mock token and the near-sandbox binary on the runner and runs the files one at a time. That workflow has not run yet; this README cites no CI result.
 
 ### Epoch timeline of the demo
 
@@ -329,9 +344,9 @@ One full cycle takes 1 hour 40 minutes from the opening of the epoch to finaliza
 | Repo | Modules | Features | Contents |
 | --- | --- | --- | --- |
 | `x207` | | | This umbrella repo: README, docs, scripts |
-| `contracts` | M1, M9 | F1–F7 | `x207-circle` contract (Rust, interface 0.0.4 with `commit_bundle`, `register_in_bundle`, `post_intent`), near-sandbox tests, Sputnik DAO proposal scripts |
-| `sdk` | M2, M3 | F2, F4, F5, F9 | `@x207/core`, `@x207/scheme`, binding spec, formats for listings, offers, bundles and referrals, test vectors, conformance suite, reference facilitator |
-| `backend` | M5, M6, M11 | F1–F7, F9, P8 | Indexer, read API, HTTP 207 report, 1Click settlement worker, marketplace book |
+| `contracts` | M1, M9 | F1–F8 | `x207-circle` contract (Rust, interface 0.0.7: barter (`commit_bundle`, `register_in_bundle`, `post_intent`), access grants and class A escrow), near-sandbox tests, Sputnik DAO proposal scripts |
+| `sdk` | M2, M3 | F2, F4, F5, F9 | `@x207/core`, `@x207/scheme`, binding spec, formats for listings, offers, bundles and referrals, test vectors, conformance suite, reference facilitator, a minimal Python SDK (`sdk/python/`, passes the suite, not published) |
+| `backend` | M5, M6, M11 | F1–F7, F9, P8 | Indexer, read API, HTTP 207 report, 1Click settlement worker, marketplace book, broker for access grants (`backend/broker/`, classes B and C) |
 | `frontend` | M8 | F1, F3, F4, F6, F7, F9 | Dashboard, marketplace page with negotiation view |
 | `solver` | M4, M12 | F3, F5, F9 | Open clearing solver (min-cost flow), barter matching and rings, seeker |
 | `agents` | M7 | F2, F5, F9 | Six demo agents and scenarios, including barter, business, invoice and marketplace scenarios |
@@ -481,9 +496,9 @@ Principle: hand over access, not secrets. A circle member lends or swaps access 
 
 | Class | What it covers | How access is handed over | Status |
 | --- | --- | --- | --- |
-| A | Assets that transfer natively: NFT, token, named NEAR account | Atomic escrow. The asset moves when the buyer's voucher is registered. Final once moved. | Roadmap |
+| A | Assets that transfer natively: NFT, token, named NEAR account | Escrow in the circle contract. The owner deposits the asset (`nft_transfer_call`), the buyer calls `complete_escrow` with a signed voucher, and the asset moves when the voucher is registered. If the transfer fails the registration is taken back exactly. Final once moved. | NFT only. Built in the contract (interface 0.0.7) and run in `near-sandbox`, with a mock NFT contract. A token or a named NEAR account is not built. Not on testnet or mainnet. |
 | B | Limited derived credentials | A NEAR function-call key restricted by contract, methods, and allowance, added after payment and deleted on expiry, non-payment, or default | Built and run in `near-sandbox` (`npm run demo:classb`). Not on testnet or mainnet, no TEE. |
-| C | A single secret that cannot be split | A broker in a trusted execution environment (TEE) holds the secret and proxies calls. The buyer never receives it. | Roadmap. Not built: no proxy, no attestation. |
+| C | A single secret that cannot be split | A broker holds the secret and proxies calls. The buyer never receives it. In the target design the broker runs in a trusted execution environment (TEE). | Proxy built and run in `near-sandbox` against a local mock provider, with the secret in the environment of the broker. **No TEE, no attestation** (the prove step answers `no_attestation`), no real provider, not on testnet or mainnet. |
 | D | Resources the member owns: a server, a GPU, storage | A paid x402 endpoint. This is F2 as it is. | MVP |
 
 Every adapter implements five functions: `price`, `prove`, `deliver`, `meter`, and `revoke`. `meter` always produces an ordinary voucher.
@@ -494,7 +509,7 @@ Every adapter implements five functions: `price`, `prove`, `deliver`, `meter`, a
 
 **Lawful paths for subscription accounts.** A team seat that an admin assigns and revokes (class B). A member of an organization or workspace with a per-member spending limit (class B). An official OAuth app with limited scope and revocable tokens (class B). A broker (class C) only where the provider's terms allow managed or delegated access.
 
-The F8 methods are in the contract (interface 0.0.6: `set_asset_class`, `offer_grant`, `accept_grant`, `revoke_grant` and the views `get_asset_class`, `get_grant`, `grants_of`). The broker for class B is in `backend/broker/`; the adapter types, the key proof and the grant voucher format are in `sdk/` (`@x207/core` `access.ts` and `access-key.ts`, `EndpointAdapter` in `@x207/scheme`).
+The F8 methods are in the contract (interface 0.0.7: `set_asset_class`, `offer_grant`, `accept_grant`, `revoke_grant`, the views `get_asset_class`, `get_grant`, `grants_of`, and for class A `nft_on_transfer`, `complete_escrow`, `cancel_escrow`, `on_escrow_resolved` and the view `get_escrow`; a class A grant is not accepted with `accept_grant`, the buyer uses `complete_escrow`). The broker for classes B and C is in `backend/broker/`; the adapter types, the key proof and the grant voucher format are in `sdk/` (`@x207/core` `access.ts` and `access-key.ts`, `EndpointAdapter` in `@x207/scheme`).
 
 ## 11. Team
 

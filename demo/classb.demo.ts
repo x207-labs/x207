@@ -76,7 +76,7 @@ describe("demo F8 kelas B: sewa function-call key dan cabut saat gagal bayar", (
       config: {
         readApiUrl: apiUrl, circleId: "agents-main", contractId: contract, facilitatorUrl: stack.facilitatorUrl, rpcUrl,
         brokerAccount: brokerAccount.accountId, brokerKey: brokerAccount.secretKey, leaseAccount: lease.accountId, leaseKey: lease.secretKey,
-        port: 0, dbPath: ":memory:", pollSeconds: 15,
+        port: 0, dbPath: ":memory:", pollSeconds: 15, providers: [],
       },
       now: () => Date.now() + clock.offsetMs, poll: false, extraCacheMs: 0, log: (line) => log.push(line),
     });
