@@ -17,6 +17,7 @@
     "demo:sandbox": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts sandbox",
     "demo:business": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts business",
     "demo:realworld": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts realworld",
+    "demo:marketplace": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts marketplace",
     "demo:testnet": "DEMO_NETWORK=testnet vitest run --config demo/vitest.config.ts network",
     "demo:mainnet": "DEMO_NETWORK=mainnet vitest run --config demo/vitest.config.ts network"
   }

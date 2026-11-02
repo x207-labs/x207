@@ -173,6 +173,25 @@ npm run demo:realworld    # three businesses, invoices as vouchers, F3 netting, 
 
 The run on 2026-11-02 asserts these numbers against the contract (`obligation`, `get_clearing_proposal`, `list_positions`, `net_position`), so the printed totals before and after netting are the contract's. No new contract is involved: invoices are ordinary cumulative vouchers and the existing clearing. The `business` limits are enforced by the agent before it signs anything; the contract enforces its own credit headroom independently. What these blocks do not show: real-world invoice disputes, tax or legal status of an invoice, and payment of the residual through 1Click.
 
+### Marketplace block (feature F9)
+
+```bash
+npm run demo:marketplace   # about 2.5 minutes; real contract, indexer, solver and keeper in near-sandbox
+```
+
+| Do | See |
+| --- | --- |
+| `translator` lists a service for another service and nobody is there | The listing stays open for two hours; a second listing with a 30 minute life drops out of the open results |
+| `summarizer` arrives later and negotiates by its own policy | `bid 0.17 -> countered 0.19 -> countered 0.18 -> accepted`; the pair becomes a bundle that both sign |
+| A seeker visits idle agents that opted in | Offers to `translator` by pay and to `summarizer` by barter; the agent that did not opt in is skipped |
+| Pay path (listing value 0.2, discount 20%, seeker share 10%) | The counterparty pays 0.18 = 0.16 to the seller + 0.02 to the seeker |
+| Barter path (same parameters) | Cashback 0.02 to the counterparty, the seller bears 0.04, the seeker earns 0.02 on each path |
+| Three agents post intents and the solver finds the ring `gpu -> translator -> image` | All three sign the same `terms_hash`; the solver commits four bundles (`commit_bundle`) |
+| Pay every leg with ordinary x402 calls | The voucher carries the bundle id, so the call uses reserved headroom; 65 paid calls registered |
+| Close the epoch, run the solver, commit, read the 207 report | Cleared 1.08 credit; `image` and `gpu` (ring only) have status 200 and net 0; the seeker nets 0.04; every net equals the registered obligations |
+
+The amounts are small on purpose so that each leg is a whole number of 0.02 calls; the 100 / 10 / 3 example of the F9 note is computed by the same functions with other parameters (`sdk/spec/marketplace.md`). The listing book, negotiation and seeker are off-chain (backend module M11); the contract only checks a bundle: one signature per participant over its `terms_hash` and the reserved headroom of each leg. Run on 2026-11-02; the test `tests/marketplace.sandbox.test.ts` asserts the same figures. Not shown: quality of goods or disputes (the protocol does not judge them), asset classes A to C with real delivery adapters, and the on-chain `post_intent` hash (the demo posts intents to the book only).
+
 ### Epoch timeline of the demo
 
 These are the default circle parameters (ADR-25). They match the defaults in `contracts/x207-circle/src/params.rs`. `set_params` can change them only inside the ranges coded in the contract (ADR-20). They have not yet been checked in a full near-sandbox epoch (UM-025); this table is updated if that test changes them.
