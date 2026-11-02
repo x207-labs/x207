@@ -385,6 +385,8 @@ Tests behind each risk. "Not applicable" means the row is a limitation or a deci
 **Impact and volume.** Real agent payment volume is small. Reports on x402 say the same: Chainalysis counted more than 100 million agentic transactions on Base up to Q1 2026 and concluded that mass adoption remains distant. Analyses that filter wash trading and non-agent payments (a16z, TRM Labs) reduce the headline figures sharply. A study on arXiv (2607.12575) finds that settlement counts measure how easily transactions can be produced, not adoption. Payment graphs in practice are star-shaped and have few cycles, so the relief from clearing there is close to zero (ADR-16). x207 does not create demand. It lowers the cost of small payments between agents that already trade with each other. Savings figures in this README come from the relief curve in section 9 and from the demo epoch once it has run. Neither gives a market estimate.
 
 **Voucher key and `exact` key.** The `exact` scheme on NEAR signs a `SignedDelegateAction` for one `ft_transfer`, and its client needs a full-access key; function-call keys are rejected. An x207 agent signs only vouchers (ed25519, verified in the contract). The voucher key cannot transfer funds, so a leaked voucher key cannot drain the account. It can create vouchers up to the credit limit of the member. The facilitator relays vouchers and cannot forge one (ADR-06).
+**Barter and marketplace (F5, F9).** Barter is a way to use the same credit and clearing for goods and services, not a source of volume. The demo figures in section 4 are small on purpose (a few cents per leg) and come from a sandbox. The seeker and the discount are an incentive design: the seeker share and the cashback are legs of the same bundle, so they are cleared and paid like any other debt, and the agent that lists carries the discount. Whether agents will list and negotiate at scale is not shown. The value of a deal is what the parties sign; the protocol does not judge quality (see the risk table).
+
 
 **The 207 report is outside the x402 cycle.** The report is a read endpoint of the backend. It does not take part in `402`, `PAYMENT-SIGNATURE`, or `PAYMENT-RESPONSE`, and it is not x402 wire behaviour (ADR-10).
 
@@ -429,7 +431,7 @@ The chart marks the Sardex benchmark of 23% of value per monthly batch (Fleischm
 
 | MVP (1–14 Nov 2026) | Roadmap |
 | --- | --- |
-| F1–F4 in full, F6 core (default and limit), F7 `set_params` | F5 barter bundle in full |
+| F1–F4 in full, F6 core (default and limit), F7 `set_params`; F5 barter bundle and F9 marketplace in the sandbox (ADR-38) | F5 and F9 on testnet and mainnet; asset classes A to C with real delivery; a book that more than one operator can run |
 | One circle, six demo agents, small amounts on mainnet | Many circles, clearing across circles |
 | Cumulative voucher per pair (ADR-17); per-request registration only as a demo mode | Registration of many pairs in one transaction |
 | Own facilitator | Proposal of the scheme spec to the x402 Foundation (`scheme_batch_settlement_x207.md`) |
