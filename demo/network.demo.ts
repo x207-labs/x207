@@ -236,6 +236,7 @@ describe("demo jaringan nyata", () => {
     }
 
     log("== F4 settlement");
+    const stakeBefore = defaulter ? ((await view("member", { account_id: accounts[defaulter] })) as ContractAbi.MemberView).stake : undefined;
     const positions = (await view("list_positions", { epoch, from_index: 0, limit: 100 })) as Array<{ account_id: string; role: string; amount: string; status: string }>;
     for (const name of AGENT_NAMES) {
       const due = positions.find((p) => p.account_id === accounts[name] && p.role === "debtor" && p.status === "due");
@@ -253,6 +254,9 @@ describe("demo jaringan nyata", () => {
       log(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
       const position = (await view("net_position", { epoch, account_id: accounts[defaulter] })) as { status: string; amount: string } | null;
       log(`   posisi ${defaulter} setelah finalize: ${JSON.stringify(position)}`);
+      // UM-037: cabang gagal bayar sampai payment window habis: stake dipotong, status 409 di laporan 207, limit 0
+      const cut = stakeBefore === undefined ? 0n : BigInt(stakeBefore) - BigInt(member.stake);
+      log(`   cabang gagal bayar: stake dipotong ${cut} dari ${stakeBefore}, laporan 207 status ${position?.status === "defaulted" ? 409 : "bukan 409 (posisi " + position?.status + ")"}, limit ${member.limit}`);
     }
     const daoAccount = process.env.DEMO_DAO_ACCOUNT;
     if (daoAccount) {
