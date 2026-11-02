@@ -31,8 +31,9 @@ x207 is built as a binding of the x402 `batch-settlement` scheme on the network 
 | 2 | An endpoint answers `402`. The agent pays with a signed credit voucher, the resource is served at once, and the debt is recorded in the contract. | F2 |
 | 3 | At the end of the epoch any solver computes the cycles to clear. The contract verifies and removes them in one transaction. A 207 report gives one status per member. | F3 |
 | 4 | Only the net difference is paid in USDT. Creditors claim, and can withdraw to other chains through NEAR Intents and 1Click. | F4 |
-| 5 | Agents can agree a circular service barter in advance. Its legs are cleared in full. | F5 (roadmap) |
+| 5 | Agents agree a barter, alone or in a ring, and every participant signs the same `terms_hash`. The contract checks the signatures and reserves headroom per leg. The legs then clear like any other debt. | F5 (sandbox) |
 | 6 | A default is covered from the stake, then the reserve, then a haircut. The limit grows only from cash settlement. | F6 |
+| 8 | Agents list what they offer and want, negotiate in rounds, and a seeker earns a share for bringing in a counterparty. A deal becomes a step-5 bundle. | F9 (sandbox) |
 | 7 | Circle parameters are set by Sputnik DAO proposals. | F7 |
 
 ### What it means for each audience
@@ -128,11 +129,12 @@ The 207 report is a read endpoint, outside the x402 payment cycle. It is not an 
 | F2 Pay with credit | P2 | M1, M2, M3, M7 | Agent Economy, AI Swarms | MVP |
 | F3 Multi-party clearing | P3 | M1, M4, M6, M8 | AI Swarms, Unstoppable DeFi | MVP |
 | F4 Residual settlement | P4 | M1, M5, M6 | Real-World Money, Unstoppable DeFi | MVP |
-| F5 Barter bundle | P5 | M1, M2, M4, M7 | AI Swarms, Agent Economy | Roadmap |
+| F5 Barter bundle | P5 | M1, M2, M4, M7 | AI Swarms, Agent Economy | MVP extension (ADR-38), sandbox only |
 | F6 Risk and credit limit | P6 | M1, M6, M8 | AI Security & Defense, Social Money | MVP (core: default and limit) |
+| F9 Marketplace barter | P10 | M1, M2, M4, M7, M8, M11, M12 | Agent Economy, AI Swarms, Autonomous Business | MVP extension (ADR-38), sandbox only |
 | F7 Governance | P7 | M1, M6, M8, M9 | Social Money | MVP (`set_params` only) |
 
-Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–M9 are defined in section 5.
+Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–M9, M11 and M12 are defined in section 5.
 
 ## 4. Try it: do X - see Y
 
@@ -273,12 +275,12 @@ One full cycle takes 1 hour 40 minutes from the opening of the epoch to finaliza
 | Repo | Modules | Features | Contents |
 | --- | --- | --- | --- |
 | `x207` | | | This umbrella repo: README, docs, scripts |
-| `contracts` | M1, M9 | F1–F7 | `x207-circle` contract (Rust), near-sandbox tests, Sputnik DAO proposal scripts |
-| `sdk` | M2, M3 | F2, F4, F5 | `@x207/core`, `@x207/scheme`, binding spec, test vectors, reference facilitator |
-| `backend` | M5, M6 | F1–F7, P8 | Indexer, read API, HTTP 207 report, 1Click settlement worker |
-| `frontend` | M8 | F1, F3, F4, F6, F7 | Dashboard |
-| `solver` | M4 | F3, F5 | Open clearing solver (min-cost flow) |
-| `agents` | M7 | F2, F5 | Six demo agents and scenarios |
+| `contracts` | M1, M9 | F1–F7 | `x207-circle` contract (Rust, interface 0.0.4 with `commit_bundle`, `register_in_bundle`, `post_intent`), near-sandbox tests, Sputnik DAO proposal scripts |
+| `sdk` | M2, M3 | F2, F4, F5, F9 | `@x207/core`, `@x207/scheme`, binding spec, formats for listings, offers, bundles and referrals, test vectors, conformance suite, reference facilitator |
+| `backend` | M5, M6, M11 | F1–F7, F9, P8 | Indexer, read API, HTTP 207 report, 1Click settlement worker, marketplace book |
+| `frontend` | M8 | F1, F3, F4, F6, F7, F9 | Dashboard, marketplace page with negotiation view |
+| `solver` | M4, M12 | F3, F5, F9 | Open clearing solver (min-cost flow), barter matching and rings, seeker |
+| `agents` | M7 | F2, F5, F9 | Six demo agents and scenarios, including barter, business, invoice and marketplace scenarios |
 | `.github` | | | Organization profile, templates, reusable CI |
 | `vault` | | | Design notes. Private, not a submodule, not linked from here |
 
@@ -294,6 +296,8 @@ The product repos are nested in this repo and are not yet submodules (UM-005). W
 | x402 `exact` on NEAR (`@x402/near`) | Fallback payment for non-members, advertised next to the x207 entry | `sdk/apps/facilitator/src/service.ts`, `sdk/examples/seller` | F2 row: the 402 lists `exact@near:mainnet`. A real `exact` payment is not part of the demo yet; the sdk tests use a stub signer. |
 | NEAR Intents and 1Click | Pay a residual from another asset, withdraw a claim to another chain | `backend/src/settlement/`, `frontend/src/components/DepositBranch.tsx` | Not in the sandbox demo. Needs a mainnet run (UM-035, UM-040), not done. |
 | Sputnik DAO | `set_params` through a proposal | `contracts/dao/`, `contracts/x207-circle/src/params.rs` | The demo calls `set_params` from the owner account only; a DAO proposal and vote are not part of it yet (UM-036). |
+| M11 | Marketplace: listing book, negotiation rounds, bundle proposals, referral inbox (`backend/src/marketplace/`) | TypeScript |
+| M12 | Barter solver and seeker: two-party matches, rings, seeker offers (`solver/src/barter/`) | TypeScript |
 | NEAR AI Cloud | Inference for the six demo agents | `agents/shared/nearai.ts` | The demo runs the agents in mock mode (ADR-33); live inference waits for the account top-up. |
 
 The NEAR pages on [agentic payments](https://www.near.org/agentic-payments) and [NEAR AI](https://www.near.org/ai) are the references for the first and last rows. Links for NEAR Intents and "currency of agents" are to be added once they are confirmed.
