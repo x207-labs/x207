@@ -121,7 +121,7 @@ npm install
 npm run demo:sandbox
 ```
 
-Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. Mainnet runs and recorded mainnet hashes are not part of this yet (UM-026, UM-040).
+Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. `npm run demo:testnet` and `npm run demo:mainnet` (`demo/network.demo.ts`) are written but have never sent a transaction: without `X207_CONFIRM_REAL_TX=yes` they only print the plan, and mainnet also needs `X207_CONFIRM_MAINNET=yes`. No testnet or mainnet hashes are recorded yet (UM-026, UM-040).
 
 | Do | See |
 | --- | --- |

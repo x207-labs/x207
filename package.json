@@ -14,6 +14,8 @@
   ],
   "scripts": {
     "test:integration": "X207_SANDBOX=1 vitest run",
-    "demo:sandbox": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts"
+    "demo:sandbox": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts sandbox",
+    "demo:testnet": "DEMO_NETWORK=testnet vitest run --config demo/vitest.config.ts network",
+    "demo:mainnet": "DEMO_NETWORK=mainnet vitest run --config demo/vitest.config.ts network"
   }
 }
