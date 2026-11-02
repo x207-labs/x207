@@ -361,7 +361,17 @@ Apache-2.0. See [LICENSE](LICENSE).
 
 ## Appendix A: judging criteria and tracks
 
-To be written (UM-046).
+Where this README answers each judging criterion. The evidence column lists only what exists today.
+
+| Criterion | Where | Evidence now |
+| --- | --- | --- |
+| Technical implementation | Sections 3, 5 and 7; [`docs/traceability.md`](docs/traceability.md) | Contract, SDK, facilitator, indexer, solver and agents run together in one sandbox epoch (`npm run demo:sandbox`); sandbox tests in `tests/`. No mainnet run yet. |
+| Design | Sections 3 and 4 | Frontend pages for onboarding, obligation graph, settlement, claim and withdrawal run against fixtures and a mock wallet. Not shown with a real wallet yet. |
+| Impact | Sections 8 and 9 | The demo prints the number of paid calls and the residual payments it became (for example 120 became 6) from epoch data. Real agent volume is small and the README says so. |
+| Originality | Section 2 and `docs/competitor-landscape.md` | Comparison table. |
+| Sustainability | Section 8 | Fee flow and risk table. No revenue data. |
+
+Tracks (`swarms`, `agents`, `defi`, `social`): which tracks are submitted, the feature and demo step per track, and the hint track used are decisions of the owner and are not written yet.
 
 ## Appendix B: glossary
 
