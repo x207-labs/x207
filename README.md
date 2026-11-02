@@ -32,8 +32,8 @@ x207 is built as a binding of the x402 `batch-settlement` scheme on the network 
 | 4 | Only the net difference is paid in USDT. Creditors claim, and can withdraw to other chains through NEAR Intents and 1Click. | F4 |
 | 5 | Agents agree a barter, alone or in a ring, and every participant signs the same `terms_hash`. The contract checks the signatures and reserves headroom per leg. The legs then clear like any other debt. | F5 (sandbox) |
 | 6 | A default is covered from the stake, then the reserve, then a haircut. The limit grows only from cash settlement. | F6 |
-| 8 | Agents list what they offer and want, negotiate in rounds, and a seeker earns a share for bringing in a counterparty. A deal becomes a step-5 bundle. | F9 (sandbox) |
 | 7 | Circle parameters are set by Sputnik DAO proposals. | F7 |
+| 8 | Agents list what they offer and want, negotiate in rounds, and a seeker earns a share for bringing in a counterparty. A deal becomes a step-5 bundle. | F9 (sandbox) |
 
 ### What it means for each audience
 
@@ -130,8 +130,8 @@ The 207 report is a read endpoint, outside the x402 payment cycle. It is not an 
 | F4 Residual settlement | P4 | M1, M5, M6 | Real-World Money, Unstoppable DeFi | MVP |
 | F5 Barter bundle | P5 | M1, M2, M4, M7 | AI Swarms, Agent Economy | MVP extension (ADR-38), sandbox only |
 | F6 Risk and credit limit | P6 | M1, M6, M8 | AI Security & Defense, Social Money | MVP (core: default and limit) |
-| F9 Marketplace barter | P10 | M1, M2, M4, M7, M8, M11, M12 | Agent Economy, AI Swarms, Autonomous Business | MVP extension (ADR-38), sandbox only |
 | F7 Governance | P7 | M1, M6, M8, M9 | Social Money | MVP (`set_params` only) |
+| F9 Marketplace barter | P10 | M1, M2, M4, M7, M8, M11, M12 | Agent Economy, AI Swarms, Autonomous Business | MVP extension (ADR-38), sandbox only |
 
 Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–M9, M11 and M12 are defined in section 5.
 
@@ -216,6 +216,7 @@ npm run demo:marketplace   # about 2.5 minutes; real contract, indexer, solver a
 | Close the epoch, run the solver, commit, read the 207 report | Cleared 1.08 credit; `image` and `gpu` (ring only) have status 200 and net 0; the seeker nets 0.04; every net equals the registered obligations |
 
 The amounts are small on purpose so that each leg is a whole number of 0.02 calls; the 100 / 10 / 3 example of the F9 note is computed by the same functions with other parameters (`sdk/spec/marketplace.md`). The listing book, negotiation and seeker are off-chain (backend module M11); the contract only checks a bundle: one signature per participant over its `terms_hash` and the reserved headroom of each leg. Run on 2026-11-02; the test `tests/marketplace.sandbox.test.ts` asserts the same figures. Not shown: quality of goods or disputes (the protocol does not judge them), asset classes A to C with real delivery adapters, and the on-chain `post_intent` hash (the demo posts intents to the book only).
+
 ### Barter bundle block (feature F5)
 
 ```bash
@@ -243,7 +244,6 @@ Contract rules behind the rows: `contracts/x207-circle/src/bundle.rs` (`commit_b
 | NEAR Intents and 1Click (residual payment, withdrawal, `defi` track) | Not observable in sandbox | Not run | Needs a mainnet run (UM-027, UM-035); not done |
 | `business` and `realworld` blocks | Run (`npm run demo:business`, `npm run demo:realworld`) | Not run | No transaction sent. `realworld` is a demo scenario of invoices as vouchers, not a deployment with real businesses |
 | NEAR AI inference for agents | Mock mode (ADR-33) | Not run | Waits for the account top-up |
-
 
 ### Epoch timeline of the demo
 
@@ -296,6 +296,8 @@ One full cycle takes 1 hour 40 minutes from the opening of the epoch to finaliza
 | M7 | Six demo agents | TypeScript |
 | M8 | Dashboard | React, Vite |
 | M9 | Governance | Sputnik DAO |
+| M11 | Marketplace: listing book, negotiation rounds, bundle proposals, referral inbox (`backend/src/marketplace/`) | TypeScript |
+| M12 | Barter solver and seeker: two-party matches, rings, seeker offers (`solver/src/barter/`) | TypeScript |
 
 ### Repositories
 
@@ -338,9 +340,9 @@ Every claim below links to the test in the `contracts` repo that checks it. The 
 | **Default model.** | A debtor that has not paid when `finalize_epoch` runs defaults: the shortfall is taken from that debtor's own stake first, then from the reserve. Creditors of the epoch are claimable in full. A defaulted member is `suspended`. | [`ct037_default_flow.rs`](contracts/tests/ct037_default_flow.rs) |
 | **Limits come from cash settlement.** | A member's credit limit grows only from residual paid in cash (`settled_history`), through `limit_growth`, and never above the stake. | [`ct034_limits.rs`](contracts/tests/ct034_limits.rs) |
 | **Cycle clearing is not history (ADR-08).** | A cycle that clears completely leaves no settlement record, `settled_history` stays 0, and the limit does not move. Clearing cannot be used to raise limits. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`cycle_clearing_does_not_raise_limits`) |
-| **Anti-sybil: stake is required.** | A member with no stake can be neither payer nor payee, and the growth term is clamped to the stake, so extra accounts without capital add no credit. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`member_without_stake_cannot_register`) |
 | **A barter bundle commits only with every participant's signature (F5, ADR-38).** | `commit_bundle` recomputes `terms_hash` from the legs, requires exactly one valid ed25519 signature per participant over it (`ERR_BUNDLE_SIGNATURES`), rejects a bundle with one leg or a leg that pays itself (`ERR_BAD_BUNDLE`), and rejects a payer whose legs exceed its free headroom (`ERR_BUNDLE_HEADROOM`). Nothing is written until the last check passes. | [`ct065_bundle.rs`](contracts/tests/ct065_bundle.rs) (`commit_refusals_change_nothing`), [`ct063_bundle_vector.rs`](contracts/tests/ct063_bundle_vector.rs) |
 | **Bundle legs are ordinary debt (F5).** | A voucher that carries `bundleId` is registered with `register_in_bundle` against the reserved amount of its leg; after that the leg is an obligation like any other and is cleared by F3. A ring leaves a net of zero. | [`ct065_bundle.rs`](contracts/tests/ct065_bundle.rs) (`bundle_legs_register_clear_and_leave_the_difference_as_residual`), [`tests/barter.sandbox.test.ts`](tests/barter.sandbox.test.ts) |
+| **Anti-sybil: stake is required.** | A member with no stake can be neither payer nor payee, and the growth term is clamped to the stake, so extra accounts without capital add no credit. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`member_without_stake_cannot_register`) |
 
 ## 8. Security and limits
 
@@ -355,11 +357,11 @@ Every claim below links to the test in the `contracts` repo that checks it. The 
 | Cash collusion | Members can trade for cash to raise limits. | Cycle clearing does not count as history, stake is required, and the limit has a cap (`limit_cap`). | Limitation. Collusion paid in cash stays possible within the cap. |
 | Real demand is not proven | Agents do not yet pay each other at scale. x207 makes small payments between agents cheaper but does not create demand. | The demo shows savings, not volume. | Open. Needs a dense community of agents. |
 | Competitors | 4Mica could add multi-party aggregation. Others can copy the mechanism. | x207 follows the official `batch-settlement` scheme and uses an open solver and on-chain verification. | Open. |
-
 | Goods and services are not judged (F5, F9) | A bundle fixes who pays whom, not whether the goods or services were delivered or good. | The value counts only after every party signs the `terms_hash`. Each leg is a voucher with a cap, so a payer loses at most its leg, and an unpaid residual follows the default model of F6. There is no dispute process. | Limitation. Quality and disputes are outside the protocol. |
 | Listing spam and seeker abuse (F9) | A seeker could flood agents with offers, or a listing could be a trap. | The seeker visits only agents that are `discoverable`, idle and opted in; the seeker share cannot exceed the discount; the book allows one pending referral per seeker, target and listing and at most five pending per agent; a refused pair is never offered again; a seeker must be an active member with stake. Class `X` assets are rejected. | MVP: guards in the code. No test at scale. |
 | The listing book is off-chain (F9) | The book, the negotiation and the referral inbox run in the backend (M11). An operator could hide or reorder listings. | The book cannot create a deal: the contract recomputes `terms_hash` from the legs and requires every participant's signature, and the formats are public (`sdk/spec/marketplace.md`) so another book can serve the same circle. | Limitation. One book per circle in the hackathon version; it is not decentralized. |
 | Bundle headroom is locked (F5) | A signed bundle reserves the headroom of each payer for its legs during the epoch. A payer that signs and never pays blocks only its own headroom. | The reservation is per epoch and per payer, it is released as the legs are registered, and a payee that did not sign cannot be bound. | Limitation. Reserved headroom cannot be used for other payments in that epoch. |
+
 Seller delay risk is limited to the vouchers not yet registered on-chain (ADR-23). Secrets live only in `.env`, which is not committed.
 
 Tests behind each risk. "Not applicable" means the row is a limitation or a decision, so no test applies. The tests were run locally; the GitHub CI has not run yet.
@@ -373,19 +375,19 @@ Tests behind each risk. "Not applicable" means the row is a limitation or a deci
 | Cash collusion | `contracts/tests/ct038_wash_trading.rs` (cycle clearing does not raise limits; no stake means no credit) and `contracts/tests/ct034_limits.rs` (only cash settlement raises a limit). |
 | Real demand is not proven | Not applicable: the demo reports savings, not volume (section 9). |
 | Competitors | Not applicable. |
-| Seller delay risk | `sdk/apps/facilitator/test/scheduler.test.ts` (retry with backoff, give up at cutoff with the unregistered amount logged) and `tests/f2.sandbox.test.ts` (new vouchers refused after two failed registrations, accepted after recovery). |
 | Goods and services are not judged | Not applicable: no dispute process exists. The cap on each leg is tested in `contracts/tests/ct065_bundle.rs` (`ERR_BUNDLE_HEADROOM`), `sdk/packages/scheme/test/bundle.test.ts` (`bundle_leg_exceeded`) and `sdk/apps/facilitator/test/bundle.sandbox.test.ts`. |
 | Listing spam and seeker abuse | `backend/test/marketplace/referrals.test.ts` (one pending per pair, inbox limit, expiry, refusal), `solver/test/barter.test.ts` (no offer without opt-in, discoverable or idle), `backend/test/marketplace/asset-classes.test.ts` (class `X` rejected). |
 | The listing book is off-chain | `backend/test/marketplace/bundles.test.ts` (`terms_hash` recomputed by the server, wrong signature refused) and `contracts/tests/ct065_bundle.rs` (the contract refuses missing, forged and swapped signatures). |
 | Bundle headroom is locked | `contracts/tests/ct065_bundle.rs` (headroom refusal and release as legs register) and `tests/barter.sandbox.test.ts`. |
+| Seller delay risk | `sdk/apps/facilitator/test/scheduler.test.ts` (retry with backoff, give up at cutoff with the unregistered amount logged) and `tests/f2.sandbox.test.ts` (new vouchers refused after two failed registrations, accepted after recovery). |
 
 ### Impact, security, and sustainability
 
 **Impact and volume.** Real agent payment volume is small. Reports on x402 say the same: Chainalysis counted more than 100 million agentic transactions on Base up to Q1 2026 and concluded that mass adoption remains distant. Analyses that filter wash trading and non-agent payments (a16z, TRM Labs) reduce the headline figures sharply. A study on arXiv (2607.12575) finds that settlement counts measure how easily transactions can be produced, not adoption. Payment graphs in practice are star-shaped and have few cycles, so the relief from clearing there is close to zero (ADR-16). x207 does not create demand. It lowers the cost of small payments between agents that already trade with each other. Savings figures in this README come from the relief curve in section 9 and from the demo epoch once it has run. Neither gives a market estimate.
 
-**Voucher key and `exact` key.** The `exact` scheme on NEAR signs a `SignedDelegateAction` for one `ft_transfer`, and its client needs a full-access key; function-call keys are rejected. An x207 agent signs only vouchers (ed25519, verified in the contract). The voucher key cannot transfer funds, so a leaked voucher key cannot drain the account. It can create vouchers up to the credit limit of the member. The facilitator relays vouchers and cannot forge one (ADR-06).
 **Barter and marketplace (F5, F9).** Barter is a way to use the same credit and clearing for goods and services, not a source of volume. The demo figures in section 4 are small on purpose (a few cents per leg) and come from a sandbox. The seeker and the discount are an incentive design: the seeker share and the cashback are legs of the same bundle, so they are cleared and paid like any other debt, and the agent that lists carries the discount. Whether agents will list and negotiate at scale is not shown. The value of a deal is what the parties sign; the protocol does not judge quality (see the risk table).
 
+**Voucher key and `exact` key.** The `exact` scheme on NEAR signs a `SignedDelegateAction` for one `ft_transfer`, and its client needs a full-access key; function-call keys are rejected. An x207 agent signs only vouchers (ed25519, verified in the contract). The voucher key cannot transfer funds, so a leaked voucher key cannot drain the account. It can create vouchers up to the credit limit of the member. The facilitator relays vouchers and cannot forge one (ADR-06).
 
 **The 207 report is outside the x402 cycle.** The report is a read endpoint of the backend. It does not take part in `402`, `PAYMENT-SIGNATURE`, or `PAYMENT-RESPONSE`, and it is not x402 wire behaviour (ADR-10).
 
