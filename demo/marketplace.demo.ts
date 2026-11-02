@@ -8,7 +8,7 @@ import type { AddressInfo } from "node:net";
 import { promisify } from "node:util";
 import { writeSync } from "node:fs";
 import { afterAll, describe, expect, it } from "vitest";
-import { parseEventLog, termsHash, type BundleTerms, type ContractAbi } from "@x207/core";
+import { bundleInput, parseEventLog, termsHash, type BundleTerms, type ContractAbi } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
 import { marketplaceRoutes } from "../backend/src/marketplace/index.ts";
 import { rpcViewFunction } from "../backend/src/settlement/intents.ts";
@@ -88,7 +88,7 @@ describe("demo marketplace F9", () => {
 
     // 2. barter cepat dengan pencari (scraper menjual, translator membayar, summarizer barter, cleaner pencari)
     const quick = await runQuickBarter({
-      book, contractId: contract, now: () => book_.now, params: { value: 0.2, discountBps: 2000, searcherShareBps: 1000 },
+      book, contractId: contract, now: () => book_.now, params: { value: 0.5, discountBps: 2000, searcherShareBps: 400 },
       identities: { seller: id.scraper, payer: id.translator, barterer: id.summarizer, seeker: id.cleaner, bystander: id.gpu },
     });
     expect(quick.pay).toMatchObject({ status: "ready" });
@@ -127,7 +127,7 @@ describe("demo marketplace F9", () => {
     const committed = new Map<string, number>();
     for (const bundle of bundles) {
       const result = await fx.sandbox.accountFrom(solver.accountId, solver.secretKey).call(
-        { receiverId: contract, methodName: "commit_bundle", deposit: 0n, gas: 200_000_000_000_000n, args: { bundle: { epoch, legs: bundle.terms.legs }, signatures: bundle.signatures } },
+        { receiverId: contract, methodName: "commit_bundle", deposit: 0n, gas: 200_000_000_000_000n, args: { bundle: bundleInput(bundle.terms), signatures: bundle.signatures } },
         "EXECUTED_OPTIMISTIC",
       );
       expect(result.failures, bundle.name).toEqual([]);
