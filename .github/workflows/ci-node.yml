@@ -4,6 +4,42 @@
 #   on: { push: { branches: [main] }, pull_request: {} }
 #   permissions: { contents: read }
 #   jobs:
+#     ci:
+#       uses: x207-labs/x207/.github/workflows/ci-node.yml@<pinned-ref>
+#
+# A repository that depends on @x207/* packages (they are not on npm) passes the commit of the sdk to build against, and a token that can
+# read x207-labs/sdk:
+#
+#     ci:
+#       uses: x207-labs/x207/.github/workflows/ci-node.yml@<pinned-ref>
+#       with: { sdk-ref: <sdk commit sha> }
+#       secrets: { sdk-token: ${{ secrets.X207_CHECKOUT_TOKEN }} }
+name: CI Node
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node version. The default is the floor set by ADR-11.
+        type: string
+        default: "22.22.2"
+      working-directory:
+        description: Folder that holds package.json. Used only when sdk-ref is empty.
+        type: string
+        default: "."
+      sdk-ref:
+        description: Commit of x207-labs/sdk to build next to this repository. Empty for a repository without @x207 dependencies.
+        type: string
+        default: ""
+    secrets:
+      sdk-token:
+        description: Token with read access to x207-labs/sdk. Required when sdk-ref is set.
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
