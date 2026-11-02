@@ -18,3 +18,6 @@ dist/
 
 # Keluaran demo
 .demo/
+
+# Submission fields with personal data (scripts/submission-payload.mjs)
+/.secrets/
