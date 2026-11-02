@@ -32,9 +32,9 @@ A letter means "the process does this to the store in at least one step". The st
 | P3 / D9 | The solver reads the cutoff snapshot from the index | `epoch_cutoff`, read API `.../obligations?stage=cutoff` | |
 | P4 / D5 | Read what is due or claimable, then mark it | `ft_on_transfer` (action `settle`), `claim` | `due` to `paid`; `claimable` to `claimed` |
 | P4 / D6 | USDT enters the pool on settle and leaves on claim | `ft_on_transfer`, `claim` (`near` or `intents`) | |
-| P4 / D1 | Raise the cash settlement history; a member leaving becomes `exited` | `ft_on_transfer`, `withdraw_stake` | `active` to `exited` |
+| P4 / D1 | Raise the cash settlement history; a member leaving records `exit_requested_epoch`, then becomes `exited` | `ft_on_transfer`, `request_exit`, `withdraw_stake` | `active` to `exited` |
 | P5 / D8 | Record an intent hash and the committed bundle with its per-leg limits | `post_intent`, `commit_bundle` (events `intent_posted`, `bundle_committed`) | bundle `active` |
-| P5 / D1 | Reserve headroom for each leg of a bundle | `commit_bundle` (view `headroom` shows it) | |
+| P5 / D1 | Reserve headroom for each leg of a bundle; the reservation is a separate key beside D8, not a field of the member row | `commit_bundle` (view `headroom` shows it) | |
 | P5 / D2 | Register the obligation of a leg against the reserved headroom | `register_in_bundle` | |
 | P6 / D5 | Read members that did not pay, mark them | `finalize_epoch` | `due` to `defaulted`; shortfall shares the claims |
 | P6 / D6 | Cut the stake of a defaulter, reduce the reserve | `finalize_epoch` | |
@@ -48,6 +48,19 @@ A letter means "the process does this to the store in at least one step". The st
 ## Beyond the nine stores
 
 Stores D10 (asset class registry) and D11 (access grants) belong to the F8 process P9 and D12 (listings and offers) to the F9 marketplace module M11; they are outside this matrix. D12 is an off-chain database written by the backend module `backend/src/marketplace/` (tables `listings`, `offers`, `matches`, `bundle_proposals`), and only the bundle hash reaches D8 on chain.
+
+## Differences found and decided (UM-047)
+
+`tests/crud-implementation.test.ts` reads the Rust source of `contracts/x207-circle/src` (without the test modules) and the 0.0.4 ABI, follows each public method through the functions it calls, and lists which stores it writes. It is a static approximation: functions with the same name in two files are merged, and `epochs` holds D4, D6 and D7 together. What it found:
+
+| Cell | Matrix said | Implementation | Decision |
+| --- | --- | --- | --- |
+| P4 x D1 | `withdraw_stake` only | `request_exit` also writes the member row (`exit_requested_epoch`) | Matrix fixed: `request_exit` is now in the cell. |
+| P5 x D1 | `U`: reserve headroom for each leg | `commit_bundle` writes the bundle (D8) and a separate reserve key (`reserves()` in `bundle.rs`), and does not write the member row; `headroom` subtracts the reserve | Letter kept as `U` because the DFD has the arrow P5 to D1 and the member's usable headroom changes. The reserve key is not in D1, and the cell text says so. |
+| P2 x D1 | `R` only | `register_cumulative`, `register_voucher` and `register_in_bundle` reach a function that rewrites the member row for lazy status sync (reactivation, ADR-30) | Kept as `R`: that write is housekeeping on a first touch, not a flow of P2. A change of this code that makes P2 write other member fields must change the cell. |
+| P2 x D8 | empty | `register_in_bundle` updates the registered amount of the bundle leg (D8) | Not added: the DFD has no arrow P2 to D8. The bundle leg is covered by the P5 / D2 cell, which names `register_in_bundle`. |
+
+Cells D9: the indexer (`backend/src/indexer/handlers/`) writes `events_raw` and the read model; the contract does not write D9.
 
 ## Checks
 
