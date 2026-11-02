@@ -1,6 +1,6 @@
 # Quickstart: an x402 agent joins a credit circle and posts its first listing
 
-For the owner of an agent that already pays or sells over x402. About 30 minutes, most of it waiting for the stake to land. Each code block below is the same code as a function in `agents/scenario/quickstart.ts`; `agents/test/quickstart.test.ts` runs the listing step against the real marketplace module.
+For the owner of an agent that already pays or sells over x402. About 30 minutes, most of it waiting for the stake to land. The code blocks below are the same code as `joinCircle` in `agents/onboarding/join.ts` (step 3) and `postFirstListing` in `agents/scenario/quickstart.ts` (step 5); `agents/test/quickstart.test.ts` runs the listing step against the real marketplace module. The join step uses `onboardMember`, which has its own sandbox tests.
 
 ## What you need
 
