@@ -28,11 +28,23 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # The sandbox tests run one at a time (see Test below) and take about an hour on their own.
+    timeout-minutes: 150
+    env:
+      # 37 test binaries with debug info filled the runner disk (`ld terminated with signal 7 [Bus error]`).
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}
     steps:
+      - name: Free disk space
+        # Removes toolchains this job does not use; a hosted runner has about 14 GB free otherwise.
+        working-directory: .
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install toolchain from rust-toolchain.toml
         run: rustup toolchain install
@@ -42,7 +54,6 @@ jobs:
             ~/.cargo/bin/cargo-near
             ~/.cargo/registry
             ~/.cargo/git
-            ${{ inputs.working-directory }}/target
           key: rust-${{ runner.os }}-near${{ inputs.cargo-near-version }}-${{ hashFiles(format('{0}/rust-toolchain.toml', inputs.working-directory), format('{0}/Cargo.lock', inputs.working-directory)) }}
           restore-keys: |
             rust-${{ runner.os }}-near${{ inputs.cargo-near-version }}-
@@ -58,4 +69,8 @@ jobs:
       - name: Build contract
         run: cargo near build non-reproducible-wasm
       - name: Test
-        run: cargo test --locked
+        # One test at a time: the sandbox tests move block time and fail with ERR_PAST_CUTOFF when they compete for the CPU.
+        run: cargo test --locked -- --test-threads=1
+      - name: Disk after the build
+        if: always()
+        run: df -h / && du -sh target
