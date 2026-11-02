@@ -146,7 +146,7 @@ npm install
 npm run demo:sandbox
 ```
 
-Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. `npm run demo:testnet` and `npm run demo:mainnet` (`demo/network.demo.ts`) run the same stages against a real network; without `X207_CONFIRM_REAL_TX=yes` they only print the plan, and mainnet also needs `X207_CONFIRM_MAINNET=yes`. A testnet rehearsal ran on 2026-11-02 against a rehearsal contract `x207r-circle.testnet` with 5-minute epochs (twenty paid calls, twelve pair registrations, one clearing proposal, 0.28 of 0.40 credit cleared, two residual payments, one default, claims to `near`); its hashes are in `vault/00 Log/Progress/Progress Main B.md`. The testnet run reads the clearing snapshot from contract views instead of the indexer, because the public testnet endpoints rate-limit a block backfill. Two optional steps of the network demo are skipped with a message when their prerequisite is missing: `DEMO_BARTER=yes` runs the F5 ring (three signatures, `commit_bundle`, fifteen leg payments with `bundleId`) and needs a contract at interface 0.0.4, set through `CIRCLE_CONTRACT`; `DEMO_DAO_ACCOUNT`, `DEMO_DAO_COUNCIL` and `DEMO_DAO_PARAMS_FILE` run a `set_params` proposal through a Sputnik DAO and need a circle contract that the DAO owns. Neither step has run on a real network yet; the barter flow is the one tested in `tests/barter.sandbox.test.ts`, and the DAO step is checked only through `contracts/dao/dao.test.mjs`. No mainnet transaction has been sent (UM-026, UM-040).
+Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|medium|high|star` (which agents buy from which). The run takes about three minutes with the sandbox clock fast-forwarded, prints every stage with transaction hashes and durations, and writes a log to `.demo/`. `npm run demo:testnet` and `npm run demo:mainnet` (`demo/network.demo.ts`) run the same stages against a real network; without `X207_CONFIRM_REAL_TX=yes` they only print the plan, and mainnet also needs `X207_CONFIRM_MAINNET=yes`. A testnet rehearsal ran on 2026-11-02 against a rehearsal contract `x207r-circle.testnet` with 5-minute epochs (twenty paid calls, twelve pair registrations, one clearing proposal, 0.28 of 0.40 credit cleared, two residual payments, one default, claims to `near`); its addresses, results and transaction hashes are in [docs/testnet-rehearsal.md](docs/testnet-rehearsal.md). That contract is interface 0.0.1, older than the contract in this repository. The testnet run reads the clearing snapshot from contract views instead of the indexer, because the public testnet endpoints rate-limit a block backfill. Two optional steps of the network demo are skipped with a message when their prerequisite is missing: `DEMO_BARTER=yes` runs the F5 ring (three signatures, `commit_bundle`, fifteen leg payments with `bundleId`) and needs a contract at interface 0.0.4, set through `CIRCLE_CONTRACT`; `DEMO_DAO_ACCOUNT`, `DEMO_DAO_COUNCIL` and `DEMO_DAO_PARAMS_FILE` run a `set_params` proposal through a Sputnik DAO and need a circle contract that the DAO owns. Neither step has run on a real network yet. The barter step is the code of `demo/barter-step.ts`, which `tests/network-barter.sandbox.test.ts` runs against the real contract in `near-sandbox`. The DAO step is not run anywhere: `contracts/dao/dao.test.mjs` tests the command builders, and `contracts/tests/ct048_sputnik_dao.rs` tests a real Sputnik DAO and `set_params` in `near-sandbox` from Rust. No mainnet transaction has been sent (UM-026, UM-040).
 
 | Do | See |
 | --- | --- |
@@ -238,11 +238,13 @@ Contract rules behind the rows: `contracts/x207-circle/src/bundle.rs` (`commit_b
 | Piece | `near-sandbox` | Testnet | Mainnet |
 | --- | --- | --- | --- |
 | F1 to F4, F6 | Run (`npm run demo:sandbox`) | Rehearsal on 2026-11-02 against a rehearsal contract | No transaction sent |
-| F5 barter ring | Run (`tests/barter.sandbox.test.ts`, `npm run demo:marketplace`) | Not run. The interface 0.0.4 testnet address is pending; the testnet demo has an optional barter step (`DEMO_BARTER=yes`) that needs it | No transaction sent |
+| F5 barter ring | Run (`tests/barter.sandbox.test.ts`, `npm run demo:marketplace`; the network demo step in `tests/network-barter.sandbox.test.ts`) | Not run. The testnet rehearsal contract is older than interface 0.0.4; the testnet demo has an optional barter step (`DEMO_BARTER=yes`) that needs a contract at 0.0.4 or newer | No transaction sent |
 | F9 marketplace, seeker, referral inbox | Run (`tests/marketplace.sandbox.test.ts`, `npm run demo:marketplace`) | Not run | No transaction sent |
 | F7 DAO vote on `set_params` | Not run; the demo calls `set_params` from the owner account | Not run | No transaction sent |
 | NEAR Intents and 1Click (residual payment, withdrawal, `defi` track) | Not observable in sandbox | Not run | Needs a mainnet run (UM-027, UM-035); not done |
 | `business` and `realworld` blocks | Run (`npm run demo:business`, `npm run demo:realworld`) | Not run | No transaction sent. `realworld` is a demo scenario of invoices as vouchers, not a deployment with real businesses |
+| Exit and withdraw stake from the dashboard | Run: the page against the real read API and contract, with a sandbox account as the wallet (`frontend/src/test/exit.sandbox.test.tsx`) | Not run. A real wallet through NEAR Connect has not been tried | No transaction sent |
+| Parallel registration with a gas key (NEP-611) | Run (`sdk/apps/facilitator/test/gas-key.sandbox.test.ts`: four registrations on four lanes) | Not run with a funded key | No transaction sent |
 | NEAR AI inference for agents | Mock mode (ADR-33) | Not run | Waits for the account top-up |
 
 ### Epoch timeline of the demo
@@ -256,7 +258,7 @@ These are the default circle parameters (ADR-25). They match the defaults in `co
 | `payment_window` | 30 minutes | After `commit_epoch`, net debtors pay the residual |
 | DAO proposal period | 1 hour | A Sputnik DAO proposal for `set_params` is open for voting. This is a DAO setting, not a contract parameter. |
 
-T0 is the moment the demo epoch `<epoch N>` opens.
+T0 is the moment the demo epoch opens.
 
 | Time | Stage | What happens |
 | --- | --- | --- |
@@ -332,7 +334,7 @@ The NEAR pages on [agentic payments](https://www.near.org/agentic-payments) and 
 
 ## 7. Mechanism and invariants
 
-Every claim below links to the test in the `contracts` repo that checks it. The tests were written and run locally; the GitHub CI has not run yet (no remote), so none of the links is backed by a CI result.
+Every claim below links to the test in the `contracts` repo that checks it. The tests were written and run locally. The repositories are in a private GitHub organization with CI configured, but this README does not cite a CI result, so none of the links is backed by one.
 
 | Claim | What the contract does | Test |
 | --- | --- | --- |
@@ -364,7 +366,7 @@ Every claim below links to the test in the `contracts` repo that checks it. The 
 
 Seller delay risk is limited to the vouchers not yet registered on-chain (ADR-23). Secrets live only in `.env`, which is not committed.
 
-Tests behind each risk. "Not applicable" means the row is a limitation or a decision, so no test applies. The tests were run locally; the GitHub CI has not run yet.
+Tests behind each risk. "Not applicable" means the row is a limitation or a decision, so no test applies. The tests were run locally; this README cites no CI result.
 
 | Risk | Test or explanation |
 | --- | --- |
@@ -411,7 +413,7 @@ x207 is measured by value, not by transaction count. A circle that clears a larg
 
 The read API serves these per epoch at `GET /x207/circles/<circleId>/epochs/<epoch>/metrics`.
 
-Results from a real demo epoch are not yet available (UM-034).
+Results from demo epochs: section 4 has the cleared ratio and transfer savings of two sandbox runs (for example 120 paid calls became 6 residual payments, cleared ratio 0.6333). No mainnet epoch has run, so there is no mainnet figure.
 
 ### Relief against graph density
 
@@ -422,7 +424,19 @@ npm run build -w @x207/solver
 node scripts/relief-curve.mjs
 ```
 
-Chart: `<path gambar kurva relief>`. The values from the run recorded for this README are to be added after the final run.
+Chart: [docs/relief-curve.svg](docs/relief-curve.svg). Values of the run `node scripts/relief-curve.mjs --seed 207 --members 30` on 2026-11-02 (synthetic graphs, not a demo epoch):
+
+| Graph | Members | Edges | Total obligation | Cleared | Relief | Residual payments |
+| --- | --- | --- | --- | --- | --- | --- |
+| random, p = 0.03 | 29 | 29 | 1407 | 51 | 3.62% | 18 |
+| random, p = 0.06 | 30 | 44 | 1887 | 45 | 2.38% | 11 |
+| random, p = 0.12 | 30 | 82 | 4251 | 1737 | 40.86% | 16 |
+| random, p = 0.25 | 30 | 214 | 11010 | 8194 | 74.42% | 16 |
+| random, p = 0.5 | 30 | 429 | 21888 | 18824 | 86.00% | 13 |
+| random, p = 0.8 | 30 | 681 | 35158 | 32129 | 91.38% | 17 |
+| star | 30 | 29 | 1613 | 0 | 0.00% | 29 |
+
+Sparse random graphs relieve only a few percent and the star graph none; relief rises quickly once the graph is dense.
 
 The chart marks the Sardex benchmark of 23% of value per monthly batch (Fleischman, Dini, Littera, JRFM 2020). A star graph, where every member owes one hub, has no cycle and shows no relief. The demo circle is dense on purpose (ADR-16). Two columns of the script are open: payable mass and cost per payment.
 
@@ -512,4 +526,8 @@ Hints used: multi-agent systems, agent commerce, NEAR Intents (code in `backend/
 
 ## Appendix C: traceability
 
-To be written (UM-041).
+- [docs/traceability.md](docs/traceability.md): feature, code, tests and demo step for F1 to F9, and the spike probes repeated with product code.
+- [docs/crud-matrix.md](docs/crud-matrix.md): which process writes which store, checked against the contract source by a test.
+- [docs/external-interfaces.md](docs/external-interfaces.md): external interfaces E1 to E8.
+- [docs/capital-provider-guide.md](docs/capital-provider-guide.md): guide for capital providers.
+- [docs/testnet-rehearsal.md](docs/testnet-rehearsal.md): testnet rehearsal with transaction hashes.
