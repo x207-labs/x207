@@ -268,6 +268,8 @@ Contract rules behind the rows: `contracts/x207-circle/src/bundle.rs` (`commit_b
 | F8 class C (secret behind a TEE broker) | Not built | Not built | Not built |
 | NEAR AI inference for agents | Mock mode (ADR-33) | Not run | Waits for the account top-up |
 
+The whole set of sandbox tests (`npm run test:integration`, among them `e2e`, `barter`, `marketplace` and `broker-class-b`) can also run on GitHub: the workflow `.github/workflows/e2e-sandbox.yml` runs on a manual dispatch and on every push to `main`. It builds the contract, the mock token and the near-sandbox binary on the runner and runs the files one at a time. That workflow has not run yet; this README cites no CI result.
+
 ### Epoch timeline of the demo
 
 These are the default circle parameters (ADR-25). They match the defaults in `contracts/x207-circle/src/params.rs`. `set_params` can change them only inside the ranges coded in the contract (ADR-20). They have not yet been checked in a full near-sandbox epoch (UM-025); this table is updated if that test changes them.
