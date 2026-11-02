@@ -1,7 +1,9 @@
 // SV-011 and SV-015 against a live stack: the built `x207-barter` command (solver/dist/barter-cli.js) talks to the real backend
 // (indexer, read API, marketplace routes) over HTTP, in a near-sandbox with the real contract and six onboarded agents.
 // rings --send -> agents sign through the book -> commit -> commit_bundle lands on chain; seek --send -> the referral reaches the
-// inbox of the agent, a second run does not repeat it. Run: npm run test:integration.
+// inbox of the agent, a second run does not repeat it. CT-082: a marketplace bundle that names its seeker leg lands when the
+// leg is under max_search_share_bps (500) and is refused with ERR_SEARCH_SHARE_EXCEEDED above it; a proposal that carries a
+// searcher without search_leg is refused by the book. Run: npm run test:integration.
 import { execFile } from "node:child_process";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import type { Server } from "node:http";
@@ -10,7 +12,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { afterAll, describe, expect, it } from "vitest";
-import { postListing, type ContractAbi, type Listing } from "@x207/core";
+import { postListing, signBundle, termsHash, type BundleTerms, type ContractAbi, type Listing } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
 import { marketplaceRoutes } from "../backend/src/marketplace/index.ts";
 import { rpcViewFunction } from "../backend/src/settlement/intents.ts";
@@ -113,5 +115,51 @@ describe.skipIf(!sandboxAvailable)("x207-barter against the live backend in near
     const second = await cli(seekArgs, { SEEKER_PRIVATE_KEY: id.cleaner.voucherSecretKey });
     expect(second.offers).toEqual([]);
     expect(await book.referralInbox(id.summarizer.accountId)).toHaveLength(1);
+
+    // CT-082: seeker leg under and over max_search_share_bps (500 bps of the sum of the legs)
+    const base = `${apiUrl}/x207/circles/agents-main/bundle-proposals`;
+    const post = async (body: unknown) => {
+      const res = await fetch(base, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      return { status: res.status, json: (await res.json()) as any };
+    };
+    const commitAll = async () => {
+      try {
+        return await cli(["commit", "--epoch", String(epoch)]);
+      } catch (error) {
+        const stdout = (error as { stdout?: string }).stdout ?? "";
+        return JSON.parse(stdout.trim().split("\n").pop()!) as any;
+      }
+    };
+    const u = CALL_PRICE;
+    const signAll = async (terms: BundleTerms, who: (keyof typeof id)[]) => {
+      for (const n of who) await book.signProposal(termsHash(terms), id[n].accountId, signBundle(terms, id[n].accountId, id[n].voucherSecretKey).signature);
+    };
+    const bundleTerms = (legs: [keyof typeof id, keyof typeof id, number][], search: [keyof typeof id, keyof typeof id]): BundleTerms => ({
+      circle: contract, epoch,
+      legs: legs.map(([a, b, n]) => ({ payer: id[a].accountId, payee: id[b].accountId, max_amount: String(n * u) })),
+      search_leg: { payer: id[search[0]].accountId, payee: id[search[1]].accountId },
+    });
+
+    // under the cap: scraper pays summarizer 97 and the seeker cleaner 3 of 200 (1.5%), summarizer pays scraper 100
+    const under = bundleTerms([["scraper", "summarizer", 97], ["summarizer", "scraper", 100], ["scraper", "cleaner", 3]], ["scraper", "cleaner"]);
+    const { search_leg: _unnamed, ...unnamed } = under;
+    const refused = await post({ terms: unnamed, searcher: id.cleaner.accountId });
+    expect(refused.status).toBe(400);
+    expect(refused.json.error.message).toMatch(/search_leg/);
+    expect((await post({ terms: under, termsHash: termsHash(under), searcher: id.cleaner.accountId })).status).toBe(201);
+    await signAll(under, ["scraper", "summarizer", "cleaner"]);
+    const landed = (await commitAll()).committed.find((c: any) => c.termsHash === termsHash(under));
+    expect(landed).toMatchObject({ ok: true });
+    const bundle2 = await fx.sandbox.view<{ legs: unknown[] }>(contract, "get_bundle", { bundle_id: 2 });
+    expect(bundle2.legs).toHaveLength(3);
+
+    // over the cap: cleaner pays summarizer 85 and the seeker translator 15 of 200 (7.5%)
+    const over = bundleTerms([["cleaner", "summarizer", 85], ["summarizer", "cleaner", 100], ["cleaner", "translator", 15]], ["cleaner", "translator"]);
+    expect((await post({ terms: over, searcher: id.translator.accountId })).status).toBe(201);
+    await signAll(over, ["cleaner", "summarizer", "translator"]);
+    const refusedOnChain = (await commitAll()).committed.find((c: any) => c.termsHash === termsHash(over));
+    expect(refusedOnChain).toMatchObject({ ok: false });
+    expect(refusedOnChain.error).toContain("ERR_SEARCH_SHARE_EXCEEDED");
+    expect(await fx.sandbox.view(contract, "get_bundle", { bundle_id: 3 })).toBeNull();
   }, 600_000);
 });
