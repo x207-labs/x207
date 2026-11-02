@@ -4,40 +4,32 @@
 #   on: { push: { branches: [main] }, pull_request: {} }
 #   permissions: { contents: read }
 #   jobs:
-#     ci:
-#       uses: x207-labs/x207/.github/workflows/ci-node.yml@<pinned-ref>
-name: CI Node
-
-on:
-  workflow_call:
-    inputs:
-      node-version:
-        description: Node version. The default is the floor set by ADR-11.
-        type: string
-        default: "22.22.2"
-      working-directory:
-        description: Folder that holds package.json.
-        type: string
-        default: "."
-
-permissions:
-  contents: read
-
-jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: ${{ inputs.working-directory }}
     steps:
+      - name: Require the sdk token when sdk-ref is set
+        if: inputs.sdk-ref != ''
+        env:
+          TOKEN: ${{ secrets.sdk-token }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::sdk-ref is set, so the caller must pass secret sdk-token (read access to x207-labs/sdk)."
+            exit 1
+          fi
+
+      # --- Repository without @x207 dependencies: install, lint, build and test in place ---
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: inputs.sdk-ref == ''
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: inputs.sdk-ref == ''
         with:
           node-version: ${{ inputs.node-version }}
           # The built-in npm cache fails on a repository without a lockfile.
           package-manager-cache: false
       - name: Install dependencies
+        if: inputs.sdk-ref == ''
+        working-directory: ${{ inputs.working-directory }}
         run: |
           if [ -f package-lock.json ]; then
             npm ci
@@ -45,9 +37,64 @@ jobs:
             npm install
           fi
       - name: Lint
+        if: inputs.sdk-ref == ''
+        working-directory: ${{ inputs.working-directory }}
         run: npm run lint --if-present
       - name: Build
+        if: inputs.sdk-ref == ''
+        working-directory: ${{ inputs.working-directory }}
         run: npm run build --if-present
       # Not --if-present: a repository without tests must fail here, not pass silently.
       - name: Test
+        if: inputs.sdk-ref == ''
+        working-directory: ${{ inputs.working-directory }}
+        run: npm test
+
+      # --- Repository with @x207 dependencies: lay it out next to the pinned sdk ---
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: inputs.sdk-ref != ''
+        with:
+          path: x207/${{ github.event.repository.name }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: inputs.sdk-ref != ''
+        with:
+          repository: x207-labs/sdk
+          ref: ${{ inputs.sdk-ref }}
+          token: ${{ secrets.sdk-token }}
+          path: x207/sdk
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: inputs.sdk-ref != ''
+        with:
+          node-version: ${{ inputs.node-version }}
+          package-manager-cache: false
+      - name: Generate the workspace root
+        if: inputs.sdk-ref != ''
+        working-directory: x207
+        run: |
+          node -e '
+            const repo = process.argv[1];
+            require("fs").writeFileSync("package.json", JSON.stringify({
+              name: "x207-ci", private: true,
+              workspaces: ["sdk/packages/*", "sdk/apps/*", repo],
+            }, null, 2));
+          ' "${{ github.event.repository.name }}"
+      - name: Install dependencies
+        if: inputs.sdk-ref != ''
+        working-directory: x207
+        run: npm install
+      - name: Build the pinned sdk
+        if: inputs.sdk-ref != ''
+        working-directory: x207/sdk
+        run: npm run build
+      - name: Lint
+        if: inputs.sdk-ref != ''
+        working-directory: x207/${{ github.event.repository.name }}
+        run: npm run lint --if-present
+      - name: Build
+        if: inputs.sdk-ref != ''
+        working-directory: x207/${{ github.event.repository.name }}
+        run: npm run build --if-present
+      - name: Test
+        if: inputs.sdk-ref != ''
+        working-directory: x207/${{ github.event.repository.name }}
         run: npm test
