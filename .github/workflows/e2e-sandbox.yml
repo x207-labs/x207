@@ -76,12 +76,13 @@ jobs:
             sudo apt-get install -y libudev-dev pkg-config
             cargo install cargo-near --version "$CARGO_NEAR_VERSION" --locked --force
           fi
-      - name: Build the contract and the mock token
+      - name: Build the contract, the mock token and the mock NFT
         working-directory: contracts
         run: |
           cargo near build non-reproducible-wasm
           cargo near build non-reproducible-wasm --manifest-path probes/mock_ft/Cargo.toml
-          ls -l target/near/x207_circle.wasm target/near/mock_ft/mock_ft.wasm
+          cargo near build non-reproducible-wasm --manifest-path probes/mock_nft/Cargo.toml
+          ls -l target/near/x207_circle.wasm target/near/mock_ft/mock_ft.wasm target/near/mock_nft/mock_nft.wasm
       - name: Get the near-sandbox binary
         # The sandbox harness looks for it in target/debug/build/near-sandbox-*/out/.near, where the build script of near-workspaces puts it.
         # Building the unit tests of the lib compiles the dev-dependencies, so the script runs; if the binary is still missing, build all test binaries.
