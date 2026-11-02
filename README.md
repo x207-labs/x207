@@ -340,6 +340,8 @@ Every claim below links to the test in the `contracts` repo that checks it. The 
 | **Limits come from cash settlement.** | A member's credit limit grows only from residual paid in cash (`settled_history`), through `limit_growth`, and never above the stake. | [`ct034_limits.rs`](contracts/tests/ct034_limits.rs) |
 | **Cycle clearing is not history (ADR-08).** | A cycle that clears completely leaves no settlement record, `settled_history` stays 0, and the limit does not move. Clearing cannot be used to raise limits. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`cycle_clearing_does_not_raise_limits`) |
 | **Anti-sybil: stake is required.** | A member with no stake can be neither payer nor payee, and the growth term is clamped to the stake, so extra accounts without capital add no credit. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`member_without_stake_cannot_register`) |
+| **A barter bundle commits only with every participant's signature (F5, ADR-38).** | `commit_bundle` recomputes `terms_hash` from the legs, requires exactly one valid ed25519 signature per participant over it (`ERR_BUNDLE_SIGNATURES`), rejects a bundle with one leg or a leg that pays itself (`ERR_BAD_BUNDLE`), and rejects a payer whose legs exceed its free headroom (`ERR_BUNDLE_HEADROOM`). Nothing is written until the last check passes. | [`ct065_bundle.rs`](contracts/tests/ct065_bundle.rs) (`commit_refusals_change_nothing`), [`ct063_bundle_vector.rs`](contracts/tests/ct063_bundle_vector.rs) |
+| **Bundle legs are ordinary debt (F5).** | A voucher that carries `bundleId` is registered with `register_in_bundle` against the reserved amount of its leg; after that the leg is an obligation like any other and is cleared by F3. A ring leaves a net of zero. | [`ct065_bundle.rs`](contracts/tests/ct065_bundle.rs) (`bundle_legs_register_clear_and_leave_the_difference_as_residual`), [`tests/barter.sandbox.test.ts`](tests/barter.sandbox.test.ts) |
 
 ## 8. Security and limits
 
@@ -355,6 +357,10 @@ Every claim below links to the test in the `contracts` repo that checks it. The 
 | Real demand is not proven | Agents do not yet pay each other at scale. x207 makes small payments between agents cheaper but does not create demand. | The demo shows savings, not volume. | Open. Needs a dense community of agents. |
 | Competitors | 4Mica could add multi-party aggregation. Others can copy the mechanism. | x207 follows the official `batch-settlement` scheme and uses an open solver and on-chain verification. | Open. |
 
+| Goods and services are not judged (F5, F9) | A bundle fixes who pays whom, not whether the goods or services were delivered or good. | The value counts only after every party signs the `terms_hash`. Each leg is a voucher with a cap, so a payer loses at most its leg, and an unpaid residual follows the default model of F6. There is no dispute process. | Limitation. Quality and disputes are outside the protocol. |
+| Listing spam and seeker abuse (F9) | A seeker could flood agents with offers, or a listing could be a trap. | The seeker visits only agents that are `discoverable`, idle and opted in; the seeker share cannot exceed the discount; the book allows one pending referral per seeker, target and listing and at most five pending per agent; a refused pair is never offered again; a seeker must be an active member with stake. Class `X` assets are rejected. | MVP: guards in the code. No test at scale. |
+| The listing book is off-chain (F9) | The book, the negotiation and the referral inbox run in the backend (M11). An operator could hide or reorder listings. | The book cannot create a deal: the contract recomputes `terms_hash` from the legs and requires every participant's signature, and the formats are public (`sdk/spec/marketplace.md`) so another book can serve the same circle. | Limitation. One book per circle in the hackathon version; it is not decentralized. |
+| Bundle headroom is locked (F5) | A signed bundle reserves the headroom of each payer for its legs during the epoch. A payer that signs and never pays blocks only its own headroom. | The reservation is per epoch and per payer, it is released as the legs are registered, and a payee that did not sign cannot be bound. | Limitation. Reserved headroom cannot be used for other payments in that epoch. |
 Seller delay risk is limited to the vouchers not yet registered on-chain (ADR-23). Secrets live only in `.env`, which is not committed.
 
 Tests behind each risk. "Not applicable" means the row is a limitation or a decision, so no test applies. The tests were run locally; the GitHub CI has not run yet.
@@ -369,6 +375,10 @@ Tests behind each risk. "Not applicable" means the row is a limitation or a deci
 | Real demand is not proven | Not applicable: the demo reports savings, not volume (section 9). |
 | Competitors | Not applicable. |
 | Seller delay risk | `sdk/apps/facilitator/test/scheduler.test.ts` (retry with backoff, give up at cutoff with the unregistered amount logged) and `tests/f2.sandbox.test.ts` (new vouchers refused after two failed registrations, accepted after recovery). |
+| Goods and services are not judged | Not applicable: no dispute process exists. The cap on each leg is tested in `contracts/tests/ct065_bundle.rs` (`ERR_BUNDLE_HEADROOM`), `sdk/packages/scheme/test/bundle.test.ts` (`bundle_leg_exceeded`) and `sdk/apps/facilitator/test/bundle.sandbox.test.ts`. |
+| Listing spam and seeker abuse | `backend/test/marketplace/referrals.test.ts` (one pending per pair, inbox limit, expiry, refusal), `solver/test/barter.test.ts` (no offer without opt-in, discoverable or idle), `backend/test/marketplace/asset-classes.test.ts` (class `X` rejected). |
+| The listing book is off-chain | `backend/test/marketplace/bundles.test.ts` (`terms_hash` recomputed by the server, wrong signature refused) and `contracts/tests/ct065_bundle.rs` (the contract refuses missing, forged and swapped signatures). |
+| Bundle headroom is locked | `contracts/tests/ct065_bundle.rs` (headroom refusal and release as legs register) and `tests/barter.sandbox.test.ts`. |
 
 ### Impact, security, and sustainability
 
