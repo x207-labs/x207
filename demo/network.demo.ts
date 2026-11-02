@@ -159,7 +159,7 @@ describe("demo jaringan nyata", () => {
     const chainNowMs = async () => Number(BigInt(((await (await fetch(rpcUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "block", params: { finality: "optimistic" } }) })).json()) as any).result.header.timestamp_nanosec) / 1_000_000n);
     const pass = () =>
       keeperPass({
-        view, chainNowMs,
+        view, chainNowMs, lookback: 50,
         send: async ({ methodName, args }: { methodName: string; args: object }) => {
           await keeperSend({ receiverId: contract, methodName, args, deposit: 0n, gas: 200_000_000_000_000n });
           return methodName;
@@ -206,9 +206,10 @@ describe("demo jaringan nyata", () => {
     await waitFor("close_epoch", async () => !["open", "cutoff"].includes(await phase(epoch)));
     const solved = await run("node", ["solver/dist/cli.js", "--epoch", String(epoch)], {
       env: { PATH: process.env.PATH, X207_READ_API_URL: readApi, X207_CIRCLE_ID: "agents-main", NEAR_RPC_URL: rpcUrl, X207_CONTRACT_ID: contract, SOLVER_ACCOUNT_ID: env("SOLVER_ACCOUNT_ID"), SOLVER_PRIVATE_KEY: operatorKey("SOLVER", env("SOLVER_ACCOUNT_ID")) },
-    });
+    }).catch((error: { stdout?: string; stderr?: string }) => ({ stdout: error.stdout ?? "", stderr: error.stderr ?? "" }));
+    if (!solved.stdout.trim()) log(`   solver: ${(solved.stderr || "tanpa keluaran").trim().split("\n").slice(-2).join(" | ").slice(0, 200)}`);
     const solverTx = /tx[ =:]+([A-Za-z0-9]{40,})/.exec(solved.stderr)?.[1];
-    log(`   solver: ${solved.stdout.trim() ? "proposal dikirim" : "tidak ada yang dikliring"}${solverTx ? ` tx ${solverTx}` : ""}`);
+    log(`   solver: ${solverTx ? `proposal dikirim, tx ${solverTx}` : solved.stdout.trim() ? "proposal dihitung tetapi tidak dikirim" : "tidak ada yang dikliring"}`);
     if (solverTx) hashes.push({ stage: "solver.submit_clearing", hash: solverTx });
     await waitFor("commit_epoch", async () => ["payment_window", "finalized"].includes(await phase(epoch)));
     const members = AGENT_NAMES.map((n) => accounts[n]);
