@@ -100,3 +100,13 @@ Twenty paid calls, twelve registrations, one clearing proposal. Cleared 0.28 of 
 | gpu.ft_transfer_call | `GernxdL5gUs2heV9meEnZkfbS5D24cC3uNUt417wG86w` |
 
 The hash lists of runs 1 and 2 come from the files `.demo/hashes-testnet-epoch2.json` and `.demo/hashes-testnet-epoch8.json` that the script wrote (for run 1 the registrations, the two settle transactions and `commit_epoch` are added from the output of that run). The `mint` rows are the mock token. Hashes can be looked up on `https://testnet.nearblocks.io/txns/<hash>`.
+
+## Rehearsal 2 (2026-11-03): contract 0.0.7, barter flow
+
+Test: `tests/testnet-rehearsal.live.test.ts` (run with `X207_TESTNET=1`). Contract `x207-circle-v7.testnet`, interface 0.0.7 (view `interface_version` answers `"0.0.7"`), mock USDT `usdt.x207-deployer.testnet`, parameters `epoch_length` 600 s, `proposal_window` 60 s, `payment_window` 900 s. Five member accounts (`andi`, `budi`, `citra`, `dewi`, `eka`), the real backend and solver on one machine.
+
+What ran: the F9 quick barter 100 / 10 / 3 (pay and barter paths with a seeker share), a ring of three intents, three bundles (`commit_bundle`, legs through `register_in_bundle`), close, solver, commit, residual payments, `finalize_epoch` and three claims.
+
+Read from the contract on 2026-11-03 (view `get_epoch` with `epoch` 4): phase `finalized`, 8 edges, 5 participants, `total_obligation` 303.3 credit, `total_cleared` 200.3 credit, `pool` 0, `shortfall` 0. The transaction hashes are written by the test to the file named in `X207_REHEARSAL_OUT` and are not in this repository yet.
+
+What did not run: NEAR Intents (`intents.testnet` has no code), a DAO vote, access assets (F8), a default case, and an indexer that follows every block. The free endpoints limit the rate, so the indexer of this rehearsal reads the receipts of each transaction that the test sends, one hash at a time, and serves only those blocks; the events are the real ones from the chain. The USDT is a mock token.
