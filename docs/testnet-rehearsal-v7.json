@@ -1,0 +1,178 @@
+{
+  "contract": "x207-circle-v7.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "steps": [
+    {
+      "step": "keeper commit_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "commit_epoch",
+      "hash": "DJCMrfqMJMpVwd32sRCx94zkJs1D8Jq3q87fh7n9juue"
+    },
+    {
+      "step": "keeper close_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "close_epoch",
+      "hash": "AUkd1bu9WyNbCAZQhiVu3PKC2r2MSsuUAzCx2PUUVyFd"
+    },
+    {
+      "step": "commit_bundle quick-8d749f",
+      "account": "x207-circle-v7.testnet",
+      "method": "commit_bundle",
+      "hash": "DQqJYkCwop3UR1ik6QRW7u9QkHBbPXhNAGYG93By4Kgj"
+    },
+    {
+      "step": "commit_bundle quick-bcaa41",
+      "account": "x207-circle-v7.testnet",
+      "method": "commit_bundle",
+      "hash": "HuH9AhmmLePTY5NBaRu6szDHmEXjv3YzmVYoV849ZCE8"
+    },
+    {
+      "step": "commit_bundle ring",
+      "account": "x207-circle-v7.testnet",
+      "method": "commit_bundle",
+      "hash": "kxaJdRP7fx5wuSKRRQsY8K972kkLERJHKSSYMn4n3b4"
+    },
+    {
+      "step": "leg quick-8d749f",
+      "account": "budi.x207-circle-v7.testnet",
+      "method": "register_in_bundle",
+      "hash": "AigrkstUwoV5wrCPzhLx2etazmzJqFoiCJCU4nWsKE6j"
+    },
+    {
+      "step": "leg quick-8d749f",
+      "account": "budi.x207-circle-v7.testnet",
+      "method": "register_in_bundle",
+      "hash": "FXm3Hyw1Gt5pPfBTp4sxJxV6kdfeEKtDJADE3169qdxu"
+    },
+    {
+      "step": "leg quick-bcaa41",
+      "account": "andi.x207-circle-v7.testnet",
+      "method": "register_in_bundle",
+      "hash": "ErdcQuTvZ9UdCF4MArSEwehRrGp6dmVuPFLQwtgJFqhp"
+    },
+    {
+      "step": "leg quick-bcaa41",
+      "account": "citra.x207-circle-v7.testnet",
+      "method": "register_in_bundle",
+      "hash": "E2i5QQaYJgfhY8TN59mfEjF64HWxzngc7tedK5T49wMk"
+    },
+    {
+      "step": "leg quick-bcaa41",
+      "account": "andi.x207-circle-v7.testnet",
+      "method": "register_in_bundle",
+      "hash": "HjvBqDZL77xrTZusoBR7UaGFJunXToZcwNQH4xHVP6YQ"
+    },
+    {
+      "step": "leg ring",
+      "account": "citra.x207-circle-v7.testnet",
+      "method": "register_in_bundle",
+      "hash": "9WBKKv7MZGc7BxZ7ezqA47nY8epjTaSbF83Z5iB7KvuJ"
+    },
+    {
+      "step": "leg ring",
+      "account": "dewi.x207-circle-v7.testnet",
+      "method": "register_in_bundle",
+      "hash": "8Myj15u9ofuf585aapkjoMR4HvQmaWkh5uEbnEswyR9G"
+    },
+    {
+      "step": "leg ring",
+      "account": "eka.x207-circle-v7.testnet",
+      "method": "register_in_bundle",
+      "hash": "FaGbYAJuipsweEtswoffuRu3aydMFUZKvykJhZqT7okr"
+    },
+    {
+      "step": "keeper finalize_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "finalize_epoch",
+      "hash": "AnS71Lx1huXpZwXchJK65zfdG6R96T9BghFW8CesECQz"
+    },
+    {
+      "step": "keeper commit_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "commit_epoch",
+      "hash": "4wYX33eaPCThooWQkL3AncRxQfxaSUkynMhCQLNxtV4"
+    },
+    {
+      "step": "keeper close_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "close_epoch",
+      "hash": "AvHYjPGaAnku66DPVavHviEaW8MsXvKNvSyhYr1qvXw2"
+    },
+    {
+      "step": "solver submit_clearing",
+      "account": "x207-circle-v7.testnet",
+      "method": "submit_clearing",
+      "hash": "H6NDeHW5vsb7szCRnNPgX6M3U6VKNVR2LaL7yDgrFdyV"
+    },
+    {
+      "step": "keeper commit_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "commit_epoch",
+      "hash": "GN2xXwGgKsSYmqMaZgVLYfdCXu3oBnZXyngNAYonWQSG"
+    },
+    {
+      "step": "settle residual",
+      "account": "budi.x207-circle-v7.testnet",
+      "method": "ft_transfer_call",
+      "hash": "CDddV4BN66XeW1bNWi56DiUH2YDy6EZdwxXk3qY4kaKb"
+    },
+    {
+      "step": "keeper finalize_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "finalize_epoch",
+      "hash": "149GfatSwAZXsCdQs3srHdwXbbQwjPfLoHSaA1Eh1oQe"
+    },
+    {
+      "step": "keeper finalize_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "finalize_epoch",
+      "hash": "GWojr6Qk4XaivXAZ1bvmTyramSo9XLidnE1Rsf9W2qdp"
+    },
+    {
+      "step": "keeper finalize_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "finalize_epoch",
+      "hash": "42VKJkP4bgaveMCz7P3meKot9VnXc1grHECEvWQqh4fs"
+    },
+    {
+      "step": "keeper close_epoch",
+      "account": "x207-circle-v7.testnet",
+      "method": "close_epoch",
+      "hash": "4GzEQU9NnuNH1XjmTK2vHQNbHUXzvDJQGShTcKXzUtM6"
+    },
+    {
+      "step": "claim",
+      "account": "andi.x207-circle-v7.testnet",
+      "method": "claim",
+      "hash": "3DUbYpWhb4E6RVebyDXgSHFGchoqMPn7VBoxKM7tsDnz"
+    },
+    {
+      "step": "claim",
+      "account": "dewi.x207-circle-v7.testnet",
+      "method": "claim",
+      "hash": "A34pufaR14EmZ4NtZP7CjBKtFQTqurU6aMcizGvftzUp"
+    },
+    {
+      "step": "claim",
+      "account": "citra.x207-circle-v7.testnet",
+      "method": "claim",
+      "hash": "DzkQngeFLr1zvfR4zeCr5ykrxBCGdyKj9TLeYRrxY2ff"
+    },
+    {
+      "step": "summary",
+      "account": "x207-circle-v7.testnet",
+      "method": "epoch 4: 1 debtors paid, 3 creditors claimed, bundles 1,2,3",
+      "hash": "-"
+    }
+  ],
+  "note": "Gladi of contract 0.0.7 (tag v0.0.7, 2c8c0ec) on testnet, epoch 4. Hashes of deploy, new, account creation and onboarding were not recorded. Hashes only; no keys.",
+  "network": "testnet",
+  "agents": [
+    "andi.x207-circle-v7.testnet",
+    "budi.x207-circle-v7.testnet",
+    "citra.x207-circle-v7.testnet",
+    "dewi.x207-circle-v7.testnet",
+    "eka.x207-circle-v7.testnet"
+  ],
+  "code_hash": "52F23KqjEZRD2pcfnV97ToZY2PS5amERLETPoGeF5Fbn"
+}
