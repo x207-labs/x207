@@ -10,6 +10,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { parseEventLog, termsHash, type BundleTerms, type ContractAbi } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
 import { marketplaceRoutes } from "../backend/src/marketplace/index.ts";
+import { rpcViewFunction } from "../backend/src/settlement/intents.ts";
 import { collectBundleSignatures, cycleTerms, findIntentCycles, loadOpenIntents } from "../solver/src/barter/index.ts";
 import { runQuickBarter } from "../agents/scenario/quick.ts";
 import { runWaitingScenario } from "../agents/scenario/waiting.ts";
@@ -49,7 +50,7 @@ describe.skipIf(!sandboxAvailable)("UM-066 marketplace F9: listing menunggu, neg
       contractId: contract, startBlock: 1, fetchParams: () => fx.sandbox.view(contract, "get_params", {}) as Promise<ContractAbi.Params>,
     });
     await indexer.bootstrap();
-    api = createApiServer({ db, now: () => book_.now * 1000, extraRoutes: marketplaceRoutes(db) });
+    api = createApiServer({ db, now: () => book_.now * 1000, extraRoutes: marketplaceRoutes(db, { chainView: rpcViewFunction(rpcUrl) }) });
     await new Promise<void>((resolve) => api!.listen(0, "127.0.0.1", resolve));
     const apiUrl = `http://127.0.0.1:${(api.address() as AddressInfo).port}`;
     const base = `${apiUrl}/x207/circles/agents-main`;
@@ -63,9 +64,9 @@ describe.skipIf(!sandboxAvailable)("UM-066 marketplace F9: listing menunggu, neg
     };
     const count = (sql: string) => Number((db.prepare(sql).get() as { n: number }).n);
     await catchUp(() => count("select count(*) as n from members where status = 'active'") >= 6);
-    // Baris epoch D9 baru muncul saat voucher pertama atau close_epoch; buku perlu tahu epoch open sejak awal.
+    // Epoch open dibaca dari view get_epoch kontrak (chainView); tabel epochs D9 belum punya baris di epoch pertama.
     const epoch = (await fx.sandbox.view<ContractAbi.EpochView>(contract, "get_epoch", {})).epoch;
-    db.prepare("INSERT OR IGNORE INTO epochs (circle_id, epoch, phase) VALUES ('agents-main', ?, 'open')").run(epoch);
+    expect(count("select count(*) as n from epochs")).toBe(0);
 
     const book = new BookClient({ baseUrl: apiUrl, circleId: "agents-main" });
     const id = identity;
