@@ -16,3 +16,13 @@ Feature, code, tests and the demo step that shows it. Demo steps refer to [Run t
 | P8 Indexer and read API | `backend/src/indexer/`, `backend/src/api/` | `backend/test/indexer/`, `backend/test/api/`, `tests/f3.sandbox.test.ts` | F3 row (report comes from the indexed D9) |
 
 Gaps: the F7 DAO vote, the F4 Intents payment and withdrawal, any testnet run of F5 and F9, and any mainnet run have no demo step. Mainnet hashes are not recorded (UM-040).
+
+## Spike probes against product code (UM-048)
+
+`tests/spike-probes.live.test.ts` repeats three key probes of the day-one spike with product code instead of spike code. It only reads: public mainnet RPC views and a dry 1Click quote, with no key, no transaction and no funds. It is opt-in: `X207_LIVE_PROBES=1 npx vitest run tests/spike-probes.live.test.ts`. Result of the run on 2026-11-02:
+
+| Probe | Product code used | Result |
+| --- | --- | --- |
+| S2.7 `simulate_intents` on `intents.near` | `simulateIntents()` and `rpcViewFunction()` in `backend/src/settlement/intents.ts` | Passed: `intents_executed` is empty and the log names the event. |
+| S4.3 dry quote with `appFees` | `OneClickClient.quote()` with `parseAppFees()` in `backend/src/settlement/` | Not reproduced. 1Click answered `Quoting for this pair is not available` to the request of the spike (5 USDT inside Intents to USDC on Solana), with and without `appFees`, and to the same amount toward USDC on Base and another USDC asset, both with deposit inside Intents and from the origin chain. All calls were without a JWT. Whether a JWT is needed now or the service changed since 26 Oct is not known; the product code builds the request (its unit tests check that `appFees` is in it), but the answer of the live service is not confirmed. |
+| S11.5 Sputnik DAO factory | `DEFAULT_FACTORY` of `contracts/dao/lib.mjs` and `rpcViewFunction()` | Passed: `get_number_daos` returned 2057 (the spike saw 2004). The DAO flow itself (proposal, vote, `set_params`) is tested with the real Sputnik wasm in `contracts/tests/ct048_sputnik_dao.rs`. |
