@@ -262,7 +262,18 @@ Every claim below links to the test in the `contracts` repo that checks it. The 
 
 Seller delay risk is limited to the vouchers not yet registered on-chain (ADR-23). Secrets live only in `.env`, which is not committed.
 
-Links from each risk to a passing test are not written yet (UM-042).
+Tests behind each risk. "Not applicable" means the row is a limitation or a decision, so no test applies. The tests were run locally; the GitHub CI has not run yet.
+
+| Risk | Test or explanation |
+| --- | --- |
+| Star graphs | `agents/test/density.test.ts` and `tests/density.sandbox.test.ts` run a star level next to low, medium and high levels; the star level clears under 1% and the high level clears more than the low one. |
+| Credit risk | `contracts/tests/ct037_default_flow.rs` (default path: only the debtor stake is cut, creditors are paid in full), `tests/e2e.sandbox.test.ts` (non-paying debtor: `defaulted`, stake cut by the due amount, `suspended`, limit 0), `agents/test/onboard.sandbox.test.ts` (limit above 0 and not above stake). |
+| Public ledger | Not applicable: accepted for the MVP, confidential settlement is roadmap (ADR-15). |
+| Dependency on NEAR Intents | `tests/e2e.sandbox.test.ts` runs join, clearing, settle, finalize and claim with USDT only and no Intents call. Intents behaviour on a real network has no test yet (UM-027). |
+| Cash collusion | `contracts/tests/ct038_wash_trading.rs` (cycle clearing does not raise limits; no stake means no credit) and `contracts/tests/ct034_limits.rs` (only cash settlement raises a limit). |
+| Real demand is not proven | Not applicable: the demo reports savings, not volume (section 9). |
+| Competitors | Not applicable. |
+| Seller delay risk | `sdk/apps/facilitator/test/scheduler.test.ts` (retry with backoff, give up at cutoff with the unregistered amount logged) and `tests/f2.sandbox.test.ts` (new vouchers refused after two failed registrations, accepted after recovery). |
 
 ### Impact, security, and sustainability
 
