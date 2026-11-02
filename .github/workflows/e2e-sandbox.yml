@@ -53,7 +53,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build the TypeScript packages
-        # dist of @x207/core, @x207/scheme, @x207/facilitator and the solver, which the tests load or run (solver/dist/cli.js)
+        # dist of @x207/core, @x207/scheme, @x207/facilitator and the solver, which the tests load or run (solver/dist/cli.js). The frontend builds here too:
+        # its test files are type-checked, and they need @testing-library/dom, which the frontend declares itself because npm does not install the peer in a workspace.
         run: npm run build --workspaces --if-present
 
       - name: Install the Rust toolchain of contracts
