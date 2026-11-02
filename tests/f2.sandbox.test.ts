@@ -31,8 +31,10 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
     // Penjadwal dengan ambang bawaan (1 credit) berjalan selama panggilan; event registrasi dihitung dari log transaksi.
     const registrations: string[][] = [];
     const schedulerLog: unknown[] = [];
+    // Jam penjadwal bisa dimajukan (`skewMs`) untuk masuk ke jendela flush sebelum cutoff; dipakai sekali, setelah semua panggilan selesai.
+    let skewMs = 0;
     const scheduler = new RegistrationScheduler({
-      circleContract: fx.circle.accountId, store: pending, log: (entry) => schedulerLog.push(entry),
+      circleContract: fx.circle.accountId, store: pending, log: (entry) => schedulerLog.push(entry), now: () => Date.now() + skewMs,
       chain: new NearRegistrationChain({
         rpc, circleContract: fx.circle.accountId, relayer: { accountId: relayer.accountId, privateKey: relayer.secretKey },
         onLogs: (logs) => registrations.push(logs),
@@ -55,11 +57,17 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
       expect(response.status, `panggilan ${i}`).toBe(200);
     }
     scheduler.stop();
-    // Putaran berkala yang masih berjalan membuat tick() berikutnya dilewati; tunggu sampai tidak ada baris terbuka.
+    // Sisa di bawah ambang (1 credit) memang tidak didaftarkan oleh putaran biasa: ia menunggu jendela flush sebelum `cutoff_at`
+    // (Spec Binding x402 6.3). Berapa banyak yang sudah terdaftar saat panggilan berakhir bergantung pada kecepatan RPC, jadi tanpa
+    // langkah ini hasil akhir ikut tergantung pada waktu. Majukan jam penjadwal ke 60 detik sebelum cutoff, lalu tunggu semua baris lunas.
+    const cutoffMs = Number(BigInt(epoch.cutoff_at) / 1_000_000n);
+    skewMs = Math.max(0, cutoffMs - 60_000 - Date.now());
+    // Putaran berkala yang masih berjalan membuat tick() berikutnya dilewati; ulangi sampai tidak ada baris terbuka.
     for (let i = 0; i < 60 && pending.listOpen(fx.circle.accountId).length > 0; i++) {
       await scheduler.tick();
       await new Promise((r) => setTimeout(r, 500));
     }
+    expect(pending.listOpen(fx.circle.accountId), "baris registrasi masih terbuka setelah 30 detik").toEqual([]);
     console.log("scheduler", JSON.stringify(schedulerLog.slice(0, 6)), "registrations", registrations.length);
     const pair = { epoch: epoch.epoch, debtor: translator.accountId, creditor: summarizer.accountId };
     const obligation = await fx.sandbox.view<ContractAbi.ObligationView>(fx.circle.accountId, "obligation", pair);
