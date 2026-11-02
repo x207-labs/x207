@@ -9,15 +9,14 @@
 
 x402 lets agents pay. x207 lets many agents settle at once.
 
-For judges: criteria and tracks are mapped in Appendix A; the recorded run is in section 4, path 0.
+For judges: criteria and tracks are mapped in Appendix A; the runs are in section 4, and what has not run on a real network is listed in section 4 under "What has and has not run".
 
 x207 is a mutual credit settlement layer for x402 agent payments on NEAR.
 Agents in a credit circle pay each other with signed credit vouchers, a solver
 removes debt cycles across many agents in one on-chain clearing at the end of
 each epoch, and only net positions are settled in USDT.
 
-Status: scaffold only. Hackathon prototype in progress at NEAR HACKATHON (1–14 Nov 2026).
-The sections below are placeholders until their backlog items are done.
+Status: hackathon prototype for NEAR HACKATHON (1–14 Nov 2026). Everything runs in a local `near-sandbox`. A testnet rehearsal of F1 to F4 ran on 2026-11-02. No mainnet transaction has been sent, and each section says what has and has not run.
 
 ## 1. What is x207
 
@@ -472,13 +471,26 @@ Where this README answers each judging criterion. The evidence column lists only
 
 | Criterion | Where | Evidence now |
 | --- | --- | --- |
-| Technical implementation | Sections 3, 5 and 7; [`docs/traceability.md`](docs/traceability.md) | Contract, SDK, facilitator, indexer, solver and agents run together in one sandbox epoch (`npm run demo:sandbox`); sandbox tests in `tests/`. No mainnet run yet. |
-| Design | Sections 3 and 4 | Frontend pages for onboarding, obligation graph, settlement, claim and withdrawal run against fixtures and a mock wallet. Not shown with a real wallet yet. |
+| Technical implementation | Sections 3, 5 and 7; [`docs/traceability.md`](docs/traceability.md) | Contract, SDK, facilitator, indexer, solver and agents run together in one sandbox epoch (`npm run demo:sandbox`); F5 barter bundles and the F9 marketplace run on the same stack (`npm run demo:marketplace`, `tests/barter.sandbox.test.ts`); sandbox tests in `tests/`. No mainnet run yet, and no testnet run of F5 and F9. |
+| Design | Sections 3 and 4 | Frontend pages for onboarding, obligation graph, settlement, claim, withdrawal and the marketplace negotiation view run against fixtures and a mock wallet. Not shown with a real wallet yet. The listing, offer, bundle and referral formats have test vectors (`sdk/spec/`) and a conformance suite (`sdk/conformance`). |
 | Impact | Sections 8 and 9 | The demo prints the number of paid calls and the residual payments it became (for example 120 became 6) from epoch data. Real agent volume is small and the README says so. |
-| Originality | Section 2 and `docs/competitor-landscape.md` | Comparison table. |
-| Sustainability | Section 8 | Fee flow and risk table. No revenue data. |
+| Originality | Section 2 and `docs/competitor-landscape.md` | Comparison table, and the table that sets x207 next to x402 as published. Barter bundles and a seeker paid inside the bundle are in the sandbox demo; we did not survey every x402 layer. |
+| Sustainability | Section 8 | Fee flow and risk table. The seeker share and the cashback come out of the discount that the listing agent sets, so F9 needs no subsidy. No revenue data. |
 
-Tracks (`swarms`, `agents`, `defi`, `social`): which tracks are submitted, the feature and demo step per track, and the hint track used are decisions of the owner and are not written yet.
+Tracks. The 8 tracks below are the owner's choice (K-59); a track is claimed only for what is in the repository today. The hint tracks used and not used are stated so that no hint is claimed by accident.
+
+| Track | Feature | Demo step | Evidence now | Not shown |
+| --- | --- | --- | --- | --- |
+| `swarms` | F2, F3, F5 | F2, F3 rows; [Barter bundle block](#barter-bundle-block-feature-f5) | Many agents paying and clearing in one epoch; a three-agent ring cleared to net zero (`tests/barter.sandbox.test.ts`) | A swarm of real model-driven agents; agents run in rule or mock mode |
+| `agents` | F1, F2, F9 | F1, F2 rows; [Marketplace block](#marketplace-block-feature-f9) | Printed 402 with the x207 and `exact` entries; agents list, negotiate and settle by policy (`tests/marketplace.sandbox.test.ts`) | Live NEAR AI inference; any mainnet payment |
+| `defi` | F3, F4 | F3, F4 rows | Multi-party clearing and residual settlement in USDT on a mock token in sandbox | NEAR Intents and 1Click payments: they need a mainnet run (UM-027, UM-035) that has not happened. This track is weak until it does. |
+| `social` | F6, F7 | F6 row | Default case: stake cut, member suspended, 409 in the 207 report. Governance through the owner account | A DAO vote on `set_params` has not run (UM-036) |
+| `business` | F2 | [Business and invoice blocks](#business-and-invoice-blocks-tracks-business-and-realworld) | The owner's limits are enforced before any voucher is signed (3 approved, 3 refused in the run) | A business that uses it outside the demo |
+| `realworld` | F1, F4 | Same blocks, `npm run demo:realworld` | Three businesses, invoices as vouchers, netting, residual 40 of 240 | A demo scenario only. No real invoice, dispute or legal status; no 1Click payout |
+| `security` | F6 | F2, F6 rows | Agent keys sign only vouchers and cannot move funds; credit limit capped by stake | No audit; no attack test beyond the contract tests in section 7 |
+| `open` | F5, F9 | [Marketplace block](#marketplace-block-feature-f9) | A layer on top of x402 with barter and an open listing format | Not shown on a real network |
+
+Hints used: multi-agent systems, agent commerce, NEAR Intents (code in `backend/src/settlement/`, not run on a network), sub-accounts, Sputnik DAO, named accounts, stablecoins. Hints not used: Chain Signatures, trading, TEE attestation, NEP-245. Tracks not submitted: `privacy` (confidential settlement is roadmap, ADR-15), `thesis`, `games`, `nfts`, `memecoins`.
 
 ## Appendix B: glossary
 
