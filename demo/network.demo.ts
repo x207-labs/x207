@@ -5,6 +5,15 @@
 // Langkah opsional (UM-032, UM-036), dilewati dengan pesan bila prasyaratnya belum ada:
 //   DEMO_BARTER=yes      F5: cincin tiga agent, commit_bundle, leg dibayar dengan voucher ber-bundleId. Butuh kontrak antarmuka 0.0.4:
 //                        isi CIRCLE_CONTRACT dengan alamat 0.0.4 (view get_bundle harus ada, bila tidak langkah dilewati).
+//   DEMO_DAO_ACCOUNT=<akun Sputnik DAO> DEMO_DAO_COUNCIL=<a,b> DEMO_DAO_PARAMS_FILE=<json>   F7: proposal set_params lewat DAO.
+//                        Hanya jalan bila get_owner kontrak sama dengan DAO; kunci anggota dewan di KEYS_DIR/<network>/<akun>.json.
+// Tanpa X207_CONFIRM_REAL_TX=yes skrip hanya mencetak rencana dan tidak mengirim apa pun. Transaksi mainnet dikonfirmasi manusia.
+//
+// Variabel (nama saja; nilai di .env, tidak pernah dicetak): DEMO_NETWORK, RPC_URL, CIRCLE_CONTRACT, USDT_TOKEN_ID, KEYS_DIR,
+// TERMS_HASH, STAKE_AMOUNT, DEMO_PAYMENTS, SPEND_POLICY_FILE,
+// KEEPER_ACCOUNT_ID, SOLVER_ACCOUNT_ID, RELAYER_ACCOUNT_ID (kunci dari <NAMA>_SECRET_KEY atau berkas kunci di KEYS_DIR),
+// AGENT_ACCOUNT_TEMPLATE (default `{name}.<CIRCLE_CONTRACT>`, mis. `x207r-{name}.testnet`), DEMO_MINT_USDT=yes (mint USDT tiruan, hanya testnet),
+// DEMO_DEFAULT=<agent> (debtor itu tidak melunasi). Kunci pemilik di KEYS_DIR/<network>/<akun>.json (format scripts/create-accounts.mjs).
 import { execFile } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, writeSync } from "node:fs";
 import { createServer, type Server } from "node:http";
@@ -19,6 +28,7 @@ import { defineCircleConfig } from "@x207/scheme";
 import { onboardAgents } from "../agents/onboarding/onboard.ts";
 import { planDensity, type Density } from "../agents/scenario/density.ts";
 import { LEG_AMOUNT, RING_MEMBERS, payLegs } from "../agents/scenario/ring.ts";
+import { buildActProposalArgs, buildAddProposalArgs, parseParamsJson } from "../contracts/dao/lib.mjs";
 import { createAgentServer } from "../agents/shared/agent-server.ts";
 import { loadSpendPolicy, type AgentIdentity } from "../agents/shared/identity.ts";
 import { createNearAiClient } from "../agents/shared/nearai.ts";
@@ -59,7 +69,9 @@ describe("demo jaringan nyata", () => {
       "F1 onboarding: 6 agent join + stake (12 transaksi, ditandatangani kunci pemilik)",
       `F2 ${payments} panggilan berbayar dengan voucher (kepadatan ${density}); registrasi on-chain oleh relayer`,
       ...(process.env.DEMO_BARTER === "yes" ? ["F5 (DEMO_BARTER=yes) cincin translator -> summarizer -> scraper: tiga tanda tangan, commit_bundle, 15 panggilan leg dengan bundleId; dilewati bila kontrak belum 0.0.4"] : []),
-      "set_params dari akun pemilik tidak dijalankan di jaringan nyata (lewat proposal DAO, UM-036)",
+      process.env.DEMO_DAO_ACCOUNT
+        ? `F7 (DEMO_DAO_ACCOUNT=${process.env.DEMO_DAO_ACCOUNT}) proposal set_params lewat DAO, suara dewan; dilewati bila kontrak tidak dimiliki DAO itu`
+        : "set_params lewat proposal DAO tidak dijalankan (set DEMO_DAO_ACCOUNT, DEMO_DAO_COUNCIL dan DEMO_DAO_PARAMS_FILE untuk langkah ini, UM-036)",
       "F3 keeper close_epoch (setelah cutoff_at), solver submit_clearing, keeper commit_epoch; laporan 207",
       "F4 debtor melunasi residual, keeper finalize_epoch setelah payment_deadline, kreditor claim(epoch, near)",
       "Metrik epoch dari endpoint metrics",
@@ -265,6 +277,36 @@ describe("demo jaringan nyata", () => {
       log(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
       const position = (await view("net_position", { epoch, account_id: accounts[defaulter] })) as { status: string; amount: string } | null;
       log(`   posisi ${defaulter} setelah finalize: ${JSON.stringify(position)}`);
+    }
+    const daoAccount = process.env.DEMO_DAO_ACCOUNT;
+    if (daoAccount) {
+      log(`== F7 set_params lewat proposal DAO ${daoAccount}`);
+      const owner = (await view("get_owner", {}).catch(() => null)) as string | null;
+      const council = (process.env.DEMO_DAO_COUNCIL ?? "").split(",").map((a) => a.trim()).filter(Boolean);
+      if (owner !== daoAccount) log(`   dilewati: pemilik ${contract} adalah ${owner ?? "tidak terbaca"}, bukan ${daoAccount}`);
+      else if (council.length === 0 || !process.env.DEMO_DAO_PARAMS_FILE) log("   dilewati: isi DEMO_DAO_COUNCIL dan DEMO_DAO_PARAMS_FILE");
+      else {
+        const daoView = createNearView(rpcUrl, daoAccount);
+        const addArgs = buildAddProposalArgs({ contract, params: parseParamsJson(readFileSync(resolve(process.env.DEMO_DAO_PARAMS_FILE), "utf8")) });
+        log(`   parameter sebelum: ${JSON.stringify(await view("get_params", {}))}`);
+        const proposalId = Number(
+          await createNearSender({ rpcUrl, accountId: council[0]!, secretKey: ownerKey(council[0]!), onTx: stamp("dao.add_proposal") })({
+            receiverId: daoAccount, methodName: "add_proposal", args: addArgs, deposit: 100_000_000_000_000_000_000_000n, gas: 100_000_000_000_000n,
+          }),
+        );
+        log(`   proposal ${proposalId} diajukan oleh ${council[0]}`);
+        let status = "InProgress";
+        for (const member of council) {
+          await createNearSender({ rpcUrl, accountId: member, secretKey: ownerKey(member), onTx: stamp(`dao.vote.${member}`) })({
+            receiverId: daoAccount, methodName: "act_proposal", args: buildActProposalArgs({ id: proposalId }), deposit: 0n, gas: 150_000_000_000_000n,
+          });
+          status = ((await daoView("get_proposal", { id: proposalId })) as { status: string }).status;
+          log(`   suara ${member}: status ${status}`);
+          if (status === "Approved") break;
+        }
+        log(`   parameter sesudah: ${JSON.stringify(await view("get_params", {}))}`);
+        if (status !== "Approved") log("   proposal belum lolos: dewan kurang suara, tidak ada perubahan");
+      }
     }
     const finalView = (await view("get_epoch", { epoch })) as ContractAbi.EpochView;
     const edgesNow = (await view("list_obligations", { epoch, from_index: 0, limit: 300 })) as ContractAbi.ObligationView[];
