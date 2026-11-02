@@ -5,13 +5,13 @@
 // Tanpa X207_CONFIRM_REAL_TX=yes skrip hanya mencetak rencana dan tidak mengirim apa pun. Transaksi mainnet dikonfirmasi manusia.
 //
 // Variabel (nama saja; nilai di .env, tidak pernah dicetak): DEMO_NETWORK, RPC_URL, CIRCLE_CONTRACT, USDT_TOKEN_ID, KEYS_DIR,
-// DEMO_START_BLOCK (blok deploy kontrak untuk indexer), TERMS_HASH, STAKE_AMOUNT, DEMO_PAYMENTS, SPEND_POLICY_FILE,
+// TERMS_HASH, STAKE_AMOUNT, DEMO_PAYMENTS, SPEND_POLICY_FILE,
 // KEEPER_ACCOUNT_ID, SOLVER_ACCOUNT_ID, RELAYER_ACCOUNT_ID (kunci dari <NAMA>_SECRET_KEY atau berkas kunci di KEYS_DIR),
 // AGENT_ACCOUNT_TEMPLATE (default `{name}.<CIRCLE_CONTRACT>`, mis. `x207r-{name}.testnet`), DEMO_MINT_USDT=yes (mint USDT tiruan, hanya testnet),
 // DEMO_DEFAULT=<agent> (debtor itu tidak melunasi). Kunci pemilik di KEYS_DIR/<network>/<akun>.json (format scripts/create-accounts.mjs).
 import { execFile } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, writeSync } from "node:fs";
-import type { Server } from "node:http";
+import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
@@ -20,7 +20,6 @@ import { buildClaimCall, buildSettleTransferCall, type ContractAbi } from "@x207
 import { createNearSender, createNearView } from "@x207/core/signer";
 import { NearRegistrationChain, NearRpc, PendingStore, RegistrationScheduler, createApp, createFacilitatorService } from "@x207/facilitator";
 import { defineCircleConfig } from "@x207/scheme";
-import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
 import { onboardAgents } from "../agents/onboarding/onboard.ts";
 import { planDensity, type Density } from "../agents/scenario/density.ts";
 import { createAgentServer } from "../agents/shared/agent-server.ts";
@@ -32,7 +31,6 @@ import { keeperPass } from "../scripts/lib/keeper.mjs";
 import { serveWeb } from "../agents/test/helpers.ts";
 
 const run = promisify(execFile);
-if (existsSync(".env")) process.loadEnvFile(".env");
 
 const NETWORKS = {
   testnet: { rpc: "https://rpc.testnet.fastnear.com", usdt: "usdt.x207-deployer.testnet", contract: "circle.x207-deployer.testnet" },
@@ -135,18 +133,28 @@ describe("demo jaringan nyata", () => {
       chain: new NearRegistrationChain({ rpc, circleContract: contract, relayer, onHash: (hash) => stamp("relayer.register")({ hash }) }),
     });
 
-    const db = openDatabase(":memory:");
-    const start = Number(env("DEMO_START_BLOCK"));
-    const indexer = new Indexer({
-      db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl], timeoutMs: 30_000 })), contract, start), circleId: "agents-main",
-      contractId: contract, startBlock: start, fetchParams: () => view("get_params", {}) as Promise<ContractAbi.Params>,
+    // RPC dan Neardata publik testnet membatasi laju (429; 30 blok per menit), jadi backfill indexer tidak mungkin dalam satu sesi.
+    // Solver membaca snapshot kewajiban dari shim ini yang disusun dari view `list_obligations` kontrak, bentuknya sama dengan read API.
+    const api = createServer(async (req, res) => {
+      const match = /\/epochs\/(\d+)\/obligations/.exec(req.url ?? "");
+      if (!match) {
+        res.writeHead(404).end("{}");
+        return;
+      }
+      const n = Number(match[1]);
+      const epochView = (await view("get_epoch", { epoch: n })) as ContractAbi.EpochView;
+      const edges = (await view("list_obligations", { epoch: n, from_index: 0, limit: 300 })) as ContractAbi.ObligationView[];
+      res.writeHead(200, { "content-type": "application/json" }).end(
+        JSON.stringify({
+          circle: "agents-main", epoch: n, phase: epochView.phase, stage: "cutoff", unit: "credit", decimals: 6,
+          edgeCount: edges.length, totalObligation: edges.reduce((sum, e) => sum + BigInt(e.cumulative), 0n).toString(),
+          edges: edges.map((e) => ({ debtor: e.debtor, creditor: e.creditor, amount: e.cumulative, seq: e.last_seq, cleared: null, remaining: null })),
+        }),
+      );
     });
-    await indexer.bootstrap();
-    const api = createApiServer({ db });
     await new Promise<void>((resolveListen) => api.listen(0, "127.0.0.1", resolveListen));
     servers.push(api);
     const readApi = `http://127.0.0.1:${(api.address() as AddressInfo).port}`;
-    const base = `${readApi}/x207/circles/agents-main`;
     const keeperSend = createNearSender({ rpcUrl, accountId: env("KEEPER_ACCOUNT_ID"), secretKey: operatorKey("KEEPER", env("KEEPER_ACCOUNT_ID")), onTx: stamp("keeper") });
     const chainNowMs = async () => Number(BigInt(((await (await fetch(rpcUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "block", params: { finality: "optimistic" } }) })).json()) as any).result.header.timestamp_nanosec) / 1_000_000n);
     const pass = () =>
@@ -157,19 +165,10 @@ describe("demo jaringan nyata", () => {
           return methodName;
         },
       }) as Promise<Array<{ method: string; epoch: number }>>;
-    // RPC publik kadang lambat; indexer dicoba lagi pada putaran berikutnya.
-    const safeDrain = async () => {
-      try {
-        await indexer.drain();
-      } catch (error) {
-        log(`   indexer: ${(error as Error).message.slice(0, 120)}; diulang`);
-      }
-    };
     const phase = async (epoch: number) => ((await view("get_epoch", { epoch })) as ContractAbi.EpochView).phase;
     const waitFor = async (what: string, done: () => Promise<boolean>) => {
       for (;;) {
         await pass();
-        await safeDrain();
         if (await done()) return;
         await sleep(15_000);
         log(`   menunggu ${what}`);
@@ -189,16 +188,7 @@ describe("demo jaringan nyata", () => {
       await sleep(15_000);
     }
     const epoch = current.epoch;
-    if (resume) {
-      log(`== Melanjutkan epoch ${epoch} (pembayaran dan registrasi sudah dilakukan di putaran sebelumnya)`);
-      // Indexer menyusul dulu sebelum keeper menutup epoch, supaya jendela proposal tidak terbuang.
-      for (let i = 0; i < 200; i++) {
-        await safeDrain();
-        const row = db.prepare("select last_block_height as h, head_block_height as head from indexer_cursor").get() as { h: number; head: number } | undefined;
-        if (row && row.head - row.h < 5) break;
-        await sleep(2_000);
-      }
-    }
+    if (resume) log(`== Melanjutkan epoch ${epoch} (pembayaran dan registrasi sudah dilakukan di putaran sebelumnya)`);
     if (!resume) log(`== F2 pembayaran voucher (epoch ${epoch})`);
     if (!resume) scheduler.start(2_000);
     for (const { buyer, seller } of resume ? [] : planDensity(density, payments, Number(process.env.DEMO_SEED ?? 20261102))) {
@@ -213,15 +203,19 @@ describe("demo jaringan nyata", () => {
     }
 
     log("== F3 kliring");
-    await waitFor("close_epoch", async () => !["open", "cutoff"].includes(await phase(epoch)) && (db.prepare("select phase from epochs where epoch = ?").get(epoch) as { phase?: string } | undefined)?.phase !== "open");
+    await waitFor("close_epoch", async () => !["open", "cutoff"].includes(await phase(epoch)));
     const solved = await run("node", ["solver/dist/cli.js", "--epoch", String(epoch)], {
       env: { PATH: process.env.PATH, X207_READ_API_URL: readApi, X207_CIRCLE_ID: "agents-main", NEAR_RPC_URL: rpcUrl, X207_CONTRACT_ID: contract, SOLVER_ACCOUNT_ID: env("SOLVER_ACCOUNT_ID"), SOLVER_PRIVATE_KEY: operatorKey("SOLVER", env("SOLVER_ACCOUNT_ID")) },
     });
     const solverTx = /tx[ =:]+([A-Za-z0-9]{40,})/.exec(solved.stderr)?.[1];
     log(`   solver: ${solved.stdout.trim() ? "proposal dikirim" : "tidak ada yang dikliring"}${solverTx ? ` tx ${solverTx}` : ""}`);
     if (solverTx) hashes.push({ stage: "solver.submit_clearing", hash: solverTx });
-    await waitFor("commit_epoch", async () => ["payment_window", "finalized"].includes(await phase(epoch)) && ["payment_window", "finalized"].includes((db.prepare("select phase from epochs where epoch = ?").get(epoch) as { phase?: string } | undefined)?.phase ?? ""));
-    log(`   laporan 207: ${JSON.stringify(await (await fetch(`${base}/epochs/${epoch}`)).json())}`);
+    await waitFor("commit_epoch", async () => ["payment_window", "finalized"].includes(await phase(epoch)));
+    const members = AGENT_NAMES.map((n) => accounts[n]);
+    for (const account of members) {
+      const position = (await view("net_position", { epoch, account_id: account })) as { net: string; role: string; amount: string; status: string } | null;
+      log(`   posisi ${account}: ${position ? `${position.role} net=${position.net} status=${position.status}` : "nol"}`);
+    }
 
     log("== F4 settlement");
     const positions = (await view("list_positions", { epoch, from_index: 0, limit: 100 })) as Array<{ account_id: string; role: string; amount: string; status: string }>;
@@ -236,14 +230,18 @@ describe("demo jaringan nyata", () => {
         await createNearSender({ rpcUrl, accountId: accounts[name], secretKey: ownerKey(accounts[name]), onTx: stamp(`${name}.claim`) })(buildClaimCall({ circleContract: contract, epoch, destination: "near" }));
       }
     }
-    await waitFor("indexer finalize", async () => (db.prepare("select phase from epochs where epoch = ?").get(epoch) as { phase?: string } | undefined)?.phase === "finalized");
     if (defaulter) {
       const member = (await view("member", { account_id: accounts[defaulter] })) as ContractAbi.MemberView;
       log(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
-      const report = (await (await fetch(`${base}/epochs/${epoch}`)).json()) as { members?: Array<{ account: string }> };
-      log(`   laporan 207 setelah finalize: ${JSON.stringify(report.members?.find((m) => m.account === accounts[defaulter]))}`);
+      const position = (await view("net_position", { epoch, account_id: accounts[defaulter] })) as { status: string; amount: string } | null;
+      log(`   posisi ${defaulter} setelah finalize: ${JSON.stringify(position)}`);
     }
-    log(`   metrik: ${JSON.stringify(await (await fetch(`${base}/epochs/${epoch}/metrics`)).json())}`);
+    const finalView = (await view("get_epoch", { epoch })) as ContractAbi.EpochView;
+    const edgesNow = (await view("list_obligations", { epoch, from_index: 0, limit: 300 })) as ContractAbi.ObligationView[];
+    const voucherCount = edgesNow.reduce((sum, e) => sum + e.last_seq, 0);
+    const residualCount = (await view("list_positions", { epoch, from_index: 0, limit: 300 }) as Array<{ role: string }>).filter((p) => p.role === "debtor").length;
+    log(`   metrik dari view kontrak: voucher=${voucherCount} edge=${edgesNow.length} cleared=${finalView.total_cleared} total=${finalView.total_obligation} transfer_residual=${residualCount}`);
+    log(`   ${voucherCount} pembayaran jadi ${residualCount}`);
     log("== Hash transaksi per tahap");
     for (const h of hashes) log(`   ${h.stage} ${h.hash}`);
 
