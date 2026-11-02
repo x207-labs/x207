@@ -18,10 +18,15 @@ const WRITES: Array<{ stores: string[]; field: string }> = [
   { stores: ["D6"], field: "(?:total_stake|reserve|in_flight|epoch_pools|solver_fees_total|solver_fees)" },
   { stores: ["D7"], field: "pending_params" },
 ];
-/** Penyimpanan kunci-nilai di luar `X207Circle` (bundle.rs): dibuka lewat fungsi, ditulis lewat `.insert`. */
-const KEYED: Array<{ stores: string[]; opener: RegExp }> = [
-  { stores: ["D8"], opener: /\b(?:intents|bundles)\(\)/ },
-  { stores: ["D8-reserve"], opener: /\breserves\(\)/ },
+/**
+ * Penyimpanan kunci-nilai di luar `X207Circle` (bundle.rs, grant.rs): dibuka lewat fungsi dan ditulis lewat variabel `let mut x = opener();` yang
+ * kemudian dipakai `.insert`. Membaca saja (`opener().get(..)`) tidak dihitung.
+ */
+const KEYED: Array<{ stores: string[]; opener: string }> = [
+  { stores: ["D8"], opener: "(?:intents|bundles)" },
+  { stores: ["D8-reserve"], opener: "reserves" },
+  { stores: ["D10"], opener: "asset_classes" },
+  { stores: ["D11"], opener: "(?:grants|grants_by|grant_counts)" },
 ];
 const MUTATE = "(?:insert|remove|push|set|get_mut|swap_remove|replace)\\s*\\(";
 
@@ -69,7 +74,9 @@ export function analyseContract(): ContractWrites {
       if (new RegExp(`\\bself\\.${field}\\s*\\.\\s*${MUTATE}|\\bself\\.${field}\\s*(?:\\+=|-=|=(?!=))`).test(body)) s.forEach((x) => stores.add(x));
     }
     for (const { stores: s, opener } of KEYED) {
-      if (opener.test(body) && new RegExp(`\\.${MUTATE}`).test(body)) s.forEach((x) => stores.add(x));
+      for (const m of body.matchAll(new RegExp(`let\\s+mut\\s+(\\w+)\\s*=\\s*${opener}\\(\\)`, "g"))) {
+        if (new RegExp(`\\b${m[1]}\\s*\\.\\s*${MUTATE}`).test(body)) s.forEach((x) => stores.add(x));
+      }
     }
     direct.set(name, stores);
     // hanya `nama(` atau `self.nama(`; `x.nama(` adalah method tipe lain dan tidak diikuti

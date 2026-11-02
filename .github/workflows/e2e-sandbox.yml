@@ -1,0 +1,104 @@
+# End-to-end tests of the whole product in near-sandbox (UM-025): real contract, facilitator, indexer, solver, keeper, marketplace book and broker.
+# `npm run test:integration` runs every file of `tests/*.test.ts`, among them join and stake to claim with a default covered by stake (`e2e`),
+# the barter ring (`barter`), the marketplace (`marketplace`) and the class B rental with revoke on default (`broker-class-b`).
+#
+# Needs one secret that already exists for the product CI: X207_CHECKOUT_TOKEN, read access to this repository and to the six product repositories
+# that are submodules. Nothing is published or deployed, and no other secret is used.
+name: E2E sandbox
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-sandbox-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      # same settings as ci-rust.yml: test binaries with debug info filled the runner disk
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_NEAR_VERSION: "0.22.0"
+      X207_SANDBOX: "1"
+    steps:
+      - name: Require the checkout token
+        env:
+          TOKEN: ${{ secrets.X207_CHECKOUT_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Secret X207_CHECKOUT_TOKEN is missing: the submodules are private repositories."
+            exit 1
+          fi
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          token: ${{ secrets.X207_CHECKOUT_TOKEN }}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22.22.2"
+          package-manager-cache: false
+      - name: Install dependencies
+        run: npm ci
+      - name: Build the TypeScript packages
+        # dist of @x207/core, @x207/scheme, @x207/facilitator and the solver, which the tests load or run (solver/dist/cli.js)
+        run: npm run build --workspaces --if-present
+
+      - name: Install the Rust toolchain of contracts
+        working-directory: contracts
+        run: rustup toolchain install
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/bin/cargo-near
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: e2e-${{ runner.os }}-near0.22.0-${{ hashFiles('contracts/rust-toolchain.toml', 'contracts/Cargo.lock') }}
+          restore-keys: |
+            e2e-${{ runner.os }}-near0.22.0-
+      - name: Install cargo-near
+        run: |
+          if ! cargo near --version 2>/dev/null | grep -qF "$CARGO_NEAR_VERSION"; then
+            sudo apt-get update
+            sudo apt-get install -y libudev-dev pkg-config
+            cargo install cargo-near --version "$CARGO_NEAR_VERSION" --locked --force
+          fi
+      - name: Build the contract and the mock token
+        working-directory: contracts
+        run: |
+          cargo near build non-reproducible-wasm
+          cargo near build non-reproducible-wasm --manifest-path probes/mock_ft/Cargo.toml
+          ls -l target/near/x207_circle.wasm target/near/mock_ft/mock_ft.wasm
+      - name: Get the near-sandbox binary
+        # The sandbox harness looks for it in target/debug/build/near-sandbox-*/out/.near, where the build script of near-workspaces puts it.
+        # Building the unit tests of the lib compiles the dev-dependencies, so the script runs; if the binary is still missing, build all test binaries.
+        working-directory: contracts
+        run: |
+          found() { find target/debug/build -path '*near-sandbox-*/out/.near/*/near-sandbox' -type f 2>/dev/null | grep . ; }
+          cargo test --locked --lib --no-run
+          found || { cargo test --locked --no-run; found; } || { echo "::error::near-sandbox binary not found"; exit 1; }
+
+      - name: The run covers the barter ring and the class B rental
+        run: |
+          npx vitest list --filesOnly | tee /tmp/tests.txt
+          for t in e2e barter marketplace broker-class-b; do
+            grep -q "tests/$t.sandbox.test.ts" /tmp/tests.txt || { echo "::error::tests/$t.sandbox.test.ts is not in the run"; exit 1; }
+          done
+      - name: End-to-end tests in near-sandbox
+        # One file at a time: the sandbox tests move block time and compete for the CPU otherwise.
+        run: npm run test:integration -- --no-file-parallelism
+      - name: Disk after the run
+        if: always()
+        run: df -h /

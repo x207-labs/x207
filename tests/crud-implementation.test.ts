@@ -89,6 +89,21 @@ describe("UM-047 matriks CRUD cocok dengan implementasi", () => {
     expect(undocumented).toEqual([]);
   });
 
+  it("UM-065 baris P9: sel D10 dan D11 menyebut method F8 yang menulisnya, dan P7 menulis D10", () => {
+    const methodsOf = (process: string, store: string) => cells.find((c) => c.process === process && c.stores.includes(store))?.methods ?? [];
+    expect(methodsOf("P9", "D11")).toEqual(expect.arrayContaining(["offer_grant", "accept_grant", "revoke_grant"]));
+    for (const method of ["offer_grant", "accept_grant", "revoke_grant"]) expect([...contract.writes.get(method)!], method).toContain("D11");
+    expect(methodsOf("P7", "D10")).toContain("set_asset_class");
+    expect([...contract.writes.get("set_asset_class")!]).toEqual(["D10"]);
+    // P9 hanya membaca D10 dan D5; D2 dan D3 ditulis lewat registrasi voucher, bukan oleh method F8
+    expect(letters("P9", "D10")).toEqual(["R"]);
+    expect(letters("P9", "D5")).toEqual(["R"]);
+    expect(letters("P9", "D11")).toEqual(["C", "R", "U"]);
+    for (const method of ["offer_grant", "accept_grant", "revoke_grant", "set_asset_class"]) {
+      expect([...contract.writes.get(method)!].filter((st) => st === "D2" || st === "D3"), method).toEqual([]);
+    }
+  });
+
   it("DECIDED hanya memuat sel yang memang ada di matriks", () => {
     for (const key of Object.keys(DECIDED)) {
       const [process, store] = key.split("/") as [string, string];
