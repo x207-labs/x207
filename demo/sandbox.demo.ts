@@ -10,7 +10,7 @@ import type { AddressInfo } from "node:net";
 import type { Server } from "node:http";
 import { promisify } from "node:util";
 import { afterAll, describe, it } from "vitest";
-import { buildClaimCall, buildSettleTransferCall, parseEventLog, type ContractAbi } from "@x207/core";
+import { buildClaimCall, buildSettleTransferCall, parseEventLog, signVoucher, type ContractAbi } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
 import { DENSITIES, planDensity, type Density } from "../agents/scenario/density.ts";
 import { AGENT_NAMES, AGENTS } from "../agents/shared/registry.ts";
@@ -185,9 +185,22 @@ describe("demo near-sandbox", () => {
         const member = await fx.sandbox.view<ContractAbi.MemberView>(fx.circle.accountId, "member", { account_id: identity[defaulter as (typeof AGENT_NAMES)[number]].accountId });
         out(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
         out(`   event member_defaulted: ${events.some((e) => e.event === "member_defaulted") ? "terlihat" : "TIDAK terlihat"}`);
-        // AG-011: debtor yang suspended membayar dengan voucher dan ditolak.
-        const refused = await createAgentBuyer(identity[defaulter as (typeof AGENT_NAMES)[number]], { rpcUrls: [rpcUrl] })(`${urls.gpu}/api/compute?input=halo`).catch((e: Error) => e);
-        out(`   voucher ${defaulter} setelah suspended: ${refused instanceof Error ? `ditolak klien (${refused.message.slice(0, 60)})` : `HTTP ${refused.status} ${refused.headers.get("PAYMENT-REQUIRED") ? decode(refused.headers.get("PAYMENT-REQUIRED")).error : ""}`}`);
+        // AG-011: voucher debtor yang suspended dikirim langsung ke /verify (klien sendiri sudah menolak karena headroom 0).
+        const key = identity[defaulter as (typeof AGENT_NAMES)[number]];
+        const nextEpoch = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", {});
+        const { signature, ...voucher } = signVoucher(
+          { circle: fx.circle.accountId, payer: key.accountId, payee: identity.gpu.accountId, epoch: nextEpoch.epoch, seq: 1, cumulativeAmount: "20000", unit: "credit", resource: `${urls.gpu}/api/compute` },
+          key.voucherSecretKey,
+        );
+        const requirements = { scheme: "batch-settlement", network: "x207:agents-main", amount: "20000", asset: "USD", payTo: identity.gpu.accountId, maxTimeoutSeconds: 60, extra: { circleContract: fx.circle.accountId, unit: "credit", decimals: 6, epoch: nextEpoch.epoch } };
+        const verdict = await (await fetch(`${stack!.facilitatorUrl}/verify`, {
+          method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ x402Version: 2, paymentRequirements: requirements, paymentPayload: { x402Version: 2, resource: { url: `${urls.gpu}/api/compute` }, accepted: requirements, payload: { voucher, signature } } }),
+        })).json();
+        out(`   /verify voucher ${defaulter} setelah suspended: ${JSON.stringify(verdict)}`);
+        const after = await (await fetch(`${base}/epochs/${epoch}`)).json();
+        const row = (after.members ?? []).find((m: { account: string }) => m.account === key.accountId);
+        out(`   laporan 207 setelah finalize: ${defaulter} ${JSON.stringify(row)}`);
       }
     });
 
