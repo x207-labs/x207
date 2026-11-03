@@ -5,7 +5,7 @@
   "aux": "x207-aux-v10.testnet",
   "broker": "broker.x207-aux-v10.testnet",
   "lease": "lease.x207-aux-v10.testnet",
-  "note": "F8 on testnet with contract 0.0.9 (tag v0.0.9). Hashes and names only, no keys. The file is written after every transaction.",
+  "note": "F8 on testnet with contract interface 0.0.9, wasm built from the contracts working tree at the time of the run (no tag existed; the commit was not recorded and cannot be recovered from this file). Hashes and names only, no keys. The file is written after every transaction.",
   "steps": [
     {
       "step": "deploy circle 0.0.9",
