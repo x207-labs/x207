@@ -18,6 +18,8 @@ This document does not say that the contract is safe. It says what was read, wha
 
 ## Findings
 
+**Status after the report (2026-11-03).** I-3 fixed in `contracts` `d19a786` (join deposit 0.32 NEAR); I-2 (`intent_removed`), I-4 and I-5 fixed in `4936e58`; I-1 accepted (same class as F8 of the first review). The tests of the umbrella follow: `TC-SR3-03`, `-05` and `TC-SR3B-04` to `-06` are plain tests now and `TC-SR3-04` (I-1) is the one `it.fails` left. Both sandbox files were run on a clean checkout against the contract at `1f9b618`. The text of each finding below is the text of the report, as written before the fixes.
+
 | Id | Level | Finding | Test |
 | --- | --- | --- | --- |
 | I-3 | **medium** (liveness, cost shifted to the contract) | `post_intent` is not payable, so the **contract** pays the storage of every intent, and only the owner can remove one. A member that joined with the minimum (join deposit 0.01 NEAR, stake of 1 unit = 0.000001 USDT) can post 64 intents. Measured in the sandbox: the join itself adds 317 bytes, the 64 intents add **6464 bytes = 0.0646 NEAR** of the balance of the contract, about 6.5 times the join deposit. An actor that creates n such members pins about 0.065 n NEAR of the contract balance for good (1000 members: about 65 NEAR) and pays about 0.01 n NEAR plus gas. When the free balance of the contract is gone, writes that need storage fail for everybody (joins, vouchers, positions). It is not a loss of stake or of USDT. | `TC-SR3-03a` (measures), `TC-SR3-03` (`it.fails`) |
