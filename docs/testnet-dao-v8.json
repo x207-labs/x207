@@ -60,8 +60,32 @@
       "account": "x207v8.sputnikv2.testnet",
       "method": "proposal 0 approved, get_params.limit_decay = 100 from epoch 2",
       "hash": "-"
+    },
+    {
+      "step": "rotate council key: AddKey (new key, signed with the old one)",
+      "account": "b.x207-dao-v8.testnet",
+      "method": "add_key",
+      "hash": "7GcqS5qii3pdZuG9en2Jz2DuVU5PpstqjP42NjrkkHxP"
+    },
+    {
+      "step": "rotate council key: DeleteKey (old key, signed with the new one)",
+      "account": "b.x207-dao-v8.testnet",
+      "method": "delete_key",
+      "hash": "4QdZ3xe29C24vQJ3RGuNqP9XfgqBAxRLo9hD6KsKiw4A"
+    },
+    {
+      "step": "council check with the new key: add_proposal (kind Vote)",
+      "account": "b.x207-dao-v8.testnet",
+      "method": "add_proposal",
+      "hash": "8UBTw6n53tT6oZsxroDZj8yNg6q9svWa8P48t2VW46iS"
+    },
+    {
+      "step": "council check with the new key: act_proposal VoteApprove",
+      "account": "b.x207-dao-v8.testnet",
+      "method": "act_proposal",
+      "hash": "FinpTjFrdAhThUMPEimzZvhQbsCaQGDKdMUcTeULf3bR"
     }
   ],
   "network": "testnet",
-  "note": "CT-045 and CT-050 on testnet: DAO created through sputnikv2.testnet, circle 0.0.7 (tag v0.0.7, 2c8c0ec) deployed with the DAO as owner_id, one set_params proposal (limit_decay 0 -> 100) voted by two council members, effective from epoch 2. Hashes only; no keys. Mainnet was not touched."
+  "note": "CT-045 and CT-050 on testnet: DAO created through sputnikv2.testnet, circle 0.0.7 (tag v0.0.7, 2c8c0ec) deployed with the DAO as owner_id, one set_params proposal (limit_decay 0 -> 100) voted by two council members, effective from epoch 2. Hashes only; no keys. Mainnet was not touched. The council key of b.x207-dao-v8.testnet was rotated afterwards because the old value had been printed in a log (testnet only): a new key was added, the old one deleted by a transaction of the new one, and the council vote checked with the new key (the last four steps; the signal proposal 1 stays InProgress and is not executed)."
 }
