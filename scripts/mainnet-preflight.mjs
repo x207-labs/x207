@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 
 export const PLAN = {
   /** Minimum NEAR per role (estimate). */
-  nearMin: { circle: 8, dao: 0, agent: 0.2, keeper: 0.5, solver: 0.5, relayer: 1.5, daoMember: 0.5 },
+  nearMin: { circle: 8, dao: 0, agent: 0.4, keeper: 0.5, solver: 0.5, relayer: 1.5, daoMember: 0.5 },
   /** NEAR the owner account needs once, to create the Sputnik DAO through the factory (estimate: 7 NEAR deposit of the factory plus gas). */
   daoFactoryDeposit: 7.2,
   /** USDT (smallest unit 1e-6) every agent must hold: stake plus spare for the residual payment (estimate, small nominal). */

@@ -32,14 +32,14 @@ NEAR (the owner funds each account):
 | --- | --- | --- | --- |
 | Circle contract account | Locked storage of the code (558 KB, 5.59 NEAR) and of the state (21.7 KB after 6 members and 3 epochs, 0.22 NEAR) plus gas of its own calls | 8.0 | *measured* 5.81 NEAR locked on testnet; 8.0 leaves about 2 NEAR for state growth |
 | Signer of the DAO factory (owner) | Factory deposit 7 NEAR; stays in the DAO account (a Sputnik `Transfer` proposal could move it out; not tried) | 7.2 | `contracts/dao/lib.mjs` (`FACTORY_DEPOSIT`); *measured* on testnet: the DAO account holds 7.0 and locks 5.41 NEAR for its storage |
-| Six agents | `join` deposit (`JOIN_STORAGE_DEPOSIT` of `@x207/core`; 0.01 NEAR in 0.0.8, ADR-41 raises it to about 0.1 NEAR in 0.0.9, **not returned** on exit, only the part above it is) and gas | 0.2 each, 1.2 | *measured* about 0.014 NEAR spent per agent over the whole testnet demo at the old deposit (0.01 of it was the deposit); with 0.1 expect about 0.115. The preflight test fails if the figure in `@x207/core` outgrows the minimum |
+| Six agents | `join` deposit (`JOIN_STORAGE_DEPOSIT` of `@x207/core`: 0.32 NEAR since ADR-41 / interface 0.0.9, 0.01 NEAR before; **not returned** on exit, only the part above it is) and gas | 0.4 each, 2.4 | 0.32 is the deposit, which stays in the contract. *Measured* on testnet: about 0.014 NEAR spent per agent over the whole demo at the old deposit of 0.01 NEAR (whether that figure includes the deposit was not checked); gas is small either way, so 0.4 leaves about 0.08 NEAR for gas. The preflight test fails if the figure in `@x207/core` outgrows the minimum |
 | Keeper | `close_epoch`, `commit_epoch`, `finalize_epoch` | 0.5 | *measured* gas below 0.05 NEAR per epoch |
 | Solver | `submit_clearing` | 0.5 | same |
 | Facilitator relayer | `register_cumulative` for every pair, about 4 Tgas each; a gas key (NEP-611) is optional and needs its own balance | 1.5 (0.5 without a gas key) | *estimate*: one `exact` transaction cost the relayer 0.0003 NEAR on testnet (measured) and a registration is about 4 Tgas; the testnet gas key was funded with 2 NEAR |
 | DAO council members (2 or 3) | Bond 0.1 NEAR per `add_proposal`, gas | 0.5 each | Sputnik default bond (`PROPOSAL_BOND`) |
 | USDT storage registration | `storage_deposit` on `usdt.tether-token.near` for every holder (six agents and the circle contract) | 0.01 in total | *measured* by the view `storage_balance_bounds`: 0.00125 NEAR each |
-| **Total with the DAO** | | **about 19.5** | |
-| **Total without the DAO** | | **about 12.3** | the backlog estimated 10 to 15 NEAR; the DAO is what takes the plan above 15 |
+| **Total with the DAO** | | **about 20.7** | 19.5 before ADR-41 (the join deposits of the six agents went from 0.01 to 0.32 NEAR each, and are kept) |
+| **Total without the DAO** | | **about 13.5** | 12.3 before ADR-41; the backlog estimated 10 to 15 NEAR; the DAO is what takes the plan above 15 |
 
 USDT (6 decimals), *estimate*: stake 2 USDT per agent (the credit limit is 0.8 of the stake, enough for the prices of the demo, which is 0.02 per call) and 1 USDT spare per agent for the residual payment, so 18 USDT for the first rehearsal. The second rehearsal reuses the stakes; the debtor that defaults loses part of its stake (200000 units, or 0.2 USDT, in the testnet run) and needs another spare unit. Plan **20 USDT** in total. The withdrawal to Base is at most 1 USDT. The minimum size of a 1Click withdrawal is *unknown*; the dry quote of the preflight tells.
 

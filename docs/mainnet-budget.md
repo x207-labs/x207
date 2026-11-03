@@ -8,11 +8,11 @@ Accounts are listed in [`.env.example`](../.env.example): the contract account, 
 
 | Item | Limit |
 | --- | --- |
-| NEAR (storage deposits, gas, account creation) | about 10–15 NEAR in total |
+| NEAR (storage deposits, gas, account creation) | about 13.5 NEAR without the DAO, about 20.7 with it (table in [mainnet-runbook.md](mainnet-runbook.md)); the backlog estimated 10–15 |
 | USDT | a small nominal amount set by the owner |
 | Rehearsals the balance must cover | two |
 
-The NEAR figure comes from the research report estimate, mostly refundable storage deposits. It is an estimate, not a measured cost.
+The NEAR figure is the total of the table in the runbook: storage of the contract and of the DAO, the join deposit of 0.32 NEAR per agent (ADR-41, **not returned** on exit) and gas. Parts are measured on testnet and parts are estimates; the table says which.
 
 ## Spending log
 

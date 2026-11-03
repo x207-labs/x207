@@ -8,7 +8,7 @@ const agent = (n, near, usdtUnits, usdtRegistered = true) => ({ id: `${n}.x207-c
 const okSnapshot = () => ({
   accounts: [
     { id: "x207-circle.near", role: "circle", label: "circle contract", exists: true, nearYocto: String(9n * 10n ** 24n) },
-    agent("translator", 0.3, 3_000_000n),
+    agent("translator", 0.5, 3_000_000n),
   ],
   circle: { hasCode: true, interfaceVersion: "0.0.8", owner: "dao.sputnik-dao.near" },
   usdtContract: { ok: true, decimals: 6, symbol: "USDt" },
