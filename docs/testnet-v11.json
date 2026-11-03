@@ -1,0 +1,436 @@
+{
+  "contract": "x207-circle-v11.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "release": {
+    "tag": "v0.0.9",
+    "wasmSha256": "fa8309059a847263e2b7e59c08f1aff2370e706cff3ff58544412218c187d72b",
+    "codeHash": "Hrtp8q8p8NfTWXqgF8q7446DTLbhfVJewq3npiXzQauQ",
+    "assets": [
+      "x207-circle-v0.0.9.wasm",
+      "abi-v0.0.9.json",
+      "SHA256SUMS"
+    ],
+    "source": "gh release download v0.0.9 --repo x207-labs/contracts",
+    "wasmDeployedIsTheDownloadedFile": true
+  },
+  "result": "run 3 passed in one uninterrupted run of 2001 seconds: five members, two bundles, clearing, residual payment, finalize, claims, prune_epoch and the claim after it. The code_hash of the account over RPC equals the base58 of the sha256 of the release wasm.",
+  "runs": [
+    {
+      "run": 1,
+      "stopped": "releaseSha shadowed a function in the test after the deploy and the init had been sent",
+      "contractFault": false
+    },
+    {
+      "run": 2,
+      "stopped": "the five members held 0.25 NEAR and the join deposit of 0.0.9 is 0.32 NEAR (ADR-41)",
+      "contractFault": false
+    },
+    {
+      "run": 3,
+      "stopped": null,
+      "seconds": 2001,
+      "contractFault": false
+    }
+  ],
+  "steps": [
+    {
+      "step": "deploy",
+      "account": "x207-circle-v11.testnet",
+      "method": "deploy_contract",
+      "hash": "BNq8jJDj2Nkvpho9zDXTfFGs8P7wfHRJXuu4Rhi1X4AD",
+      "note": "run 1; hash recovered from the chain (the test stopped on a bug of the test after sending it)"
+    },
+    {
+      "step": "init",
+      "account": "x207-circle-v11.testnet",
+      "method": "new",
+      "hash": "2VjY2TAWHoWUJ4RcuNJYdmPUyUJobZK1H8wrrA418pc9",
+      "note": "run 1; hash recovered from the chain"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v11.testnet",
+      "method": "create_account",
+      "hash": "BEXbYteAAPgK9t5VFS2EShfSYaEY4uDSm5hDmXbaVjYE",
+      "note": "run 2"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v11.testnet",
+      "method": "create_account",
+      "hash": "evTiMdRwESPQP5mbEFizt7ijJCzcxbPWuJJcSrbCP43",
+      "note": "run 2"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v11.testnet",
+      "method": "create_account",
+      "hash": "J3TnpP8Pt9WpbA87zjL4vr1U7gV21GtWTTuC8Y5tiE4H",
+      "note": "run 2"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v11.testnet",
+      "method": "create_account",
+      "hash": "4HRnVzgP5na6nug6CrnrA2Pnh2prRtS2DFYJaHCJhYFi",
+      "note": "run 2"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v11.testnet",
+      "method": "create_account",
+      "hash": "E4zVSqHim6T8zHPWMuRxgAAobxRhGghrnGhaEUVNSRJ3",
+      "note": "run 2"
+    },
+    {
+      "step": "usdt",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "mint",
+      "hash": "53JCntt7Y9T2yRsfFCp6MSWZngt4od1pbMEzht5wakPp",
+      "note": "run 2"
+    },
+    {
+      "step": "top-up",
+      "account": "x207-circle-v11.testnet",
+      "method": "transfer",
+      "hash": "HhquTzezcdJbj3iLjKcZmscMXUuZxH5K7asHjhvwR7Ti",
+      "note": "run 3"
+    },
+    {
+      "step": "top-up",
+      "account": "x207-circle-v11.testnet",
+      "method": "transfer",
+      "hash": "3UiWUn3kqarV9w8H3EBaRVdBJSMAWdYS8Y7Qoy99t1fZ",
+      "note": "run 3"
+    },
+    {
+      "step": "top-up",
+      "account": "x207-circle-v11.testnet",
+      "method": "transfer",
+      "hash": "3rDbUqP3ii3v6tynNm2aoi6uHkYgC9353jZLsWi3Gdku",
+      "note": "run 3"
+    },
+    {
+      "step": "top-up",
+      "account": "x207-circle-v11.testnet",
+      "method": "transfer",
+      "hash": "mkmECQ3M28duygU3Pu4dmVxn9jDWrJYCpiUHgzmMCAN",
+      "note": "run 3"
+    },
+    {
+      "step": "top-up",
+      "account": "x207-circle-v11.testnet",
+      "method": "transfer",
+      "hash": "7Q7DTYBC6afXygfZSteydML5QKnU8fwUffS53EQu6oZJ",
+      "note": "run 3"
+    },
+    {
+      "step": "usdt",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "mint",
+      "hash": "9K2Faphve2AmweNi2Lw2uYY6qxoZ29PzPojinXesEySD",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "join",
+      "hash": "A1aqpUyzZZVTDZRrKtSsW26rLo21o28xYHxHXaLJnfoN",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "ft_transfer_call",
+      "hash": "2w2Je8KFqEZT6raLBnnkkeTLF7HDBCrafwZCY5JkuiiP",
+      "note": "run 3"
+    },
+    {
+      "step": "usdt",
+      "account": "budi.x207-circle-v11.testnet",
+      "method": "mint",
+      "hash": "4Vs9EJ3pcDt99QvsScQqGneARkoPdxca2gBvmAuKLkSG",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "budi.x207-circle-v11.testnet",
+      "method": "join",
+      "hash": "GfSLqmBLcKkUYnjtQxizZNUxsh8XzZNs2iUu1yZ3xGWJ",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "budi.x207-circle-v11.testnet",
+      "method": "ft_transfer_call",
+      "hash": "5LE44dgt5vj4sVgjj2HLBrwuyeFNxR4Hb3pr3TBTvXtN",
+      "note": "run 3"
+    },
+    {
+      "step": "usdt",
+      "account": "citra.x207-circle-v11.testnet",
+      "method": "mint",
+      "hash": "133LNBv6mP8sCBLx5hrmR8nxgKQzV1ijN9T3swZkopGF",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "citra.x207-circle-v11.testnet",
+      "method": "join",
+      "hash": "7FcQjNMVszpWcm6LmRdM2fatw4ZHza3vuH1xYCnixCV6",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "citra.x207-circle-v11.testnet",
+      "method": "ft_transfer_call",
+      "hash": "5afSo3Acyvm8E3DkSCdDRGkh8NxC8vYd5sbujyyqjevn",
+      "note": "run 3"
+    },
+    {
+      "step": "usdt",
+      "account": "dewi.x207-circle-v11.testnet",
+      "method": "mint",
+      "hash": "8R6rV27LggxERjJTeyR4E2FKHfRhLCWLMXSum66HSrYH",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "dewi.x207-circle-v11.testnet",
+      "method": "join",
+      "hash": "AgCKeR7a8JnZvRakpPTGoBZuBjhwFBNnVGTM8PfxUiea",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "dewi.x207-circle-v11.testnet",
+      "method": "ft_transfer_call",
+      "hash": "F8d4CznQkL8QkkKsSBSg2FtTwtNsNusoGXsdiEoxpkhJ",
+      "note": "run 3"
+    },
+    {
+      "step": "usdt",
+      "account": "eka.x207-circle-v11.testnet",
+      "method": "mint",
+      "hash": "HnbBU3kmjKidQsPaoBwSGMquCifrjJVzjTPoKBnE4Qy4",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "eka.x207-circle-v11.testnet",
+      "method": "join",
+      "hash": "FExj6W9Uo8s6qgeSbxEq6qYNbV3eMNBim9NzNq5unFZh",
+      "note": "run 3"
+    },
+    {
+      "step": "onboard",
+      "account": "eka.x207-circle-v11.testnet",
+      "method": "ft_transfer_call",
+      "hash": "77wsT47NadLKAbQif5sLqB5NXJMMUHiA6WES5VosdRbW",
+      "note": "run 3"
+    },
+    {
+      "step": "keeper close_epoch",
+      "account": "x207-circle-v11.testnet",
+      "method": "close_epoch",
+      "hash": "yAVinCCeRxHxLRuDPQdccNJBXh7pTg9nscFBAgqAeXh",
+      "note": "run 3"
+    },
+    {
+      "step": "commit_bundle quick-a0232f",
+      "account": "x207-circle-v11.testnet",
+      "method": "commit_bundle",
+      "hash": "35GdLi43Ujadc6aBDSyuizpqijYVcwSb1jRjSJhXuCpX",
+      "note": "run 3"
+    },
+    {
+      "step": "commit_bundle quick-4ea513",
+      "account": "x207-circle-v11.testnet",
+      "method": "commit_bundle",
+      "hash": "49RgG3xdVp6V7AHVGSsuY4JEkohNTH9auBhyfS3vDt7m",
+      "note": "run 3"
+    },
+    {
+      "step": "commit_bundle ring",
+      "account": "x207-circle-v11.testnet",
+      "method": "commit_bundle",
+      "hash": "3t44MgujcGoAd4uHLVWVvYc71unBe2qn4Cu8GnafcSYF",
+      "note": "run 3"
+    },
+    {
+      "step": "leg quick-a0232f",
+      "account": "budi.x207-circle-v11.testnet",
+      "method": "register_in_bundle",
+      "hash": "HtXe5EsanrMXjxcxk7DkC6ERTwuLw5yBpWgSeVYyMSS",
+      "note": "run 3"
+    },
+    {
+      "step": "leg quick-a0232f",
+      "account": "budi.x207-circle-v11.testnet",
+      "method": "register_in_bundle",
+      "hash": "BLT2JFn2R9MVzvmLRewi9h39vRH5MTQvz37w8tCvBQr7",
+      "note": "run 3"
+    },
+    {
+      "step": "leg quick-4ea513",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "register_in_bundle",
+      "hash": "F3J3qhVJsbvFVHLDFzdAftAPapPjfkoXk2LWWrQvoTpy",
+      "note": "run 3"
+    },
+    {
+      "step": "leg quick-4ea513",
+      "account": "citra.x207-circle-v11.testnet",
+      "method": "register_in_bundle",
+      "hash": "D2EFaw4suKxzdHgAU6ZBCUggKaQnMGjY2RECNKE1298f",
+      "note": "run 3"
+    },
+    {
+      "step": "leg quick-4ea513",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "register_in_bundle",
+      "hash": "HfnV11dyVHsSiT214ADZ6vjZzKEkf6WUehQ8eCVjGDog",
+      "note": "run 3"
+    },
+    {
+      "step": "leg ring",
+      "account": "citra.x207-circle-v11.testnet",
+      "method": "register_in_bundle",
+      "hash": "Hnhne8HYS4XMuq94gqHtvfyxhrR6Pp6mZmXYWb6GUAsw",
+      "note": "run 3"
+    },
+    {
+      "step": "leg ring",
+      "account": "dewi.x207-circle-v11.testnet",
+      "method": "register_in_bundle",
+      "hash": "2ULS3pbKtqTbysJ254RWGviSNsNVeuNnWvB77dGVgQws",
+      "note": "run 3"
+    },
+    {
+      "step": "leg ring",
+      "account": "eka.x207-circle-v11.testnet",
+      "method": "register_in_bundle",
+      "hash": "3dj3cfmSU1EzDvZz98mDQyNXKcBQyQpbURLsSpJA2TfT",
+      "note": "run 3"
+    },
+    {
+      "step": "keeper commit_epoch",
+      "account": "x207-circle-v11.testnet",
+      "method": "commit_epoch",
+      "hash": "6bjMCexuNjtLqxdNvfpoy1romgZJyNmNhBSxmHoDydwd",
+      "note": "run 3"
+    },
+    {
+      "step": "keeper close_epoch",
+      "account": "x207-circle-v11.testnet",
+      "method": "close_epoch",
+      "hash": "EAA4e1nG1mtYbuSfKVZq2R4mddhPSDvNn2477utStK4L",
+      "note": "run 3"
+    },
+    {
+      "step": "solver submit_clearing",
+      "account": "x207-circle-v11.testnet",
+      "method": "submit_clearing",
+      "hash": "Db4NGVbhmSsNdZBDRLEQmzxoZzPSJS3ZRgt3kVvJ3qFb",
+      "note": "run 3"
+    },
+    {
+      "step": "keeper commit_epoch",
+      "account": "x207-circle-v11.testnet",
+      "method": "commit_epoch",
+      "hash": "EXprZtjiLNs1Rxd1K2Z8yA1EShyJvRKVJXYqY2RFPNC8",
+      "note": "run 3"
+    },
+    {
+      "step": "settle residual",
+      "account": "budi.x207-circle-v11.testnet",
+      "method": "ft_transfer_call",
+      "hash": "ERL4VhRaSFKNWgkMT9NBojfqufvdBRkZTrbLdf9G7Di1",
+      "note": "run 3"
+    },
+    {
+      "step": "keeper finalize_epoch",
+      "account": "x207-circle-v11.testnet",
+      "method": "finalize_epoch",
+      "hash": "9AmZ3VnzsZVVzDyLZrbwNzppq8HK8oXAAtg9k8quKmWn",
+      "note": "run 3"
+    },
+    {
+      "step": "keeper finalize_epoch",
+      "account": "x207-circle-v11.testnet",
+      "method": "finalize_epoch",
+      "hash": "HrLjZqY3kwDdiYvqbJ1ZucEv7zUXhKxvXC3ojuGNFZKd",
+      "note": "run 3"
+    },
+    {
+      "step": "keeper close_epoch",
+      "account": "x207-circle-v11.testnet",
+      "method": "close_epoch",
+      "hash": "E8C7bxfz6WF3RADtsSSdPzYgS7S1gFAuizurTssbQzVC",
+      "note": "run 3"
+    },
+    {
+      "step": "claim",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "claim",
+      "hash": "AGZXTpDomaJJnjcwTj86b4RY7LG7oMEpPys53pP4bFgP",
+      "note": "run 3"
+    },
+    {
+      "step": "claim",
+      "account": "dewi.x207-circle-v11.testnet",
+      "method": "claim",
+      "hash": "pHcPCwGsJeocKWjS7MN25rzACv8uqkC2FBCjTJdzSto",
+      "note": "run 3"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "prune_epoch",
+      "hash": "GZyAuowTtrZuBZYokMnG254gXACuY5SzVbCKwi3UAex2",
+      "note": "run 3"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "prune_epoch",
+      "hash": "FmrPPtWLEA3Mu3vSmsiNDT8a1t5eaHCPYak2RagFDbyU",
+      "note": "run 3"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "prune_epoch",
+      "hash": "62hwWLe17QBkshEVHGbNwNAZSFeTxQZjgbmfmySNMbJF",
+      "note": "run 3"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "andi.x207-circle-v11.testnet",
+      "method": "prune_epoch",
+      "hash": "5mW1129wiak2FU45zQerfmUHy1LF7SiYd6fM6X11v85q",
+      "note": "run 3"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "x207-circle-v11.testnet",
+      "method": "removed 43 entries, 8 obligations gone, 4 positions unchanged",
+      "hash": "-",
+      "note": "run 3"
+    },
+    {
+      "step": "claim after prune_epoch",
+      "account": "citra.x207-circle-v11.testnet",
+      "method": "claim",
+      "hash": "9dKmTLfoD1xudUvYWB2KBQtCKJifqHSyXjmfpfpBZ6HM",
+      "note": "run 3"
+    },
+    {
+      "step": "summary",
+      "account": "x207-circle-v11.testnet",
+      "method": "epoch 2: 1 debtors paid, 3 creditors claimed, bundles 1,2,3",
+      "hash": "-",
+      "note": "run 3"
+    }
+  ]
+}
