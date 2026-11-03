@@ -107,6 +107,19 @@ Test: `tests/testnet-rehearsal.live.test.ts` (run with `X207_TESTNET=1`). Contra
 
 What ran: the F9 quick barter 100 / 10 / 3 (pay and barter paths with a seeker share), a ring of three intents, three bundles (`commit_bundle`, legs through `register_in_bundle`), close, solver, commit, residual payments, `finalize_epoch` and three claims.
 
-Read from the contract on 2026-11-03 (view `get_epoch` with `epoch` 4): phase `finalized`, 8 edges, 5 participants, `total_obligation` 303.3 credit, `total_cleared` 200.3 credit, `pool` 0, `shortfall` 0. The transaction hashes are written by the test to the file named in `X207_REHEARSAL_OUT` and are not in this repository yet.
+Read from the contract on 2026-11-03 (view `get_epoch` with `epoch` 4): phase `finalized`, 8 edges, 5 participants, `total_obligation` 303.3 credit, `total_cleared` 200.3 credit, `pool` 0, `shortfall` 0. The transaction hashes are in `testnet-rehearsal-v7.json`.
 
 What did not run: NEAR Intents (`intents.testnet` has no code), a DAO vote, access assets (F8), a default case, and an indexer that follows every block. The free endpoints limit the rate, so the indexer of this rehearsal reads the receipts of each transaction that the test sends, one hash at a time, and serves only those blocks; the events are the real ones from the chain. The USDT is a mock token.
+
+## Other testnet runs of 2026-11-03
+
+| Run | Contract or accounts | Result | Hashes |
+| --- | --- | --- | --- |
+| DAO vote on `set_params` | Sputnik DAO `x207v8.sputnikv2.testnet` owns `x207-circle-v8.testnet` (0.0.7) | One proposal (`limit_decay` 0 to 100), two council votes, effective from epoch 2 | `testnet-dao-v8.json` |
+| Access assets (F8) | `x207-circle-v9.testnet` (0.0.7), real broker | Class B: `AddKey` and `DeleteKey` on a lease account, grants revoked and expired. Class A: failed delivery (`escrow_failed`), then a delivered sale, mock NFT. Class C: a grant offered, the proxy ran locally against a mock provider, no TEE | `testnet-f8-v9.json` |
+| `exact` payment (SD-034) | `x207b-buyer`, `x207b-seller`, relayer `x207b-relayer`, token `usdt.fakes.testnet` | A buyer outside every circle paid 0.02 USDT.e to a seller endpoint through the facilitator on `near:testnet`; the relayer paid the gas and the buyer spent no NEAR | `testnet-demo.json`, section `sd-034-exact` |
+| Gas key (SD-031) | `x207b-relayer.testnet` | Four transactions at the same time from one gas key with four lanes, one per lane, all accepted; each lane nonce advanced. The calls were `ft_total_supply` of the mock token, not `register_cumulative` | `testnet-demo.json`, section `sd-031-gaskey` |
+| Network demo with barter, gas key and a default (UM-032, UM-036, UM-037) | Own circle `x207b-circle2.testnet` (0.0.7, epoch 600 s), owner the DAO `x207b.sputnikv2.testnet`, six agents `x207b-*`, mock USDT `x207b-usdt.testnet` | **Did not finish.** Six agents joined and staked, the gas key was added and funded, and the barter ring was committed (`commit_bundle`) with its three legs paid, once in each of epochs 1 to 4 (one bundle per run). The paid calls that follow failed with HTTP 503 `facilitator_unavailable` in seven runs: the free fastnear RPC answered 429, then timed out after about 17 calls. Retry with backoff, a four-endpoint failover and a pause between calls did not get past it. No voucher was registered by the relayer, no clearing, no default branch, and the demo's DAO step did not run | `testnet-demo.json`, section `network-demo` |
+
+The reason for the last row is the public RPC, measured from one machine, not a fault found in the contract. It limits what the facilitator can do on testnet: each paid call needs several chain reads, and the endpoint stalled while other testnet runs were using it. The v7 rehearsal avoids the problem by feeding the indexer from the receipts of each transaction.
+
