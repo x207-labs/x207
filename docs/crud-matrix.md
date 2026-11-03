@@ -1,6 +1,6 @@
 # CRUD matrix: processes by data stores
 
-Source: DFD Level 1 (processes P1 to P8, stores D1 to D9) and DFD Level 2 of F8 (process P9, stores D10 and D11) in the design vault, with the contract methods and events of interface 0.0.7. Every arrow between a process and a store in the diagram appears below as one or more letters: `C` create, `R` read, `U` update. `D` (delete) does not occur: the contract never deletes a row of D1 to D6, and `prune_epoch` is not in the 0.0.4 ABI.
+Source: DFD Level 1 (processes P1 to P8, stores D1 to D9) and DFD Level 2 of F8 (process P9, stores D10 and D11) in the design vault, with the contract methods and events of interface 0.0.9. Every arrow between a process and a store in the diagram appears below as one or more letters: `C` create, `R` read, `U` update. `D` (delete) does not occur: the contract never deletes a row of D1 to D6, and `prune_epoch` is not in the 0.0.4 ABI.
 
 A letter means "the process does this to the store in at least one step". The status names are the fixed ones of ADR-26: D1 `pending`, `active`, `suspended`, `exited`; D5 debtor `due` then `paid` or `defaulted`, creditor `claimable` then `claimed`.
 
@@ -31,16 +31,17 @@ A letter means "the process does this to the store in at least one step". The st
 | P3 / D4 | Store the best proposal, the solver and the cleared total | `submit_clearing`; `commit_epoch` | |
 | P3 / D5 | Create the net positions of the epoch | `commit_epoch` | debtor `due`, creditor `claimable` |
 | P3 / D9 | The solver reads the cutoff snapshot from the index | `epoch_cutoff`, read API `.../obligations?stage=cutoff` | |
-| P4 / D5 | Read what is due or claimable, then mark it | `ft_on_transfer` (action `settle`), `claim` | `due` to `paid`; `claimable` to `claimed` |
-| P4 / D6 | USDT enters the pool on settle and leaves on claim | `ft_on_transfer`, `claim` (`near` or `intents`) | |
-| P4 / D1 | Raise the cash settlement history; a member leaving records `exit_requested_epoch`, then becomes `exited` | `ft_on_transfer`, `request_exit`, `withdraw_stake` | `active` to `exited` |
-| P5 / D8 | Record an intent hash and the committed bundle with its per-leg limits | `post_intent`, `commit_bundle` (events `intent_posted`, `bundle_committed`) | bundle `active` |
+| P4 / D5 | Read what is due or claimable, then mark it | `ft_on_transfer` (action `settle`), `mt_on_transfer` (a residual paid through NEAR Intents, same settle logic), `claim` | `due` to `paid`; `claimable` to `claimed` |
+| P4 / D6 | USDT enters the pool on settle and leaves on claim; USDT booked by `mt_on_transfer` stays on `intents.near` until somebody moves it into the pool | `ft_on_transfer`, `mt_on_transfer`, `withdraw_intents_balance` (callback `on_intents_withdrawn`, event `intents_withdrawn`), `claim` (`near` or `intents`) | |
+| P4 / D1 | Raise the cash settlement history; a member leaving records `exit_requested_epoch`, then becomes `exited` | `ft_on_transfer`, `mt_on_transfer`, `request_exit`, `withdraw_stake` | `active` to `exited` |
+| P5 / D8 | Record an intent hash and the committed bundle with its per-leg limits; the owner of an intent takes it back and gets the slot of the book back | `post_intent`, `remove_intent`, `commit_bundle` (events `intent_posted`, `bundle_committed`) | bundle `active` |
 | P5 / D1 | Reserve headroom for each leg of a bundle; the reservation is a separate key beside D8, not a field of the member row | `commit_bundle` (view `headroom` shows it) | |
 | P5 / D2 | Register the obligation of a leg against the reserved headroom | `register_in_bundle` | |
 | P6 / D5 | Read members that did not pay, mark them | `finalize_epoch` | `due` to `defaulted`; shortfall shares the claims |
 | P6 / D6 | Cut the stake of a defaulter, reduce the reserve | `finalize_epoch` | |
 | P6 / D1 | Recompute `limit`; suspend a defaulter | `finalize_epoch` | `active` to `suspended` |
 | P6 / D7 | Read ratio, growth, cap and decay | `get_params` | |
+| P6 / D2, D3, D8 | Housekeeping after the epoch is `finalized`: take the pair entries (D2, D3), the participant totals, and the bundles of the epoch with their reservations (D8) out of the contract storage; the epoch record, the clearing proposal and every position (D5) stay. Anyone may call it; `max_items` bounds the gas and the call is repeated until it answers 0. No letter in the matrix, see the table below | `prune_epoch` (errors `ERR_NOT_FINALIZED`, `ERR_UNKNOWN_EPOCH`) | epoch stays `finalized` |
 | P7 / D7 | Replace the parameters from the next epoch | `set_params` (owner DAO), view `get_pending_params` | |
 | P7 / D1 | Admit a member when the admission mode is DAO | `admit_member` | `pending` to `active` |
 | P8 / D1, D2, D4, D5 | Read all four to build the 207 report and the dashboard | read API of the indexer | |
@@ -66,6 +67,11 @@ Stores D10 (asset class registry) and D11 (access grants) are in the matrix sinc
 | P5 x D1 | `U`: reserve headroom for each leg | `commit_bundle` writes the bundle (D8) and a separate reserve key (`reserves()` in `bundle.rs`), and does not write the member row; `headroom` subtracts the reserve | Letter kept as `U` because the DFD has the arrow P5 to D1 and the member's usable headroom changes. The reserve key is not in D1, and the cell text says so. |
 | P2 x D1 | `R` only | `register_cumulative`, `register_voucher` and `register_in_bundle` reach a function that rewrites the member row for lazy status sync (reactivation, ADR-30) | Kept as `R`: that write is housekeeping on a first touch, not a flow of P2. A change of this code that makes P2 write other member fields must change the cell. |
 | P2 x D8 | empty | `register_in_bundle` updates the registered amount of the bundle leg (D8) | Not added: the DFD has no arrow P2 to D8. The bundle leg is covered by the P5 / D2 cell, which names `register_in_bundle`. |
+
+| P6 x D2, D3, D8 (`prune_epoch`) | no cell | `prune_epoch` **removes** entries of D2, D3 and D8, and also pops the epoch's own indexes of edges, participants and bundle ids (the analysis also lists D4, D6 and D7 because the function reaches the shared epoch record; that record keeps its counts, as the module doc of `prune.rs` says) | The letters of this matrix are C, R and U (a test checks it), so the deletion has no letter and no cell is added to the matrix: the DFD has no arrow from P6 to D2, D3 or D8. The method is named in the explanation row `P6 / D2, D3, D8`, where the deletion is written in words. After the call, `obligation`, `list_obligations` and `get_bundle` of that epoch answer empty, which P8 and P3 must not rely on for a finalized epoch that has been pruned. |
+| P4 x D5, D6, D1 (`mt_on_transfer`) | `ft_on_transfer` only | `mt_on_transfer` runs the same settle logic for a residual paid through NEAR Intents (only `intents_id` may call it), so it writes what the settle action of `ft_on_transfer` writes | Matrix fixed: `mt_on_transfer` is in the cells P4 / D5, D6 and D1; the letters did not change. The listed D2, D4 and D7 come from shared functions and are not new writes of P4. |
+| P4 x D6 (`withdraw_intents_balance`, `on_intents_withdrawn`) | no cell | The USDT that `mt_on_transfer` booked is moved from `intents.near` into the NEP-141 balance of the contract; the callback `on_intents_withdrawn` closes it and emits `intents_withdrawn` | Matrix fixed: named in the cell P4 / D6, letter unchanged (`U`). The analysis finds no D1 to D8 store written by these two, so the test does not list them; they are named for completeness. |
+| P5 x D8 (`remove_intent`) | `post_intent`, `commit_bundle` | `remove_intent` deletes one intent entry of the owner and frees the slot (`ERR_UNKNOWN_INTENT`, `ERR_NOT_INTENT_OWNER`) | Matrix fixed: named in the cell P5 / D8; a deletion of one entry is counted under the existing `C U` of that cell. |
 
 Cells D9: the indexer (`backend/src/indexer/handlers/`) writes `events_raw` and the read model; the contract does not write D9.
 
