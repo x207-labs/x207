@@ -6,6 +6,15 @@
 //   finalized dan sudah `prune.lag` epoch di belakang (opsional) -> prune_epoch(n, 200) sampai hasilnya 0
 const NS_PER_MS = 1_000_000n;
 
+/** Entries one `prune_epoch` call may take (the contract caps a call at 200 as well). */
+export const PRUNE_MAX_ITEMS = 200;
+/**
+ * Gas attached to `prune_epoch`. Measured by the review of the contract: 196 items used 70.2 Tgas, so 100 Tgas is the least that is safe for 200 items and
+ * 200 Tgas leaves a margin of almost three times for a bundle of 64 legs that costs more than the average entry.
+ */
+export const PRUNE_GAS = 200_000_000_000_000n;
+export const PRUNE_MIN_GAS = 100_000_000_000_000n;
+
 /**
  * @param {object} options
  * @param {(method: string, args: object) => Promise<any>} options.view view kontrak
@@ -46,7 +55,7 @@ export async function keeperPass({ view, send, chainNowMs, log = () => {}, lookb
       const edges = await view("list_obligations", { epoch: n, from_index: 0, limit: 1 });
       if (!Array.isArray(edges) || edges.length === 0) continue;
       for (let round = 0; round < (prune.maxRounds ?? 20); round++) {
-        const { hash, removed } = await prune.call({ epoch: n, maxItems: 200 });
+        const { hash, removed } = await prune.call({ epoch: n, maxItems: PRUNE_MAX_ITEMS });
         const action = { method: "prune_epoch", epoch: n, hash, removed, at: new Date().toISOString() };
         log(action);
         actions.push(action);

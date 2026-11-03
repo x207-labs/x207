@@ -7,7 +7,7 @@
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { keeperPass } from "./lib/keeper.mjs";
+import { keeperPass, PRUNE_GAS } from "./lib/keeper.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const { Account, JsonRpcProvider, KeyPairSigner } = createRequire(resolve(here, "../sdk/package.json"))("near-api-js");
@@ -35,7 +35,7 @@ const prune = args["prune-lag"] && args["prune-lag"] !== true
   ? {
       lag: Number(args["prune-lag"]),
       call: async ({ epoch, maxItems }) => {
-        const result = await account.callFunctionRaw({ contractId: args.contract, methodName: "prune_epoch", args: { epoch, max_items: maxItems }, deposit: 0n, gas: 200_000_000_000_000n, waitUntil: "FINAL" });
+        const result = await account.callFunctionRaw({ contractId: args.contract, methodName: "prune_epoch", args: { epoch, max_items: maxItems }, deposit: 0n, gas: PRUNE_GAS, waitUntil: "FINAL" });
         const value = result.status?.SuccessValue;
         return { hash: result.transaction.hash, removed: value ? JSON.parse(Buffer.from(value, "base64").toString("utf8")) : 0 };
       },

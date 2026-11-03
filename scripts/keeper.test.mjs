@@ -2,7 +2,7 @@
 // the contract says 0, and not again once the epoch has no pair left.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { keeperPass } from "./lib/keeper.mjs";
+import { keeperPass, PRUNE_GAS, PRUNE_MAX_ITEMS, PRUNE_MIN_GAS } from "./lib/keeper.mjs";
 
 function chain(epochs, edgesLeft) {
   const sent = [];
@@ -37,4 +37,19 @@ test("TC-UM-022-22 an epoch that is not finalized is never pruned, and the round
   let rounds = 0;
   await keeperPass({ ...endless, prune: { lag: 1, maxRounds: 4, call: async () => ({ hash: `E${++rounds}`, removed: 9 }) } });
   assert.equal(rounds, 4);
+});
+
+test("TC-UM-022-23 prune_epoch carries at least 100 Tgas for 200 items (the review measured 70.2 Tgas for 196), and the keeper script uses that constant", async () => {
+  assert.equal(PRUNE_MAX_ITEMS, 200);
+  assert.ok(PRUNE_MIN_GAS >= 100_000_000_000_000n);
+  assert.ok(PRUNE_GAS >= PRUNE_MIN_GAS);
+  assert.ok(PRUNE_GAS >= 70_200_000_000_000n * 2n, "less than twice the measured gas");
+  const { readFile } = await import("node:fs/promises");
+  const script = await readFile(new URL("./keeper.mjs", import.meta.url), "utf8");
+  const prune = script.slice(script.indexOf('methodName: "prune_epoch"'));
+  assert.match(prune.slice(0, 200), /gas: PRUNE_GAS/);
+  const c = chain([finalized(1), finalized(2), open(3)], { 1: 1 });
+  const seen = [];
+  await keeperPass({ ...c, prune: { lag: 1, call: async ({ epoch, maxItems }) => (seen.push([epoch, maxItems]), { hash: "H", removed: 0 }) } });
+  assert.deepEqual(seen[0]?.[1], PRUNE_MAX_ITEMS);
 });
