@@ -1,0 +1,371 @@
+{
+  "contract": "x207-v012.testnet",
+  "aux": "x207-v012-aux.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "release": {
+    "tag": "v0.0.12",
+    "wasmSha256": "1ee2c406fc762fbfa1af5e43e2a264aa2b457678f114ce7ad306df57f885d226",
+    "codeHash": "35ZnTMPAMBRdkrGqUkD8Frb29YAHrBmKwKAmaTbYSduw",
+    "source": "gh release download v0.0.12 --repo x207-labs/contracts"
+  },
+  "steps": [
+    {
+      "step": "deploy",
+      "account": "x207-v012.testnet",
+      "method": "deploy_contract",
+      "hash": "BQbji9b3muVg5GmT8kdo6sAYDun2ipMntDFX2XVjN45c"
+    },
+    {
+      "step": "init",
+      "account": "x207-v012.testnet",
+      "method": "new",
+      "hash": "FoJXWBLtba5ATYNZECae6EvT7PUwvpGqHp2VL5LzuSvE"
+    },
+    {
+      "step": "account alice",
+      "account": "x207-v012.testnet",
+      "method": "create_account",
+      "hash": "EbnFqvMLqxvu3MEZ66ZaX4v78h42xE3kid8zmJamQfsd"
+    },
+    {
+      "step": "usdt alice",
+      "account": "alice.x207-v012.testnet",
+      "method": "mint",
+      "hash": "BmMmASQhy4Qj1Vbw9U7yvYEsPSeK8o9esy9HFrSgX5ek"
+    },
+    {
+      "step": "onboard alice",
+      "account": "alice.x207-v012.testnet",
+      "method": "join",
+      "hash": "FXMJpHyPwsuqwp9aTTgzPgzUGm6oKPxvQ7iFVSQBvu5h"
+    },
+    {
+      "step": "onboard alice",
+      "account": "alice.x207-v012.testnet",
+      "method": "ft_transfer_call",
+      "hash": "3EVcEosMXJa1wibdftk6qesGQ8ANwDQJ9owhqsYauvjc"
+    },
+    {
+      "step": "account bob",
+      "account": "x207-v012.testnet",
+      "method": "create_account",
+      "hash": "4eb5pxSdGugWVPGZt5KngVJi5ChRG9hv1zoE3HrVUnSP"
+    },
+    {
+      "step": "usdt bob",
+      "account": "bob.x207-v012.testnet",
+      "method": "mint",
+      "hash": "FvZiiwHSxxxVRbp7hKM8fz5o259AkdWLH7H2SxYfvCGr"
+    },
+    {
+      "step": "onboard bob",
+      "account": "bob.x207-v012.testnet",
+      "method": "join",
+      "hash": "35q35HtP3sxjWqwfYWvJhDsrTqPzacMJ3zaxQxP4jKtF"
+    },
+    {
+      "step": "onboard bob",
+      "account": "bob.x207-v012.testnet",
+      "method": "ft_transfer_call",
+      "hash": "EJKLPSd4JhwP3YyNRnNT2kpF3wsXZn6waAi2YBaw3SEY"
+    },
+    {
+      "step": "account arbiter",
+      "account": "x207-v012.testnet",
+      "method": "create_account",
+      "hash": "XiCvYLdfxJkGZt3iyGZQKBGFkV8DQYximZTz8HeM7fg"
+    },
+    {
+      "step": "commit_bundle confirmed",
+      "account": "x207-v012.testnet",
+      "method": "commit_bundle",
+      "hash": "BD4ED2HRvSPaEbo1qmS6LK1RybFCrwemcUDeUSyD61x9"
+    },
+    {
+      "step": "confirm_deal alice",
+      "account": "alice.x207-v012.testnet",
+      "method": "confirm_deal",
+      "hash": "EDCkYxJgyZ9EPfzvCmyokqU9KTxAJmpDdngHM6qquSLb"
+    },
+    {
+      "step": "confirm_deal bob",
+      "account": "bob.x207-v012.testnet",
+      "method": "confirm_deal",
+      "hash": "HafuHUjBhZ5u8aTY6EjsRq7mfqVtuU5EPGNeMcFBdXpo"
+    },
+    {
+      "step": "commit_bundle guilty",
+      "account": "x207-v012.testnet",
+      "method": "commit_bundle",
+      "hash": "BYF6snDTwq2Mg1tjyveRNY2D2fo6Hmr7DV6bK7h6C9pj"
+    },
+    {
+      "step": "dispute_deal",
+      "account": "alice.x207-v012.testnet",
+      "method": "dispute_deal",
+      "hash": "7HyiaMjw4yoGhAHhhuHb8d4DzuVdefHyE5dGWaxrPkdp"
+    },
+    {
+      "step": "top-up arbiter",
+      "account": "x207-v012.testnet",
+      "method": "transfer",
+      "hash": "GtbofjYLYSdnBT2FNPRvzXXDuVJq72dNvv4sUQiZmdqE"
+    },
+    {
+      "step": "cleanup rule_deal 2",
+      "account": "arb.x207-v012.testnet",
+      "method": "rule_deal",
+      "hash": "8NA6q1PuPHDUxWkwDSi5zjcuMVzESH72h1WY9aT8xSFr"
+    },
+    {
+      "step": "usdt alice.x207-v012.testnet",
+      "account": "alice.x207-v012.testnet",
+      "method": "mint",
+      "hash": "9RtCLo9VCeddSQGEguygRa9cheZvcpqMFso8N8L2wht2"
+    },
+    {
+      "step": "add stake alice.x207-v012.testnet",
+      "account": "alice.x207-v012.testnet",
+      "method": "ft_transfer_call",
+      "hash": "zhCxnjEehXmmzATiSGuP1b5wGdxspZE3DsaVykDTfkU"
+    },
+    {
+      "step": "usdt bob.x207-v012.testnet",
+      "account": "bob.x207-v012.testnet",
+      "method": "mint",
+      "hash": "B4HiVHMwPpkUwLG3hDzyRVzz6HXTmwf5NK6898sWkFhy"
+    },
+    {
+      "step": "add stake bob.x207-v012.testnet",
+      "account": "bob.x207-v012.testnet",
+      "method": "ft_transfer_call",
+      "hash": "84NTmZ3xCabAS3i4F3Z8wKxJTbdzNLPGXhfiUyfCPwfa"
+    },
+    {
+      "step": "commit_bundle confirmed",
+      "account": "x207-v012.testnet",
+      "method": "commit_bundle",
+      "hash": "F7zVBCzTUKycqAwCUx7EgUwoWCtxgbww2ykuETCnYqQj"
+    },
+    {
+      "step": "confirm_deal alice",
+      "account": "alice.x207-v012.testnet",
+      "method": "confirm_deal",
+      "hash": "C4cnxPKUtPBpejwtqQkPMxW21Wc2ZCkMSxagVkakLD3k"
+    },
+    {
+      "step": "confirm_deal bob",
+      "account": "bob.x207-v012.testnet",
+      "method": "confirm_deal",
+      "hash": "Av8sYRaLdyD8oRmRoTkWbFZMhVpsQkBaT3Htvp6pzVom"
+    },
+    {
+      "step": "commit_bundle guilty",
+      "account": "x207-v012.testnet",
+      "method": "commit_bundle",
+      "hash": "GrvMNHrwMyBFMtYNLWTFqT4DcB6GhH3wRX9j9Md2Z4d"
+    },
+    {
+      "step": "dispute_deal",
+      "account": "alice.x207-v012.testnet",
+      "method": "dispute_deal",
+      "hash": "ETMHhmXr9kcbAzAdi1crTdjGrPhdAYWFZ3QxMToCudfd"
+    },
+    {
+      "step": "rule_deal accused_guilty",
+      "account": "arb.x207-v012.testnet",
+      "method": "rule_deal",
+      "hash": "7Bt2HftvxU9wec8oEpSTzthep8UPjzvduX4J4Ggyj7Ri"
+    },
+    {
+      "step": "propose_freeze bob",
+      "account": "x207-v012.testnet",
+      "method": "propose_freeze",
+      "hash": "Aum2Mi3ZfLRhTzNHeDZSvenDnPKtXKymopb17GukxiCT"
+    },
+    {
+      "step": "account official",
+      "account": "x207-v012-aux.testnet",
+      "method": "create_account",
+      "hash": "GVtKAcCd4qKqjYiaWXRbNJotGGTP8rosCk4g2qiqj3CB"
+    },
+    {
+      "step": "deploy official",
+      "account": "official.x207-v012-aux.testnet",
+      "method": "deploy_contract",
+      "hash": "FCVejHk6a8XHUT7bdB5pgvVpe8NcNXwUvxjY4vKKa5Ui"
+    },
+    {
+      "step": "init official",
+      "account": "official.x207-v012-aux.testnet",
+      "method": "new",
+      "hash": "28Cfs3C8ATZoc6hYZ84j8FpbUksyM7XmMnDs2a73SB8J"
+    },
+    {
+      "step": "account fake",
+      "account": "x207-v012-aux.testnet",
+      "method": "create_account",
+      "hash": "96587skJH8vxhK7arxeb2FoJgdKqiPDjFwMuyyufDpYt"
+    },
+    {
+      "step": "deploy fake",
+      "account": "fake.x207-v012-aux.testnet",
+      "method": "deploy_contract",
+      "hash": "HUbepiEvCLVM77Uteon9fASLm8AyifkUNqN3ANkpJRPe"
+    },
+    {
+      "step": "init fake",
+      "account": "fake.x207-v012-aux.testnet",
+      "method": "new",
+      "hash": "HBN2dYbCoojUAJjhcWEmXMmuQtfQs5svynEVjFj7kdau"
+    },
+    {
+      "step": "mint official.x207-v012-aux.testnet",
+      "account": "official.x207-v012-aux.testnet",
+      "method": "mint",
+      "hash": "73aqVcqMQepZdi6AGM8SkpBWwebZnmMkCM1e1EKagdBG"
+    },
+    {
+      "step": "mint fake.x207-v012-aux.testnet",
+      "account": "fake.x207-v012-aux.testnet",
+      "method": "mint",
+      "hash": "7aVe7ujqwjavdAr96eanRe5TRu73zFrvDZR1HEQeR1VG"
+    },
+    {
+      "step": "set_asset_class",
+      "account": "x207-v012.testnet",
+      "method": "set_asset_class",
+      "hash": "37ZxarZphNy5AZg9Dh8keww6hixGERSb2qNaeytPTNSA"
+    },
+    {
+      "step": "offer_grant fake",
+      "account": "alice.x207-v012.testnet",
+      "method": "offer_grant",
+      "hash": "2iAp1hPsXQjH9yUnnho8bJ9NXxsAHJRze2dHbZnwjDH8"
+    },
+    {
+      "step": "set_asset_contracts",
+      "account": "x207-v012.testnet",
+      "method": "set_asset_contracts",
+      "hash": "CoZHKyf7f8HggVJ6Zgm2mX5mE3w6bFUgzZ6jXTo5P8Nh"
+    },
+    {
+      "step": "usdt alice.x207-v012.testnet",
+      "account": "alice.x207-v012.testnet",
+      "method": "mint",
+      "hash": "J6iDQrRfbcA3ar8k7cB7D5VkhDM8LR5PC6LSEFPvzjxh"
+    },
+    {
+      "step": "add stake alice.x207-v012.testnet",
+      "account": "alice.x207-v012.testnet",
+      "method": "ft_transfer_call",
+      "hash": "JCa5FridbiyhurRptsFDXi3mhwtfv7RSx41XNmh8fv8X"
+    },
+    {
+      "step": "usdt bob.x207-v012.testnet",
+      "account": "bob.x207-v012.testnet",
+      "method": "mint",
+      "hash": "HXcZ4p6JfWv1WwiGifjmkzwhnSZJNTRgm8tT2ouVvAkQ"
+    },
+    {
+      "step": "add stake bob.x207-v012.testnet",
+      "account": "bob.x207-v012.testnet",
+      "method": "ft_transfer_call",
+      "hash": "9UtZh9QUR5cX9AnWaPtF6hWQEaVo1Nx5dc7Li7VzzgwJ"
+    },
+    {
+      "step": "commit_bundle confirmed",
+      "account": "x207-v012.testnet",
+      "method": "commit_bundle",
+      "hash": "He5UpWHd1Zks2X8xmXnYo42pL9qgHmsn18JsZa3GGksB"
+    },
+    {
+      "step": "confirm_deal alice",
+      "account": "alice.x207-v012.testnet",
+      "method": "confirm_deal",
+      "hash": "3fWnSZrb8jvzXc9Q6Z4E1rFU5BNraZkfCWrLuGUstsoH"
+    },
+    {
+      "step": "confirm_deal bob",
+      "account": "bob.x207-v012.testnet",
+      "method": "confirm_deal",
+      "hash": "7BuinggoTP9uib8WeXgwn5xcKU6iBvCu59QktkaEgNqi"
+    },
+    {
+      "step": "commit_bundle guilty",
+      "account": "x207-v012.testnet",
+      "method": "commit_bundle",
+      "hash": "CVv2koDaf8LFncYoE21qCVMr6ae6UhPiThxTCGqx9vJS"
+    },
+    {
+      "step": "dispute_deal",
+      "account": "alice.x207-v012.testnet",
+      "method": "dispute_deal",
+      "hash": "Dn9r73TeJJsGXoP9NuY9juzsot1y3ZrFRaj1Mmv7nvF6"
+    },
+    {
+      "step": "rule_deal accused_guilty",
+      "account": "arb.x207-v012.testnet",
+      "method": "rule_deal",
+      "hash": "DDAckhTRRrsvusEneget7t7BEqmpY9sjpoA9fCu5BxJW"
+    },
+    {
+      "step": "mint official.x207-v012-aux.testnet",
+      "account": "official.x207-v012-aux.testnet",
+      "method": "mint",
+      "hash": "AQUyS9gRGiF69m6Mz9a3RBRUPYr84CMeoqaEt5SKg6Mv"
+    },
+    {
+      "step": "mint fake.x207-v012-aux.testnet",
+      "account": "fake.x207-v012-aux.testnet",
+      "method": "mint",
+      "hash": "4BC6jV3toEjgzn9cGuRDzX6vmrcgw2q8cWtJB7RcnWLW"
+    },
+    {
+      "step": "deposit fake token",
+      "account": "alice.x207-v012.testnet",
+      "method": "ft_transfer_call",
+      "hash": "5wkwd8LpNgapEYe8LtzY1sh4j4dxceYrQmEoLCh1H2eX"
+    },
+    {
+      "step": "offer_grant official",
+      "account": "alice.x207-v012.testnet",
+      "method": "offer_grant",
+      "hash": "FQ64zBdeCrpevh2Zi7g3nTTMyQBo5kifEzKFJ7NUkH1d"
+    },
+    {
+      "step": "deposit official token",
+      "account": "alice.x207-v012.testnet",
+      "method": "ft_transfer_call",
+      "hash": "J9sxoWqybFhVwWYXwagRc8nCBVfaxAsNbG2qi1M412ng"
+    }
+  ],
+  "result": {
+    "codeHash": "35ZnTMPAMBRdkrGqUkD8Frb29YAHrBmKwKAmaTbYSduw",
+    "confirmedDeal": {
+      "bundleId": 5,
+      "bondEach": "20000000",
+      "releasedAfterTwoConfirmations": true
+    },
+    "guiltyDeal": {
+      "bundleId": 6,
+      "bond": "22000000",
+      "stakeOfComplainant": "922000000 -> 944000000",
+      "stakeOfAccused": "878000000 -> 856000000"
+    },
+    "freeze": {
+      "state": "pending",
+      "eta": "1793799451518308958",
+      "waiting": "apply_freeze runs 24 hours after the proposal; run this test again after the eta"
+    },
+    "officialContracts": {
+      "assetType": "token:nep141",
+      "list": [
+        "official.x207-v012-aux.testnet"
+      ],
+      "fakeOfferRefused": "ERR_CONTRACT_NOT_OFFICIAL",
+      "fakeDepositReturned": true,
+      "officialDepositHeld": true
+    }
+  }
+}

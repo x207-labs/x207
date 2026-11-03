@@ -79,9 +79,20 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
     type Call = { receiverId: string; methodName: string; args: object; deposit?: bigint; gas?: bigint };
     /** Sends one call, records its hash, and returns the failures instead of throwing (some calls of the scenario are meant to fail). */
     const raw = async (account: Account, step: string, call: Call): Promise<{ failures: string[]; logs: string[]; value: unknown }> => {
-      const r = (await patient(() =>
+      let r: any;
+      try {
+        r = (await patient(() =>
         account.callFunctionRaw({ contractId: call.receiverId, methodName: call.methodName, args: call.args, deposit: call.deposit ?? 0n, gas: call.gas ?? 150_000_000_000_000n, waitUntil: "FINAL" }),
       )) as any;
+      } catch (error) {
+        // the call itself panicked: the node throws; the refusal is the answer that the scenario wants
+        const e = error as { message?: string; transaction_outcome?: { id?: string }; transaction?: { hash?: string } };
+        const text = String(e.message ?? error);
+        if (!/panicked|ContractExecutionError|Smart contract/.test(text)) throw error;
+        const hash = e.transaction_outcome?.id ?? e.transaction?.hash;
+        if (hash) recorder.add({ step: `${step} (refused)`, account: account.accountId, method: call.methodName, hash });
+        return { failures: [text.slice(0, 300)], logs: [], value: undefined };
+      }
       recorder.add({ step, account: account.accountId, method: call.methodName, hash: r.transaction_outcome.id });
       const failures = [r.status, ...(r.receipts_outcome ?? []).map((o: any) => o.outcome.status)]
         .filter((s) => s && typeof s === "object" && "Failure" in s)
@@ -164,7 +175,12 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
         expect(joined.member.status).toBe("active");
       }
     }
-    const arbiter = await create(owner, `arb.${CIRCLE}`, 100_000_000_000_000_000_000_000n, "account arbiter");
+    const arbiter = await create(owner, `arb.${CIRCLE}`, 600_000_000_000_000_000_000_000n, "account arbiter");
+    const have = BigInt((await patient(() => provider.viewAccount({ accountId: arbiter.accountId }))).amount);
+    if (have < 400_000_000_000_000_000_000_000n) {
+      const sent = (await patient(() => owner.transfer({ receiverId: arbiter.accountId, amount: 600_000_000_000_000_000_000_000n }))) as any;
+      recorder.add({ step: "top-up arbiter", account: CIRCLE, method: "transfer", hash: sent.transaction_outcome?.id ?? sent.transaction?.hash });
+    }
     const [A, B] = [members.alice.accountId, members.bob.accountId];
     const chainNowNs = async (): Promise<bigint> => BigInt((await rpc("block", { finality: "optimistic" })).header.timestamp_nanosec);
     const epoch = (await view<{ epoch: number }>(CIRCLE, "get_epoch")).epoch;
@@ -189,6 +205,24 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
       expect(e.filter((x) => x.event === "bond_locked")).toHaveLength(2);
       return Number(e.find((x) => x.event === "bundle_committed")!.data[0].bundle_id);
     };
+
+    // a resumed run: deals that an earlier run left open are closed first (disputed: no fault; open: both confirm), so that their bonds do not take the slack
+    for (let id = 1; id <= 30; id += 1) {
+      const left = await view<{ state: string } | null>(CIRCLE, "get_deal", { bundle_id: id });
+      if (left === null) continue;
+      if (left.state === "disputed") await send(arbiter, `cleanup rule_deal ${id}`, { receiverId: CIRCLE, methodName: "rule_deal", args: { bundle_id: id, verdict: "no_fault" } });
+      else for (const who of [members.alice, members.bob]) await raw(who, `cleanup confirm_deal ${id}`, { receiverId: CIRCLE, methodName: "confirm_deal", args: { bundle_id: id } });
+    }
+
+    // a bundle reserves headroom for its legs until the epoch ends (24 hours here): two deals of 100 and 110 credit need 210 credit above what earlier deals of this epoch took
+    for (const who of [members.alice, members.bob]) {
+      if (BigInt(await view<string>(CIRCLE, "headroom", { account_id: who.accountId })) < 220n * CREDIT) {
+        await send(who, `usdt ${who.accountId}`, { receiverId: USDT, methodName: "mint", args: { account_id: who.accountId, amount: "300000000" } });
+        await send(who, `add stake ${who.accountId}`, {
+          receiverId: USDT, methodName: "ft_transfer_call", args: { receiver_id: CIRCLE, amount: "300000000", msg: JSON.stringify({ action: "stake" }) }, deposit: 1n, gas: 100_000_000_000_000n,
+        });
+      }
+    }
 
     // 2. a deal that both parties confirm
     const lockedBefore = [await locked(A), await locked(B)];
@@ -249,10 +283,20 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
       await send(owner, "set_asset_class", { receiverId: CIRCLE, methodName: "set_asset_class", args: { asset_type: assetType, entry } });
     }
     const offer = (contract: string) => raw(members.alice, `offer_grant ${contract.split(".")[0]}`, { receiverId: CIRCLE, methodName: "offer_grant", args: { input: template(contract).grantInput } });
-    const early = await offer(fake.accountId); // before the list exists: accepted
-    expect(early.failures).toEqual([]);
-    const earlyId = Number(early.value);
-    await send(owner, "set_asset_contracts", { receiverId: CIRCLE, methodName: "set_asset_contracts", args: { asset_type: assetType, contracts: [official.accountId] } });
+    let earlyId = 0;
+    if ((await view<string[]>(CIRCLE, "get_asset_contracts", { asset_type: assetType })).length === 0) {
+      const early = await offer(fake.accountId); // before the list exists: accepted
+      expect(early.failures).toEqual([]);
+      earlyId = Number(early.value);
+      await send(owner, "set_asset_contracts", { receiverId: CIRCLE, methodName: "set_asset_contracts", args: { asset_type: assetType, contracts: [official.accountId] } });
+    } else {
+      // a resumed run: the list is set; the grant that an earlier run offered to the fake token before the list is found by its scope
+      for (let id = 1; id <= 60 && earlyId === 0; id += 1) {
+        const g = await view<{ status: string; limits: { scope: string } } | null>(CIRCLE, "get_grant", { grant_id: id });
+        if (g !== null && g.status === "offered" && g.limits.scope.includes(fake.accountId)) earlyId = id;
+      }
+      expect(earlyId).toBeGreaterThan(0);
+    }
     expect(await view<string[]>(CIRCLE, "get_asset_contracts", { asset_type: assetType })).toEqual([official.accountId]);
     const refusedOffer = await offer(fake.accountId);
     expect(refusedOffer.failures.join(" ")).toContain("ERR_CONTRACT_NOT_OFFICIAL");
