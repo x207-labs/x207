@@ -313,6 +313,25 @@ x207 does not store the file. The seller encrypts it, puts the ciphertext at a s
 
 A seller who lies about the hash is caught by the buyer's own check, without a judge. What this block does not show: a source that serves other bytes than the ciphertext (the buyer's SDK refuses it and makes no proof), the 72-hour automatic confirmation, and the exclusive license with a bond (each has its own test in `agents/test/license.test.ts`).
 
+### Access rent block (pipeline P2)
+
+```bash
+npx vitest run agents/test/rent.test.ts                       # agents against the broker, in process, no sandbox
+X207_SANDBOX=1 npx vitest run tests/rent.sandbox.test.ts       # real contract, indexer, facilitator and broker; several minutes
+```
+
+An access (an SSH key, a repository collaborator, a cloud role) is rented by the day. The grantor offers a grant on the contract and runs its own broker, so the administrator token of the provider stays on its machine; the lessee pays one day in advance with an ordinary voucher and signs the next day only if the access still works (`sdk/docs/daily-rent.md`). Each side loses one day at most. The providers in this block are mocks and an SSH `authorized_keys` that is checked by what `sshd` does with it.
+
+| Do | See |
+| --- | --- |
+| The grantor offers an SSH grant, the lessee accepts, proves it owns the key (a signature of the challenge of the broker) and pays one day | The key is in `authorized_keys` with its forced command and `expiry-time` at the end of the paid day; after that time `sshd` refuses it even if the broker is down |
+| The grantor revokes the grant on the contract | `grant_revoked` reaches the broker through the read API; the line is removed and a new payment is refused (`403`) |
+| A repository collaborator is rented and the lessee stops with a signed notice | The collaborator is removed at the provider; the SDK signs no voucher after the stop |
+| A cloud role is rented with a daily cap of 0.1 credit; the real cost of day 1 is 0.02 | The broker writes the bill; the lessee signs it as a second voucher (`resource = x207:grant:<id>:cost`) |
+| The real cost of day 2 is 0.3, above the cap | The broker closes the access, and the SDK refuses to sign the bill (`rent_bill_over_cap`) |
+
+What this block does not show: real GitHub, Discord or AWS accounts (the broker has adapters for them, tested against mocked `fetch`), the payment of a bill by the facilitator, and the loss of the paid day when a provider closes an access in the minutes after the check.
+
 ### Marketplace block (feature F9)
 
 ```bash
