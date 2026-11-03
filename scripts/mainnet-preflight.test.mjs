@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { PLAN, accountsFromEnv, evaluate, missingVariables, render } from "./mainnet-preflight.mjs";
+import { PLAN, accountsFromEnv, base58ToHex, evaluate, missingVariables, render } from "./mainnet-preflight.mjs";
 
 const agent = (n, near, usdtUnits, usdtRegistered = true) => ({ id: `${n}.x207-circle.near`, role: "agent", label: `agent ${n}`, exists: true, nearYocto: String(BigInt(Math.round(near * 1e4)) * 10n ** 20n), usdtUnits, usdtRegistered });
 const okSnapshot = () => ({
@@ -66,4 +66,22 @@ test("TC-UM-009-13 the script reads views only: no signing, no transaction metho
 test("TC-UM-009-14 the table is printed with one line per check", () => {
   const rows = evaluate(okSnapshot());
   assert.equal(render(rows).split("\n").length, rows.length);
+});
+
+test("TC-UM-009-16 the code hash of the circle account is compared with the sha256 of the release wasm", () => {
+  const ok = okSnapshot();
+  assert.equal(evaluate(ok).find((r) => r.item === "code_hash against the release").status, "NOT CHECKED");
+  ok.circle.codeHashHex = "ab".repeat(32);
+  ok.circle.expectedWasmSha256 = "AB".repeat(32);
+  assert.equal(evaluate(ok).find((r) => r.item === "code_hash against the release").status, "OK");
+  ok.circle.expectedWasmSha256 = "cd".repeat(32);
+  assert.equal(evaluate(ok).find((r) => r.item === "code_hash against the release").status, "MISSING");
+});
+
+test("TC-UM-009-17 base58ToHex turns a NEAR code_hash into the hex of the sha256 ", () => {
+  // "11111111111111111111111111111111" is the hash of an account without code: 32 zero bytes
+  assert.equal(base58ToHex("11111111111111111111111111111111"), "00".repeat(32));
+  assert.equal(base58ToHex("2"), "01");
+  assert.equal(base58ToHex("5Q"), "ff");
+  assert.equal(base58ToHex("12"), "0001"); // a leading 1 is a zero byte
 });

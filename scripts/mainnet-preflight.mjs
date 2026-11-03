@@ -51,6 +51,20 @@ export function missingVariables(env) {
   return need.filter((name) => !env[name]);
 }
 
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+/** Hex of a base58 string (NEAR `code_hash` is the base58 of a sha256). */
+export function base58ToHex(text) {
+  let n = 0n;
+  for (const ch of text) {
+    const i = B58.indexOf(ch);
+    if (i < 0) throw new Error("not base58");
+    n = n * 58n + BigInt(i);
+  }
+  const zeros = text.length - text.replace(/^1+/, "").length;
+  const hex = n.toString(16);
+  return "00".repeat(zeros) + (hex.length % 2 ? `0${hex}` : hex).replace(/^00$/, "");
+}
+
 const near = (yocto) => Number(BigInt(yocto) / 10n ** 20n) / 10_000;
 const usdt = (units) => Number(units) / 1_000_000;
 
@@ -80,6 +94,8 @@ export function evaluate(snapshot, plan = PLAN) {
   if (!circle.hasCode) row("circle", "contract code", "MISSING", "the circle account has no contract yet (deploy is a step of the runbook)");
   else {
     row("circle", "interface version", circle.interfaceVersion ? "OK" : "MISSING", `interface_version ${circle.interfaceVersion ?? "unreadable"}`);
+    if (circle.expectedWasmSha256 === undefined) row("circle", "code_hash against the release", "NOT CHECKED", "set X207_EXPECTED_WASM_SHA256 to the sha256 of the wasm of the GitHub release (SHA256SUMS)");
+    else row("circle", "code_hash against the release", circle.codeHashHex === circle.expectedWasmSha256.toLowerCase() ? "OK" : "MISSING", circle.codeHashHex === circle.expectedWasmSha256.toLowerCase() ? "the deployed code is the release" : `deployed code ${circle.codeHashHex} is not the release ${circle.expectedWasmSha256.toLowerCase()}`);
     row("circle", "owner", circle.owner ? "INFO" : "MISSING", `get_owner: ${circle.owner ?? "unreadable"}`);
     if (circle.intentsBalance !== undefined) row("circle", "intents_balance", "INFO", `${usdt(circle.intentsBalance)} USDT booked by mt_on_transfer and waiting for withdraw_intents_balance`);
   }
@@ -152,6 +168,8 @@ export async function collect(env, net = "mainnet") {
   const circleState = circleId ? await rpc.account(circleId) : null;
   const circle = { hasCode: Boolean(circleState && circleState.code_hash !== "11111111111111111111111111111111") };
   if (circle.hasCode) {
+    circle.codeHashHex = base58ToHex(circleState.code_hash);
+    circle.expectedWasmSha256 = /^[0-9a-fA-F]{64}$/.test(env.X207_EXPECTED_WASM_SHA256 ?? "") ? env.X207_EXPECTED_WASM_SHA256 : undefined;
     circle.interfaceVersion = await rpc.view(circleId, "interface_version").catch(() => undefined);
     circle.owner = await rpc.view(circleId, "get_owner").catch(() => undefined);
     circle.intentsBalance = await rpc.view(circleId, "intents_balance").then((v) => BigInt(v), () => undefined); // interface 0.0.9 and later
