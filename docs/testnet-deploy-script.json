@@ -1,0 +1,62 @@
+{
+  "network": "testnet",
+  "circle": "x207-dep-r1.testnet",
+  "owner": "x207v8.sputnikv2.testnet",
+  "release": {
+    "tag": "v0.0.11",
+    "source": "gh release download v0.0.11 -R x207-labs/contracts",
+    "wasmSha256": "a9d0c839149a6e84ce4f87c1898b2cf871d2eda117f1988e13d0c59ae13a2f39",
+    "codeHash": "CRtYqTc47ADcDkHp7UJaRPLXu5XHS7KYftrTNUnZ8bNx"
+  },
+  "initArgs": {
+    "owner_id": "x207v8.sputnikv2.testnet",
+    "circle_id": "agents-main",
+    "usdt_token_id": "usdt.x207-deployer.testnet",
+    "intents_id": "intents.testnet",
+    "params": {
+      "epoch_length": 600,
+      "payment_window": 900,
+      "proposal_window": 60,
+      "base_limit_ratio": 8000,
+      "limit_growth": 1000,
+      "limit_cap": "1000000000",
+      "limit_decay": 0,
+      "fees": {
+        "clearing_fee_bps": 0,
+        "solver_fee_bps": 0
+      },
+      "admission": "open"
+    }
+  },
+  "facts": {
+    "ownerIsDao": true,
+    "usdt": null,
+    "intentsHasCode": false,
+    "circleNear": "10000",
+    "circleCodeHash": "11111111111111111111111111111111",
+    "alreadyDeployed": false
+  },
+  "warnings": [
+    "usdt.x207-deployer.testnet does not answer ft_metadata (the mock token of testnet has none)",
+    "intents.testnet has no code"
+  ],
+  "problems": [],
+  "steps": [
+    {
+      "step": "deploy",
+      "hash": "9wyagD6gjeZSdCPdJVqqMyihoNu1Azpi2nLxZip646mp"
+    },
+    {
+      "step": "init",
+      "hash": "B9Viaa7WeVTEz2TxhEMRy5y1J11ETVNg1ZcvC8PpJHy"
+    }
+  ],
+  "check": {
+    "codeHash": "CRtYqTc47ADcDkHp7UJaRPLXu5XHS7KYftrTNUnZ8bNx",
+    "codeHashIsTheRelease": true,
+    "owner": "x207v8.sputnikv2.testnet",
+    "ownerIsTheDao": true,
+    "interfaceVersion": "0.0.11",
+    "interfaceIsTheTag": true
+  }
+}
