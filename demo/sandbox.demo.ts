@@ -30,7 +30,7 @@ describe("demo near-sandbox", () => {
     await stack?.stop();
   });
 
-  it("satu siklus epoch", async () => {
+  it("one epoch cycle", async () => {
     const lines: string[] = [];
     const out = (line: string) => {
       lines.push(line);
@@ -42,18 +42,18 @@ describe("demo near-sandbox", () => {
       out(`\n== ${stage}`);
       const result = await work();
       stages.push({ stage, ms: Date.now() - t0 });
-      out(`   selesai dalam ${Date.now() - t0} ms`);
+      out(`   done in ${Date.now() - t0} ms`);
       return result;
     };
     const tx = (label: string, hash: string, ms: number) => out(`   tx ${label} ${hash} (${ms} ms)`);
 
     const density = (process.env.DEMO_DENSITY ?? "medium") as Density;
-    if (!DENSITIES.includes(density)) throw new Error(`DEMO_DENSITY harus salah satu dari ${DENSITIES.join(", ")}`);
+    if (!DENSITIES.includes(density)) throw new Error(`DEMO_DENSITY must be one of ${DENSITIES.join(", ")}`);
     const payments = Number(process.env.DEMO_PAYMENTS ?? 120);
     const observed = new Set<string>();
 
     const clock = { offset: 0 };
-    stack = await timed("F1 onboarding: join + stake enam agent (E3)", async () =>
+    stack = await timed("F1 onboarding: join + stake six agents (E3)", async () =>
       startStack({
         now: () => Date.now() + clock.offset,
         onTx: (t) => {
@@ -88,7 +88,7 @@ describe("demo near-sandbox", () => {
         if (done()) return;
         await new Promise((r) => setTimeout(r, 1_000));
       }
-      throw new Error("indexer tidak menyusul dalam 90 detik");
+      throw new Error("indexer did not catch up within 90 seconds");
     };
     const events: Array<Record<string, any> & { event: string }> = [];
     const send = async (label: string, who: { accountId: string; secretKey: string }, call: Parameters<typeof fx.circle.call>[0]) => {
@@ -117,7 +117,7 @@ describe("demo near-sandbox", () => {
     const current = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", {});
     const epoch = current.epoch;
 
-    await timed("F2 pembayaran voucher antar agent (E1, E2)", async () => {
+    await timed("F2 voucher payments between agents (E1, E2)", async () => {
       const challenge = await fetch(`${urls.summarizer}/api/summarize?input=halo`);
       const required = decode(challenge.headers.get("PAYMENT-REQUIRED"));
       out(`   402 accepts: ${required.accepts.map((a: { scheme: string; network: string }) => `${a.scheme}@${a.network}`).join(" + ")}`);
@@ -129,9 +129,9 @@ describe("demo near-sandbox", () => {
         if (response.status !== 200) throw new Error(`${buyer} -> ${seller}: HTTP ${response.status}`);
         observed.add("E1");
       }
-      out(`   ${plan.length} panggilan berbayar (${density}), ${new Set(plan.map((p) => `${p.buyer}>${p.seller}`)).size} pasangan`);
+      out(`   ${plan.length} paid calls (${density}), ${new Set(plan.map((p) => `${p.buyer}>${p.seller}`)).size} pairs`);
       const ticked = await stack!.scheduler.tick();
-      out(`   registrasi on-chain: ${ticked.registered} pasangan`);
+      out(`   on-chain registration: ${ticked.registered} pairs`);
     });
 
     // E5: pemilik (dao) menjadwalkan params untuk epoch berikutnya.
@@ -139,7 +139,7 @@ describe("demo near-sandbox", () => {
     observed.add("E5");
 
     let report: any;
-    await timed("F3 kliring: close_epoch, submit_clearing, commit_epoch, laporan 207 (E4)", async () => {
+    await timed("F3 clearing: close_epoch, submit_clearing, commit_epoch, 207 report (E4)", async () => {
       await advance(current.cutoff_at);
       await pass();
       await catchUp(() => phaseOf(epoch) !== "open");
@@ -150,7 +150,7 @@ describe("demo near-sandbox", () => {
         },
       });
       const hash = /tx[ =:]+([A-Za-z0-9]{40,})/.exec(stderr)?.[1];
-      out(`   solver: ${stdout.trim() ? "proposal dikirim" : "tidak ada yang dikliring"}${hash ? ` tx ${hash}` : ""}`);
+      out(`   solver: ${stdout.trim() ? "proposal submitted" : "nothing to clear"}${hash ? ` tx ${hash}` : ""}`);
       if (stdout.trim()) observed.add("E4");
       const closing = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", { epoch });
       await advance(closing.proposal_deadline);
@@ -158,7 +158,7 @@ describe("demo near-sandbox", () => {
       await catchUp(() => ["payment_window", "finalized"].includes(phaseOf(epoch) ?? ""));
       const response = await fetch(`${base}/epochs/${epoch}`);
       report = await response.json();
-      out(`   laporan 207 (HTTP ${response.status}): cleared=${report.cleared}`);
+      out(`   207 report (HTTP ${response.status}): cleared=${report.cleared}`);
       // the answer as the read API sent it, for the sample in the README (UM-039)
       mkdirSync(".demo", { recursive: true });
       writeFileSync(`.demo/report207-epoch${epoch}.json`, JSON.stringify({ request: `GET /x207/circles/agents-main/epochs/${epoch}`, status: response.status, body: report }, null, 2));
@@ -166,8 +166,8 @@ describe("demo near-sandbox", () => {
     });
 
     const defaulter = process.env.DEMO_DEFAULT;
-    if (defaulter && !AGENT_NAMES.includes(defaulter as (typeof AGENT_NAMES)[number])) throw new Error(`DEMO_DEFAULT harus salah satu dari ${AGENT_NAMES.join(", ")}`);
-    await timed(`F4 settlement residual: bayar, finalize_epoch, claim${defaulter ? ` (${defaulter} tidak membayar)` : ""}`, async () => {
+    if (defaulter && !AGENT_NAMES.includes(defaulter as (typeof AGENT_NAMES)[number])) throw new Error(`DEMO_DEFAULT must be one of ${AGENT_NAMES.join(", ")}`);
+    await timed(`F4 residual settlement: pay, finalize_epoch, claim${defaulter ? ` (${defaulter} does not pay)` : ""}`, async () => {
       const positions = await fx.sandbox.view<Array<{ account_id: string; role: string; amount: string; status: string }>>(fx.circle.accountId, "list_positions", { epoch, from_index: 0, limit: 100 });
       for (const name of AGENT_NAMES) {
         const position = positions.find((p) => p.account_id === identity[name].accountId && p.role === "debtor" && p.status === "due");
@@ -187,7 +187,7 @@ describe("demo near-sandbox", () => {
       if (defaulter) {
         const member = await fx.sandbox.view<ContractAbi.MemberView>(fx.circle.accountId, "member", { account_id: identity[defaulter as (typeof AGENT_NAMES)[number]].accountId });
         out(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
-        out(`   event member_defaulted: ${events.some((e) => e.event === "member_defaulted") ? "terlihat" : "TIDAK terlihat"}`);
+        out(`   event member_defaulted: ${events.some((e) => e.event === "member_defaulted") ? "seen" : "NOT seen"}`);
         // AG-011: voucher debtor yang suspended dikirim langsung ke /verify (klien sendiri sudah menolak karena headroom 0).
         const key = identity[defaulter as (typeof AGENT_NAMES)[number]];
         const nextEpoch = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", {});
@@ -200,28 +200,28 @@ describe("demo near-sandbox", () => {
           method: "POST", headers: { "content-type": "application/json" },
           body: JSON.stringify({ x402Version: 2, paymentRequirements: requirements, paymentPayload: { x402Version: 2, resource: { url: `${urls.gpu}/api/compute` }, accepted: requirements, payload: { voucher, signature } } }),
         })).json();
-        out(`   /verify voucher ${defaulter} setelah suspended: ${JSON.stringify(verdict)}`);
+        out(`   /verify voucher ${defaulter} after suspended: ${JSON.stringify(verdict)}`);
         const after = await (await fetch(`${base}/epochs/${epoch}`)).json();
         const row = (after.members ?? []).find((m: { account: string }) => m.account === key.accountId);
-        out(`   laporan 207 setelah finalize: ${defaulter} ${JSON.stringify(row)}`);
+        out(`   207 report after finalize: ${defaulter} ${JSON.stringify(row)}`);
       }
     });
 
     // Metrik dari data epoch nyata (UM-034): tidak ada angka tetap di skrip.
     const metrics = await (await fetch(`${base}/epochs/${epoch}/metrics`)).json();
-    out("\n== Metrik epoch");
-    out(`   pembayaran berbayar (voucher): ${metrics.voucherCount}`);
+    out("\n== Epoch metrics");
+    out(`   paid payments (vouchers): ${metrics.voucherCount}`);
     const clearingTxs = (db.prepare("select count(distinct tx_hash) as n from events_raw where event = 'clearing_submitted'").get() as { n: number }).n;
-    out(`   transaksi kliring: ${clearingTxs}`);
-    out(`   pembayaran residual: ${metrics.residualTransfers}`);
+    out(`   clearing transactions: ${clearingTxs}`);
+    out(`   residual payments: ${metrics.residualTransfers}`);
     out(`   cleared ratio: ${metrics.clearedRatio}`);
-    out(`   penghematan transfer: ${metrics.transferSavings}`);
-    out(`   ${metrics.voucherCount} pembayaran jadi ${metrics.residualTransfers}`);
+    out(`   transfer savings: ${metrics.transferSavings}`);
+    out(`   ${metrics.voucherCount} payments became ${metrics.residualTransfers}`);
 
-    observed.add("E6-belum");
-    out("\n== Aliran Level 0 yang teramati");
+    observed.add("E6-not-yet");
+    out("\n== Observed Level 0 flows");
     for (const flow of ["E1", "E2", "E3", "E4", "E5"]) out(`   [${observed.has(flow) ? "x" : " "}] ${flow}`);
-    out("   [ ] E6 NEAR Intents/1Click: tidak teramati di mode sandbox (UM-035, mainnet)");
+    out("   [ ] E6 NEAR Intents/1Click: not observed in sandbox mode (UM-035, mainnet)");
 
     mkdirSync(".demo", { recursive: true });
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");

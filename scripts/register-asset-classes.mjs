@@ -22,7 +22,7 @@ const dryRun = args["dry-run"] === true;
 const secretKey = process.env.OWNER_SECRET_KEY;
 for (const [name, value] of [["--rpc-url", args["rpc-url"]], ["--contract", args.contract], ...(dryRun ? [] : [["--owner", args.owner], ["OWNER_SECRET_KEY", secretKey]])]) {
   if (!value || value === true) {
-    console.error(`${name} wajib diisi`);
+    console.error(`${name} is required`);
     process.exit(1);
   }
 }

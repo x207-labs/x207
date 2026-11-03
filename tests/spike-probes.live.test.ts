@@ -11,7 +11,7 @@ const live = process.env.X207_LIVE_PROBES === "1";
 const MAINNET_RPC = "https://rpc.mainnet.fastnear.com";
 
 describe.skipIf(!live)("UM-048 probe spike terhadap kode produk", () => {
-  it("S2.7 simulate_intents dengan simulateIntents() produk: intents kosong tereksekusi nol, tanpa transaksi", async () => {
+  it("S2.7 simulate_intents with the product simulateIntents(): empty intents execute zero, no transaction", async () => {
     const outcome = await simulateIntents(rpcViewFunction(MAINNET_RPC), []);
     expect(INTENTS_CONTRACT).toBe("intents.near");
     expect(outcome).toMatchObject({ ok: true });
@@ -21,20 +21,20 @@ describe.skipIf(!live)("UM-048 probe spike terhadap kode produk", () => {
     expect(result.logs.join(" ")).toContain("intents_executed");
   }, 60_000);
 
-  it("S4.3 quote dry 1Click dengan OneClickClient produk dan appFees dari konfigurasi produk", async () => {
+  it("S4.3 dry 1Click quote with the product OneClickClient and appFees from the product config", async () => {
     const appFees = parseAppFees('[{"recipient":"x207-probe.near","fee":10}]');
     const client = new OneClickClient({ config: { mode: "dry", baseUrl: "https://1click.chaindefuser.com", jwt: undefined, appFees } });
     const q = await client.quote({
       swapType: "EXACT_INPUT", originAsset: "nep141:usdt.tether-token.near", destinationAsset: "nep141:sol-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near",
       amount: "5000000", depositType: "INTENTS", recipientType: "INTENTS", refundType: "INTENTS", refundTo: "x207-probe.near", recipient: "x207-probe.near", dry: true,
     }).catch((error: unknown) => ({ failure: error instanceof Error ? error.message : String(error) }));
-    if ("failure" in q) throw new Error(`quote dry ditolak: ${q.failure}`);
+    if ("failure" in q) throw new Error(`dry quote rejected: ${q.failure}`);
     expect(q.quote.amountIn).toBe("5000000");
     expect(q.quote.depositAddress).toBeUndefined();
     expect(q.quoteRequest?.appFees).toEqual(appFees);
   }, 60_000);
 
-  it("S11.5 factory Sputnik DAO produk (DEFAULT_FACTORY) terbaca di mainnet lewat rpcViewFunction produk", async () => {
+  it("S11.5 factory Sputnik DAO product (DEFAULT_FACTORY) is readable on mainnet through the product rpcViewFunction", async () => {
     expect(DEFAULT_FACTORY).toBe("sputnik-dao.near");
     const count = await rpcViewFunction(MAINNET_RPC)(DEFAULT_FACTORY, "get_number_daos", {});
     expect(Number(count)).toBeGreaterThan(0);

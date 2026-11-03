@@ -9,17 +9,17 @@ import { AGENTS } from "../agents/shared/registry.ts";
 import { createAgentBuyer } from "../agents/shared/x207.ts";
 import { startStack, type Stack } from "../agents/test/stack.ts";
 
-describe("demo bisnis: pengadaan dalam anggaran", () => {
+describe("demo business: procurement within budget", () => {
   let stack: Stack | undefined;
   afterAll(async () => {
     await stack?.stop();
   });
 
-  it("agent pengadaan membeli dalam batas dan ditolak di luar batas", async () => {
+  it("procurement agent buys within limits and is refused outside them", async () => {
     const out = (line: string) => writeSync(1, `${line}\n`);
     const step = (doX: string, seeY: string) => out(`do: ${doX}\n   see: ${seeY}`);
 
-    out("\n== K-59 business: agent pengadaan `gpu` dengan anggaran dari pemilik");
+    out("\n== K-59 business: procurement agent `gpu` with a budget from the owner");
     stack = await startStack();
     const { fx, identity, urls } = stack;
     const listed = (name: "translator" | "summarizer" | "cleaner", maxPrice: string) => ({

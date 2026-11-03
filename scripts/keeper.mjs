@@ -18,7 +18,7 @@ const args = Object.fromEntries(
 const secretKey = process.env.KEEPER_SECRET_KEY;
 for (const [name, value] of [["--rpc-url", args["rpc-url"]], ["--contract", args.contract], ["--account", args.account], ["KEEPER_SECRET_KEY", secretKey]]) {
   if (!value || value === true) {
-    console.error(`${name} wajib diisi`);
+    console.error(`${name} is required`);
     process.exit(1);
   }
 }

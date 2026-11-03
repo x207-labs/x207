@@ -138,12 +138,12 @@ describe("batch 1 review: are amounts, decimals or token ids rounded or cut anyw
   // token, and nothing in the warnings says so. A grantor (or a slip) with 2 decimals for a 6-decimal token lists "2.5 USDC" for 250 units, which is 0.00025 USDC.
   it("TC-XR1-08 [finding X3] the warnings of a fungible token say that the decimals and the symbol were not checked against the token", () => {
     const t = buildAssetTemplate(inputs.ft!, NOW);
-    expect(t.warnings.join(" ")).toMatch(/desimal.*(belum|tidak) (diperiksa|diverifikasi)|(belum|tidak) (diperiksa|diverifikasi).*desimal/i);
+    expect(t.warnings.join(" ")).toMatch(/decimals.*not (checked|verified)|not (checked|verified).*decimals/i);
   });
 });
 
 describe("batch 1 review: do the risk warnings always appear?", () => {
-  const FEE = /biaya transfer/i;
+  const FEE = /transfer fee/i;
   const REGISTER = /storage_deposit/;
   const KINDS_WITH_TOKEN_FEE = ["ft", "rwa", "lst", "intents-balance", "pool-share-ft", "pool-share-mt"];
 
@@ -157,10 +157,10 @@ describe("batch 1 review: do the risk warnings always appear?", () => {
     const rwa = inputs.rwa as Extract<AssetInput, { kind: "rwa" }>;
     for (const whitelist of [undefined, { circleContract: true, grantor: true }, { circleContract: true, grantor: true, buyer: false }, { circleContract: true, grantor: true, buyer: true }]) {
       const w = buildAssetTemplate({ ...rwa, ...(whitelist ? { whitelist } : { whitelist: undefined }) } as AssetInput, NOW).warnings.join(" ");
-      expect(w, JSON.stringify(whitelist)).toMatch(/aturan penerbitnya/);
+      expect(w, JSON.stringify(whitelist)).toMatch(/issuer's rules/);
     }
-    expect(buildAssetTemplate({ ...rwa, whitelist: undefined } as AssetInput, NOW).warnings.join(" ")).toMatch(/belum diperiksa/);
-    expect(buildAssetTemplate({ ...rwa, whitelist: { circleContract: true, grantor: true, buyer: false } }, NOW).warnings.join(" ")).toMatch(/Pembeli belum ada di whitelist/);
+    expect(buildAssetTemplate({ ...rwa, whitelist: undefined } as AssetInput, NOW).warnings.join(" ")).toMatch(/not checked/);
+    expect(buildAssetTemplate({ ...rwa, whitelist: { circleContract: true, grantor: true, buyer: false } }, NOW).warnings.join(" ")).toMatch(/buyer is not in the token whitelist/i);
   });
 
   it("TC-XR1-11 [no problem] an RWA token is refused by the template when the circle or the grantor is not on the whitelist of the token", () => {
@@ -180,7 +180,7 @@ describe("batch 1 review: do the risk warnings always appear?", () => {
   // token in escrow until the grant has expired.
   it("TC-XR1-13 [finding X4] the warnings of an RWA listing say that the circle keeps its own list of accepted tokens and that the listing can be refused", () => {
     const w = buildAssetTemplate(inputs.rwa!, NOW).warnings.join(" ");
-    expect(w).toMatch(/(daftar|whitelist) (milik )?(lingkaran|circle)/i);
+    expect(w).toMatch(/circle (keeps its own )?list/i);
   });
 });
 

@@ -16,7 +16,7 @@ import { buildInvoiceVouchers, formatNetting, latestPerPair, netInvoices, sample
 const run = promisify(execFile);
 type Member = { account: SandboxAccount; secretKey: `ed25519:${string}` };
 
-describe.skipIf(!sandboxAvailable)("AG-021 tiga bisnis, invoice, kliring F3 dan residual F4", () => {
+describe.skipIf(!sandboxAvailable)("AG-021 three businesses, invoices, F3 clearing and F4 residual", () => {
   let fx: CircleFixture;
   let api: Server | undefined;
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe.skipIf(!sandboxAvailable)("AG-021 tiga bisnis, invoice, kliring F3 dan 
     await fx?.stop();
   });
 
-  it("TC-AG-021-01..04 total invoice sebelum dan sesudah netting cocok dengan kontrak", async () => {
+  it("TC-AG-021-01..04 invoice totals before and after netting match the contract", async () => {
     fx = await deployCircle();
     const rpcUrl = fx.sandbox.rpcUrl;
     const startBlock = (await (await fetch(rpcUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "status", params: [] }) })).json() as any).result.sync_info.latest_block_height as number;
@@ -102,7 +102,7 @@ describe.skipIf(!sandboxAvailable)("AG-021 tiga bisnis, invoice, kliring F3 dan 
         if (done()) return;
         await new Promise((r) => setTimeout(r, 1_000));
       }
-      throw new Error("indexer tidak menyusul dalam 60 detik");
+      throw new Error("indexer did not catch up within 60 seconds");
     };
     const phaseOf = () => (db.prepare("select phase from epochs where epoch = ?").get(epoch) as { phase: string } | undefined)?.phase;
     await catchUp(() => phaseOf() !== "open");

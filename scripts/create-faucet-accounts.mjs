@@ -16,7 +16,7 @@ const dir = argv.indexOf("--keys-dir");
 const keysDir = resolve(dir >= 0 ? argv.splice(dir, 2)[1] : ".keys");
 const accounts = argv;
 if (accounts.length === 0 || accounts.some((a) => !a.endsWith(".testnet"))) {
-  console.error("sebutkan akun berakhiran .testnet");
+  console.error("name an account ending in .testnet");
   process.exit(1);
 }
 const provider = new JsonRpcProvider({ url: "https://rpc.testnet.fastnear.com" });
@@ -35,7 +35,7 @@ for (const accountId of accounts) {
     const parent = new Account(parentId, provider, KeyPairSigner.fromSecretKey(parentKey.toString()));
     await parent.createAccount({ newAccountId: accountId, publicKey: key.getPublicKey(), nearToTransfer: BigInt(parseNearAmount(2)) });
     const sub = await provider.viewAccount({ accountId });
-    console.log(`created ${accountId} balance ${Number(BigInt(sub.amount) / 10n ** 21n) / 1000} NEAR (dari ${parentId})`);
+    console.log(`created ${accountId} balance ${Number(BigInt(sub.amount) / 10n ** 21n) / 1000} NEAR (from ${parentId})`);
     continue;
   }
   const run = spawnSync(
@@ -44,7 +44,7 @@ for (const accountId of accounts) {
     { encoding: "utf8" },
   );
   if (run.status !== 0) {
-    console.error(`gagal membuat ${accountId} (exit ${run.status}): ${(run.stderr || run.stdout).split("\n").slice(-4).join(" ").slice(0, 300)}`);
+    console.error(`failed to create ${accountId} (exit ${run.status}): ${(run.stderr || run.stdout).split("\n").slice(-4).join(" ").slice(0, 300)}`);
     process.exit(1);
   }
   const state = await provider.viewAccount({ accountId });

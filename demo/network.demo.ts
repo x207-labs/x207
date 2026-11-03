@@ -49,42 +49,42 @@ const NETWORKS = {
 
 const env = (name: string): string => {
   const value = process.env[name];
-  if (!value) throw new Error(`variabel ${name} wajib diisi`);
+  if (!value) throw new Error(`variable ${name} is required`);
   return value;
 };
 const out = (line: string) => writeSync(1, `${line}\n`);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-describe("demo jaringan nyata", () => {
-  it("rencana atau eksekusi satu epoch", async () => {
+describe("demo real network", () => {
+  it("plan or execution of one epoch", async () => {
     const network = env("DEMO_NETWORK") as keyof typeof NETWORKS;
-    if (!(network in NETWORKS)) throw new Error("DEMO_NETWORK harus testnet atau mainnet");
+    if (!(network in NETWORKS)) throw new Error("DEMO_NETWORK must be testnet or mainnet");
     const defaults = NETWORKS[network];
     const rpcUrl = process.env.RPC_URL ?? defaults.rpc;
     const contract = process.env.CIRCLE_CONTRACT ?? defaults.contract;
-    if (!contract) throw new Error("variabel CIRCLE_CONTRACT wajib diisi");
+    if (!contract) throw new Error("variable CIRCLE_CONTRACT is required");
     const usdt = process.env.USDT_TOKEN_ID ?? defaults.usdt;
     const payments = Number(process.env.DEMO_PAYMENTS ?? 20);
     const density = (process.env.DEMO_DENSITY ?? "medium") as Density;
 
-    out(`Rencana demo ${network} (kontrak ${contract}, USDT ${usdt}, RPC ${rpcUrl})`);
+    out(`Demo plan ${network} (contract ${contract}, USDT ${usdt}, RPC ${rpcUrl})`);
     for (const step of [
-      "F1 onboarding: 6 agent join + stake (12 transaksi, ditandatangani kunci pemilik)",
-      `F2 ${payments} panggilan berbayar dengan voucher (kepadatan ${density}); registrasi on-chain oleh relayer`,
-      ...(process.env.DEMO_BARTER === "yes" ? ["F5 (DEMO_BARTER=yes) cincin translator -> summarizer -> scraper: tiga tanda tangan, commit_bundle, 15 panggilan leg dengan bundleId; dilewati bila kontrak belum 0.0.4"] : []),
+      "F1 onboarding: 6 agents join + stake (12 transactions, signed by the owner key)",
+      `F2 ${payments} paid calls with vouchers (density ${density}); on-chain registration by the relayer`,
+      ...(process.env.DEMO_BARTER === "yes" ? ["F5 (DEMO_BARTER=yes) translator -> summarizer -> scraper ring: three signatures, commit_bundle, 15 leg calls with bundleId; skipped if the contract is not yet 0.0.4"] : []),
       process.env.DEMO_DAO_ACCOUNT
-        ? `F7 (DEMO_DAO_ACCOUNT=${process.env.DEMO_DAO_ACCOUNT}) proposal set_params lewat DAO, suara dewan; dilewati bila kontrak tidak dimiliki DAO itu`
-        : "set_params lewat proposal DAO tidak dijalankan (set DEMO_DAO_ACCOUNT, DEMO_DAO_COUNCIL dan DEMO_DAO_PARAMS_FILE untuk langkah ini, UM-036)",
-      "F3 keeper close_epoch (setelah cutoff_at), solver submit_clearing, keeper commit_epoch; laporan 207",
-      "F4 debtor melunasi residual, keeper finalize_epoch setelah payment_deadline, kreditor claim(epoch, near)",
-      "Metrik epoch dari endpoint metrics",
+        ? `F7 (DEMO_DAO_ACCOUNT=${process.env.DEMO_DAO_ACCOUNT}) set_params proposal through the DAO, council votes; skipped if the contract is not owned by that DAO`
+        : "set_params through a DAO proposal is not run (set DEMO_DAO_ACCOUNT, DEMO_DAO_COUNCIL and DEMO_DAO_PARAMS_FILE for this step, UM-036)",
+      "F3 keeper close_epoch (after cutoff_at), solver submit_clearing, keeper commit_epoch; 207 report",
+      "F4 debtor pays the residual, keeper finalize_epoch after payment_deadline, creditor claim(epoch, near)",
+      "Epoch metrics from the metrics endpoint",
     ]) out(`  - ${step}`);
     if (process.env.X207_CONFIRM_REAL_TX !== "yes") {
-      out("Tidak ada transaksi dikirim. Set X207_CONFIRM_REAL_TX=yes untuk menjalankan.");
+      out("No transactions sent. Set X207_CONFIRM_REAL_TX=yes to run.");
       return;
     }
     if (network === "mainnet" && process.env.X207_CONFIRM_MAINNET !== "yes") {
-      throw new Error("mainnet butuh X207_CONFIRM_MAINNET=yes dan transaksi dikonfirmasi manusia");
+      throw new Error("mainnet needs X207_CONFIRM_MAINNET=yes and human-confirmed transactions");
     }
 
     const servers: Server[] = [];
@@ -100,7 +100,7 @@ describe("demo jaringan nyata", () => {
     const accounts = Object.fromEntries(AGENT_NAMES.map((n) => [n, template.replace("{name}", n)])) as Record<AgentName, string>;
     const operatorKey = (prefix: string, accountId: string): `ed25519:${string}` => (process.env[`${prefix}_SECRET_KEY`] as `ed25519:${string}` | undefined) ?? ownerKey(accountId);
     const defaulter = process.env.DEMO_DEFAULT as AgentName | undefined;
-    if (defaulter && !AGENT_NAMES.includes(defaulter)) throw new Error(`DEMO_DEFAULT harus salah satu dari ${AGENT_NAMES.join(", ")}`);
+    if (defaulter && !AGENT_NAMES.includes(defaulter)) throw new Error(`DEMO_DEFAULT must be one of ${AGENT_NAMES.join(", ")}`);
     // X207_DEMO_RECORD=<file>: every hash goes to that JSON file as soon as it exists (docs/testnet-demo.json), never keys.
     const record = process.env.X207_DEMO_RECORD;
     const note = (stage: string, hash: string) => {
@@ -114,7 +114,7 @@ describe("demo jaringan nyata", () => {
     const view = createNearView(rpcUrl, contract);
 
     if (network === "testnet" && process.env.DEMO_MINT_USDT === "yes") {
-      log("== USDT tiruan (hanya testnet)");
+      log("== mock USDT (testnet only)");
       for (const n of AGENT_NAMES) {
         await createNearSender({ rpcUrl, accountId: accounts[n], secretKey: ownerKey(accounts[n]), onTx: stamp(`${n}.usdt`) })({
           receiverId: usdt, methodName: "mint", args: { account_id: accounts[n], amount: "1000000000" }, deposit: 0n,
@@ -175,13 +175,13 @@ describe("demo jaringan nyata", () => {
         }
         gasKey = { privateKey: key.toString(), lanes };
       }
-      log(`== SD-031 gas key NEP-611 pada relayer ${relayer.accountId}, ${lanes} jalur nonce`);
+      log(`== SD-031 gas key NEP-611 on relayer ${relayer.accountId}, ${lanes} nonce lanes`);
     }
     const registrationChain = new NearRegistrationChain({
       rpc, circleContract: contract, relayer, onHash: (hash) => stamp(gasKey ? "relayer.register(gas key)" : "relayer.register")({ hash }), ...(gasKey ? { gasKey } : {}),
     });
     const scheduler = new RegistrationScheduler({
-      circleContract: contract, store: pending, log: (e) => log(`   registrasi ${JSON.stringify(e)}`),
+      circleContract: contract, store: pending, log: (e) => log(`   registration ${JSON.stringify(e)}`),
       chain: registrationChain, concurrency: registrationChain.concurrency,
       onRegistered: ({ payer }) => facilitatorService.invalidatePayer?.(contract, payer),
     });
@@ -224,7 +224,7 @@ describe("demo jaringan nyata", () => {
         await pass();
         if (await done()) return;
         await sleep(15_000);
-        log(`   menunggu ${what}`);
+        log(`   waiting for ${what}`);
       }
     };
 
@@ -237,11 +237,11 @@ describe("demo jaringan nyata", () => {
       current = (await view("get_epoch", {})) as ContractAbi.EpochView;
       const remaining = Number(BigInt(current.cutoff_at) / 1_000_000n) - (await chainNowMs());
       if (current.phase === "open" && remaining >= MIN_REMAINING_MS) break;
-      log(`   epoch ${current.epoch} sisa ${Math.round(remaining / 1000)} detik, menunggu epoch berikutnya`);
+      log(`   epoch ${current.epoch} ${Math.round(remaining / 1000)} s left, waiting for the next epoch`);
       await sleep(15_000);
     }
     const epoch = current.epoch;
-    if (resume) log(`== Melanjutkan epoch ${epoch} (pembayaran dan registrasi sudah dilakukan di putaran sebelumnya)`);
+    if (resume) log(`== Resuming epoch ${epoch} (payments and registration were done in a previous round)`);
     if (!resume) scheduler.start(Number(process.env.DEMO_SCHEDULER_MS ?? 2_000));
     if (!resume && process.env.DEMO_BARTER === "yes") {
       const solverId = env("SOLVER_ACCOUNT_ID");
@@ -250,7 +250,7 @@ describe("demo jaringan nyata", () => {
         send: createNearSender({ rpcUrl, accountId: solverId, secretKey: operatorKey("SOLVER", solverId), onTx: stamp("solver") }),
       });
     }
-    if (!resume) log(`== F2 pembayaran voucher (epoch ${epoch})`);
+    if (!resume) log(`== F2 voucher payments (epoch ${epoch})`);
     // one buyer client per agent: it keeps its own membership and headroom reads between calls
     const buyers = new Map<AgentName, ReturnType<typeof createAgentBuyer>>();
     const buyerOf = (name: AgentName, seller: AgentName) => {
@@ -264,7 +264,7 @@ describe("demo jaringan nyata", () => {
       for (let attempt = 0; ; attempt += 1) {
         response = await buyerOf(buyer, seller);
         if (response.status !== 503 || attempt >= 6) break;
-        log(`   ${buyer} -> ${seller}: HTTP 503, ulang ${attempt + 1}/6 setelah ${4 * (attempt + 1)} detik`);
+        log(`   ${buyer} -> ${seller}: HTTP 503, retry ${attempt + 1}/6 after ${4 * (attempt + 1)} seconds`);
         await sleep(4_000 * (attempt + 1));
       }
       await sleep(Number(process.env.DEMO_CALL_PAUSE_MS ?? 0));
@@ -275,26 +275,26 @@ describe("demo jaringan nyata", () => {
       }
     }
     if (!resume) {
-      log(`   ${payments} panggilan berbayar selesai`);
+      log(`   ${payments} paid calls done`);
       while (pending.listOpen(contract).length > 0) await sleep(2_000);
       scheduler.stop();
-      log("   semua pasangan teregistrasi on-chain");
+      log("   all pairs registered on-chain");
     }
 
-    log("== F3 kliring");
+    log("== F3 clearing");
     await waitFor("close_epoch", async () => !["open", "cutoff"].includes(await phase(epoch)));
     const solved = await run("node", ["solver/dist/cli.js", "--epoch", String(epoch)], {
       env: { PATH: process.env.PATH, X207_READ_API_URL: readApi, X207_CIRCLE_ID: "agents-main", NEAR_RPC_URL: rpcUrl, X207_CONTRACT_ID: contract, SOLVER_ACCOUNT_ID: env("SOLVER_ACCOUNT_ID"), SOLVER_PRIVATE_KEY: operatorKey("SOLVER", env("SOLVER_ACCOUNT_ID")) },
     }).catch((error: { stdout?: string; stderr?: string }) => ({ stdout: error.stdout ?? "", stderr: error.stderr ?? "" }));
-    if (!solved.stdout.trim()) log(`   solver: ${(solved.stderr || "tanpa keluaran").trim().split("\n").slice(-2).join(" | ").slice(0, 200)}`);
+    if (!solved.stdout.trim()) log(`   solver: ${(solved.stderr || "no output").trim().split("\n").slice(-2).join(" | ").slice(0, 200)}`);
     const solverTx = /tx[ =:]+([A-Za-z0-9]{40,})/.exec(solved.stderr)?.[1];
-    log(`   solver: ${solverTx ? `proposal dikirim, tx ${solverTx}` : solved.stdout.trim() ? "proposal dihitung tetapi tidak dikirim" : "tidak ada yang dikliring"}`);
+    log(`   solver: ${solverTx ? `proposal submitted, tx ${solverTx}` : solved.stdout.trim() ? "proposal computed but not submitted" : "nothing to clear"}`);
     if (solverTx) note("solver.submit_clearing", solverTx);
     await waitFor("commit_epoch", async () => ["payment_window", "finalized"].includes(await phase(epoch)));
     const members = AGENT_NAMES.map((n) => accounts[n]);
     for (const account of members) {
       const position = (await view("net_position", { epoch, account_id: account })) as { net: string; role: string; amount: string; status: string } | null;
-      log(`   posisi ${account}: ${position ? `${position.role} net=${position.net} status=${position.status}` : "nol"}`);
+      log(`   position ${account}: ${position ? `${position.role} net=${position.net} status=${position.status}` : "zero"}`);
     }
 
     log("== F4 settlement");
@@ -315,48 +315,48 @@ describe("demo jaringan nyata", () => {
       const member = (await view("member", { account_id: accounts[defaulter] })) as ContractAbi.MemberView;
       log(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
       const position = (await view("net_position", { epoch, account_id: accounts[defaulter] })) as { status: string; amount: string } | null;
-      log(`   posisi ${defaulter} setelah finalize: ${JSON.stringify(position)}`);
+      log(`   position ${defaulter} after finalize: ${JSON.stringify(position)}`);
       // UM-037: cabang gagal bayar sampai payment window habis: stake dipotong, status 409 di laporan 207, limit 0
       const cut = stakeBefore === undefined ? 0n : BigInt(stakeBefore) - BigInt(member.stake);
-      log(`   cabang gagal bayar: stake dipotong ${cut} dari ${stakeBefore}, laporan 207 status ${position?.status === "defaulted" ? 409 : "bukan 409 (posisi " + position?.status + ")"}, limit ${member.limit}`);
+      log(`   default branch: stake slashed ${cut} of ${stakeBefore}, 207 report status ${position?.status === "defaulted" ? 409 : "not 409 (position " + position?.status + ")"}, limit ${member.limit}`);
     }
     const daoAccount = process.env.DEMO_DAO_ACCOUNT;
     if (daoAccount) {
-      log(`== F7 set_params lewat proposal DAO ${daoAccount}`);
+      log(`== F7 set_params through DAO proposal ${daoAccount}`);
       const owner = (await view("get_owner", {}).catch(() => null)) as string | null;
       const council = (process.env.DEMO_DAO_COUNCIL ?? "").split(",").map((a) => a.trim()).filter(Boolean);
-      if (owner !== daoAccount) log(`   dilewati: pemilik ${contract} adalah ${owner ?? "tidak terbaca"}, bukan ${daoAccount}`);
-      else if (council.length === 0 || !process.env.DEMO_DAO_PARAMS_FILE) log("   dilewati: isi DEMO_DAO_COUNCIL dan DEMO_DAO_PARAMS_FILE");
+      if (owner !== daoAccount) log(`   skipped: owner of ${contract} is ${owner ?? "unreadable"}, not ${daoAccount}`);
+      else if (council.length === 0 || !process.env.DEMO_DAO_PARAMS_FILE) log("   skipped: set DEMO_DAO_COUNCIL and DEMO_DAO_PARAMS_FILE");
       else {
         const daoView = createNearView(rpcUrl, daoAccount);
         const addArgs = buildAddProposalArgs({ contract, params: parseParamsJson(readFileSync(resolve(process.env.DEMO_DAO_PARAMS_FILE), "utf8")) });
-        log(`   parameter sebelum: ${JSON.stringify(await view("get_params", {}))}`);
+        log(`   parameters before: ${JSON.stringify(await view("get_params", {}))}`);
         const proposalId = Number(
           await createNearSender({ rpcUrl, accountId: council[0]!, secretKey: ownerKey(council[0]!), onTx: stamp("dao.add_proposal") })({
             receiverId: daoAccount, methodName: "add_proposal", args: addArgs, deposit: 100_000_000_000_000_000_000_000n, gas: 100_000_000_000_000n,
           }),
         );
-        log(`   proposal ${proposalId} diajukan oleh ${council[0]}`);
+        log(`   proposal ${proposalId} submitted by ${council[0]}`);
         let status = "InProgress";
         for (const member of council) {
           await createNearSender({ rpcUrl, accountId: member, secretKey: ownerKey(member), onTx: stamp(`dao.vote.${member}`) })({
             receiverId: daoAccount, methodName: "act_proposal", args: buildActProposalArgs({ id: proposalId }), deposit: 0n, gas: 150_000_000_000_000n,
           });
           status = ((await daoView("get_proposal", { id: proposalId })) as { status: string }).status;
-          log(`   suara ${member}: status ${status}`);
+          log(`   vote ${member}: status ${status}`);
           if (status === "Approved") break;
         }
-        log(`   parameter sesudah: ${JSON.stringify(await view("get_params", {}))}`);
-        if (status !== "Approved") log("   proposal belum lolos: dewan kurang suara, tidak ada perubahan");
+        log(`   parameters after: ${JSON.stringify(await view("get_params", {}))}`);
+        if (status !== "Approved") log("   proposal not passed: council has too few votes, no change");
       }
     }
     const finalView = (await view("get_epoch", { epoch })) as ContractAbi.EpochView;
     const edgesNow = (await view("list_obligations", { epoch, from_index: 0, limit: 300 })) as ContractAbi.ObligationView[];
     const voucherCount = edgesNow.reduce((sum, e) => sum + e.last_seq, 0);
     const residualCount = (await view("list_positions", { epoch, from_index: 0, limit: 300 }) as Array<{ role: string }>).filter((p) => p.role === "debtor").length;
-    log(`   metrik dari view kontrak: voucher=${voucherCount} edge=${edgesNow.length} cleared=${finalView.total_cleared} total=${finalView.total_obligation} transfer_residual=${residualCount}`);
-    log(`   ${voucherCount} pembayaran jadi ${residualCount}`);
-    log("== Hash transaksi per tahap");
+    log(`   metrics from the contract view: voucher=${voucherCount} edge=${edgesNow.length} cleared=${finalView.total_cleared} total=${finalView.total_obligation} transfer_residual=${residualCount}`);
+    log(`   ${voucherCount} payments became ${residualCount}`);
+    log("== Transaction hashes per stage");
     for (const h of hashes) log(`   ${h.stage} ${h.hash}`);
 
     mkdirSync(".demo", { recursive: true });

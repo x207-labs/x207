@@ -54,7 +54,7 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
     // 03: 300 panggilan berurutan, lalu flush
     for (let i = 2; i <= 300; i++) {
       const response = await paid(`${urls.summarizer}/api/summarize?input=halo`);
-      expect(response.status, `panggilan ${i}`).toBe(200);
+      expect(response.status, `call ${i}`).toBe(200);
     }
     scheduler.stop();
     // Sisa di bawah ambang (1 credit) memang tidak didaftarkan oleh putaran biasa: ia menunggu jendela flush sebelum `cutoff_at`
@@ -67,7 +67,7 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
       await scheduler.tick();
       await new Promise((r) => setTimeout(r, 500));
     }
-    expect(pending.listOpen(fx.circle.accountId), "baris registrasi masih terbuka setelah 30 detik").toEqual([]);
+    expect(pending.listOpen(fx.circle.accountId), "registration row still open after 30 seconds").toEqual([]);
     console.log("scheduler", JSON.stringify(schedulerLog.slice(0, 6)), "registrations", registrations.length);
     const pair = { epoch: epoch.epoch, debtor: translator.accountId, creditor: summarizer.accountId };
     const obligation = await fx.sandbox.view<ContractAbi.ObligationView>(fx.circle.accountId, "obligation", pair);

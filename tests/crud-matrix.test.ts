@@ -1,5 +1,5 @@
 // UM-020 dan UM-065: docs/crud-matrix.md cocok dengan semua panah proses <-> store di DFD Level 1 (vault, 33 panah) dan DFD Level 2 F8 (proses P9, 8 panah)
-// dan memakai nama status ADR-26.
+// dan uses the ADR-26 status names.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -33,7 +33,7 @@ const matrix = new Map<string, string[][]>(
 const letters = (process: string, store: string): string[] => matrix.get(process)![Number(store.slice(1)) - 1]!;
 
 describe("UM-020 matriks CRUD proses x store", () => {
-  it("sembilan proses dan sebelas store, hanya huruf C, R, U", () => {
+  it("nine processes and eleven stores, only the letters C, R, U", () => {
     expect([...matrix.keys()]).toEqual(["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9"]);
     for (const [process, cells] of matrix) {
       expect(cells, process).toHaveLength(STORES);
@@ -41,7 +41,7 @@ describe("UM-020 matriks CRUD proses x store", () => {
     }
   });
 
-  it("tiap panah DFD punya huruf yang sesuai arahnya: ke store C atau U, dari store R", () => {
+  it("every DFD arrow has a letter that fits its direction: to a store C or U, from a store R", () => {
     expect(LEVEL1).toHaveLength(33);
     expect(F8).toHaveLength(8);
     expect(ARROWS).toHaveLength(41);
@@ -53,7 +53,7 @@ describe("UM-020 matriks CRUD proses x store", () => {
     }
   });
 
-  it("tiap huruf berasal dari sebuah panah: tidak ada sel tanpa dasar", () => {
+  it("every letter comes from an arrow: no cell without a basis", () => {
     for (const [process, cells] of matrix) {
       cells.forEach((found, i) => {
         const store = `D${i + 1}`;
@@ -68,19 +68,19 @@ describe("UM-020 matriks CRUD proses x store", () => {
     }
   });
 
-  it("memakai nama status ADR-26", () => {
+  it("uses the ADR-26 status names", () => {
     for (const name of ["`pending`", "`active`", "`suspended`", "`exited`", "`due`", "`paid`", "`defaulted`", "`claimable`", "`claimed`"]) {
       expect(text, name).toContain(name);
     }
   });
 
-  it("method yang disebut ada di ABI 0.0.4", () => {
+  it("the named methods are in ABI 0.0.4", () => {
     const abi = JSON.parse(readFileSync(fileURLToPath(new URL("../sdk/packages/core/abi/x207-circle.abi.json", import.meta.url)), "utf8")) as { body: { functions: Array<{ name: string }> } };
     const names = new Set(abi.body.functions.map((f) => f.name));
     const mentioned = new Set([...text.matchAll(/`([a-z_]+)`/g)].map((m) => m[1]!));
     for (const method of ["join", "ft_on_transfer", "register_cumulative", "register_voucher", "close_epoch", "submit_clearing", "commit_epoch", "claim", "finalize_epoch", "withdraw_stake", "set_params", "admit_member", "commit_bundle", "register_in_bundle", "post_intent", "get_params", "get_epoch", "get_pending_params", "member", "headroom"]) {
       expect(mentioned.has(method), `${method} disebut`).toBe(true);
-      expect(names.has(method), `${method} di ABI`).toBe(true);
+      expect(names.has(method), `${method} in the ABI`).toBe(true);
     }
   });
 });

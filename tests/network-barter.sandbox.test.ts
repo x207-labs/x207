@@ -9,8 +9,8 @@ import { startStack, type Stack } from "../agents/test/stack.ts";
 import { runBarterRing } from "../demo/barter-step.ts";
 import { sandboxAvailable } from "../sdk/test-support/sandbox.ts";
 
-describe("UM-032 langkah F5 demo jaringan: kontrak lama dilewati", () => {
-  it("view get_bundle ditolak: langkah dilewati dengan pesan dan tanpa transaksi", async () => {
+describe("UM-032 network demo step F5: an old contract is skipped", () => {
+  it("a rejected get_bundle view: the step is skipped with a message and no transaction", async () => {
     const lines: string[] = [];
     let sent = 0;
     const result = await runBarterRing({
@@ -24,17 +24,17 @@ describe("UM-032 langkah F5 demo jaringan: kontrak lama dilewati", () => {
     });
     expect(result).toEqual({ status: "skipped" });
     expect(sent).toBe(0);
-    expect(lines.join("\n")).toMatch(/belum punya get_bundle/);
+    expect(lines.join("\n")).toMatch(/get_bundle/);
   });
 });
 
-describe.skipIf(!sandboxAvailable)("UM-032 langkah F5 demo jaringan di near-sandbox", () => {
+describe.skipIf(!sandboxAvailable)("UM-032 network demo step F5 on near-sandbox", () => {
   let stack: Stack;
   afterAll(async () => {
     await stack?.stop();
   });
 
-  it("commit_bundle oleh solver, leg ber-bundleId terdaftar penuh, lalu pembayaran F2 pada pasangan yang sama diterima", async () => {
+  it("commit_bundle by the solver, legs with a bundleId are fully registered, then an F2 payment on the same pair is accepted", async () => {
     stack = await startStack();
     const { fx, identity, urls } = stack;
     const contract = fx.circle.accountId;
@@ -45,7 +45,7 @@ describe.skipIf(!sandboxAvailable)("UM-032 langkah F5 demo jaringan di near-sand
     const epoch = (await fx.sandbox.view<ContractAbi.EpochView>(contract, "get_epoch", {})).epoch;
     const lines: string[] = [];
     const result = await runBarterRing({
-      // final seperti createNearView di demo jaringan; facilitator juga membaca blok final
+      // final like createNearView in the network demo; the facilitator also reads the final block
       view: (m, a) => stack.rpc.view(contract, m, a), rpcUrl, contract, epoch, accounts, identity, urls, log: (l) => lines.push(l),
       send: async (call: ContractCall) => {
         const r = await solverAccount.call(call, "EXECUTED_OPTIMISTIC");
@@ -53,7 +53,7 @@ describe.skipIf(!sandboxAvailable)("UM-032 langkah F5 demo jaringan di near-sand
         return r.value;
       },
     });
-    if (result.status !== "done") throw new Error(`langkah dilewati: ${lines.join(" | ")}`);
+    if (result.status !== "done") throw new Error(`step skipped: ${lines.join(" | ")}`);
     expect(result.terms.legs).toHaveLength(3);
     expect(Object.values(result.paid).every((v) => v === BigInt(LEG_AMOUNT))).toBe(true);
     expect(await stack.scheduler.tick()).toMatchObject({ registered: 3, dropped: 0, retrying: 0 });

@@ -20,7 +20,7 @@ import { keeperPass } from "../scripts/lib/keeper.mjs";
 
 const PRICE = "50000"; // 0.05 credit sehari, di bawah batas belanja agent (0,1 per panggilan)
 
-describe("demo F8 kelas B: sewa function-call key dan cabut saat gagal bayar", () => {
+describe("demo F8 class B: rent a function-call key and revoke it on default", () => {
   let stack: Stack | undefined;
   let api: Server | undefined;
   let broker: RunningBroker | undefined;
@@ -31,7 +31,7 @@ describe("demo F8 kelas B: sewa function-call key dan cabut saat gagal bayar", (
     await stack?.stop();
   });
 
-  it("pemberi menyewakan, penyewa memanggil dalam batas, key dicabut saat penyewa defaulted", async () => {
+  it("grantor rents out, lessee calls within limits, key is revoked when the lessee is defaulted", async () => {
     const out = (line: string) => writeSync(1, `${line}\n`);
     const step = (doX: string, seeY: string) => out(`do: ${doX}\n   see: ${seeY}`);
     out("\n== F8 class B: rent a NEAR function-call key (sandbox, no TEE, class C not built)");

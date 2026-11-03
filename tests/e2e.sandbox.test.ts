@@ -82,7 +82,7 @@ describe.skipIf(!sandboxAvailable)("UM-025 e2e penuh di near-sandbox", () => {
     await Promise.all(fixtures.map((f) => f.stop()));
   });
 
-  it("TC-UM-025-01..04 join, voucher, kliring, claim sebelum finalize ditolak, settle, finalize, claim", async () => {
+  it("TC-UM-025-01..04 join, voucher, clearing, claim before finalize rejected, settle, finalize, claim", async () => {
     const fx = await deployCircle();
     fixtures.push(fx);
     const m = await setup(fx);
@@ -122,7 +122,7 @@ describe.skipIf(!sandboxAvailable)("UM-025 e2e penuh di near-sandbox", () => {
     expect(pool.epoch_pools).toBe("0");
   }, 900_000);
 
-  it("TC-UM-025-05 debtor tidak membayar: defaulted, stake terpotong sebesar due, suspended, limit 0, kreditor dibayar penuh", async () => {
+  it("TC-UM-025-05 debtor does not pay: defaulted, stake slashed by due, suspended, limit 0, creditor paid in full", async () => {
     const fx = await deployCircle();
     fixtures.push(fx);
     const m = await setup(fx);

@@ -24,7 +24,7 @@ import { sandboxAvailable } from "../sdk/test-support/sandbox.ts";
 
 const run = promisify(execFile);
 
-describe.skipIf(!sandboxAvailable)("UM-066 marketplace F9: listing menunggu, negosiasi, barter cepat, pencari, siklus, kliring", () => {
+describe.skipIf(!sandboxAvailable)("UM-066 marketplace F9: waiting listing, negotiation, quick barter, seeker, cycle, clearing", () => {
   let stack: Stack;
   let api: Server | undefined;
   afterAll(async () => {
@@ -33,7 +33,7 @@ describe.skipIf(!sandboxAvailable)("UM-066 marketplace F9: listing menunggu, neg
     await stack?.stop();
   });
 
-  it("tiga bundle dalam satu epoch dibayar lewat leg dan dikliring F3", async () => {
+  it("three bundles in one epoch are paid through legs and cleared by F3", async () => {
     const clock = { offset: 0 };
     stack = await startStack({ now: () => Date.now() + clock.offset });
     const { fx, identity, urls } = stack;
@@ -60,7 +60,7 @@ describe.skipIf(!sandboxAvailable)("UM-066 marketplace F9: listing menunggu, neg
         if (done()) return;
         await new Promise((r) => setTimeout(r, 1_000));
       }
-      throw new Error("indexer tidak menyusul dalam 90 detik");
+      throw new Error("indexer did not catch up within 90 seconds");
     };
     const count = (sql: string) => Number((db.prepare(sql).get() as { n: number }).n);
     await catchUp(() => count("select count(*) as n from members where status = 'active'") >= 6);

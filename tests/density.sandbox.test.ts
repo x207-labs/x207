@@ -16,7 +16,7 @@ import { sandboxAvailable } from "../sdk/test-support/sandbox.ts";
 
 const run = promisify(execFile);
 
-describe.skipIf(!sandboxAvailable)("AG-010 variasi kepadatan dan AG-009 TC-04", () => {
+describe.skipIf(!sandboxAvailable)("AG-010 density variation and AG-009 TC-04", () => {
   let stack: Stack;
   let api: Server | undefined;
   afterAll(async () => {
@@ -24,7 +24,7 @@ describe.skipIf(!sandboxAvailable)("AG-010 variasi kepadatan dan AG-009 TC-04", 
     await stack?.stop();
   });
 
-  it("cleared ratio per tingkat sama dengan metrik backend; bintang hampir nol; tinggi di atas rendah", async () => {
+  it("cleared ratio per level equals the backend metric; star is near zero; high is above low", async () => {
     const clock = { offset: 0 };
     stack = await startStack({ now: () => Date.now() + clock.offset });
     const { fx, identity, urls } = stack;
@@ -50,7 +50,7 @@ describe.skipIf(!sandboxAvailable)("AG-010 variasi kepadatan dan AG-009 TC-04", 
         if (done()) return;
         await new Promise((r) => setTimeout(r, 1_000));
       }
-      throw new Error("indexer tidak menyusul dalam 90 detik");
+      throw new Error("indexer did not catch up within 90 seconds");
     };
     const pass = () =>
       keeperPass({

@@ -18,7 +18,7 @@ import { buildInvoiceVouchers, formatNetting, latestPerPair, netInvoices, sample
 const run = promisify(execFile);
 type Member = { account: SandboxAccount; secretKey: `ed25519:${string}` };
 
-describe("demo invoice: tiga bisnis, kliring F3, residual F4", () => {
+describe("demo invoice: three businesses, F3 clearing, F4 residual", () => {
   let fx: CircleFixture;
   let api: Server | undefined;
   afterAll(async () => {
@@ -26,7 +26,7 @@ describe("demo invoice: tiga bisnis, kliring F3, residual F4", () => {
     await fx?.stop();
   });
 
-  it("invoice menjadi voucher, kliring, residual", async () => {
+  it("invoices become vouchers, clearing, residual", async () => {
     const out = (line: string) => writeSync(1, `${line}\n`);
     const step = (doX: string, seeY: string) => out(`do: ${doX}\n   see: ${seeY}`);
     fx = await deployCircle();
@@ -61,7 +61,7 @@ describe("demo invoice: tiga bisnis, kliring F3, residual F4", () => {
       circle: fx.circle.accountId, epoch, invoices,
       secretKeys: Object.fromEntries(members.map((m) => [m.account.accountId, m.secretKey])),
     });
-    out("\n== K-59 realworld: tiga bisnis, tiga invoice");
+    out("\n== K-59 realworld: three businesses, three invoices");
     for (const i of invoices) out(`   ${i.id}: ${i.debtor.split(".")[0]} owes ${i.issuer.split(".")[0]} ${Number(i.amount) / 1e6} credit (${i.memo})`);
     step("each debtor signs a voucher whose resource is invoice:<sha256 of the invoice>", `${vouchers.length} vouchers, resources ${vouchers.map((v) => `invoice:${v.hash.slice(0, 8)}…`).join(", ")}; invoice text never goes on-chain`);
     for (const v of latestPerPair(vouchers)) {
@@ -109,7 +109,7 @@ describe("demo invoice: tiga bisnis, kliring F3, residual F4", () => {
         if (done()) return;
         await new Promise((r) => setTimeout(r, 1_000));
       }
-      throw new Error("indexer tidak menyusul dalam 60 detik");
+      throw new Error("indexer did not catch up within 60 seconds");
     };
     const phaseOf = () => (db.prepare("select phase from epochs where epoch = ?").get(epoch) as { phase: string } | undefined)?.phase;
     await catchUp(() => phaseOf() !== "open");

@@ -16,12 +16,12 @@ const optional = (name, fallback) => {
 };
 const arg = (name) => {
   const i = process.argv.indexOf(`--${name}`);
-  if (i < 0 || !process.argv[i + 1]) throw new Error(`--${name} wajib`);
+  if (i < 0 || !process.argv[i + 1]) throw new Error(`--${name} is required`);
   return process.argv[i + 1];
 };
 const keysDir = resolve(arg("keys-dir"));
 const [circleId, usdtId, ownerId] = [arg("circle"), arg("usdt"), arg("owner")];
-for (const id of [circleId, usdtId, ownerId]) if (!id.endsWith(".testnet")) throw new Error("hanya akun .testnet");
+for (const id of [circleId, usdtId, ownerId]) if (!id.endsWith(".testnet")) throw new Error("only .testnet accounts");
 const provider = new JsonRpcProvider({ url: "https://rpc.testnet.fastnear.com" });
 const accountOf = (id) => new Account(id, provider, KeyPairSigner.fromSecretKey(JSON.parse(readFileSync(resolve(keysDir, "testnet", `${id}.json`), "utf8")).secret_key));
 const hasCode = async (id) => (await provider.viewAccount({ accountId: id })).code_hash !== "11111111111111111111111111111111";
@@ -37,7 +37,7 @@ for (const [id, wasm, initArgs] of [
   [circleId, "x207_circle.wasm", { owner_id: ownerId, circle_id: "agents-main", usdt_token_id: usdtId, intents_id: "intents.testnet", params: SHORT_PARAMS }],
 ]) {
   if (await hasCode(id)) {
-    console.log(`sudah ada kode di ${id}, dilewati`);
+    console.log(`code already exists at ${id}, skipped`);
     continue;
   }
   const code = readFileSync(resolve(contracts, wasm));

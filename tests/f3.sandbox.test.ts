@@ -14,7 +14,7 @@ import { sandboxAvailable, type SandboxAccount } from "../sdk/test-support/sandb
 const run = promisify(execFile);
 type Member = { account: SandboxAccount; secretKey: `ed25519:${string}` };
 
-describe.skipIf(!sandboxAvailable)("UM-024 F3 tiga agent dengan indexer dan solver nyata", () => {
+describe.skipIf(!sandboxAvailable)("UM-024 F3 three agents with a real indexer and solver", () => {
   let fx: CircleFixture;
   let api: Server | undefined;
   afterAll(async () => {
@@ -97,7 +97,7 @@ describe.skipIf(!sandboxAvailable)("UM-024 F3 tiga agent dengan indexer dan solv
         if (done()) return;
         await new Promise((r) => setTimeout(r, 1_000));
       }
-      throw new Error("indexer tidak menyusul dalam 60 detik");
+      throw new Error("indexer did not catch up within 60 seconds");
     };
     const phaseOf = () => (db.prepare("select phase from epochs where epoch = ?").get(epoch) as { phase: string } | undefined)?.phase;
     await catchUp(() => phaseOf() !== "open");

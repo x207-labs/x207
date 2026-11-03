@@ -11,7 +11,7 @@ describe.skipIf(!sandboxAvailable)("UM-022 keeper", () => {
     await fx?.stop();
   });
 
-  it("TC-UM-022-01..06 close_epoch, commit_epoch, finalize_epoch tepat sekali pada waktunya", async () => {
+  it("TC-UM-022-01..06 close_epoch, commit_epoch, finalize_epoch exactly once on time", async () => {
     fx = await deployCircle();
     const keeper = await fx.sandbox.createAccount("keeper", "20");
     const events: Array<{ event: string }> = [];
