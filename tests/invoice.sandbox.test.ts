@@ -35,7 +35,8 @@ describe.skipIf(!sandboxAvailable)("UM-086 invoice and installments of three epo
     fx = await deployCircle();
     const rpcUrl = fx.sandbox.rpcUrl;
     const rpc = async (method: string, params: unknown) => ((await (await fetch(rpcUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) })).json()) as any).result;
-    const startBlock = (await rpc("status", [])).sync_info.latest_block_height as number;
+    // from the first block: the indexer must see the epoch_opened of the first epoch, which was emitted when the contract was initialised, before any member joined
+    const startBlock = 1;
     const view = createCircleViewFn({ circleContract: fx.circle.accountId, rpcUrls: [rpcUrl] });
     const join = async (name: string): Promise<Member> => {
       const account = await fx.member(name);
@@ -87,16 +88,22 @@ describe.skipIf(!sandboxAvailable)("UM-086 invoice and installments of three epo
       contractId: contract, startBlock, fetchParams: () => view_("get_params", {}) as Promise<ContractAbi.Params>,
     });
     await indexer.bootstrap();
+    // The indexer reads final blocks, and the sandbox makes blocks slowly when nothing is sent: nudge the clock a little while waiting.
     const catchUp = async (done: () => boolean) => {
       for (let i = 0; i < 90; i++) {
         await indexer.drain();
         if (done()) return;
+        if (i % 5 === 4) await fx.sandbox.advanceTo((await fx.sandbox.blockTimestampMs()) + 2_000);
         await new Promise((r) => setTimeout(r, 1_000));
       }
-      throw new Error("the indexer did not catch up in 90 seconds");
+      const members = (db.prepare("select count(*) as n from members").get() as { n: number }).n;
+      const epochs = db.prepare("select epoch, phase from epochs").all();
+      const cursor = db.prepare("select last_block_height, head_block_height from indexer_cursor").get();
+      throw new Error(`the indexer did not catch up in 90 seconds: members ${members}, epochs ${JSON.stringify(epochs)}, cursor ${JSON.stringify(cursor)}`);
     };
     const phaseOf = (epoch: number) => (db.prepare("select phase from epochs where epoch = ?").get(epoch) as { phase: string } | undefined)?.phase;
-    api = createApiServer({ db, extraRoutes: marketplaceRoutes(db) });
+    // The epoch rows of the indexer appear with the first epoch event after the cutoff, so the open epoch is read from the contract (the book falls back to the rows otherwise).
+    api = createApiServer({ db, extraRoutes: marketplaceRoutes(db, { chainView: (_contract: string, method: string, args: object) => view_(method, args) }) });
     await new Promise<void>((resolve) => api!.listen(0, "127.0.0.1", resolve));
     const apiUrl = `http://127.0.0.1:${(api.address() as AddressInfo).port}`;
     const base = `${apiUrl}/x207/circles/agents-main`;
@@ -104,7 +111,7 @@ describe.skipIf(!sandboxAvailable)("UM-086 invoice and installments of three epo
 
     // --- epoch E: the three invoices are requested and approved
     const E = (await view_<ContractAbi.EpochView>("get_epoch", {})).epoch;
-    await catchUp(() => phaseOf(E) === "open" && (db.prepare("select count(*) as n from members").get() as { n: number }).n === 3);
+    await catchUp(() => (db.prepare("select count(*) as n from members").get() as { n: number }).n === 3);
     const docX: InvoiceDocument = { id: "INV-X", issuer: supplier.account.accountId, debtor: maker.account.accountId, amount: credit(90), memo: "components, three installments" };
     const docY: InvoiceDocument = { id: "INV-Y", issuer: retailer.account.accountId, debtor: supplier.account.accountId, amount: credit(30), memo: "storefront ads" };
     const docZ: InvoiceDocument = { id: "INV-Z", issuer: maker.account.accountId, debtor: retailer.account.accountId, amount: credit(30), memo: "finished goods" };
