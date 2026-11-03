@@ -1,0 +1,65 @@
+{
+  "factory": "sputnikv2.testnet",
+  "dao": "x207v10.sputnikv2.testnet",
+  "circle": "x207-circle-v10d.testnet",
+  "council": [
+    "x207-dao-v10.testnet",
+    "b.x207-dao-v10.testnet"
+  ],
+  "steps": [
+    {
+      "step": "council member",
+      "account": "x207-dao-v10.testnet",
+      "method": "create_account",
+      "hash": "DcBzXxUvMFVMPXg6WrefRX8HppiY8YmDfKSL3AMzYTim"
+    },
+    {
+      "step": "create DAO",
+      "account": "x207-dao-v10.testnet",
+      "method": "create",
+      "hash": "8Wuepe5gt4a1hiDXqUzvXtTduXSfutvS1a3K5oARLdbH"
+    },
+    {
+      "step": "deploy circle",
+      "account": "x207-circle-v10d.testnet",
+      "method": "deploy_contract",
+      "hash": "3X2BFbJqjbSJdxZjNtvpUyaBgq2XSyzu5VLuubXYzS1d"
+    },
+    {
+      "step": "init circle",
+      "account": "x207-circle-v10d.testnet",
+      "method": "new",
+      "hash": "4v33citzNhBs3Wi15XVw7s3p2dcjH6GhtfaKtfZjyw4L"
+    },
+    {
+      "step": "add_proposal",
+      "account": "x207-dao-v10.testnet",
+      "method": "add_proposal",
+      "hash": "HtodjoZXhJbrWMJZXUwiJfvPVzHV8AhxucZoeS5v6E15"
+    },
+    {
+      "step": "vote A",
+      "account": "x207-dao-v10.testnet",
+      "method": "act_proposal",
+      "hash": "7HqjdJjbzsRsyGGAjoFt6Lx7dohcJTbRYD6fUjVr3TdP"
+    },
+    {
+      "step": "vote B",
+      "account": "b.x207-dao-v10.testnet",
+      "method": "act_proposal",
+      "hash": "Vc8qNSicoGb9EtGpYuofcqpXvSnoJeVnhzqW8b3j8Xe"
+    },
+    {
+      "step": "close_epoch (keeper)",
+      "account": "x207-circle-v10d.testnet",
+      "method": "close_epoch",
+      "hash": "2RdJx8xEemL9JgWQct4NHnDogBeC53cRfoJz9hPvwyAD"
+    },
+    {
+      "step": "summary",
+      "account": "x207v10.sputnikv2.testnet",
+      "method": "proposal 0 approved, get_params.limit_decay = 100 from epoch 2",
+      "hash": "-"
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "network": "testnet",
+  "contract": "x207-circle-v10f.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "aux": "x207-aux-v10.testnet",
+  "broker": "broker.x207-aux-v10.testnet",
+  "lease": "lease.x207-aux-v10.testnet",
+  "note": "F8 on testnet with contract 0.0.9 (tag v0.0.9). Hashes and names only, no keys. The file is written after every transaction.",
+  "steps": [
+    {
+      "step": "deploy circle 0.0.9",
+      "account": "x207-circle-v10f.testnet",
+      "method": "deploy_contract",
+      "hash": "Ca3L5D5TYdgWG8v3iGnzFD7yP9qEefqpwvyRFrTDncyP"
+    },
+    {
+      "step": "init circle",
+      "account": "x207-circle-v10f.testnet",
+      "method": "new",
+      "hash": "AAkPtdJoPrDh6HqKVmf8HvXXivJCeDuPSrfmUDzWghwD"
+    },
+    {
+      "step": "deploy mock_nft",
+      "account": "x207-aux-v10.testnet",
+      "method": "deploy_contract",
+      "hash": "AKxc59DoDCJiwKmMHLTYD3iduwV4L67rgq6cHeNvbfcu"
+    },
+    {
+      "step": "init mock_nft",
+      "account": "x207-aux-v10.testnet",
+      "method": "new",
+      "hash": "2zHPo4Umgordw5NMoYAFuoTPXWDpW8ysxino8RrxtHd4"
+    },
+    {
+      "step": "account broker",
+      "account": "x207-aux-v10.testnet",
+      "method": "create_account",
+      "hash": "HxXuK18NyHw32CMi81iUoZmjL3mdfZvx9tHYg3WcWhR1"
+    },
+    {
+      "step": "account lease",
+      "account": "x207-aux-v10.testnet",
+      "method": "create_account",
+      "hash": "B31YAiwPV2h76JvAKVBtX5oUFYDdrGvRLCqZDwctFu2c"
+    },
+    {
+      "step": "account gina",
+      "account": "x207-circle-v10f.testnet",
+      "method": "create_account",
+      "hash": "325iaEEVnToL7bFm8MjHkvodAJspgQVuwxSA3g799VSS"
+    },
+    {
+      "step": "account leo",
+      "account": "x207-circle-v10f.testnet",
+      "method": "create_account",
+      "hash": "2EMmKFEBYaMWVgPFTr7gNWTAJ9r7XkHLtifKiDJ5yurg"
+    },
+    {
+      "step": "account lena",
+      "account": "x207-circle-v10f.testnet",
+      "method": "create_account",
+      "hash": "CDGg21GuGosyY1kKcKo6hugvaFiGoxPeZ5giEbrVVSYj"
+    },
+    {
+      "step": "mint usdt gina",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "mint",
+      "hash": "79ppyS9SZ5qDKcFU1vekiDHLPLoPKJGtMtBaWHq9HE3F"
+    },
+    {
+      "step": "onboard gina",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "join",
+      "hash": "Cn9oFowrSLFFewPbvnfxVvtJY5ZajWN2j5PAaME3371L"
+    },
+    {
+      "step": "onboard gina",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "ft_transfer_call",
+      "hash": "C1ZzSrAYttANrzHut8BeECtvsTCXfcwgNReo9CY9q2Cu"
+    },
+    {
+      "step": "mint usdt leo",
+      "account": "leo.x207-circle-v10f.testnet",
+      "method": "mint",
+      "hash": "6sETv9gKZGGwy6APKNBsPVY2Ci2zP6Qhr5UungpeG54L"
+    },
+    {
+      "step": "onboard leo",
+      "account": "leo.x207-circle-v10f.testnet",
+      "method": "join",
+      "hash": "ArYkKPFp83GwNFCf6PRYpHcBz46UeKQq9QEC9yg8CuWq"
+    },
+    {
+      "step": "onboard leo",
+      "account": "leo.x207-circle-v10f.testnet",
+      "method": "ft_transfer_call",
+      "hash": "1476p11RRguCAsU4Y8fJ28KGMoNTVKoM6UQYtMQHVLKa"
+    },
+    {
+      "step": "mint usdt lena",
+      "account": "lena.x207-circle-v10f.testnet",
+      "method": "mint",
+      "hash": "APEFsjLgpV9VvYwzjFRjd2ivewHeoJi4wYydYb5ZzVea"
+    },
+    {
+      "step": "onboard lena",
+      "account": "lena.x207-circle-v10f.testnet",
+      "method": "join",
+      "hash": "7k4SdVydVMpEeAaNatEyxTLeKAwhRYBF9qvDku2a5HC6"
+    },
+    {
+      "step": "onboard lena",
+      "account": "lena.x207-circle-v10f.testnet",
+      "method": "ft_transfer_call",
+      "hash": "DUNJHDuNFSVq5ozedrdWChKwZMrbtfBsJf93gbddoRh8"
+    },
+    {
+      "step": "set_asset_class B",
+      "account": "x207-circle-v10f.testnet",
+      "method": "set_asset_class",
+      "hash": "5Z9T4Kn5R7j5RDXWn923tCJBUTnHSYZXeRhdE6vcMi4d"
+    },
+    {
+      "step": "set_asset_class A",
+      "account": "x207-circle-v10f.testnet",
+      "method": "set_asset_class",
+      "hash": "4NAnZu4pMR78KSJnJGnZgzdBAbD4ntixedG9iuckV4Av"
+    },
+    {
+      "step": "set_asset_class C",
+      "account": "x207-circle-v10f.testnet",
+      "method": "set_asset_class",
+      "hash": "Bhj9ijhVGBc79SCa6YR89jEorDRTXKk1VYMmmJZdvF4v"
+    },
+    {
+      "step": "offer_grant near-rpc:access",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "offer_grant",
+      "hash": "GHUH8zkxsmhsQK7uANmyEzC9BG42cCcamiXNvBenVsSC"
+    },
+    {
+      "step": "accept_grant 1",
+      "account": "leo.x207-circle-v10f.testnet",
+      "method": "accept_grant",
+      "hash": "EnDrAM3t2LF31FMaLer1pKtZpmPE6GQZSbD2sXtd4dxW"
+    },
+    {
+      "step": "offer_grant near-rpc:access",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "offer_grant",
+      "hash": "7evZJaynwnbsgYpHrJf6DUzU1j1oBPa5mDgdubWzDvBw"
+    },
+    {
+      "step": "accept_grant 2",
+      "account": "leo.x207-circle-v10f.testnet",
+      "method": "accept_grant",
+      "hash": "ELv7XgzLi65QxSniSBgqTmPW5bS7XBKXJuXutEg1iqS8"
+    },
+    {
+      "step": "broker AddKey",
+      "account": "lease.x207-aux-v10.testnet",
+      "method": "add_key",
+      "hash": "AM3kswuMwv3rWm1v7YeQrmhHCuxYK6XskEPAkjPUqt3T"
+    },
+    {
+      "step": "broker AddKey",
+      "account": "lease.x207-aux-v10.testnet",
+      "method": "add_key",
+      "hash": "AeZPEDULvA1jzHpbBf5waku9ApMn9mFy8HQLs9YgpPpr"
+    },
+    {
+      "step": "lessee call get_params with the leased key",
+      "account": "lease.x207-aux-v10.testnet",
+      "method": "get_params",
+      "hash": "76vEuhKKyddET5zPfTN1i2Dy6wHCpim8VHt99uF5GB8S"
+    },
+    {
+      "step": "revoke_grant B1 (grantor)",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "revoke_grant",
+      "hash": "9ccwzeGH5V2BQKpTMDmigujrrgdRTSnzgGLrVrTRFr4W"
+    },
+    {
+      "step": "broker DeleteKey",
+      "account": "lease.x207-aux-v10.testnet",
+      "method": "delete_key",
+      "hash": "326YzkL1H8FzZQ1YkbTzRcUadSimChimvNsTg4QzbxqH"
+    },
+    {
+      "step": "nft_mint",
+      "account": "x207-aux-v10.testnet",
+      "method": "nft_mint",
+      "hash": "91zaJvfbUy2yF3jzVi9WuFf6GqJy6TTjSKnP1Py5nCQd"
+    },
+    {
+      "step": "offer_grant nft:ticket",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "offer_grant",
+      "hash": "CXD4hsH3kZALMmM3LcphNDVnSoqhQzxChfgwJfnJBGNV"
+    },
+    {
+      "step": "nft_transfer_call to the circle",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "nft_transfer_call",
+      "hash": "8cpxJCMAK3tmgh1x2hv3QJdtTip3hyz5q6SJJhWtRXo1"
+    },
+    {
+      "step": "block_receiver lena",
+      "account": "x207-aux-v10.testnet",
+      "method": "block_receiver",
+      "hash": "GyvxBcXG1cJJcftKjjVG1hEEBsCCDq2nWsKZC5myDfy6"
+    },
+    {
+      "step": "complete_escrow (delivery fails)",
+      "account": "lena.x207-circle-v10f.testnet",
+      "method": "complete_escrow",
+      "hash": "5v8z2D6u5ACyq2m1tfS4xiPYFvtrEY537FvVFvq5Vg1Z"
+    },
+    {
+      "step": "complete_escrow (delivered)",
+      "account": "leo.x207-circle-v10f.testnet",
+      "method": "complete_escrow",
+      "hash": "7bB3nDSaB6tyfwDn6mfeKq2metGQz32DJZzFb9b6vtrW"
+    },
+    {
+      "step": "offer_grant mock:echo",
+      "account": "gina.x207-circle-v10f.testnet",
+      "method": "offer_grant",
+      "hash": "3xkzkW51R8XbYsaXMu3PUkhYGarzMhenPbK6v2Zsksht"
+    },
+    {
+      "step": "accept_grant 4",
+      "account": "leo.x207-circle-v10f.testnet",
+      "method": "accept_grant",
+      "hash": "D7Vb6JmqmVGwTfmsmprdsrcnhuSwXensRUaXurYq66Mv"
+    },
+    {
+      "step": "broker DeleteKey",
+      "account": "lease.x207-aux-v10.testnet",
+      "method": "delete_key",
+      "hash": "HKU9woHd1KEFF17t7acHbb3SpQJqYAmECxofHECZEdX1"
+    },
+    {
+      "step": "broker revoke_grant expired",
+      "account": "broker.x207-aux-v10.testnet",
+      "method": "revoke_grant",
+      "hash": "A4Pb8PQQ7eV6iHkvYFopxWvypMxcwucmUTq5QbSTNkkY"
+    },
+    {
+      "step": "summary",
+      "account": "x207-circle-v10f.testnet",
+      "method": "B grants 2 (revoked by the grantor) and 1 (expired), A grant 3 (failed delivery, then delivered), C grant 4",
+      "hash": "-"
+    }
+  ]
+}

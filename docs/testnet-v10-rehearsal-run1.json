@@ -1,0 +1,204 @@
+{
+  "contract": "x207-circle-v10.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "steps": [
+    {
+      "step": "deploy",
+      "account": "x207-circle-v10.testnet",
+      "method": "deploy_contract",
+      "hash": "A3bFnfGMYUrL63n7ew5Kkm6ZpHxT53PDf1zmPnUqSahp"
+    },
+    {
+      "step": "init",
+      "account": "x207-circle-v10.testnet",
+      "method": "new",
+      "hash": "95rihHhe58JPre1Y3Fp5AKPxxk4C24qtQUGqdic1eNpe"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v10.testnet",
+      "method": "create_account",
+      "hash": "9ALfuggbFmjiYd6ucyVqa262o7QCVSiPEvKmdtfoyiTY"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v10.testnet",
+      "method": "create_account",
+      "hash": "HVjKr4qkGZouLgxaLaiweMDjr1Db29EXXhXVGNHFbKpV"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v10.testnet",
+      "method": "create_account",
+      "hash": "66iEcHtpLMUpFsA865uz7xzPGUVqWjovi2HEHn27g9sk"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v10.testnet",
+      "method": "create_account",
+      "hash": "F3nV9jCrSkXkaEtd1UvqgHS5JywgNvcaH7wwNUUepgmL"
+    },
+    {
+      "step": "account",
+      "account": "x207-circle-v10.testnet",
+      "method": "create_account",
+      "hash": "DndAELsoEF5v7n27QEYFtaWqXnZZecQEisp9Laqc9hpT"
+    },
+    {
+      "step": "usdt",
+      "account": "andi.x207-circle-v10.testnet",
+      "method": "mint",
+      "hash": "3mdjn6Pyjjyzt8VMP8oA3MC9Lv7LWXKUPgWdNzGfyeCA"
+    },
+    {
+      "step": "onboard",
+      "account": "andi.x207-circle-v10.testnet",
+      "method": "join",
+      "hash": "76X7nU9APfLtJf6unVUGvuBLJfHxQc3tciJtsPWvHu3m"
+    },
+    {
+      "step": "onboard",
+      "account": "andi.x207-circle-v10.testnet",
+      "method": "ft_transfer_call",
+      "hash": "5zUN4Qho6WpEsWotVrUQjWiiEAmcwidSoB9EkUNb3TJD"
+    },
+    {
+      "step": "usdt",
+      "account": "budi.x207-circle-v10.testnet",
+      "method": "mint",
+      "hash": "CNMDkbdBJDNH9THWzsPcUfhUnfmfpzr6dG1TV5x81GK"
+    },
+    {
+      "step": "onboard",
+      "account": "budi.x207-circle-v10.testnet",
+      "method": "join",
+      "hash": "BJcyn4rfZK5MJvMMLh2M3snas1fRVPJwPWHK6ViK9Nnz"
+    },
+    {
+      "step": "onboard",
+      "account": "budi.x207-circle-v10.testnet",
+      "method": "ft_transfer_call",
+      "hash": "FJNjmpZw57pj38RANVWFrRkRtxhyxH4YWofRbgLSwe5W"
+    },
+    {
+      "step": "usdt",
+      "account": "citra.x207-circle-v10.testnet",
+      "method": "mint",
+      "hash": "6sjTLzTHN6FEAUBENTeKFrvrvCjnYT9wtkYYfEoeLbUR"
+    },
+    {
+      "step": "onboard",
+      "account": "citra.x207-circle-v10.testnet",
+      "method": "join",
+      "hash": "CUPFfmwDFaPCmsCaH4c7P8PmTRzLWBV3BFBRxgRRdb7w"
+    },
+    {
+      "step": "onboard",
+      "account": "citra.x207-circle-v10.testnet",
+      "method": "ft_transfer_call",
+      "hash": "L6untiud4iYHuRupeFeC5Uw9viTTDyCHrgz1fJBb2Bq"
+    },
+    {
+      "step": "usdt",
+      "account": "dewi.x207-circle-v10.testnet",
+      "method": "mint",
+      "hash": "5p2ic6K6cXRghELwuXPALS5S24Fmc7qAhhbYU32DhcNN"
+    },
+    {
+      "step": "onboard",
+      "account": "dewi.x207-circle-v10.testnet",
+      "method": "join",
+      "hash": "5Mr4PAZiq4wTawz5FR9KzBawTUeMJMe8cHw2kDqGQmRG"
+    },
+    {
+      "step": "onboard",
+      "account": "dewi.x207-circle-v10.testnet",
+      "method": "ft_transfer_call",
+      "hash": "DBocKRbDqHj7KCM4KaZoVZEhgTV92gwxg9jDY3364iYv"
+    },
+    {
+      "step": "usdt",
+      "account": "eka.x207-circle-v10.testnet",
+      "method": "mint",
+      "hash": "EDNs3H53oLkCcXLzuJTqpuVb77vBqDTc8s7b285qzzyd"
+    },
+    {
+      "step": "onboard",
+      "account": "eka.x207-circle-v10.testnet",
+      "method": "join",
+      "hash": "8Dzgz8F6AhmFpQhchQDkUDYovwcGFK4rdmTFrbkXQxsK"
+    },
+    {
+      "step": "onboard",
+      "account": "eka.x207-circle-v10.testnet",
+      "method": "ft_transfer_call",
+      "hash": "HSobn5mDXSUyHZn8397JrFKnVLzZ5L8MejFbm67RCMdx"
+    },
+    {
+      "step": "commit_bundle quick-fbca26",
+      "account": "x207-circle-v10.testnet",
+      "method": "commit_bundle",
+      "hash": "FyFEmXkcSyt6YDsvhVNY3zRxKCgJJMzvwbznSBHbKKxa"
+    },
+    {
+      "step": "commit_bundle quick-ae5cdf",
+      "account": "x207-circle-v10.testnet",
+      "method": "commit_bundle",
+      "hash": "ESHe6f62q3DaiAudVGJT848JyeGp9LFXa1MbSP2yncxK"
+    },
+    {
+      "step": "commit_bundle ring",
+      "account": "x207-circle-v10.testnet",
+      "method": "commit_bundle",
+      "hash": "H4i1hnyeG96TSvKywMSddcC4XETFXYk3ywqkBfmbuH53"
+    },
+    {
+      "step": "leg quick-fbca26",
+      "account": "budi.x207-circle-v10.testnet",
+      "method": "register_in_bundle",
+      "hash": "61pD5H7WEPgBgcyVv1gXEzVxPfkunrDgP9izxXvDNP3m"
+    },
+    {
+      "step": "leg quick-fbca26",
+      "account": "budi.x207-circle-v10.testnet",
+      "method": "register_in_bundle",
+      "hash": "GvXq4V3vvjVFEJqvZBysev2W1Sj1awEb9kmKtHFELH4B"
+    },
+    {
+      "step": "leg quick-ae5cdf",
+      "account": "andi.x207-circle-v10.testnet",
+      "method": "register_in_bundle",
+      "hash": "Be1XBXLMBDDwV4CtW27cCJx1CTxcHPg3D5JmsqdANwGJ"
+    },
+    {
+      "step": "leg quick-ae5cdf",
+      "account": "citra.x207-circle-v10.testnet",
+      "method": "register_in_bundle",
+      "hash": "CLGLcpqjkj6ztj1sSbBdM9sfKmyHBAK1kPcesXx2zxxq"
+    },
+    {
+      "step": "leg quick-ae5cdf",
+      "account": "andi.x207-circle-v10.testnet",
+      "method": "register_in_bundle",
+      "hash": "C6x9fdt2uDLZzHsPs7Xk2pfqMYbGiEisFJ6u2bwqkgpG"
+    },
+    {
+      "step": "leg ring",
+      "account": "citra.x207-circle-v10.testnet",
+      "method": "register_in_bundle",
+      "hash": "HJLNKD6hTdsLgsv5vwCzN7HBgY7WoUgeMXEKkkfaN7W9"
+    },
+    {
+      "step": "leg ring",
+      "account": "dewi.x207-circle-v10.testnet",
+      "method": "register_in_bundle",
+      "hash": "3dqmxuLYgqaAyV7MSXiaQmsvyoCGhHXeQyq2dwEbuc54"
+    },
+    {
+      "step": "leg ring",
+      "account": "eka.x207-circle-v10.testnet",
+      "method": "register_in_bundle",
+      "hash": "DZhf5NeTtBRyiEGphp1X3oZCPghhEFek75zmXh52MBM1"
+    }
+  ]
+}

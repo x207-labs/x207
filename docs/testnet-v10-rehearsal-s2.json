@@ -1,0 +1,61 @@
+{
+  "contract": "x207-circle-v10s.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "note": "continuation of a rehearsal run that stopped after the clearing; hashes and names only",
+  "steps": [
+    {
+      "step": "finalize_epoch",
+      "account": "x207-circle-v10s.testnet",
+      "method": "finalize_epoch",
+      "hash": "4z7Rs7imhyYg812dofCsJqT11DmANdxm1T6d8Yvz2DLw"
+    },
+    {
+      "step": "claim",
+      "account": "andi.x207-circle-v10s.testnet",
+      "method": "claim",
+      "hash": "ALh15bDGGFZuVyXefZx9eYGmHhufmwCXKXDc9f4qstRT"
+    },
+    {
+      "step": "claim",
+      "account": "dewi.x207-circle-v10s.testnet",
+      "method": "claim",
+      "hash": "3UEEyZPzjkKJzXR9wk59nTHRM79LbGkQoi6kTFF6cSZA"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "andi.x207-circle-v10s.testnet",
+      "method": "prune_epoch",
+      "hash": "4zx5XZV4ZVaY2NAF3KssnLY7zEkumGQkj6fQVdXvdEXm"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "andi.x207-circle-v10s.testnet",
+      "method": "prune_epoch",
+      "hash": "9h1fSh8AiuKG8ufE9xxmWvt6w2SCc95uH9YKB9LBQMKS"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "andi.x207-circle-v10s.testnet",
+      "method": "prune_epoch",
+      "hash": "4pBNnqB4SJvLwgvsv5oK6Ts6S1Txjou57MsbgNFJ5vsv"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "andi.x207-circle-v10s.testnet",
+      "method": "prune_epoch",
+      "hash": "DKcXrbihXCx6h2q4rKpe34ioZFLJLB5oQuSFoxjYTNtb"
+    },
+    {
+      "step": "prune_epoch",
+      "account": "x207-circle-v10s.testnet",
+      "method": "removed 43 entries, 8 obligations gone, 4 positions unchanged",
+      "hash": "-"
+    },
+    {
+      "step": "claim after prune_epoch",
+      "account": "citra.x207-circle-v10s.testnet",
+      "method": "claim",
+      "hash": "EsyFKpFwKki7ph2qWbKpzd2vx3bRsHb9ZL1A5JR1uiKT"
+    }
+  ]
+}

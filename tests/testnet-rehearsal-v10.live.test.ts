@@ -26,7 +26,7 @@ const ENABLED = process.env.X207_TESTNET === "1";
 const run = promisify(execFile);
 const RPC = process.env.X207_TESTNET_RPC ?? "https://rpc.testnet.fastnear.com";
 
-const OWNER = "x207-circle-v10.testnet";
+const OWNER = process.env.X207_REHEARSAL_OWNER ?? "x207-circle-v10.testnet";
 const USDT = "usdt.x207-deployer.testnet";
 const NAMES = ["andi", "budi", "citra", "dewi", "eka"] as const;
 type Name = (typeof NAMES)[number];
@@ -84,7 +84,7 @@ async function patient<T>(what: string, fn: () => Promise<T>): Promise<T> {
       return await fn();
     } catch (error) {
       const text = `${(error as Error).message} ${JSON.stringify((error as { cause?: unknown }).cause ?? "")}`;
-      if (attempt >= 12 || !/429|rate limit/i.test(text)) throw error;
+      if (attempt >= 12 || !/429|rate limit|fetch failed|EHOSTUNREACH|ECONNRESET|ETIMEDOUT|ENETUNREACH|EAI_AGAIN|socket hang up|other side closed|UND_ERR/i.test(text)) throw error;
       await new Promise<void>((r) => setTimeout(r, 4000 + attempt * 2000));
       void what;
     }
@@ -105,7 +105,7 @@ describe.skipIf(!ENABLED)("rehearsal on testnet: contract 0.0.9, barter, clearin
   it("deploys 0.0.9, onboards five members, runs two bundles through one epoch and pays out", async () => {
     // ---- keys: the owner key comes from .secrets, the agent keys are made here and kept there
     const ownerKey = (JSON.parse(readFileSync(join(secretsDir, `${OWNER}.json`), "utf8")) as { private_key: string }).private_key;
-    const keysPath = join(secretsDir, "rehearsal-v10.json");
+    const keysPath = join(secretsDir, OWNER === "x207-circle-v10.testnet" ? "rehearsal-v10.json" : `rehearsal-${OWNER.split(".")[0]}.json`);
     const saved: Record<string, { tx: string; voucher: string }> = existsSync(keysPath) ? JSON.parse(readFileSync(keysPath, "utf8")) : {};
     const provider = new JsonRpcProvider({ url: RPC });
     const accountOf = (id: string, secret: string) => new Account(id, provider, KeyPairSigner.fromSecretKey(secret as never));
@@ -205,6 +205,11 @@ describe.skipIf(!ENABLED)("rehearsal on testnet: contract 0.0.9, barter, clearin
     }
 
     feed = new TxFeedSource(OWNER, Number((await rpc("status", [])).sync_info.latest_block_height), rpc);
+    // a resumed run: the transactions of the earlier runs (files in X207_REHEARSAL_PRIOR, comma separated) are fed to the indexer too, so that D9 knows the epoch
+    for (const file of (process.env.X207_REHEARSAL_PRIOR ?? "").split(",").filter(Boolean)) {
+      const prior = JSON.parse(readFileSync(file, "utf8")) as { steps: Array<{ account: string; hash: string }> };
+      for (const step of prior.steps) if (/^[1-9A-HJ-NP-Za-km-z]{43,44}$/.test(step.hash)) await feed.add(step.hash, step.account);
+    }
     const feedStart = Number((await rpc("status", [])).sync_info.latest_block_height);
 
     // ---- keeper helpers (the owner account runs them) and a guard: a fresh epoch needs at least 6 minutes before its cutoff

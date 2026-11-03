@@ -1,0 +1,12 @@
+{
+  "contract": "x207-circle-v10.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "steps": [
+    {
+      "step": "keeper close_epoch",
+      "account": "x207-circle-v10.testnet",
+      "method": "close_epoch",
+      "hash": "6fDkhGGYWF3vD5kqW2Q8bTeLKSUXctwimrvBnota52r3"
+    }
+  ]
+}
