@@ -170,6 +170,7 @@ Optional: `DEMO_PAYMENTS=120` (number of paid calls) and `DEMO_DENSITY=low|mediu
 | F3: keeper closes the epoch, the solver clears it, the keeper commits | `close_epoch`, `submit_clearing`, `commit_epoch` hashes and the 207 report with each member's net |
 | F4: debtors pay the residual, the keeper finalizes, creditors claim | `settle`, `finalize_epoch` and `claim` hashes |
 | F6: a debtor does not pay (`DEMO_DEFAULT=scraper npm run demo:sandbox`) | `finalize_epoch` emits `member_defaulted`; the member is `suspended` with limit 0 and its stake cut by the due amount; `/verify` answers `member_not_active` for a new voucher of that member; the 207 report lists it with status 409, settlement `defaulted` and `haircut` 0; creditors still claim in full; `DEMO_DEFAULT=<agent> npm run demo:testnet` prints the same branch from contract views (stake cut, status 409 from the `defaulted` position, limit) but has not run on a network |
+| F7: a DAO proposal changes a parameter (`DEMO_DAO_ACCOUNT=<dao> DEMO_DAO_COUNCIL=<a,b> DEMO_DAO_PARAMS_FILE=<json> npm run demo:testnet`, the circle contract must be owned by the DAO) | `add_proposal` and two council votes, status `Approved`, the event `params_updated` with its `effective_epoch`; the next epoch shows the new value in `get_epoch`. Ran on testnet on 2026-11-03 (`limit_decay` 0 to 100, effective epoch 11, hashes in [docs/testnet-demo.json](docs/testnet-demo.json)). `npm run demo:sandbox` only calls `set_params` from the owner account (stage `dao.set_params`) |
 | Metrics | Voucher count, residual payments, cleared ratio, transfer savings and a line "N payments became M", all read from the epoch metrics |
 
 Two real runs (output seen on 2026-11-02, sandbox, different graph density, so the numbers differ):
@@ -190,7 +191,49 @@ The log also marks which Level 0 external interfaces appeared: E1 (buyer), E2 (s
 | `gpu` | 202 | +160000 |
 | `image` | 202 | +300000 |
 
-Net positions add up to zero. Steps for the F7 DAO vote, the F4 Intents payment, the cross-chain withdrawal, the DAO vote on `set_params`, the dashboard views and a sample 207 response from the real epoch are still to be written.
+Net positions add up to zero. The answer of the read API for this epoch, as `npm run demo:sandbox` saved it (`GET /x207/circles/agents-main/epochs/1`, HTTP `207 Multi-Status`; two of the six members shown, the file is `.demo/report207-epoch1.json`):
+
+```json
+{
+  "circle": "agents-main",
+  "network": "x207:agents-main",
+  "epoch": 1,
+  "phase": "payment_window",
+  "committed": true,
+  "finalized": false,
+  "unit": "credit",
+  "decimals": 6,
+  "totalObligation": "2400000",
+  "cleared": "1520000",
+  "clearedRatio": 0.6333,
+  "committedAt": "2026-11-03T03:32:33Z",
+  "paymentDeadline": "2026-11-03T03:47:33Z",
+  "members": [
+    {
+      "account": "cleaner.test.near",
+      "status": 402,
+      "net": "-40000",
+      "cleared": "260000",
+      "settlement": "due",
+      "amount": "40000",
+      "due": "2026-11-03T03:47:33Z",
+      "haircut": "0"
+    },
+    {
+      "account": "gpu.test.near",
+      "status": 202,
+      "net": "+160000",
+      "cleared": "240000",
+      "settlement": "claimable",
+      "amount": "160000",
+      "claimable": false,
+      "haircut": "0"
+    }
+  ]
+}
+```
+
+`status` 402 means that the member owes a residual, 202 that it is owed; `settlement` follows the position (`due`, `claimable`, `defaulted`, `claimed`); `haircut` is the share of a claim that the stake and the reserve could not cover (0 here). Not yet written as steps: the F4 payment through NEAR Intents and the cross-chain withdrawal (they have not run on any network, see [What has and has not run](#what-has-and-has-not-run)) and the dashboard views.
 
 ### Business and invoice blocks (tracks `business` and `realworld`)
 
@@ -364,13 +407,13 @@ The product repos are nested in this repo and are not yet submodules (UM-005). W
 | NEAR resource | Feature | Code | Demo step |
 | --- | --- | --- | --- |
 | USDT NEP-141 (`ft_transfer_call`) | F1 stake and F4 residual payment | `contracts/x207-circle/src/stake.rs`, `contracts/x207-circle/src/settlement.rs`; client builders in `sdk/packages/core/src/contract/` | [Run the sandbox demo](#run-the-sandbox-demo): F1 and F4 rows. In sandbox the token is a NEP-141 mock. |
-| x402 `exact` on NEAR (`@x402/near`) | Fallback payment for non-members, advertised next to the x207 entry | `sdk/apps/facilitator/src/service.ts`, `sdk/examples/seller` | F2 row: the 402 lists `exact@near:mainnet`. A real `exact` payment is not part of the demo yet; the sdk tests use a stub signer. |
-| NEAR Intents and 1Click | Pay a residual from another asset, withdraw a claim to another chain | `backend/src/settlement/`, `frontend/src/components/DepositBranch.tsx` | Not in the sandbox demo. Needs a mainnet run (UM-035, UM-040), not done. |
-| Sputnik DAO | `set_params` through a proposal | `contracts/dao/`, `contracts/x207-circle/src/params.rs` | The sandbox demo calls `set_params` from the owner account. The network demo can run a DAO proposal and council vote (`DEMO_DAO_ACCOUNT`) when the DAO owns the circle contract; that step has not run yet (UM-036). |
+| x402 `exact` on NEAR (`@x402/near`) | Fallback payment for non-members, advertised next to the x207 entry | `sdk/apps/facilitator/src/service.ts`, `sdk/examples/seller` | F2 row: the 402 lists `exact@near:mainnet`. A real `exact` payment ran on `near:testnet` on 2026-11-03 (`X207_TESTNET=1 npx vitest run apps/facilitator/test/exact-testnet.live.test.ts` in `sdk`; hash in [docs/testnet-demo.json](docs/testnet-demo.json)); it is not a step of the demo script, and mainnet has not run. |
+| NEAR Intents and 1Click | Pay a residual from another asset (`mt_on_transfer`, `withdraw_intents_balance`, interface 0.0.9), withdraw a claim to another chain | `backend/src/settlement/`, `contracts/x207-circle/src/settlement.rs`, `frontend/src/components/DepositBranch.tsx` | Not in the demo script. The contract methods run in the sandbox against a mock Intents contract; the real `intents.near` and 1Click need a mainnet run ([docs/mainnet-runbook.md](docs/mainnet-runbook.md), UM-035), not done. |
+| Sputnik DAO | `set_params` through a proposal | `contracts/dao/`, `contracts/x207-circle/src/params.rs` | The sandbox demo calls `set_params` from the owner account. The network demo runs a DAO proposal and council vote (`DEMO_DAO_ACCOUNT`) when the DAO owns the circle contract; it ran on testnet on 2026-11-03 (F7 row of section 4). Mainnet has not run. |
 | `x207-circle` bundle methods (`commit_bundle`, `register_in_bundle`, `post_intent`, `get_bundle`) | F5 barter bundles and the F9 deals that become bundles | `contracts/x207-circle/src/bundle.rs`, `contracts/x207-circle/src/voucher.rs`, `sdk/packages/scheme/`, `backend/src/marketplace/bundles.ts` | [Barter bundle block](#barter-bundle-block-feature-f5) and [Marketplace block](#marketplace-block-feature-f9). Sandbox only; the interface 0.0.4 testnet address is pending. |
 | NEAR AI Cloud | Inference for the six demo agents, including the negotiation policy of F9 when it runs in model mode | `agents/shared/nearai.ts`, `agents/shared/barter-policy.ts` | The demo runs the agents in rule or mock mode (ADR-33); the negotiation in the marketplace block is rule-based. Live inference waits for the account top-up. |
 
-The NEAR pages on [agentic payments](https://www.near.org/agentic-payments) and [NEAR AI](https://www.near.org/ai) are the references for the first and last rows. Links for NEAR Intents and "currency of agents" are to be added once they are confirmed.
+The NEAR pages on [agentic payments](https://www.near.org/agentic-payments) and [NEAR AI](https://www.near.org/ai), and [NEAR Intents](https://near-intents.org) with its [documentation](https://docs.near-intents.org) and the [1Click API](https://docs.near-intents.org/integration/distribution-channels/1click-api/about-1click-api), are the references for these rows (the links answered on 2026-11-03). A near.org page called "currency of agents", which the task asked for, was searched for and not found, so it is not linked.
 
 ## 7. Mechanism and invariants
 
@@ -432,6 +475,8 @@ Tests behind each risk. "Not applicable" means the row is a limitation or a deci
 **Impact and volume.** Real agent payment volume is small. Reports on x402 say the same: Chainalysis counted more than 100 million agentic transactions on Base up to Q1 2026 and concluded that mass adoption remains distant. Analyses that filter wash trading and non-agent payments (a16z, TRM Labs) reduce the headline figures sharply. A study on arXiv (2607.12575) finds that settlement counts measure how easily transactions can be produced, not adoption. Payment graphs in practice are star-shaped and have few cycles, so the relief from clearing there is close to zero (ADR-16). x207 does not create demand. It lowers the cost of small payments between agents that already trade with each other. Savings figures in this README come from the relief curve in section 9 and from the demo epoch once it has run. Neither gives a market estimate.
 
 **Barter and marketplace (F5, F9).** Barter is a way to use the same credit and clearing for goods and services, not a source of volume. The demo figures in section 4 are small on purpose (a few cents per leg) and come from a sandbox. The seeker and the discount are an incentive design: the seeker share and the cashback are legs of the same bundle, so they are cleared and paid like any other debt, and the agent that lists carries the discount. Whether agents will list and negotiate at scale is not shown. The value of a deal is what the parties sign; the protocol does not judge quality (see the risk table).
+
+**Reviews.** The facilitator and the cache of its chain reads were reviewed as an attacker (`tests/security-review-facilitator.test.ts`, [backend/docs/security-review-2.md](backend/docs/security-review-2.md)): a voucher used by parallel requests is now served once (`voucher_in_flight`), and the staleness of the cache and its cost are written down ([sdk/docs/rpc-load.md](sdk/docs/rpc-load.md)). The contract was reviewed for the features F5 to F8 (`contracts/docs/security-review.md`). The frontend was reviewed for what data of other users can do in the browser and for what the voucher key can be made to sign ([frontend/docs/security-review.md](frontend/docs/security-review.md)). These are our own reviews, not an audit.
 
 **Voucher key and `exact` key.** The `exact` scheme on NEAR signs a `SignedDelegateAction` for one `ft_transfer`, and its client needs a full-access key; function-call keys are rejected. An x207 agent signs only vouchers (ed25519, verified in the contract). The voucher key cannot transfer funds, so a leaked voucher key cannot drain the account. It can create vouchers up to the credit limit of the member. The facilitator relays vouchers and cannot forge one (ADR-06).
 
@@ -544,13 +589,13 @@ Tracks. The 8 tracks below are the owner's choice (K-59); a track is claimed onl
 | `swarms` | F2, F3, F5 | F2, F3 rows; [Barter bundle block](#barter-bundle-block-feature-f5) | Many agents paying and clearing in one epoch; a three-agent ring cleared to net zero (`tests/barter.sandbox.test.ts`) | A swarm of real model-driven agents; agents run in rule or mock mode |
 | `agents` | F1, F2, F9 | F1, F2 rows; [Marketplace block](#marketplace-block-feature-f9) | Printed 402 with the x207 and `exact` entries; agents list, negotiate and settle by policy (`tests/marketplace.sandbox.test.ts`) | Live NEAR AI inference; any mainnet payment |
 | `defi` | F3, F4 | F3, F4 rows | Multi-party clearing and residual settlement in USDT on a mock token in sandbox | NEAR Intents and 1Click payments: they need a mainnet run (UM-027, UM-035) that has not happened. This track is weak until it does. |
-| `social` | F6, F7 | F6 row | Default case: stake cut, member suspended, 409 in the 207 report. Governance through the owner account | A DAO vote on `set_params` has not run (UM-036) |
+| `social` | F6, F7 | F6 and F7 rows | Default case: stake cut, member suspended, 409 in the 207 report (sandbox and testnet). A DAO vote on `set_params` with two council votes ran on testnet | Not on mainnet; the dashboard governance page was not shown with the real value |
 | `business` | F2 | [Business and invoice blocks](#business-and-invoice-blocks-tracks-business-and-realworld) | The owner's limits are enforced before any voucher is signed (3 approved, 3 refused in the run) | A business that uses it outside the demo |
 | `realworld` | F1, F4 | Same blocks, `npm run demo:realworld` | Three businesses, invoices as vouchers, netting, residual 40 of 240 | A demo scenario only. No real invoice, dispute or legal status; no 1Click payout |
-| `security` | F6 | F2, F6 rows | Agent keys sign only vouchers and cannot move funds; credit limit capped by stake | No audit; no attack test beyond the contract tests in section 7 |
-| `open` | F5, F9 | [Marketplace block](#marketplace-block-feature-f9) | A layer on top of x402 with barter and an open listing format | Not shown on a real network |
+| `security` | F6 | F2, F6 rows; section 8 "Reviews" | Agent keys sign only vouchers and cannot move funds; credit limit capped by stake; our reviews of the contract, the facilitator and the frontend found and fixed a replay in parallel requests and a signing oracle in the frontend, with tests | No external audit |
+| `open` | F5, F9 | [Marketplace block](#marketplace-block-feature-f9) | A layer on top of x402 with barter and an open listing format; the barter ring and the quick barter ran on testnet | Not on mainnet; testnet used a mock USDT |
 
-Hints used: multi-agent systems, agent commerce, NEAR Intents (code in `backend/src/settlement/`, not run on a network), sub-accounts, Sputnik DAO, named accounts, stablecoins. Hints not used: Chain Signatures, trading, TEE attestation, NEP-245. Tracks not submitted: `privacy` (confidential settlement is roadmap, ADR-15), `thesis`, `games`, `nfts`, `memecoins`.
+Hints used: multi-agent systems, agent commerce, NEAR Intents (code in `backend/src/settlement/`, not run on a network), sub-accounts, Sputnik DAO, named accounts, stablecoins. Hints not used: Chain Signatures, trading, TEE attestation. The circle contract implements the receiver of NEP-245 multi-tokens (`mt_on_transfer`, for a residual paid through NEAR Intents) and that part has run only against a mock. Tracks not submitted: `privacy` (confidential settlement is roadmap, ADR-15), `thesis`, `games`, `nfts`, `memecoins`.
 
 ## Appendix B: glossary
 

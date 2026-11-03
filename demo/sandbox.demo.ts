@@ -159,6 +159,9 @@ describe("demo near-sandbox", () => {
       const response = await fetch(`${base}/epochs/${epoch}`);
       report = await response.json();
       out(`   laporan 207 (HTTP ${response.status}): cleared=${report.cleared}`);
+      // the answer as the read API sent it, for the sample in the README (UM-039)
+      mkdirSync(".demo", { recursive: true });
+      writeFileSync(`.demo/report207-epoch${epoch}.json`, JSON.stringify({ request: `GET /x207/circles/agents-main/epochs/${epoch}`, status: response.status, body: report }, null, 2));
       for (const m of report.members ?? []) out(`     ${m.account} status=${m.status} net=${m.net}`);
     });
 
