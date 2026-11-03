@@ -76,10 +76,10 @@ describe("batch 1 review: can the template make a listing whose scope differs fr
 
   // FINDING X1: a token id that is not ASCII passes the template, but `Listing.detail` must be ASCII. The grant and the deposit do not look at the detail, so the owner
   // can offer the grant and put the asset in escrow, and only then the listing is refused: the asset waits in escrow until the grant has expired.
-  it.fails("TC-XR1-03 [finding X1] a template that succeeds gives a detail that is a valid listing (a non-ASCII token id must be refused by the template)", () => {
+  it("TC-XR1-03 [finding X1] a template that succeeds gives a detail that is a valid listing (a non-ASCII token id must be refused by the template)", () => {
     const input: AssetInput = { kind: "nft", nftContract: "art.near", tokenId: "tök-1", unitPrice: "1000000", expiresAt: NOW + 3600 };
-    const t = buildAssetTemplate(input, NOW);
-    expect(() => validateListing(listingOf(t.detail, t.side))).not.toThrow();
+    // SD-066: refused by the template, so the grant and the deposit are never made for a listing that would be refused
+    expect(code(() => buildAssetTemplate(input, NOW))).toBe("bad_token_id");
   });
 });
 
@@ -125,7 +125,7 @@ describe("batch 1 review: are amounts, decimals or token ids rounded or cut anyw
 
   // FINDING X2: the form reads the decimals of the token with `Number(text)`, so "0x6" is 6 and "1e1" is 10. Nothing is rounded, but a text that is not a plain integer is
   // silently read as another number, and the amount in the smallest unit is computed from it.
-  it.fails("TC-XR1-07 [finding X2] decimals typed as 0x6 or 1e1 are refused, not read as 6 and 10", () => {
+  it("TC-XR1-07 [finding X2] decimals typed as 0x6 or 1e1 are refused, not read as 6 and 10", () => {
     const v = { ftContract: "usdc.near", symbol: "USDC", decimals: "0x6", amount: "2.5", price: "1", hours: "6" };
     const input = toAssetInput("ft", v, NOW);
     const odd = typeof input === "string" ? "refused" : String((input as { decimals: number }).decimals);
@@ -136,7 +136,7 @@ describe("batch 1 review: are amounts, decimals or token ids rounded or cut anyw
 
   // FINDING X3: the display ("2.5 USDC") and the amount in the smallest unit come from the decimals that the OWNER typed. Nothing compares them with `ft_metadata` of the
   // token, and nothing in the warnings says so. A grantor (or a slip) with 2 decimals for a 6-decimal token lists "2.5 USDC" for 250 units, which is 0.00025 USDC.
-  it.fails("TC-XR1-08 [finding X3] the warnings of a fungible token say that the decimals and the symbol were not checked against the token", () => {
+  it("TC-XR1-08 [finding X3] the warnings of a fungible token say that the decimals and the symbol were not checked against the token", () => {
     const t = buildAssetTemplate(inputs.ft!, NOW);
     expect(t.warnings.join(" ")).toMatch(/desimal.*(belum|tidak) (diperiksa|diverifikasi)|(belum|tidak) (diperiksa|diverifikasi).*desimal/i);
   });
@@ -178,7 +178,7 @@ describe("batch 1 review: do the risk warnings always appear?", () => {
   // FINDING X4: for an RWA token the owner can say nothing about the whitelist of THE CIRCLE (the backend refuses `rwa:tokenized` unless the contract is on its
   // `rwaWhitelist`), and the template says nothing about it. In the order the form allows (grant, deposit, then the listing) a listing that the backend refuses leaves the
   // token in escrow until the grant has expired.
-  it.fails("TC-XR1-13 [finding X4] the warnings of an RWA listing say that the circle keeps its own list of accepted tokens and that the listing can be refused", () => {
+  it("TC-XR1-13 [finding X4] the warnings of an RWA listing say that the circle keeps its own list of accepted tokens and that the listing can be refused", () => {
     const w = buildAssetTemplate(inputs.rwa!, NOW).warnings.join(" ");
     expect(w).toMatch(/(daftar|whitelist) (milik )?(lingkaran|circle)/i);
   });
@@ -204,13 +204,13 @@ describe("batch 1 review: can a secret get into the detail of a listing?", () =>
 
   // FINDING X5: `secret_in_listing` looks at the NAMES of the keys of the detail, not at the free text in the values (name, description, product, label, source, valueInfo),
   // so a coupon code, a password or a key typed in a free text field is written into a listing that everybody can read.
-  it.fails("TC-XR1-15 [finding X5] a private key of an account typed into a free text field is refused", () => {
+  it("TC-XR1-15 [finding X5] a private key of an account typed into a free text field is refused", () => {
     for (const field of ["name", "description", "product", "label", "valueInfo", "source"]) {
       expect(code(() => buildAssetTemplate(withText(field, `my key ${SECRET_KEY}`), NOW)), field).toBe("secret_in_listing");
     }
   });
 
-  it.fails("TC-XR1-16 [finding X5] a password or an API key written as text in a free text field is refused", () => {
+  it("TC-XR1-16 [finding X5] a password or an API key written as text in a free text field is refused", () => {
     for (const text of ["password=hunter2", "api_key: sk_live_4eC39HqLyjWDarjtT1zdp7dc", "token ghp_16C7e42F292c6912E7710c838347Ae178B4a", "redeem code SAVE50-ABCD-1234 at checkout"]) {
       expect(code(() => buildAssetTemplate(withText("description", text), NOW)), text).toBe("secret_in_listing");
     }
@@ -272,7 +272,7 @@ describe("batch 1 review: are the validation of the backend (BE-049) and the tem
   // FINDING X6: the SDK does not know the USDT of the circle. An `ft`, `lst` or pool-share listing whose token is the USDT of the circle passes the template, and the
   // contract refuses the deposit (`ERR_ESCROW_USDT`), so such a listing can never be bought. (The backend check of BE-049 is to refuse it when it is told the USDT; this test
   // is about the SDK, which has no input for it.)
-  it.fails("TC-XR1-20 [finding X6] the template can be told the USDT of the circle and refuses it as the asset of a token escrow", () => {
+  it("TC-XR1-20 [finding X6] the template can be told the USDT of the circle and refuses it as the asset of a token escrow", () => {
     const usdt = "usdt.tether-token.near";
     const input = { ...(inputs.ft as Extract<AssetInput, { kind: "ft" }>), ftContract: usdt };
     const options = { circleUsdt: usdt };
