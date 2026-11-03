@@ -2,14 +2,14 @@
 
 For reviewers and for users of the SDK. This file is the interface of the circle contract, version by version: methods, events, error codes, decisions, and whether a circle that already runs the previous version needs a migration. It is written from the Interface Spec of the contract (`vault/14 x207/04 Arsitektur/x207 - Spec Antarmuka Kontrak.md`, sections 1, 14 to 18), from the history of `abi.json` and from the commits of the repository `contracts`. Where the sources do not say something, this file says so; it does not fill the gap.
 
-**How versions work (spec section 1, rules of the `0.0.x` freeze).** While the version is `0.0.x`, every change that an outside caller can see raises the patch number: the name or arguments of a method, the return type of a view, a field of an event, an error code, the `msg` schema, the byte format of a voucher. The view `interface_version()` returns the version, and the field `version` of every NEP-297 event (`standard: "x207"`) carries it. A consumer refuses an event with a higher minor than it knows and ignores fields it does not know. The first release tagged `v0.1.0` changes the rule: after it, a minor raises for a break and a patch for a compatible addition. The SDK pins the version it was generated from: `X207_CIRCLE_ABI_VERSION` in `sdk/packages/core/src/contract/types.generated.ts` (today `"0.0.9"`).
+**How versions work (spec section 1, rules of the `0.0.x` freeze).** While the version is `0.0.x`, every change that an outside caller can see raises the patch number: the name or arguments of a method, the return type of a view, a field of an event, an error code, the `msg` schema, the byte format of a voucher. The view `interface_version()` returns the version, and the field `version` of every NEP-297 event (`standard: "x207"`) carries it. A consumer refuses an event with a higher minor than it knows and ignores fields it does not know. The first release tagged `v0.1.0` changes the rule: after it, a minor raises for a break and a patch for a compatible addition. The SDK pins the version it was generated from: `X207_CIRCLE_ABI_VERSION` in `sdk/packages/core/src/contract/types.generated.ts` (today `"0.0.10"`, pinned from `contracts` `6124495`).
 
-**Releases and reproducibility.** A release is a tag `vX.Y.Z` of the repository `contracts` with `x207-circle-vX.Y.Z.wasm`, `abi-vX.Y.Z.json` and `SHA256SUMS`. GitHub has the releases `v0.0.4` to `v0.0.8`. There is no tag for `0.0.1`, `0.0.2` and `0.0.3`: those are interface versions only.
+**Releases and reproducibility.** A release is a tag `vX.Y.Z` of the repository `contracts` with `x207-circle-vX.Y.Z.wasm`, `abi-vX.Y.Z.json` and `SHA256SUMS`. GitHub has the releases `v0.0.4` to `v0.0.9`. There is no tag for `0.0.1`, `0.0.2` and `0.0.3`: those are interface versions only.
 
 | Release | Reproducible build | Basis |
 | --- | --- | --- |
 | `v0.0.4`, `v0.0.5`, `v0.0.6`, `v0.0.7`, `v0.0.8` | **No** | Built on a developer machine or by the earlier workflow, before the pinned container existed. `Cargo.toml` at each of these tags has no `reproducible_build` section (checked for `v0.0.7` and `v0.0.8`), and `contracts/docs/verify-release.md` says that versions up to `v0.0.7` are not reproducible. The `code_hash` of a deployment of these versions cannot be tied to the source of the tag. |
-| `v0.0.9` (not tagged yet) | **Yes, once released** | Built twice in a pinned container (image by digest, `cargo near build non-reproducible-wasm --locked`, `Cargo.lock` committed); the release workflow publishes nothing if the two sha256 differ. Run 41575069378 of `reproducible.yml` on a GitHub runner built one commit twice with the same sha256 (`95515ee8f759…`), the same as two builds on a Mac (CT-087). How to check a `code_hash`: `contracts/docs/verify-release.md`. Limit: the repository is private, so a third-party verifier such as SourceScan may compute another number until it is public. |
+| `v0.0.9` (tag on `b9236b1`, published 2026-11-03 07:25 UTC) | **Yes, the first** | Built twice in a pinned container (image by digest, `cargo near build non-reproducible-wasm --locked`, `Cargo.lock` committed); the release workflow publishes nothing if the two sha256 differ. `SHA256SUMS` of the release: wasm `fa8309059a84…` (full value in the file), ABI file `ea01ea625262…`; `shasum -a 256 -c SHA256SUMS` passes on the downloaded files. The coordinator reports the same wasm sha256 from the two builds of the runner; two builds of ours in the container at `1f9b618` gave the same value too. The earlier proof run (41575069378, CT-087) built another commit twice with `95515ee8f759…`. How to check a `code_hash`: `contracts/docs/verify-release.md`. Limit: the repository is private, so a third-party verifier such as SourceScan may compute another number until it is public. |
 
 A rehearsal or a mainnet deployment uses the wasm of a release and records its `code_hash` ([docs/mainnet-runbook.md](docs/mainnet-runbook.md)).
 
@@ -17,7 +17,23 @@ Dates are those of the commits (UTC+07:00). "Commit" is the commit of the reposi
 
 ---
 
-## 0.0.9 (in progress; `abi.json` has the version since `35dfca5`, 2026-11-03; final ABI at `4936e58`)
+## 0.0.10 (not released; interface in `contracts` `6124495`, 2026-11-03)
+
+Class A escrow of an exact amount of a fungible token (CT-090) and the tests of restricted tokens (CT-091). It is a new interface version because it adds a view, an event and three errors, so it could not share `0.0.9` with the tag `v0.0.9`.
+
+**Added**
+- `ft_on_transfer` takes a new action, `{"action":"escrow","grant_id":N}`, from any NEP-141 token **except** the USDT of the circle (the USDT of the circle is not an escrow asset). The grantor of a class A grant deposits the token with `ft_transfer_call`; the contract holds it until `complete_escrow` pays the buyer with `ft_transfer`, or `cancel_escrow` gives it back after `expires_at`.
+- The scope of a class A grant for a token is `{"ft_contract": ..., "amount": ...}` (`amount` in the units of that token, decimal text). The deposit must be exactly this amount of exactly this token.
+- View `get_ft_escrow(grant_id) -> {grant_id, ft_contract, amount, state, buyer} | null`; event `ft_escrow_held { grant_id, ft_contract, amount }` (34 events in total). The stored NFT escrow is unchanged (the new map has its own storage key).
+- Errors: `ERR_ESCROW_FT_MISMATCH`, `ERR_ESCROW_FT_AMOUNT`, `ERR_ESCROW_USDT`.
+- Behaviour of a failed delivery: when `ft_transfer` to the buyer fails, the registration of the buyer's voucher is taken back exactly (as for an NFT) and the escrow is `held` again; the grantor takes the tokens back by `cancel_escrow` after the grant expires. Tested with a restricted token (`probes/mock_rwa`: whitelist, frozen account, unregistered buyer).
+- **Not supported:** tokens with a transfer fee (a deflationary token): the contract would hold less than the amount in the scope, so the deposit is refused and the tokens return to the grantor. The buyer must be registered at the token contract (`storage_deposit`), or the delivery fails and the payment is taken back.
+- SDK: `get_ft_escrow` and `ft_escrow_held` in the pinned ABI, `ftEscrowGrantScope`, `buildFtEscrowDepositCall`, `assertBuyerRegisteredAtToken`.
+
+**Breaking for callers:** none that the sources name; no existing method changes its signature.
+**Migration:** not stated in the sources; the new map is under its own storage key, so the state layout of the escrow of NFTs does not change. An upgrade from `0.0.9` was not run.
+
+## 0.0.9 (released 2026-11-03 as `v0.0.9`, tag on `b9236b1`, reproducible; `abi.json` has the version since `35dfca5`, final ABI at `4936e58`)
 
 Residual payment through NEAR Intents (BE-034, spec section 18) and the decisions of ADR-41.
 
@@ -31,8 +47,8 @@ Residual payment through NEAR Intents (BE-034, spec section 18) and the decision
 - `JOIN_STORAGE_DEPOSIT` rises from 0.01 NEAR to **0.32 NEAR**, which covers the worst storage of one member (31 282 bytes measured by the contract owner). The deposit is not returned when the member exits; only the part above it is returned.
 - `remove_intent` emits `intent_removed { intent_hash, account_id }` (33 events in total).
 - The intents of an `exited` member may be removed by anybody; `accept_grant` refuses an offer whose grantor is not `active` (`ERR_GRANT_NOT_ACTIVE_MEMBER`); `revoke_grant` with reason `defaulted` is allowed for a grantee that is `exited`.
-- No method changes its signature: the ABI of `0.0.9` has the same 66 methods and views plus the event `intent_removed`. The SDK pins it (`abi/x207-circle.abi.json`, pinned from `4936e58`).
-- The tag `v0.0.9` is not published yet, so this section stays "in progress" until it is.
+- No method changes its signature: the ABI of `0.0.9` has the same 66 methods and views plus the event `intent_removed`. The SDK pinned it from `4936e58` (`abi-v0.0.9.json` of the release has the sha256 `ea01ea625262…`, the same as the pin) until it moved to 0.0.10.
+- Released as `v0.0.9` with `x207-circle-v0.0.9.wasm`, `abi-v0.0.9.json` and `SHA256SUMS`, reproducible (see the table above).
 
 **Breaking for callers:** a client that attaches less than 0.32 NEAR to `join` is refused once ADR-41 is in the contract. A contract before 0.0.9 accepts 0.32 NEAR and returns what is above 0.01 NEAR (the onboarding sandbox tests of the SDK and the agents pass with the new deposit against the local `0.0.9` build made before ADR-41, whose minimum is still 0.01 NEAR).
 **Migration:** the credit booked at Intents is kept under its own storage key, so no change of the state layout was found in the code. An upgrade from `0.0.8` to `0.0.9` through `propose_upgrade` and `apply_upgrade` has not been run. The upgrade from `0.0.7` to `0.0.8` has (below).
