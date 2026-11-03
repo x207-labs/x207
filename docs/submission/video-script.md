@@ -45,7 +45,7 @@ Read each from the terminal of the take that is on screen. The runs of 2026-11-0
 
 - Anything on mainnet: no mainnet transaction has been sent.
 - NEAR Intents or 1Click paying a residual or a withdrawal: not run (`intents.testnet` has no code).
-- A testnet epoch with a default or a DAO vote inside the network demo as one run: the default branch and the DAO vote ran as separate runs, see `docs/testnet-rehearsal.md`.
+- A mainnet or Intents-backed version of the testnet epoch: the testnet epoch of `docs/testnet-demo.json` (barter, gas key, clearing, a default, a DAO vote) used a mock USDT.
 - A class C secret behind a TEE: there is no TEE. A class A NFT escrow ran in the sandbox and on testnet with a mock NFT only.
 - Real model inference by the agents: they run in mock or rule mode.
 - A real wallet in the dashboard: the pages run against fixtures and a mock wallet.
