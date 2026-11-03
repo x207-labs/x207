@@ -40,6 +40,13 @@ test("TC-UM-009-11 short balances, an unregistered agent, a missing account and 
   ].sort());
 });
 
+test("TC-UM-009-15 intents_balance is shown when the circle has the view, and left out when it has not", () => {
+  const withView = okSnapshot();
+  withView.circle.intentsBalance = 2_500_000n;
+  assert.match(evaluate(withView).find((r) => r.item === "intents_balance").detail, /^2\.5 USDT/);
+  assert.equal(evaluate(okSnapshot()).some((r) => r.item === "intents_balance"), false);
+});
+
 test("TC-UM-009-12 accounts and missing variables come from the names of .env.example", () => {
   const env = { X207_CIRCLE_ACCOUNT_ID: "c.near", X207_AGENT_GPU_ACCOUNT_ID: "gpu.c.near", X207_KEEPER_ACCOUNT_ID: "k.near" };
   assert.deepEqual(accountsFromEnv(env).map((a) => a.role), ["circle", "agent", "keeper"]);

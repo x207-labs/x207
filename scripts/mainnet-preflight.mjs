@@ -81,6 +81,7 @@ export function evaluate(snapshot, plan = PLAN) {
   else {
     row("circle", "interface version", circle.interfaceVersion ? "OK" : "MISSING", `interface_version ${circle.interfaceVersion ?? "unreadable"}`);
     row("circle", "owner", circle.owner ? "INFO" : "MISSING", `get_owner: ${circle.owner ?? "unreadable"}`);
+    if (circle.intentsBalance !== undefined) row("circle", "intents_balance", "INFO", `${usdt(circle.intentsBalance)} USDT booked by mt_on_transfer and waiting for withdraw_intents_balance`);
   }
   const t = snapshot.usdtContract;
   row("USDT", "token contract", t.ok && t.decimals === 6 ? "OK" : "MISSING", t.ok ? `${t.symbol}, ${t.decimals} decimals` : "ft_metadata unreadable");
@@ -153,6 +154,7 @@ export async function collect(env, net = "mainnet") {
   if (circle.hasCode) {
     circle.interfaceVersion = await rpc.view(circleId, "interface_version").catch(() => undefined);
     circle.owner = await rpc.view(circleId, "get_owner").catch(() => undefined);
+    circle.intentsBalance = await rpc.view(circleId, "intents_balance").then((v) => BigInt(v), () => undefined); // interface 0.0.9 and later
   }
   const meta = usdtId ? await rpc.view(usdtId, "ft_metadata").catch(() => undefined) : undefined;
   const usdtContract = { ok: Boolean(meta), decimals: meta?.decimals, symbol: meta?.symbol };
