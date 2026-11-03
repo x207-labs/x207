@@ -30,9 +30,45 @@ const KEYED: Array<{ stores: string[]; opener: string }> = [
 ];
 const MUTATE = "(?:insert|remove|push|set|get_mut|swap_remove|replace)\\s*\\(";
 
-function stripTests(text: string): string {
-  const cut = text.indexOf("#[cfg(test)]");
-  return (cut >= 0 ? text.slice(0, cut) : text).replace(/\/\/.*$/gm, "");
+/**
+ * Removes the items that carry `#[cfg(test)]` (a `mod tests` block, a test-only function, a test-only `use`) and the line comments, and keeps all
+ * the rest of the file. Cutting at the first `#[cfg(test)]` would silently drop every function that comes after a test-only item in the middle.
+ */
+export function stripTests(text: string): string {
+  let out = "";
+  let i = 0;
+  const attribute = /#\[cfg\(test\)\]/g;
+  for (;;) {
+    attribute.lastIndex = i;
+    const found = attribute.exec(text);
+    if (!found) break;
+    out += text.slice(i, found.index);
+    // the item starts after the attribute (and any further attributes); it ends at the matching `}` of its first `{`, or at a `;` that comes first
+    let j = found.index + found[0].length;
+    for (;;) {
+      const open = text.indexOf("{", j);
+      const semi = text.indexOf(";", j);
+      if (open < 0 && semi < 0) {
+        j = text.length;
+        break;
+      }
+      if (semi >= 0 && (open < 0 || semi < open)) {
+        j = semi + 1;
+        break;
+      }
+      let depth = 0;
+      let k = open;
+      for (; k < text.length; k += 1) {
+        if (text[k] === "{") depth += 1;
+        else if (text[k] === "}" && --depth === 0) break;
+      }
+      j = k + 1;
+      break;
+    }
+    i = j;
+  }
+  out += text.slice(i);
+  return out.replace(/\/\/.*$/gm, "");
 }
 
 function functionBodies(text: string): Map<string, string> {
