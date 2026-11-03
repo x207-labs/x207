@@ -45,6 +45,28 @@ X207_SANDBOX=1 npx vitest run tests/asset-catalog.sandbox.test.ts    # scene 11 
 (cd contracts && scripts/verify-release.sh v0.0.9)                   # scene 14
 ```
 
+## Scenes added on 2026-11-03, second batch (optional; the owner decides which to keep)
+
+Five more cuts, each 12 to 20 seconds, for the features built after the first draft. Every one is a near-sandbox run with the real contract and the real backend; the only mocks are named in the narration. If the video must stay near 3 minutes, take one or two of them and drop scenes 11 to 13.
+
+| No | Time | Label | On screen | Narration (EN) | Source of the proof | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| 15 | about 15 s | NEAR-SANDBOX | Terminal: `X207_SANDBOX=1 npx vitest run tests/invoice.sandbox.test.ts`, then the table of the README block "Invoice and installment block" | "An invoice is a claim outside x207. The debtor signs three installments at once, one per epoch, and they are cleared with everything else: here a ring of three invoices clears 90 credit and nothing is left to pay." | `tests/invoice.sandbox.test.ts` (UM-086), README block | passed on 2026-11-03, 149 s |
+| 16 | about 20 s | NEAR-SANDBOX | Terminal: `X207_SANDBOX=1 npx vitest run tests/orders.sandbox.test.ts`. Show the milestone `paid`, the milestone `disputed` with the pair still at 10 credit, and the keeper order with one voucher for one `close_epoch` | "Work is paid after it is confirmed. A disputed milestone is not paid, and a keeper is paid per transaction that shows on the chain. A delegate can be paid per vote on a DAO, by the same rule; that part runs against a mock node." | `tests/orders.sandbox.test.ts` (UM-087), `agents/test/delegate.test.ts` (AG-029) | passed, 69 s; the delegate part is a mock node |
+| 17 | about 15 s | NEAR-SANDBOX | Terminal: `X207_SANDBOX=1 npx vitest run tests/licenses.sandbox.test.ts`. Show the dataset `confirmed` with the pair at 50 credit, and the file with another hash `disputed` with the pair at 0 | "x207 does not hold the file. The seller sells a license: the file is encrypted, the payment waits, and a seller who sends the wrong file is caught by the buyer's own check, with no judge." | `tests/licenses.sandbox.test.ts` (UM-088) | passed, 58 s |
+| 18 | about 20 s | NEAR-SANDBOX | Terminal: `X207_SANDBOX=1 npx vitest run tests/rent.sandbox.test.ts`. Show the SSH key in `authorized_keys` with its `expiry-time`, the line removed after `grant_revoked`, and the cloud role bill refused over the cap | "An access is rented by the day. The renter pays one day ahead and the next only if the access still works, so each side loses one day at most. The providers here are mocks and an SSH file." | `tests/rent.sandbox.test.ts` (UM-089) | passed, 316 s (jump-cut) |
+| 19 | about 15 s | NEAR-SANDBOX | Terminal in `sdk`: `X207_SANDBOX=1 npx vitest run apps/facilitator/test/frozen.sandbox.test.ts`. Show `account_frozen` for the frozen member and `isValid: true` for another pair | "The DAO can freeze a member after a timelock of 24 hours. From then on the facilitator takes no new voucher from or to it. Bonds with an arbiter for swaps came in the same release." | `sdk/apps/facilitator/test/frozen.sandbox.test.ts` (SD-074); `contracts` tests `ct094_bond`, `ct095_freeze` | passed, 417 s (the sandbox moves the clock 24 hours; jump-cut) |
+
+Commands of these scenes, one at a time:
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/invoice.sandbox.test.ts          # scene 15 (about 2.5 minutes; jump-cut)
+X207_SANDBOX=1 npx vitest run tests/orders.sandbox.test.ts           # scene 16 (about 1 minute)
+X207_SANDBOX=1 npx vitest run tests/licenses.sandbox.test.ts         # scene 17 (about 1 minute)
+X207_SANDBOX=1 npx vitest run tests/rent.sandbox.test.ts             # scene 18 (about 5 minutes; jump-cut)
+(cd sdk && X207_SANDBOX=1 npx vitest run apps/facilitator/test/frozen.sandbox.test.ts)   # scene 19 (about 7 minutes; jump-cut)
+```
+
 ## Commands in the order of the scenes
 
 ```bash
@@ -74,6 +96,10 @@ Read each from the terminal of the take that is on screen. The runs of 2026-11-0
 - That a real RWA token, a token with a transfer fee, or a token that needs KYC works: only `probes/mock_rwa` ran. A token with a transfer fee is refused on purpose.
 - The off-chain handover on a network, or a payment held by the contract until the receiver confirms: the flow is in the backend only.
 - That release v0.0.9 was matched with an account on chain, until the record of the rehearsal v11 says so. The release itself is reproducible and its checksums pass.
+- That a delegate voted in a real Sputnik DAO and was paid for it: the votes of the delegate scenario run against a mock node.
+- That access to a real GitHub, Discord or AWS account was rented: the providers of scene 18 are mocks and an SSH file. The adapters for the real services are tested against a mocked `fetch`.
+- That the dashboard works with a real wallet under its content security policy: the policy of the production build has not been tried with one.
+- That the bond with an arbiter or the freeze ran on testnet or mainnet: they ran in tests and in near-sandbox only.
 - "Audited": the reviews are our own.
 
 ## X post (draft)
