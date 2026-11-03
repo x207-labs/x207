@@ -1,6 +1,6 @@
 // Security review 3, "Not checked" of docs/security-review-3.md: (1) does `exit` remove the open intents and the open grants of a member, and (2) what does `prune_epoch` cost in gas
 // for about 200 items. Real contract in near-sandbox (X207_SANDBOX=1). Observations go to the file named by SR3B_NOTES; the asserts say what the contract does today, and an
-// `it.fails` marks a behaviour that is unsafe. Run: SR3B_NOTES=/tmp/sr3b.txt X207_SANDBOX=1 npx vitest run tests/security-review-contract3b.sandbox.test.ts
+// `it.fails` marks a behaviour that is unsafe (none is left in this file). Run: SR3B_NOTES=/tmp/sr3b.txt X207_SANDBOX=1 npx vitest run tests/security-review-contract3b.sandbox.test.ts
 import { appendFileSync } from "node:fs";
 import { afterAll, describe, expect, it } from "vitest";
 import { base58Encode, createCircleViewFn, onboardMember, signVoucher, type ContractAbi, type ContractCall } from "@x207/core";
@@ -142,10 +142,10 @@ describe.skipIf(!sandboxAvailable)("security review 3b: exit and open intents or
     note(`after exit: the exited member posts a new intent: ${JSON.stringify(postByExited.failures)}`);
     const removeByStranger = await call(partner, "remove_intent", { intent_hash: hash(3002) });
     note(`after exit: a stranger removes the intent of the exited member: ${JSON.stringify(removeByStranger.failures)}`);
-    // what holds today: the owner can still remove, the exited member cannot post, a stranger cannot remove
+    // interface 0.0.9 (ADR-41): the owner can still remove, the exited member cannot post, and anybody may remove the intents of an exited member
     expect(removeByOwner.failures).toEqual([]);
     expect(postByExited.failures.join(" ")).toContain("ERR_PAYER_NOT_ACTIVE");
-    expect(removeByStranger.failures.join(" ")).toContain("ERR_NOT_INTENT_OWNER");
+    expect(removeByStranger.failures).toEqual([]);
     seen.intent2Remains = (await view("get_intent", { intent_hash: hash(3002) })) !== null;
 
     // grants
@@ -159,29 +159,31 @@ describe.skipIf(!sandboxAvailable)("security review 3b: exit and open intents or
     const strangerRevoke = await call(partner, "revoke_grant", { grant_id: seen.grantActive, reason: "defaulted" });
     note(`after exit: a stranger revokes the active grant of the exited grantee as defaulted: ${JSON.stringify(strangerRevoke.failures)}`);
     seen.strangerRevokes = strangerRevoke.failures.length === 0;
-    expect(strangerRevoke.failures.join(" ")).toContain("ERR_GRANT_REVOKE_DENIED");
+    expect(strangerRevoke.failures).toEqual([]);
     expect((seen.offeredAfter as { status: string }).status).toBe("offered");
-    expect((seen.activeAfter as { status: string }).status).toBe("active");
+    expect((seen.activeAfter as { status: string }).status).toBe("active"); // read before the revocation above
+    expect(acceptFromExited.failures.join(" ")).toContain("ERR_GRANT_NOT_ACTIVE_MEMBER");
     const heldByExited = await view<unknown[]>("grants_of", { account_id: exiter.accountId, role: "grantee", from_index: 0, limit: 10 });
     note(`after exit: grants_of(exited, grantee) = ${JSON.stringify(heldByExited)}`);
   }, 900_000);
 
+  // Findings I-4 and I-5 are fixed in interface 0.0.9 (ADR-41, contracts 4936e58); the comments say what the contract did before.
   // Finding I-4: `exit` does not touch the intents of the member. The owner can still remove them, nobody else can, and the join deposit is not given back, so an intent of a member that left
   // pins the storage of the contract until the owner acts. The safe behaviour: the open intents of an exited member are gone (or anybody may remove them).
-  it.fails("TC-SR3B-04 [finding I-4] the open intents of a member that exited do not stay in the contract", () => {
+  it("TC-SR3B-04 [finding I-4, fixed] the open intents of a member that exited do not stay in the contract", () => {
     expect(seen.intent2Remains).toBeDefined();
     expect(seen.intent2Remains).toBe(false);
   });
 
   // Finding I-5a: a grant that the exited member offered is still `offered` and another member could accept it: the lessee then holds a grant whose grantor has no stake in the circle.
-  it.fails("TC-SR3B-05 [finding I-5a] a grant offered by a member that exited cannot be accepted", () => {
+  it("TC-SR3B-05 [finding I-5a, fixed] a grant offered by a member that exited cannot be accepted", () => {
     expect(seen.acceptFromExited).toBeDefined();
     expect(seen.acceptFromExited).toBe(false);
   });
 
   // Finding I-5b: a grant that the exited member holds as grantee stays `active`, and a stranger cannot revoke it as `defaulted` (the grantee is `exited`, not `suspended`, and has no defaulted
   // position); only the grantor, the grantee, the operator or the expiry end it. The safe behaviour: anybody may end the grants of an exited grantee.
-  it.fails("TC-SR3B-06 [finding I-5b] anybody can revoke the active grants of a grantee that exited", () => {
+  it("TC-SR3B-06 [finding I-5b, fixed] anybody can revoke the active grants of a grantee that exited", () => {
     expect(seen.strangerRevokes).toBeDefined();
     expect(seen.strangerRevokes).toBe(true);
   });

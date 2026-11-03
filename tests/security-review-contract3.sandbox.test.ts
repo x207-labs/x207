@@ -4,7 +4,7 @@
 // Run: X207_SANDBOX=1 npx vitest run tests/security-review-contract3.sandbox.test.ts
 import { appendFileSync } from "node:fs";
 import { afterAll, describe, expect, it } from "vitest";
-import { base58Encode, createCircleViewFn, onboardMember, parseEventLog, type ContractCall } from "@x207/core";
+import { JOIN_STORAGE_DEPOSIT, base58Encode, createCircleViewFn, onboardMember, parseEventLog, type ContractCall } from "@x207/core";
 import { SHORT_PARAMS, TERMS_HASH, deployCircle, type CircleFixture } from "../sdk/test-support/circle.ts";
 import { sandboxAvailable, type SandboxAccount } from "../sdk/test-support/sandbox.ts";
 
@@ -121,11 +121,12 @@ describe.skipIf(!sandboxAvailable)("security review 3: intents, withdrawals, lim
     expect(removed.failures).toEqual([]);
   }, 900_000);
 
-  // Finding I-3: post_intent is not payable, so the contract pays the storage of every intent, and an intent is only removed by its owner. A sybil member (join deposit 0.01 NEAR and a stake of one unit)
-  // pins the storage of 64 intents for good. The safe behaviour asserted here: what a minimal member can pin with intents does not exceed its join deposit.
-  it.fails("TC-SR3-03 [finding I-3] the storage that one minimal member can pin with intents does not exceed its join deposit (0.01 NEAR)", () => {
+  // Finding I-3 (fixed by ADR-41, interface 0.0.9): post_intent is not payable, so the contract pays the storage of every intent, and an intent is only removed by its owner. A sybil member that
+  // joined with the least stake could pin the storage of 64 intents for good, more than its join deposit of 0.01 NEAR (measured 0.0646 NEAR). The join deposit is now 0.32 NEAR, the storage of the worst
+  // member. The safe behaviour asserted here: what a minimal member can pin with intents does not exceed the join deposit of `@x207/core`.
+  it("TC-SR3-03 [finding I-3, fixed] the storage that one minimal member can pin with intents does not exceed its join deposit", () => {
     expect(measured.intentBytes).toBeDefined();
-    expect(BigInt(measured.intentBytes!) * 10n ** 19n <= 10n ** 22n).toBe(true);
+    expect(BigInt(measured.intentBytes!) * 10n ** 19n <= JOIN_STORAGE_DEPOSIT).toBe(true);
   });
 
   // Finding I-1: the key of an intent is the hash alone, so the first member that posts a hash owns it. The safe behaviour: the owner of the intent can still post it.
@@ -135,10 +136,11 @@ describe.skipIf(!sandboxAvailable)("security review 3: intents, withdrawals, lim
     expect(measured.squatVictim).not.toContain("ERR_INTENT_EXISTS");
   });
 
-  // Finding I-2: the removal of an intent emits no event, so an indexer cannot tell that the slot is free.
-  it.fails("TC-SR3-05 [finding I-2] remove_intent emits an event", () => {
+  // Finding I-2 (fixed, interface 0.0.9): the removal of an intent emitted no event, so an indexer could not tell that the slot is free.
+  it("TC-SR3-05 [finding I-2, fixed] remove_intent emits intent_removed { intent_hash, account_id }", () => {
     expect(measured.removeFailures).toEqual([]);
-    expect(measured.removeLogs!.flatMap((l) => parseEventLog(l) ?? []).length).toBeGreaterThan(0);
+    const events = measured.removeLogs!.flatMap((l) => (parseEventLog(l) ?? []) as Array<{ event: string; data?: Record<string, unknown> }>);
+    expect(events.map((e) => e.event)).toContain("intent_removed");
   });
 
   it("TC-SR3-06 only the owner removes an intent, and an unknown hash is refused", async () => {
