@@ -25,6 +25,26 @@ Target: about 3 minutes. Narration at about 2.4 words a second.
 
 Total: 180 seconds.
 
+## Scenes added on 2026-11-03 (optional; the owner decides which to keep)
+
+The first ten scenes make 180 seconds. These four were proven after the first draft; together they are about 70 seconds more. If the video must stay near 3 minutes, cut scene 2 to 10 seconds, shorten scenes 4 and 5, and keep these as four short cuts of 12 to 15 seconds. Every one of them is a sandbox or a file; none runs on mainnet.
+
+| No | Time | Label | On screen | Narration (EN) | Source of the proof | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| 11 | about 15 s | NEAR-SANDBOX | Terminal: `X207_SANDBOX=1 npx vitest run tests/asset-catalog.sandbox.test.ts`, then the table of `docs/asset-catalog.md` | "Barter has to be as random as real life. The catalog lists 90 kinds of things agents can trade: tokens, access, secrets, services, and digital goods of ordinary people. 94 entries go into the contract's registry; nine kinds are registered as refused, and an offer of one fails." | `scripts/register-asset-classes.mjs`, `tests/asset-catalog.sandbox.test.ts` (2 tests passed; 94 written, 94 read back, a second run writes nothing, `securities:equity` fails with `ERR_ASSET_CLASS_FORBIDDEN`) | Ran in the sandbox. The 94 = 85 assets of classes A to D (rows 1 to 55 and 61 to 90; the 5 debts of class E are not assets of the registry) plus 9 refused kinds. |
+| 12 | about 20 s | NEAR-SANDBOX | Terminal in `agents`: `X207_SANDBOX=1 npx vitest run test/classes.sandbox.test.ts`. Show the eleven lines `AG-022 ...`: the buyer outside the whitelist fails with `ERR_NOT_WHITELISTED` and is paid back, the whitelisted buyer holds 1000, then B, C, D reach `active` and class X is refused | "A real-world-asset token can refuse a transfer. The contract holds the exact amount, a buyer outside the whitelist fails and gets everything back, and a whitelisted buyer receives the tokens. One asset of each class works the same way, and a refused kind is refused." | `agents/test/classes.sandbox.test.ts` (AG-022, run 3 passed), contract tests `ct090_ft_escrow` and the restricted-token tests of CT-091 in `contracts` | Ran in the sandbox with a mock token (`probes/mock_rwa`). Classes B to D show the offer and the acceptance, not the delivery of the access. No real RWA token, no transfer-fee token (not supported). |
+| 13 | about 15 s | none | `backend/docs/delivery.md`, then the terminal: `npx vitest run test/marketplace/delivery.test.ts` in `backend` (11 tests) | "Goods that are not on-chain cannot move in one atomic step. The seller marks the delivery, the buyer confirms with a signature, and if the buyer stays silent for the whole window the delivery is confirmed. Only then the bundle can be signed." | `backend/src/marketplace/delivery*.ts`, 11 tests passed on 2026-11-03 | Built in the backend and unit-tested. Not run on a network and not shown in the dashboard. The contract holds no payment for it: `CT-093` is a design note only. |
+| 14 | about 20 s | none | Terminal in `contracts`: `scripts/verify-release.sh v0.0.9` (prints `x207-circle-v0.0.9.wasm: OK`, the sha256 in hex and in base58), then `docs/security.md` | "The contract you read is the contract that runs. Release v0.0.9 is built twice in a pinned container and gives the same bytes, so its hash can be compared with the code on chain. We reviewed our own code as attackers, twice for the contract, and fixed what we found with tests that failed before. This is not an external audit." | `contracts/scripts/verify-release.sh`, `contracts/docs/verify-release.md`, `docs/security.md` (every finding with its level, status and the command that repeats the check; the numbers on screen are the ones in that file) | The release check ran on 2026-11-03 (`SHA256SUMS` passes; wasm sha256 `fa8309059a84…`). **Waiting:** comparing that hash with the `code_hash` of an account on chain depends on the rehearsal v11 of the contract owner, which is running; do not say it was matched until its record has the `code_hash`. |
+
+Commands of these scenes, one at a time (each starts its own `near-sandbox`):
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/asset-catalog.sandbox.test.ts    # scene 11 (about 3 minutes; jump-cut)
+(cd agents && X207_SANDBOX=1 npx vitest run test/classes.sandbox.test.ts)   # scene 12 (about 5 minutes)
+(cd backend && npx vitest run test/marketplace/delivery.test.ts)     # scene 13
+(cd contracts && scripts/verify-release.sh v0.0.9)                   # scene 14
+```
+
 ## Commands in the order of the scenes
 
 ```bash
@@ -50,6 +70,11 @@ Read each from the terminal of the take that is on screen. The runs of 2026-11-0
 - Real model inference by the agents: they run in mock or rule mode.
 - A real wallet in the dashboard: the pages run against fixtures and a mock wallet.
 - Savings on star graphs: the README says clearing helps in dense circles.
+- That the 90 kinds of the catalog can be traded end to end. The registry holds them; only NFTs and fungible tokens (class A), a NEAR access key (B), a mock provider behind the proxy (C) and x402 endpoints (D) have a delivery that ran. Rows marked roadmap in the catalog have no adapter.
+- That a real RWA token, a token with a transfer fee, or a token that needs KYC works: only `probes/mock_rwa` ran. A token with a transfer fee is refused on purpose.
+- The off-chain handover on a network, or a payment held by the contract until the receiver confirms: the flow is in the backend only.
+- That release v0.0.9 was matched with an account on chain, until the record of the rehearsal v11 says so. The release itself is reproducible and its checksums pass.
+- "Audited": the reviews are our own.
 
 ## X post (draft)
 
