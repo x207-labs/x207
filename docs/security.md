@@ -55,13 +55,14 @@ Every "fixed" row above has a test that failed before the fix. Run them from the
 | B1 to B7 | `backend/broker` | `npx vitest run test/security-review.test.ts` |
 | G1, G2, L1, F1, F2 (SDK) | repository root | `npx vitest run tests/security-review-sdk.test.ts` (open findings: the `it.fails` tests) |
 | FE-1, FE-2 | `frontend` | `npx vitest run src/test/security.test.tsx src/components/Negotiation.test.tsx` |
+| Clearing verifier (property tests) | `contracts` | `cargo test --test ct030_clearing_property` (1000 cases each; 2 to 30 members; the verifier against an independent statement of the rules, mutated and random proposals, the real `submit_clearing` and `commit_epoch` of every accepted one, the order of submissions); `cargo test --lib leg_properties` (partly registered bundle legs). A failing case prints its smallest input and proptest keeps the seed in `proptest-regressions/`. No violation was found. |
 | Release | `contracts` | `scripts/repro-build.sh HEAD /tmp/a && scripts/repro-build.sh HEAD /tmp/b` and compare the two sha256 lines (needs Docker) |
 | Testnet runs | repository root | hashes in `docs/testnet-v10-*.json` and `docs/testnet-f8-v10.json`; look a hash up in the explorer of testnet |
 
 ## Not tested or not checked
 - Anything on mainnet. The rehearsals ran on testnet with a mock USDT; Intents has no code on testnet, so `mt_on_transfer` and `withdraw_intents_balance` ran against a mock that plays `intents.near`. The real answer of `ft_withdraw` is assumed from the reference contract.
 - A TEE: class C secrets are not sealed to an enclave key (BK-009, BK-010); the audit log of the broker is a plain file.
-- Fuzzing of the contract, and an economic model beyond the cases in the review (clearing with fees above 0 together with bundles).
+- Fuzzing of the contract beyond the property tests of the clearing verifier and of the bookkeeping of bundle legs (no random sequences of calls through the whole interface, no fuzzing of the vouchers), and an economic model beyond the cases in the review (clearing with fees above 0 together with bundles).
 - Upgrade from 0.0.4 or older (the `Params` layout changed in 0.0.5); 0.0.7 to 0.0.9 was tested in near-sandbox.
 - Several seller processes (the in-flight guard lives in the memory of one process), two facilitators on one pending store, and the behaviour of the free RPC endpoints under load beyond what the rehearsals met.
 - A real wallet in the browser, and the dependencies of every package (`npm audit` not run).
