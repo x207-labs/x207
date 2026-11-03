@@ -18,6 +18,54 @@ Dates are those of the commits (UTC+07:00). "Commit" is the commit of the reposi
 
 ---
 
+## 0.0.12 (not released; in progress in `contracts`, 2026-11-03, ADR-43)
+
+Rules of conduct: a frozen member (CT-095), official contracts per asset type (CT-096), a bond with an arbiter (CT-094). The design is `contracts/docs/rules-0.0.12.md`. A section is added here with each of the three when it is built.
+
+### CT-094: bond of both sides, with an arbiter
+**Added**
+- `BundleInput` takes optional `arbiter`, `agreement_hash` and `confirm_by` (ns, between commit + 1 hour and + 14 days). They enter the signed terms after `search_leg` only when an arbiter is present, so the `terms_hash` of a bundle without a deal is the one of 0.0.11.
+- Methods `confirm_deal(bundle_id)`, `dispute_deal(bundle_id, evidence_hash)`, `rule_deal(bundle_id, verdict)` (verdict `accused_guilty`, `complaint_false` or `no_fault`; the arbiter only), `settle_deal(bundle_id)` (anybody). Views `get_deal`, `bond_locked`.
+- Events `bond_locked`, `deal_confirmed`, `deal_disputed`, `deal_ruled`, `bond_slashed`, `bond_released {reason}` with reason `confirmed`, `elapsed`, `arbiter_silent` or `ruling`.
+- Parameters `bond_threshold` (default 100 credit) and `bond_bps` (default 2000, that is 20 percent of the value of the bundle), set with `set_params` (the usual timelock). They are kept in raw keys, because the Borsh `Params` inside each `Epoch` record cannot change.
+- Storage: `StorageKey::Deals` (`d`), raw keys `x207_bond_locked:<account>`, `x207_deal_count:<account>`, `x207_rules`, `x207_rules_pending`. Errors `ERR_BOND_REQUIRED`, `ERR_BOND_LOCKED`, `ERR_DEAL_LIMIT` and the deal errors listed in `abi.json`.
+
+**Changed (behaviour)**
+- A bundle of two participants whose largest owed amount is at or above `bond_threshold` needs an arbiter and `confirm_by`. Each side locks a bond on its stake (the limit is bounded by `stake - bond_locked`); `request_exit` and `withdraw_stake` are refused with `ERR_BOND_LOCKED` while a bond is held. A member has at most 8 open deals.
+- `complaint_false`: half of the complainant's bond goes to the stake of the accused, the rest is released. A silent arbiter (7 days after the dispute) releases all bonds.
+
+**Limits (written, not hidden)**
+- A ring of three or more participants has **no bond** in 0.0.12.
+- Open deals of a frozen member continue, and a frozen arbiter may still rule.
+
+**Join deposit (changed):** `JOIN_STORAGE_DEPOSIT` goes from 0.32 to **0.35 NEAR** (ADR-41). The worst case of one member grows by 2,954 bytes to 34,236 bytes (0.3424 NEAR), measured by `ct062_storage_per_member`, which now fails if the deposit does not cover it. Members who joined with 0.32 are not asked for more. SDK and onboarding code must send 0.35.
+
+**Upgrade from 0.0.11:** no data migration. `get_params` shows the two new fields with their defaults until the owner sets them (`ct094_upgrade_from_0_0_11`).
+
+### CT-095: `freeze_member`
+**Added**
+- `propose_freeze(account_id, reason_hash?)` (owner), `apply_freeze(account_id)` (anybody, after the timelock of 24 hours), `cancel_freeze(account_id)` (owner, while pending), `unfreeze_member(account_id)` (owner, at once). Views `get_freeze`, `is_frozen`.
+- Events `freeze_proposed {account_id, eta, reason_hash}`, `member_frozen {account_id, from_epoch}`, `freeze_cancelled`, `member_unfrozen`.
+- Errors `ERR_FREEZE_PENDING`, `ERR_FREEZE_NOT_PENDING`, `ERR_FREEZE_TIMELOCK`, `ERR_ALREADY_FROZEN`, `ERR_NOT_FROZEN`, `ERR_FROZEN`, `ERR_BAD_HASH`.
+- Storage: a raw key `x207_freeze:<account>`; `Member` is unchanged.
+
+**Changed (behaviour)**
+- A frozen member is refused `commit_bundle` (any participant), `post_intent`, `offer_grant`, `accept_grant` and `complete_escrow` at once (`ERR_FROZEN`). `register_cumulative`, `register_voucher` and `register_in_bundle` refuse a frozen payer or payee only for a voucher of an epoch **after** the epoch in which the freeze took effect, so a seller that already handed over its goods can still register the voucher of a frozen buyer until the cutoff of that epoch.
+- A frozen member can still pay a residual, claim, add stake, `request_exit`, `withdraw_stake`, `cancel_escrow`, `revoke_grant`, `remove_intent`. No money moves by a freeze (ADR-20).
+- A pending freeze blocks nothing.
+
+**Upgrade from 0.0.11:** no migration for this part.
+
+### CT-096: official contracts per asset type
+**Added**
+- `set_asset_contracts(asset_type, contracts)` (owner; the type must be registered with class `A`; at most 16 distinct accounts; an empty vector clears the list) and the view `get_asset_contracts(asset_type)`. Event `asset_contracts_set {asset_type, contracts}`. Errors `ERR_ASSET_CLASS_NOT_A`, `ERR_TOO_MANY_CONTRACTS`, `ERR_DUPLICATE_CONTRACT`, `ERR_CONTRACT_NOT_OFFICIAL`.
+- Storage: `StorageKey::AssetContracts` (`w`), a side map; `AssetClassEntry` is unchanged.
+
+**Changed (behaviour)**
+- With a non-empty list for the asset type of a grant, `offer_grant` refuses a class A scope that names another contract, and `nft_on_transfer`, `ft_on_transfer` (escrow action) and `mt_on_transfer` (escrow action) refuse a deposit from another contract (the multi-token receiver hands everything back by its answer and logs the reason). An empty list, which is the default, is the behaviour of 0.0.11. A held escrow is not touched by a change of the list.
+
+**Upgrade from 0.0.11:** no migration for this part.
+
 ## 0.0.11 (released as `v0.0.11`, tag on `be4da8f`, reproducible; first written in `6d9ef76`, 2026-11-03)
 
 Class A escrow of an exact amount of one NEP-245 multi-token (CT-092). A new interface version because it adds a view, an event and three errors, and `0.0.10` was already pinned by the SDK.
