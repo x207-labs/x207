@@ -2,7 +2,7 @@
 
 For reviewers and for users of the SDK. This file is the interface of the circle contract, version by version: methods, events, error codes, decisions, and whether a circle that already runs the previous version needs a migration. It is written from the Interface Spec of the contract (`vault/14 x207/04 Arsitektur/x207 - Spec Antarmuka Kontrak.md`, sections 1, 14 to 18), from the history of `abi.json` and from the commits of the repository `contracts`. Where the sources do not say something, this file says so; it does not fill the gap.
 
-**How versions work (spec section 1, rules of the `0.0.x` freeze).** While the version is `0.0.x`, every change that an outside caller can see raises the patch number: the name or arguments of a method, the return type of a view, a field of an event, an error code, the `msg` schema, the byte format of a voucher. The view `interface_version()` returns the version, and the field `version` of every NEP-297 event (`standard: "x207"`) carries it. A consumer refuses an event with a higher minor than it knows and ignores fields it does not know. The first release tagged `v0.1.0` changes the rule: after it, a minor raises for a break and a patch for a compatible addition. The SDK pins the version it was generated from: `X207_CIRCLE_ABI_VERSION` in `sdk/packages/core/src/contract/types.generated.ts` (today `"0.0.10"`, pinned from `contracts` `6124495`).
+**How versions work (spec section 1, rules of the `0.0.x` freeze).** While the version is `0.0.x`, every change that an outside caller can see raises the patch number: the name or arguments of a method, the return type of a view, a field of an event, an error code, the `msg` schema, the byte format of a voucher. The view `interface_version()` returns the version, and the field `version` of every NEP-297 event (`standard: "x207"`) carries it. A consumer refuses an event with a higher minor than it knows and ignores fields it does not know. The first release tagged `v0.1.0` changes the rule: after it, a minor raises for a break and a patch for a compatible addition. The SDK pins the version it was generated from: `X207_CIRCLE_ABI_VERSION` in `sdk/packages/core/src/contract/types.generated.ts` (today `"0.0.11"`, pinned from `contracts` `6d9ef76`).
 
 **Releases and reproducibility.** A release is a tag `vX.Y.Z` of the repository `contracts` with `x207-circle-vX.Y.Z.wasm`, `abi-vX.Y.Z.json` and `SHA256SUMS`. GitHub has the releases `v0.0.4` to `v0.0.9`. There is no tag for `0.0.1`, `0.0.2` and `0.0.3`: those are interface versions only.
 
@@ -16,6 +16,22 @@ A rehearsal or a mainnet deployment uses the wasm of a release and records its `
 Dates are those of the commits (UTC+07:00). "Commit" is the commit of the repository `contracts` in which the version appears in `abi.json`.
 
 ---
+
+## 0.0.11 (not released; interface in `contracts` `6d9ef76`, 2026-11-03)
+
+Class A escrow of an exact amount of one NEP-245 multi-token (CT-092). A new interface version because it adds a view, an event and three errors, and `0.0.10` was already pinned by the SDK.
+
+**Added**
+- `mt_on_transfer` takes a new action, `{"action":"escrow","grant_id":N}`, from any multi-token contract (the `settle` action keeps its own checks: only `intents_id`, only `nep141:<usdt>`). The grantor of a class A grant deposits the token with `mt_transfer_call`; `complete_escrow` pays the buyer with `mt_transfer`, and when that fails the registration of the buyer's voucher is taken back exactly, as for NFTs and tokens of NEP-141.
+- The scope of a class A grant for a multi-token is `{"mt_contract": ..., "token_id": ..., "amount": ...}` (`amount` in the units of that token, decimal text). The deposit must be exactly this contract, token and amount.
+- View `get_mt_escrow(grant_id) -> {grant_id, mt_contract, token_id, amount, state, buyer} | null`; event `mt_escrow_held { grant_id, mt_contract, token_id, amount }` (35 events in total). The stored escrows of NFTs and NEP-141 tokens are unchanged (the new map has its own storage key).
+- Errors: `ERR_ESCROW_MT_MISMATCH` (other contract or token than the scope), `ERR_ESCROW_MT_AMOUNT` (other amount), `ERR_ESCROW_MT_BATCH` (a deposit with more than one token, one amount or one owner).
+- This is the way to trade a balance held at NEAR Intents (a multi-token such as `nep141:<usdt>`) or a pool share as a barter good.
+- SDK: `get_mt_escrow` and `mt_escrow_held` in the pinned ABI, `mtEscrowGrantScope`, `buildMtEscrowDepositCall`, `KNOWN_EVENT_VERSION` 0.0.11.
+
+**Tested by the contract owner:** `ct092_mt_escrow` (3 sandbox tests) with `probes/mock_mt` (a NEP-245 mock with batch calls, a blocked receiver and a frozen account); `ct068_abi_freeze`, `be034_mt_on_transfer` and the escrow tests of 0.0.10 still pass. Only the mock ran: the multi-token contract of NEAR Intents (`intents.near`) was not used.
+**Breaking for callers:** none that the sources name; no existing method changes its signature.
+**Migration:** not stated in the sources; the new map is under its own storage key. An upgrade from `0.0.10` was not run.
 
 ## 0.0.10 (not released; interface in `contracts` `6124495`, 2026-11-03)
 
