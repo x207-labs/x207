@@ -671,6 +671,524 @@
       "step": "lane nonces",
       "note": "before 275970032000000,275970032000000,275970032000000,275970032000000 after 275970032000001,275970032000001,275970032000001,275970032000001; 4 transactions in parallel",
       "at": "2026-11-03T00:48:16.804Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 8 (1 of 3 after the RPC load work): facilitator chainCache on, one buyer client per agent, 60 calls, 1.5 s pause, four RPC endpoints",
+      "at": "2026-11-03T01:07:11.384Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "9mSF2axA26pbtmbHxpzbGmEUt71pBD9ybyfxdBvDKLKV",
+      "at": "2026-11-03T01:07:17.097Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "AJx4ZsruCQh6CoRvGgb3bHkVJDZTq3RCLtQaNYzJagUc",
+      "at": "2026-11-03T01:07:21.339Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "Bm6X2AcUMao3dTVY24vE1aLLUGwTBroPqTahoYpLK3jC",
+      "at": "2026-11-03T01:07:25.928Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "Gi7Fa2gLmYSmKGavPVb9sNHrZijSsMq9mGXaepjW98oW",
+      "at": "2026-11-03T01:07:29.359Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "6B2wt3iPW4n9u64ioKotLeNTpEnDXv4DfRzZYjwVf7HA",
+      "at": "2026-11-03T01:07:33.493Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "3zrtwYFpL45qYH92SSMr5TN7zYqMjSGvL1jenk3xYjzR",
+      "at": "2026-11-03T01:07:37.537Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "6KwCodoGWfHwBU4RJyfc1sSjF32RAGpSLDRvZBZFcvZH",
+      "at": "2026-11-03T01:07:44.709Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "Btf6cbSyNHZT4WKNChEtwApFMXo2bvgazP5HkuL9Q3P",
+      "at": "2026-11-03T01:07:48.870Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "EZTC9sXg2d8kft4TmhHizLBhtd34fP2TkBjRqNFZCXiA",
+      "at": "2026-11-03T01:07:52.816Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.commit_bundle",
+      "hash": "9xxmqAxgHMXiq2exXJXG2nr1dEXaAkYnrYaLsT6aKb6",
+      "at": "2026-11-03T01:07:57.636Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "7UHpd71C6kcnMEvSwTz3Z6W2Jsri3nt5TH9GvdQo9r59",
+      "at": "2026-11-03T01:15:57.534Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "EhngLF92LwG8vXsX3Vammjcz9Zdk3x8rgrcyUxeCRV1r",
+      "at": "2026-11-03T01:15:58.189Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "7cLcCJpU1fXMt4tm3dd3TZTqQjsY1XTcUB83DyqPGGpw",
+      "at": "2026-11-03T01:15:58.191Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "GHdZmwwWhYYXzfCLJgrEY4oGXDdyt9hsX73iYTr1TNY3",
+      "at": "2026-11-03T01:15:58.221Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "7yxSZa2Pu65t43arsBVuPGVx12VDNe7a7VjMztzGFT9v",
+      "at": "2026-11-03T01:16:01.307Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "2hWhgX2XLRbCdZFfApFjVGj9mC8h4i5gHxYe166JQcYJ",
+      "at": "2026-11-03T01:16:01.520Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "7unxrPVEyXZjF4h4qYpGbDbLfmZse8vyn2di6Hh8ajuE",
+      "at": "2026-11-03T01:16:01.821Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "CboH5jWc2rp193uqBjaJF2FmedVkGUNQoyrB8rJo3Prf",
+      "at": "2026-11-03T01:16:01.839Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "EhvG5ZKHzmig2EW2pADEkh73VKvYbrcrGGTJt2oT9VLJ",
+      "at": "2026-11-03T01:16:05.763Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "6JtttMXPhpCMKkPveckxB94jXTSaba36HhT42nUXrKBz",
+      "at": "2026-11-03T01:16:06.096Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "4WgGpu9VkjRxEngc6DbfQSWXkVVWCrLJs7bR1eB3Recj",
+      "at": "2026-11-03T01:16:06.177Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "J4ZMDvaw8Nnka1kazFsexth8eCZrERojyzdvUpdDZ6qA",
+      "at": "2026-11-03T01:16:06.180Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "2b5TiwYXqkQScrTJpLWMF4FPFC3MYzkdKBabob2c1VFC",
+      "at": "2026-11-03T01:16:10.000Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "FVhA6xLX9xPzbSSsDpeygMTeKuYN3X9LHk9UcZbdZioa",
+      "at": "2026-11-03T01:16:16.278Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "Cozx7yHtkkkufMnsSV9TYXJidNbxpWNEM1cLnFPY5n1x",
+      "at": "2026-11-03T01:18:02.409Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.submit_clearing",
+      "hash": "4BDM9DAheae1DypSE1ebyUzeQh7XseVSh7xnJEcH9zJU",
+      "at": "2026-11-03T01:18:07.909Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "9o6bPSffwk1wP4S632fbE95wzrr8Fbxh1Jt8SJQpAbfe",
+      "at": "2026-11-03T01:19:07.750Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.settle.ft_transfer_call",
+      "hash": "HD8GqRTReYGN8J7LgZeDd7Ky8stRGxgwEqQUDhXxhYi8",
+      "at": "2026-11-03T01:19:15.541Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.settle.ft_transfer_call",
+      "hash": "6BP4dWtpetPyNUtV12QtEEEDHS6UGq3Xu3EaAz56YE3S",
+      "at": "2026-11-03T01:19:20.977Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "Z76G3jkuwbsYy8Qb7fmyMr33Wb7gPJ9Z6oRtaLKbckL",
+      "at": "2026-11-03T01:22:56.659Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "8Xg1WpW9aRCdH2Dh2NtW7kZV5d8aiJv8u1YHmsTECuGY",
+      "at": "2026-11-03T01:28:14.215Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "D2rDiWP5nG4RPfnUV4Yp57FfpqcCiDbCWta5JiRtfUUV",
+      "at": "2026-11-03T01:29:28.772Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "Betm3y7dGuuR6YF18pwkkLwM3ZMVYUZytWELNaki8UGA",
+      "at": "2026-11-03T01:31:19.441Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "Fkf3iA8My1LGWcY9YtA7UsFxg4brFA6xnRDGXVo864Dh",
+      "at": "2026-11-03T01:34:20.176Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.claim.claim",
+      "hash": "8hrKV6hwWcAt9zk8M5mFM39Gwya2foJ4vNRJeFu3sApq",
+      "at": "2026-11-03T01:34:26.444Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.claim.claim",
+      "hash": "GBeihFmzwzR3gSSwSvFBVi8yUby6kPtQY2nNMbqp2Yh5",
+      "at": "2026-11-03T01:34:31.769Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.claim.claim",
+      "hash": "A21xipqzpDj2UqrCXL9aJmxDYhFjoxqYJchLPgLB8edz",
+      "at": "2026-11-03T01:34:37.595Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.claim.claim",
+      "hash": "FwX9wfowvuCBA3j8zgEgdbZMBwikGWesjtQumX51WHLY",
+      "at": "2026-11-03T01:34:42.676Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 8 finished F1-F4 on testnet (epoch 5): 60 paid calls and the barter ring, registrations through the gas key, clearing 1.1 of 1.5 credit, 2 residual payments, claims; the default branch did not show because cleaner was a creditor. Run 9 (2 of 3): default = translator (a debtor), DAO step on",
+      "at": "2026-11-03T01:35:21.062Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "E2qgyEkY4FNUG8Xe2Ef84Yj2bvK4ep7iPSLoH652VFwb",
+      "at": "2026-11-03T01:35:26.675Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "VWXJWnw6pxdcETAjsUPe2fR2F7Sgxk9aR4K1RVySmDt",
+      "at": "2026-11-03T01:35:38.692Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "3D2mUX8Ngpkh2VUNL58KxPhRaiF46JMqCQz1ALLSp4Pr",
+      "at": "2026-11-03T01:35:43.064Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "9xqkgu2PomDtfbgYaC2CpJTJNH9x7CDQSmMeLeuayYh5",
+      "at": "2026-11-03T01:35:47.224Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "5JEdS66fF618Lhm38hrXGaM2DXJcnRZhJKbBv3chmCeK",
+      "at": "2026-11-03T01:35:51.236Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "xBr4GpfG9DsWbA15N6irbwLYQxFveUFMUeZWds8EfbU",
+      "at": "2026-11-03T01:35:55.163Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "E2gL1qxHSiBiW8UyitEyMsvHgdAeuMsFhe3FALFNY6B6",
+      "at": "2026-11-03T01:35:58.796Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "9gwp1CgbHUz2r9n5B2rj16ijL25FCer7pdNZoSBLmP4q",
+      "at": "2026-11-03T01:38:13.552Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.commit_bundle",
+      "hash": "DFBDzma4MKMSaNGYuNWEddFxWe4te9eqBpXU9xPnUb4x",
+      "at": "2026-11-03T01:38:18.880Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "9dd4Nz4Rsj1nkQpHCrRherpKLFJKNZHFw1TPC1ak3DoJ",
+      "at": "2026-11-03T01:45:54.973Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "GtpUyAyQgdpyKJDjKJ9X84EZAb7SfrsEuKTEhrL2u4Ut",
+      "at": "2026-11-03T01:45:54.983Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "DJ6dn4EKi5qx6i6vbk1HYMnCXrd8rNZhkSbXJaSPpvJk",
+      "at": "2026-11-03T01:45:54.985Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "9zgguTAe7sVtp95QxoCXHuDkJ3G2dYdtcHpFzVNnyVbp",
+      "at": "2026-11-03T01:45:55.263Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "9yf3szpDrRRQudLBKPmo6CKNjNGTWvH7MK1bk9N8Jmvd",
+      "at": "2026-11-03T01:45:59.247Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "7CiFtbb3KV4mHQDp2C8FUgrv4Z5wo496Xkf7pF2ZQZoE",
+      "at": "2026-11-03T01:45:59.303Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "7zVhJrpKNkmDBhMYhFqxtAJGD6f9YZwUQe7AWHTgCGbw",
+      "at": "2026-11-03T01:45:59.305Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "9MLqKArajwEcX11mVk9ETysTwryfV9K5z7Zk4HjT1hsv",
+      "at": "2026-11-03T01:45:59.343Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "2jPKzZUgpq3KEt9LzUBoohJpPAE7oNvfnFCzmwFsW5r9",
+      "at": "2026-11-03T01:46:03.506Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "8KMv7NuqcVZp6kUBqnxSmHha4rabfekhkge2N9VETdL9",
+      "at": "2026-11-03T01:46:10.324Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "Dpw53TbjcZkooKSx3eqeFc6sKtdXtJV5fwbAAr9VG8A4",
+      "at": "2026-11-03T01:46:10.447Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "27nYM8LffGhD7NogorQA6r3r2RzMgSUUgURzTesB49cW",
+      "at": "2026-11-03T01:46:10.935Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register(gas key)",
+      "hash": "vkZr5NnD6QQQC9MyYqzTme7bbcNVxU2AadnkLpCvwWb",
+      "at": "2026-11-03T01:46:11.183Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "BbrSyvAkFbTcWdbGiGKnedLrRLWJuy4L8HexxVXzTJXa",
+      "at": "2026-11-03T01:46:18.907Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "H9SVKkMRVGEwmhGD95ASY797d9trnQzVz7UioMgKGu9Y",
+      "at": "2026-11-03T01:46:22.904Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "2hZsHyuZ4ujLoU4UFXtysqmUrVgUpqShpu95orHNpHJu",
+      "at": "2026-11-03T01:48:15.614Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.submit_clearing",
+      "hash": "95gnoA1D3bXGyG7bPr1xRb21ptM5y7HxjpH3tX18TJZ9",
+      "at": "2026-11-03T01:48:21.640Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "Dtn5WCZWCLn8wYHZjcBm7MLhYkLST7PCLmUy69DvagZJ",
+      "at": "2026-11-03T01:49:24.400Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.settle.ft_transfer_call",
+      "hash": "2U6HHZYMQDbYGTQzeRvEMgQ1jABpMjzJsqg2CUVkbBrg",
+      "at": "2026-11-03T01:49:32.300Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 9 reached F4 of epoch 8 (barter ring, 60 calls, gas key registrations, clearing, scraper settled) and stopped on a local DNS failure (getaddrinfo ENOTFOUND rpc.testnet.fastnear.com); resumed with DEMO_RESUME_EPOCH=8 (the same run, not a new one)",
+      "at": "2026-11-03T01:57:08.286Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "Gjzd27KvbD62XTRY1sTw7z12jqj19hLFi7Rcv8UGkkiq",
+      "at": "2026-11-03T01:57:14.173Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "8opPxDi4K75yaMevMRiCmMGSXviGAGYY74CDdVRCCrpz",
+      "at": "2026-11-03T01:57:18.541Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "3wRynes7c1bfUfMUrCHCSn1sQwioQ1icxX8i4ptF3PUr",
+      "at": "2026-11-03T01:57:22.778Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "BdzLcY38GWtmKPFHXk6JzzCmBjqN5uXAUJzgyKzkGaRh",
+      "at": "2026-11-03T01:57:26.983Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "7cCkrDUxyraxqdPiJNEWp7RYwzter3NrgpcrCkEXzcRx",
+      "at": "2026-11-03T01:57:31.616Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "DYRt1kw3buipqb8MtVkz9XxYXojHdjkqEi8bJHBe2Taf",
+      "at": "2026-11-03T01:57:35.514Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "CeZFZWAxCywsdv1sHvLoFrhyPyzVjEF1CVgzb2v2G5jS",
+      "at": "2026-11-03T01:58:10.103Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "FCjV5PAS6Bt9aGcrLgQrswE5ULtYtUu9snh7USHFWWp9",
+      "at": "2026-11-03T01:59:26.748Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "7m3yPz84gLNaxvCFMQQqcSphDMgmMwRA5p32CWMHwYR2",
+      "at": "2026-11-03T02:01:38.579Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "5Dtn4vZxu3mM8ruyfDnWPy5F3dQVBWN1u26nz2G2nhuk",
+      "at": "2026-11-03T02:04:44.860Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.claim.claim",
+      "hash": "6oDhdpzu7G3G3iAPgSodbwJbrLNY17UezT3K4KxqgB32",
+      "at": "2026-11-03T02:04:49.659Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.claim.claim",
+      "hash": "4wrqfLTVg15AnftmE7T7ExW3YZ284NewPR4z6K2A2YE4",
+      "at": "2026-11-03T02:04:54.522Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.claim.claim",
+      "hash": "FniwPnyimqD89GFWPVgGoDZoAvLCX8ryyCs2FwDsWuJD",
+      "at": "2026-11-03T02:04:58.996Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.claim.claim",
+      "hash": "GdRdh6RZHimKFP6xq9aKdY3fBBDW5s5fSbyg9pLwMaKm",
+      "at": "2026-11-03T02:05:03.340Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "dao.add_proposal.add_proposal",
+      "hash": "C9Az38E4me8SbbDCPnYDY4V77pPqUHArkE3fS3CZpS4k",
+      "at": "2026-11-03T02:05:07.733Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "dao.vote.x207b-deploy.testnet.act_proposal",
+      "hash": "62Ei1vjULcc7Wpw9vBbKvTJg5CxyZPoQmbayP9pRjK5h",
+      "at": "2026-11-03T02:05:11.445Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "dao.vote.x207b-image.testnet.act_proposal",
+      "hash": "H4s8iSb8Z9ujoFAbh72aLeTsqNXJAkMa2DF9pi4Zb2d8",
+      "at": "2026-11-03T02:05:17.753Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 9 resumed (epoch 8) finished: default branch (translator did not pay: stake cut by 200000 of 150000000, status 409, limit 0) and the DAO step (proposal 0 set_params limit_decay 0 to 100, two council votes, Approved, params_updated effective_epoch 11); 75 vouchers, 2 net debtors, cleared 1.1 of 1.5 credit",
+      "at": "2026-11-03T02:06:07.293Z"
     }
   ]
 }

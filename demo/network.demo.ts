@@ -138,7 +138,9 @@ describe("demo jaringan nyata", () => {
     const rpc = new NearRpc({ urls: rpcUrls, timeoutMs: 10_000, rateLimit: { attempts: 5, baseMs: 2_000 } });
     const circle = defineCircleConfig({ network: "x207:agents-main", circleContract: contract });
     const relayer = { accountId: env("RELAYER_ACCOUNT_ID"), privateKey: operatorKey("RELAYER", env("RELAYER_ACCOUNT_ID")) };
-    const facilitatorApp = createApp(createFacilitatorService({ circles: [circle], rpc, pending, signers: [relayer.accountId] }));
+    // chainCache: the chain reads of /verify are kept for a few seconds (sdk/apps/facilitator/src/chain-cache.ts) so that a paid call does not cost ten RPC requests.
+    const facilitatorService = createFacilitatorService({ circles: [circle], rpc, pending, signers: [relayer.accountId], chainCache: {} });
+    const facilitatorApp = createApp(facilitatorService);
     const facilitator = await serveWeb((request) => facilitatorApp.fetch(request));
     servers.push(facilitator.server);
     const urls = {} as Record<AgentName, string>;
@@ -180,6 +182,7 @@ describe("demo jaringan nyata", () => {
     const scheduler = new RegistrationScheduler({
       circleContract: contract, store: pending, log: (e) => log(`   registrasi ${JSON.stringify(e)}`),
       chain: registrationChain, concurrency: registrationChain.concurrency,
+      onRegistered: ({ payer }) => facilitatorService.invalidatePayer?.(contract, payer),
     });
 
     // RPC dan Neardata publik testnet membatasi laju (429; 30 blok per menit), jadi backfill indexer tidak mungkin dalam satu sesi.
@@ -247,12 +250,18 @@ describe("demo jaringan nyata", () => {
       });
     }
     if (!resume) log(`== F2 pembayaran voucher (epoch ${epoch})`);
+    // one buyer client per agent: it keeps its own membership and headroom reads between calls
+    const buyers = new Map<AgentName, ReturnType<typeof createAgentBuyer>>();
+    const buyerOf = (name: AgentName, seller: AgentName) => {
+      if (!buyers.has(name)) buyers.set(name, createAgentBuyer(identity[name], { rpcUrls }));
+      return buyers.get(name)!(`${urls[seller]}/api/${AGENTS[seller].verb}?input=halo`);
+    };
     for (const { buyer, seller } of resume ? [] : planDensity(density, payments, Number(process.env.DEMO_SEED ?? 20261102))) {
       // The free testnet RPC answers 429 now and then; the facilitator then answers 503 before the resource is served (nothing is paid).
       // Ask again a few times, and say what the refusal was when it stays.
       let response: Response;
       for (let attempt = 0; ; attempt += 1) {
-        response = await createAgentBuyer(identity[buyer], { rpcUrls })(`${urls[seller]}/api/${AGENTS[seller].verb}?input=halo`);
+        response = await buyerOf(buyer, seller);
         if (response.status !== 503 || attempt >= 6) break;
         log(`   ${buyer} -> ${seller}: HTTP 503, ulang ${attempt + 1}/6 setelah ${4 * (attempt + 1)} detik`);
         await sleep(4_000 * (attempt + 1));
