@@ -35,6 +35,8 @@ const member = (account: string, status: string) => ({
 });
 const rpcOf = (w: World) => ({
   view: async (_c: string, method: string, args: any) => {
+    if (method === "interface_version") return "0.0.12"; // SD-074 B5-F2: the facilitator reads the version before it asks is_frozen
+    if (method === "is_frozen") return false;
     if (method === "get_epoch") return { epoch: 42, cutoff_at: String(BigInt(w.cutoffMs) * 1_000_000n), phase: "open" };
     if (method === "member") return member(args.account_id, args.account_id === A ? w.status : "active");
     if (method === "headroom") return w.status === "active" ? w.headroom : "0"; // the contract answers "0" when the member is not active
@@ -49,7 +51,7 @@ function stack(w: World, options: { pendingPath?: string; cache?: boolean; clock
     circles: [CIRCLE], rpc: rpcOf(w), pending, ...(options.verifyNow ? { verify: { now: options.verifyNow } } : {}),
     ...(options.cache ? { chainCache: { now: () => options.clock!.ms } } : {}),
   });
-  const app = createApp(service);
+  const app = createApp(service, { rateLimit: false }); // the tests send many requests from one client; the limiter has its own tests (SD-034)
   const post = (path: string, body: unknown) => app.request(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).then((r) => r.json() as Promise<any>);
   return { pending, app, post };
 }

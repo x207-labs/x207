@@ -197,7 +197,7 @@ describe.skipIf(!ENABLED)("F8 on testnet: class B lease, class A escrow, class C
       circles: [defineCircleConfig({ network: "x207:agents-main", circleContract: V9 })], rpc: new NearRpc({ urls: RPCS, timeoutMs: 20_000 }), pending, signers: [AUX],
     });
     const settled: unknown[] = [];
-    const app = createApp(service);
+    const app = createApp(service, { rateLimit: false });
     const served = await serveWeb(async (request) => {
       const response = await app.fetch(request);
       if (new URL(request.url).pathname === "/settle") settled.push(await response.clone().json());
