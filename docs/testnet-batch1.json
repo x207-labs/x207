@@ -1,0 +1,751 @@
+{
+  "contract": "x207-b1-v011.testnet",
+  "aux": "x207-b1-aux.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "release": {
+    "tag": "v0.0.11",
+    "wasmSha256": "a9d0c839149a6e84ce4f87c1898b2cf871d2eda117f1988e13d0c59ae13a2f39",
+    "codeHash": "CRtYqTc47ADcDkHp7UJaRPLXu5XHS7KYftrTNUnZ8bNx",
+    "source": "gh release download v0.0.11 --repo x207-labs/contracts"
+  },
+  "limits": [
+    "the Intents balance kind runs with probes/mock_mt: the real Intents contract is only in the sandbox"
+  ],
+  "steps": [
+    {
+      "step": "deploy",
+      "account": "x207-b1-v011.testnet",
+      "method": "deploy_contract",
+      "hash": "A728oChvbdwZ9NVfvgDnx9NVxMrAsLL73hCDK6gar6Wv"
+    },
+    {
+      "step": "init",
+      "account": "x207-b1-v011.testnet",
+      "method": "new",
+      "hash": "6ot8XBZgL6M7rgbJNHdsEgrMMczuCKDyigiXwvBi318m"
+    },
+    {
+      "step": "account nft",
+      "account": "x207-b1-aux.testnet",
+      "method": "create_account",
+      "hash": "4iupdVP9UcyphXPXUz5CYkGZdog1G4HcZkmmaihWPk1h"
+    },
+    {
+      "step": "deploy nft",
+      "account": "nft.x207-b1-aux.testnet",
+      "method": "deploy_contract",
+      "hash": "9uPK2RSz13A7YsvW8crt15NU9pubv2csmGLofoG4Y4Hz"
+    },
+    {
+      "step": "init nft",
+      "account": "nft.x207-b1-aux.testnet",
+      "method": "new",
+      "hash": "33A5Zn8Hg7Xwu7icBSQTqWiNwPJv3Y8BjRc5FEw2HKzD"
+    },
+    {
+      "step": "account tokft",
+      "account": "x207-b1-aux.testnet",
+      "method": "create_account",
+      "hash": "BHz3vPXykhUCGZHZWHKPoiquRMyNgGD6emSVUgWbpxe1"
+    },
+    {
+      "step": "deploy tokft",
+      "account": "tokft.x207-b1-aux.testnet",
+      "method": "deploy_contract",
+      "hash": "AF54VogtDy32tjHx1mCZGXPXKQjuHN6Cn7MTVbywK8Bj"
+    },
+    {
+      "step": "init tokft",
+      "account": "tokft.x207-b1-aux.testnet",
+      "method": "new",
+      "hash": "GNovPn27gg6Vbfrn9CW76fa8K7JAHdjYFoT6LgriXwht"
+    },
+    {
+      "step": "account tokrwa",
+      "account": "x207-b1-aux.testnet",
+      "method": "create_account",
+      "hash": "7PJ3mTd3m9R7CBwZRrrSW5MKFc4RxZzV4Ak4YsFECz9D"
+    },
+    {
+      "step": "deploy tokrwa",
+      "account": "tokrwa.x207-b1-aux.testnet",
+      "method": "deploy_contract",
+      "hash": "Hf5JvjTeAo38kjGF1LoorAXMPwEZJK1gSQH3mWDpwj8s"
+    },
+    {
+      "step": "init tokrwa",
+      "account": "tokrwa.x207-b1-aux.testnet",
+      "method": "new",
+      "hash": "EWG38n1njJr4rWR44nmHJctN5TKT2pru66WMEJwAThmi"
+    },
+    {
+      "step": "account toklst",
+      "account": "x207-b1-aux.testnet",
+      "method": "create_account",
+      "hash": "HpD5MdTi8XbUUJDnrwvH9ww69sfbbgpAiJZYaKEcDnon"
+    },
+    {
+      "step": "deploy toklst",
+      "account": "toklst.x207-b1-aux.testnet",
+      "method": "deploy_contract",
+      "hash": "FVGyZL2iRWGUD1fTtfTD3MtTTXEgS9rgDYwe7KMBg4UG"
+    },
+    {
+      "step": "init toklst",
+      "account": "toklst.x207-b1-aux.testnet",
+      "method": "new",
+      "hash": "FNB9XdGBNTUsxFXr3MfAqZkuyL8mMotnsr3QRbqcupJg"
+    },
+    {
+      "step": "account mt",
+      "account": "x207-b1-aux.testnet",
+      "method": "create_account",
+      "hash": "7YNPra7FKgctXbWwzKcrtGwRcW5hV2BdCwxUZRiwVyK4"
+    },
+    {
+      "step": "deploy mt",
+      "account": "mt.x207-b1-aux.testnet",
+      "method": "deploy_contract",
+      "hash": "3SZGUgcdrTEyTKknNUBJKpCP3gXzdQVbBYmrb3XkoAQe"
+    },
+    {
+      "step": "init mt",
+      "account": "mt.x207-b1-aux.testnet",
+      "method": "new",
+      "hash": "GoTV2C3b2WYm52A6pup8GZ6GznKq3SmAEyd7NjP4eXtZ"
+    },
+    {
+      "step": "set_asset_class nft:nep171",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "Ea8nPSwbtmTXrZgvVKfDTeghnFm7aNTPn12TFzrMSZmz"
+    },
+    {
+      "step": "set_asset_class ticket:event-nft",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "BfpzsVkLKNvyYLBApsVZu8J2RSdt4wbH6UHTXCN1jbha"
+    },
+    {
+      "step": "set_asset_class game:item-nft",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "F37GE79EYkT7MdMqa85YQA85mbvkWeDxPpqL3a7mA2zZ"
+    },
+    {
+      "step": "set_asset_class coupon:voucher-nft",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "GpmV3mB2wPL2dnoxXxitw2wq4XgbNXLKcRvGWmgtCUx1"
+    },
+    {
+      "step": "set_asset_class license:software-nft",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "CXhYr8rY1vh6uDVxVp2KG3s2EKwGUfTiojma9gp6Cov5"
+    },
+    {
+      "step": "set_asset_class token:nep141",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "FGZ6GMGx2u4cmUbbtSpY44TpJDAbhYvxx4vZABX66ToX"
+    },
+    {
+      "step": "set_asset_class rwa:tokenized",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "JGLYftmgtuNjX7bGPEuhU24Vx6cKLDkZ2nzML6oWf2C"
+    },
+    {
+      "step": "set_asset_class lst:liquid-staking",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "ByZhyc5fQ2eVSTKGws1e2HEC7BLesDYkatuW3bhujrzV"
+    },
+    {
+      "step": "set_asset_class intents:multi-token",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "4D4EoDv22w7oFApX6SzEDneLRHviMfYhLxWJck2hVwXD"
+    },
+    {
+      "step": "set_asset_class amm:lp-share",
+      "account": "x207-b1-v011.testnet",
+      "method": "set_asset_class",
+      "hash": "AtMSwbdoCUpvAiHA3LLFSKuHVoFyGvA3BwcPhyWmX1wC"
+    },
+    {
+      "step": "account grantor",
+      "account": "x207-b1-v011.testnet",
+      "method": "create_account",
+      "hash": "5jz2wEVMtf7v2R4AC8e3MHvC1BshhSgxEL34stf3EejW"
+    },
+    {
+      "step": "usdt grantor",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "mint",
+      "hash": "4k49Bo3FPLVZUrt6VqG278ZKZgxpM3ei7qa2E3Zc8xFn"
+    },
+    {
+      "step": "onboard grantor",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "join",
+      "hash": "H4DGkei2fxyAtFrWuucG5CFv7LDiy1N7njJzhLK3SPow"
+    },
+    {
+      "step": "onboard grantor",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "ft_transfer_call",
+      "hash": "f9pPJN76tJc8HrAgQVSS9oXwjqWw1uuKBcnFcHN7MhR"
+    },
+    {
+      "step": "account buyer",
+      "account": "x207-b1-v011.testnet",
+      "method": "create_account",
+      "hash": "9bn7zRFw1HWGPm4hyb4CfYXtA9k9ZW8KGjZ6UBuwHnEt"
+    },
+    {
+      "step": "usdt buyer",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "mint",
+      "hash": "5M6wvDZDnPtUU7rQ461Ea4uRPoT5c8SLRLkYErgG7NjZ"
+    },
+    {
+      "step": "onboard buyer",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "join",
+      "hash": "BHiaj7TMAvjotphb6AEUvUKLkUXowjM27BcNC3ntcZ1g"
+    },
+    {
+      "step": "onboard buyer",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "ft_transfer_call",
+      "hash": "3EA8vo8KNvQZUR1hdRSNepbiQPijLLPhCwg36PLLw929"
+    },
+    {
+      "step": "mint t1",
+      "account": "nft.x207-b1-aux.testnet",
+      "method": "nft_mint",
+      "hash": "CzzhmAZM5bDxpGLmyMQtGU2fGJaa3AeQfJxxM4QF7y1W"
+    },
+    {
+      "step": "mint t2",
+      "account": "nft.x207-b1-aux.testnet",
+      "method": "nft_mint",
+      "hash": "5Wwetc3x3DmH3oCaEJjjA5SxSLg5NVvNzjCMChHEPduY"
+    },
+    {
+      "step": "mint t3",
+      "account": "nft.x207-b1-aux.testnet",
+      "method": "nft_mint",
+      "hash": "DN3HZjr6Vy83cgqnoXnkhP273GWpvygCkMmKQggmVJmU"
+    },
+    {
+      "step": "mint t4",
+      "account": "nft.x207-b1-aux.testnet",
+      "method": "nft_mint",
+      "hash": "DxqVFUX74ExSx8FG3WjmKwDaoERxBNMp1FyjkaQ3sSuF"
+    },
+    {
+      "step": "mint t5",
+      "account": "nft.x207-b1-aux.testnet",
+      "method": "nft_mint",
+      "hash": "12aDXEzpXV8T6zYJMCtkzjxLfU97qXZQMK7b9NdTsQxv"
+    },
+    {
+      "step": "mint t6",
+      "account": "nft.x207-b1-aux.testnet",
+      "method": "nft_mint",
+      "hash": "Cxa8rYcwsbaspQkdijNKmcaBujkNBhSnyEMWH4cXdv42"
+    },
+    {
+      "step": "mint tokft.x207-b1-aux.testnet",
+      "account": "tokft.x207-b1-aux.testnet",
+      "method": "mint",
+      "hash": "GamdMKh9GtK2yAxQrfaPbBg8FcfwQk1cCVqGeYuKo2vi"
+    },
+    {
+      "step": "mint tokrwa.x207-b1-aux.testnet",
+      "account": "tokrwa.x207-b1-aux.testnet",
+      "method": "mint",
+      "hash": "YrxALAMhMLZUm4Jr1T6LpoWhMPgZc9narDtpAgvANvs"
+    },
+    {
+      "step": "mint toklst.x207-b1-aux.testnet",
+      "account": "toklst.x207-b1-aux.testnet",
+      "method": "mint",
+      "hash": "B4Guxpy63yGFG67Vb31Tavbc9J7cUq63JDNLMP4j6xia"
+    },
+    {
+      "step": "whitelist on",
+      "account": "tokrwa.x207-b1-aux.testnet",
+      "method": "set_whitelist_on",
+      "hash": "By6hAwwFq1tayyh8j21zWcrBbSnT6PGHYkBXP3mdzAik"
+    },
+    {
+      "step": "whitelist x207-b1-v011.testnet",
+      "account": "tokrwa.x207-b1-aux.testnet",
+      "method": "set_whitelisted",
+      "hash": "EuAG4RZGSBTnosBdMAVnHj8PjMX7cCpVrPDYYRUVy8mV"
+    },
+    {
+      "step": "whitelist grantor.x207-b1-v011.testnet",
+      "account": "tokrwa.x207-b1-aux.testnet",
+      "method": "set_whitelisted",
+      "hash": "81YjRnntCErBv92G5eb8RynKGJz15PwBg7tgEfUj5Spu"
+    },
+    {
+      "step": "whitelist buyer.x207-b1-v011.testnet",
+      "account": "tokrwa.x207-b1-aux.testnet",
+      "method": "set_whitelisted",
+      "hash": "9qbnjRoLGFUBTTYzd4fHPyxyew96o6AUp3y8jZje798D"
+    },
+    {
+      "step": "mint intents balance",
+      "account": "mt.x207-b1-aux.testnet",
+      "method": "mint",
+      "hash": "CAFiZVWeQxYC5YDV3b8YrUe4Gg1qCNC1hWVd5uEgWmVY"
+    },
+    {
+      "step": "mint pool share",
+      "account": "mt.x207-b1-aux.testnet",
+      "method": "mint",
+      "hash": "AzMjCiPvSRjBjj9F4uPE2VfTY7VhuVq4EqWCoaiLeL2E"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "3RthwfXRD9orkPE2oP4CGceRrATNRfj6q9QSi7FbFQiE"
+    },
+    {
+      "step": "nft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "nft_transfer_call",
+      "hash": "EYLHHss3fMHXNYFJf3bof1DYtWx1WcQ9Uj2Y3mMGPwro"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "5cfAoTB9NN8mUf95oBb6akBRsikTmAP7vRDcUWQuUAPW"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "6CUvQWoMvwk3zxLMnVEQr2rQbmTYq5TtfANzvBr6gHoj"
+    },
+    {
+      "step": "nft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "nft_transfer_call",
+      "hash": "BofhA4jvv6N5nzX5dm3jf5UPPU7KS4KQcTdEANotobAu"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "CgKmPdc3y6imsUbqtZ8tx7J6NNpmE2AeSqAoRL32vR59"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "H9fwNhC6LYXMLyqCe24d2uFnmFoQHGVdr1ThDzdxWCSk"
+    },
+    {
+      "step": "nft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "nft_transfer_call",
+      "hash": "2aY6cAJAMnDUCjh6tmXTcrWNHXmQk85WoYcN9payUkbs"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "8hA5CrH49pmAMAs6TKnmSxb1h73MSjf72MMAnHvgNSTM"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "ADMJ9g6os2gi47sqafahidbavhPw4RJkihG7tx9aZvbt"
+    },
+    {
+      "step": "nft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "nft_transfer_call",
+      "hash": "J1X6opVpM7E3Nb76rcJZFk3penxinFdncUhwLDk56Ujm"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "5TWYxpQ9sjuG1qc6swjkubjYmRcnLqVD7mcPDXXga3Bw"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "HScAzJN5pGbMhRvg53Mjd56f6dZeNCPzysFi99DYkkS4"
+    },
+    {
+      "step": "nft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "nft_transfer_call",
+      "hash": "5nhQvm4PGAiJ65KmBgMS3irnRamfscCYEuVA21CkArGL"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "FAiXbGMU5jGqVf82nXzDqzmeZQfxaNMhbmJHPM38u9pa"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "kXzWEUJAXgGkrxDzEq71NeUTZqYH2AZ5gjbZ8oFuvz1"
+    },
+    {
+      "step": "ft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "ft_transfer_call",
+      "hash": "CdpxvVWQ9tubFQKpoQaynsFwLwP6wshVHVKboHZ7UQ3K"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "7NFPjBdMN7xj8xYLtg9pAXDABoM6wUVRKXy1PYZ1MCps"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "3bY6uigqYnEZoPfToSTbQvLUfvZRaKEbhyw61RrJSvJX"
+    },
+    {
+      "step": "ft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "ft_transfer_call",
+      "hash": "6s3mF1THHJKQQ8RLk4u1mHb3MXKtmhA9UZ6A7kzRR6JT"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "EUspN4NXWsuKwhVwvig9tfMPu8Mf3BGdLW3t48wXqQuR"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "BfidQsApTrJWHxJtfinx9jZTAo3kjGdvioj5gWs5gFET"
+    },
+    {
+      "step": "ft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "ft_transfer_call",
+      "hash": "9RwjhbooKtnWFeS1H68wDwsn3CjshUgfZB6qLjtfCurk"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "9V8mQaVbtsKwgVYpShFUUww46GsVQArdjyf5YH6MFPQw"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "2dExFbDH2z6fNToygJ71qsich8CcthXUi6AYg2vwBxJu"
+    },
+    {
+      "step": "mt_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "mt_transfer_call",
+      "hash": "DR7E5gMTjjPcRwJedDrfxMP2JiRzvtYLTbGMDPg56HMJ"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "bqLLELpMyqXArqgsEB5NihuVPE2quJDgDxdEnBAAw7m"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "AsT2LQULUhHGptfjJnQ6TLXUtExaPTi93LL8mdGVK7Uh"
+    },
+    {
+      "step": "mt_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "mt_transfer_call",
+      "hash": "ArHAoawqvHZ4xaQpx6NDEWcfWNgf6wxuSt7me8HyJjJh"
+    },
+    {
+      "step": "complete_escrow",
+      "account": "buyer.x207-b1-v011.testnet",
+      "method": "complete_escrow",
+      "hash": "6fEWd13oGyJZ2UQ6djPB8XfYkYEGUBQJBXajz1B3qqkE"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "7yCFoz5xXgJxGcsAo64EHqfusbp3phCjovzkwDBtXswK"
+    },
+    {
+      "step": "nft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "nft_transfer_call",
+      "hash": "CNsJNAA4ktKZAmtFkwhqn61Qu6rRhGntaRuSPNWrWarG"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "BvXaYMtedXoHtAikAaLb9B4oJ2RbheFcsz9vLZAqYYmi"
+    },
+    {
+      "step": "ft_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "ft_transfer_call",
+      "hash": "22pYLJESZmVxUeVbKJ7ERC8ogd6T69MFf2h9Af5nB8T4"
+    },
+    {
+      "step": "offer_grant",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "offer_grant",
+      "hash": "7B6udcBJYT4LYr4aPYLoGstFuqKDrCmCSeqYiCLN49RX"
+    },
+    {
+      "step": "mt_transfer_call",
+      "account": "grantor.x207-b1-v011.testnet",
+      "method": "mt_transfer_call",
+      "hash": "3Q5camFU9CT6TTA4hT3nGpyMGDydv86mcoZ1jmoxmvkw"
+    }
+  ],
+  "codeHash": "CRtYqTc47ADcDkHp7UJaRPLXu5XHS7KYftrTNUnZ8bNx",
+  "result": [
+    {
+      "kind": "nft",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "nft:nep171 grant 1"
+    },
+    {
+      "kind": "nft",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "nft",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds buyer.x207-b1-v011.testnet"
+    },
+    {
+      "kind": "ticket",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "ticket:event-nft grant 2"
+    },
+    {
+      "kind": "ticket",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "ticket",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds buyer.x207-b1-v011.testnet"
+    },
+    {
+      "kind": "game-item",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "game:item-nft grant 3"
+    },
+    {
+      "kind": "game-item",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "game-item",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds buyer.x207-b1-v011.testnet"
+    },
+    {
+      "kind": "coupon",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "coupon:voucher-nft grant 4"
+    },
+    {
+      "kind": "coupon",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "coupon",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds buyer.x207-b1-v011.testnet"
+    },
+    {
+      "kind": "license",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "license:software-nft grant 5"
+    },
+    {
+      "kind": "license",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "license",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds buyer.x207-b1-v011.testnet"
+    },
+    {
+      "kind": "ft",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "token:nep141 grant 6"
+    },
+    {
+      "kind": "ft",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "ft",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds 2500000"
+    },
+    {
+      "kind": "rwa",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "rwa:tokenized grant 7"
+    },
+    {
+      "kind": "rwa",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "rwa",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds 2500000"
+    },
+    {
+      "kind": "lst",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "lst:liquid-staking grant 8"
+    },
+    {
+      "kind": "lst",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "lst",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds 2500000"
+    },
+    {
+      "kind": "intents-balance",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "intents:multi-token grant 9"
+    },
+    {
+      "kind": "intents-balance",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "intents-balance",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds 750000"
+    },
+    {
+      "kind": "pool-share",
+      "step": "offer_grant",
+      "ok": true,
+      "detail": "amm:lp-share grant 10"
+    },
+    {
+      "kind": "pool-share",
+      "step": "deposit",
+      "ok": true,
+      "detail": "escrow held"
+    },
+    {
+      "kind": "pool-share",
+      "step": "complete_escrow",
+      "ok": true,
+      "detail": "escrow delivered, buyer holds 42"
+    },
+    {
+      "kind": "nft-group",
+      "step": "template refuses",
+      "ok": true,
+      "detail": "code ticket_event_over"
+    },
+    {
+      "kind": "ft-group",
+      "step": "template refuses",
+      "ok": true,
+      "detail": "code rwa_not_whitelisted"
+    },
+    {
+      "kind": "mt-group",
+      "step": "template refuses",
+      "ok": true,
+      "detail": "code intents_token_id"
+    },
+    {
+      "kind": "nft-group",
+      "step": "contract refuses a deposit of another NFT",
+      "ok": true,
+      "detail": "escrow none, t6 owner grantor.x207-b1-v011.testnet"
+    },
+    {
+      "kind": "ft-group",
+      "step": "contract refuses a deposit of another amount",
+      "ok": true,
+      "detail": "escrow none, grantor balance 97500000 -> 97500000"
+    },
+    {
+      "kind": "mt-group",
+      "step": "contract refuses a deposit of another amount",
+      "ok": true,
+      "detail": "escrow none, grantor balance 4250000 -> 4250000"
+    }
+  ]
+}
