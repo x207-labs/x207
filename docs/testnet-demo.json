@@ -1189,6 +1189,14 @@
       "section": "network-demo",
       "step": "run 9 resumed (epoch 8) finished: default branch (translator did not pay: stake cut by 200000 of 150000000, status 409, limit 0) and the DAO step (proposal 0 set_params limit_decay 0 to 100, two council votes, Approved, params_updated effective_epoch 11); 75 vouchers, 2 net debtors, cleared 1.1 of 1.5 credit",
       "at": "2026-11-03T02:06:07.293Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch (epoch 10): epoch 11 opened with limit_decay 100, the value set by the DAO proposal",
+      "account": "x207b-deploy.testnet",
+      "method": "close_epoch",
+      "hash": "CA5Wt6r56uNeMYYtYT8v9t2PghmGrvEBtNHEdU5SHF4Y",
+      "at": "2026-11-03T02:08:12.199Z"
     }
   ]
 }
