@@ -36,7 +36,13 @@ Level is the one written in the review document. "Fixed" names the commit and th
 | Frontend | FE-1 the server decided what the voucher key signs | high | fixed (`frontend` `d0b5059`) | `frontend/docs/security-review.md` |
 | Frontend | FE-2 no script and connection policy | low | partly fixed: object, base, form and referrer only | same |
 | Release | the wasm of releases up to v0.0.7 cannot be traced to a tag | medium | fixed for later tags in the pipeline (`d651a65`, `06b72f8`): build in a pinned container, twice, compared; first run on a runner pending | `contracts/docs/verify-release.md` |
-| Contract 0.0.9 | `mt_on_transfer`, `withdraw_intents_balance`, `on_intents_withdrawn`, `prune_epoch`, `remove_intent`, the limits | reviewed by a second session (not the author) | no double deposit into D6, no negative or unbounded `intents_balance`, no drain by repeated calls, and nothing that `claim` needs is pruned (read; sandbox for the refusals); real `intents.near` not checked | `docs/security-review-3.md` |
+| Contract 0.0.9 | `mt_on_transfer`, `withdraw_intents_balance`, `prune_epoch`, `remove_intent`: reviewed by another session (Main B), not by the author | see rows I-1 to I-5 and the "not checked" list of the document | `docs/security-review-3.md` |
+| Contract 0.0.9 | I-3 `post_intent` is not payable: the contract pays the storage of 64 intents (0.0659 NEAR, 6.5 times the join deposit) | medium | fixed `d19a786`: the join deposit is 0.32 NEAR, the measured worst case of one member (64 intents, 16 grants with a scope of 1024 bytes: 31282 bytes = 0.3128 NEAR; `contracts/tests/ct062_storage_per_member.rs`). The limits of scope and grants were not lowered (ADR-41) | `docs/security-review-3.md` |
+| Contract 0.0.9 | I-2 `remove_intent` emitted no event | low | fixed `d19a786`, `4936e58`: `intent_removed { intent_hash, account_id }` | same |
+| Contract 0.0.9 | I-4 intents of a member that `exited` stay in the contract | low | fixed `4936e58`: anybody removes the intents of an exited member (unit test `anybody_removes_the_intent_of_an_exited_member_and_of_nobody_else`) | same |
+| Contract 0.0.9 | I-5 the offer of a grantor that left can be accepted; the grants of an exited grantee cannot be ended by a stranger | low to medium | fixed `4936e58`: `accept_grant` refuses (`ERR_GRANT_NOT_ACTIVE_MEMBER`), `revoke_grant(.., defaulted)` is open for an `exited` grantee (unit tests in `grant::tests`) | same |
+| Contract 0.0.9 | I-1 the first member that posts an intent hash owns it | low | accepted (same class as F8) | same |
+| Keeper | `prune_epoch` needs 70.2 Tgas for 196 items | low | fixed `2368bce` (umbrella): the keeper attaches 200 Tgas, a test pins it | `scripts/keeper.test.mjs` |
 | Contract 0.0.9 | I-3 `post_intent` is not payable: a member with the minimum stake pins 64 intents = 0.065 NEAR of the contract balance (6.5 times its join deposit) for good | medium | open, reported to the contract owner; `it.fails` `TC-SR3-03` | `docs/security-review-3.md` |
 | Contract 0.0.9 | I-1 an intent hash is first come (second poster gets `ERR_INTENT_EXISTS`); I-2 `remove_intent` emits no event | low | open; `it.fails` `TC-SR3-04`, `TC-SR3-05` | same |
 
@@ -52,6 +58,7 @@ Every "fixed" row above has a test that failed before the fix. Run them from the
 | F5 | `contracts`, `backend/broker` | `cargo test --test ct070_grants grants_of_pages_and_drops_ended_grants`; `npm test` in `backend/broker` (`watcher.test.ts`, `grants-api.test.ts`) |
 | F6 to F10, K-62 | `contracts` | `cargo test --test ct_security_review` and `cargo test --test ct084_bundle_economics` (what holds); the accepted ones are decisions, not code |
 | Gas, legs, upgrade | `contracts` | `cargo test --test ct086_gas_limits -- --nocapture --test-threads=1 \| grep GAS`; the upgrade test needs the 0.0.7 wasm in `target/near/x207_circle.wasm` and `X207_NEW_WASM=<new wasm> cargo test --test ct083_upgrade_from_0_0_7` |
+| I-2 to I-5 | `contracts` | `cargo test --lib bundle::security_tests grant::tests events`; `cargo test --test ct062_storage_per_member -- --nocapture \\| grep STORAGE` |
 | Interface of 0.0.9 | `contracts` | `cargo test --test ct068_abi_freeze`, `cargo test --test be034_mt_on_transfer`, `cargo test --test be034_intents_withdraw` |
 | R1, C1, C2 | repository root | `npx vitest run tests/security-review-facilitator.test.ts` (build `sdk` first: `npm run build` in `sdk`, because the tests import `dist/`) |
 | B1 to B7 | `backend/broker` | `npx vitest run test/security-review.test.ts` |
@@ -59,6 +66,7 @@ Every "fixed" row above has a test that failed before the fix. Run them from the
 | I-1, I-2, I-3 (contract 0.0.9) | repository root | `X207_SANDBOX=1 npx vitest run tests/security-review-contract3.sandbox.test.ts` (about 12 minutes; the `it.fails` tests are the open findings) |
 | FE-1, FE-2 | `frontend` | `npx vitest run src/test/security.test.tsx src/components/Negotiation.test.tsx` |
 | Clearing verifier (property tests) | `contracts` | `cargo test --test ct030_clearing_property` (1000 cases each; 2 to 30 members; the verifier against an independent statement of the rules, mutated and random proposals, the real `submit_clearing` and `commit_epoch` of every accepted one, the order of submissions); `cargo test --lib leg_properties` (partly registered bundle legs). A failing case prints its smallest input and proptest keeps the seed in `proptest-regressions/`. No violation was found. |
+| Stateful sequences | `contracts` | `cargo test --lib stateful_tests` (12 random sequences of calls through join, stake, vouchers, intents, grants, clearing, settle, finalize, claim and prune; `PROPTEST_CASES=100` for more; `X207_STATEFUL_STATS=<file>` writes how many calls of each kind were accepted and refused). No violation was found. |
 | Release | `contracts` | `scripts/repro-build.sh HEAD /tmp/a && scripts/repro-build.sh HEAD /tmp/b` and compare the two sha256 lines (needs Docker) |
 | Testnet runs | repository root | hashes in `docs/testnet-v10-*.json` and `docs/testnet-f8-v10.json`; look a hash up in the explorer of testnet |
 
