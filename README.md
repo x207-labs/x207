@@ -276,6 +276,25 @@ An invoice is a claim of an issuer on a debtor outside x207. When the debtor sig
 
 There is no spare voucher signed in advance: the issuer could register it although the real installment was paid, and the debtor would pay twice. A signature in advance is evidence, not a guarantee of payment: the contract allows gaps in `seq`, so a debtor can block an installment. Reputation, the status `blocked_by_debtor` and the bond of CT-094 for a large invoice answer that (ADR-44). The invoice page of the frontend is `/invoice`.
 
+### Service orders block (pipeline P6)
+
+```bash
+npx vitest run agents/test/services.test.ts                  # agents against the order book, in process, no sandbox
+X207_SANDBOX=1 npx vitest run tests/orders.sandbox.test.ts    # real contract, indexer and keeper; several minutes
+```
+
+An order is the agreement of a buyer and a seller on work. On the chain there is only an ordinary cumulative voucher with `resource = x207:order:<sha256 of the document>`; the contract does not change (`sdk/docs/order.md`). A milestone is paid only after it is confirmed (or after the dispute window), and the buyer signs its voucher then, from the real state of the pair.
+
+| Do | See |
+| --- | --- |
+| `research` orders an audit of two milestones (10 and 20 credit) from `audit`; both sign the document | The book shows the order `open` |
+| Milestone 1 is delivered and confirmed; the buyer signs, the seller registers the voucher | `voucher_registered` is read by the indexer; the milestone is `paid`, the pair holds 10 credit |
+| Milestone 2 is delivered and disputed (`not_as_described`) | No voucher is signed; the pair stays at 10 credit; a confirmation afterwards is refused |
+| `research` hires `keeper` at 1 credit per `close_epoch` | The member `keeper` closes the epoch itself; the list `onchain-proofs` has that call and its signer |
+| The buyer pays the proof | One voucher of 1 credit; the same proof presented again is `already_paid` |
+
+A dispute leaves the state as it was: a cumulative voucher cannot skip a milestone, so the next voucher never carries a disputed one. What this block does not show: the judgement of a dispute, the check of the target of a load test, and orders of a kind other than `audit` and `keeper` (each has its own test in `agents/test/services.test.ts`).
+
 ### Marketplace block (feature F9)
 
 ```bash
