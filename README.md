@@ -313,6 +313,37 @@ X207_SANDBOX=1 npx vitest run tests/barter.sandbox.test.ts   # real contract, fa
 
 Contract rules behind the rows: `contracts/x207-circle/src/bundle.rs` (`commit_bundle` checks the epoch phase, the shape of the legs, active participants, one valid signature per participant over the NEP-413 style `terms_hash`, and headroom of every payer; nothing is written before the last check passes) and `contracts/tests/ct065_bundle.rs`. The test run is the source of the figures; the printed form for the whole flow with a seeker is the marketplace block above.
 
+### Metered resource block (pipeline P5, class D)
+
+```bash
+npx vitest run agents/test/metered.test.ts        # a CPU job in chunks and a data feed per call (AG-024), no network
+```
+
+A resource that is paid per unit of use is an x402 endpoint. `createMeteredEndpoint({ kind, unitPrice, handler })` in `@x207/scheme` gives it the price per unit, the ceiling per request, the listing detail and the warnings of its kind; the twelve kinds are the same as in the registry D10 (`docs/asset-catalog.md`) and in the listing form of the frontend:
+
+| Kind | Asset type | Units (first is default) |
+| --- | --- | --- |
+| `cpu` (#31) | `compute:cpu-idle` | minute, job |
+| `gpu` (#32) | `compute:gpu-hours` | minute, job |
+| `storage` (#33) | `storage:capacity` | GB, day |
+| `cdn` (#34) | `cdn:static-cache` | GB, request |
+| `inference` (#35) | `model:inference` | request, call |
+| `fine-tuning` (#36) | `model:fine-tuning` | job |
+| `data-feed` (#44) | `oracle:data-feed` | call, request |
+| `iot-sensor` (#45) | `iot:sensor-data` | call, day |
+| `gas-relayer` (#47) | `gas:relayer` | request, call |
+| `priority-slot` (#49) | `queue:priority-slot` | request, day |
+| `proxy-bandwidth` (#55) | `network:proxy-bandwidth` | GB, request |
+| `home-device` (#90) | `compute:home-device` | minute, day, job |
+
+| Do | See |
+| --- | --- |
+| The buyer asks `?quantity=30` at a `cpu` endpoint priced per minute | `402` with `extra.meter = {unit, quantity, unit_price, max_quantity}`; above the ceiling the request is refused `413` before any `402` |
+| A long job is split in chunks and the budget is committed as a bundle (`JobBudget`, SD-067) | The buyer signs the voucher of chunk k only after chunk k-1 arrived; the seller works chunk k only after its voucher arrived |
+| The buyer stops paying, or the seller disappears inside a chunk | The seller worked nothing unpaid; the buyer lost one chunk at most (the one it prepaid) |
+
+The contract does not change: the units live in the SDK, the listing and the voucher. The contract needs two legs in a bundle (`ERR_BAD_BUNDLE`), so the budget bundle carries a one-unit counter leg from the seller to the buyer. Proxy and bandwidth (#55) are subject to local law and a device at home (#90) leaves power and security to its owner; both carry a warning, they are not refused. See `sdk/docs/metered-endpoint.md`.
+
 ### What has and has not run
 
 | Piece | `near-sandbox` | Testnet | Mainnet |
