@@ -124,13 +124,15 @@ describe.skipIf(!sandboxAvailable)("UM-086 invoice and installments of three epo
     expect((await book.approve(ry.invoiceHash, actor(supplier))).status).toBe("approved");
     expect((await book.approve(rz.invoiceHash, actor(retailer))).status).toBe("approved");
 
-    // The issuer registers what the debtor signed. The book keeps these vouchers but does not hand them out (noted in the log of UM-086); here they are rebuilt from the plan, which is
-    // deterministic: ed25519 signs the same bytes to the same signature.
-    const register = async (doc: InvoiceDocument, count: number, index: number, payer: Member) => {
+    // The issuer registers what the debtor signed, and takes it from the invoice book (GET invoice returns the voucher and the signature of each approved installment, BE-051).
+    // The voucher of the book must be the one of the plan: ed25519 signs the same bytes to the same signature, so the rebuilt one is a check, not the source.
+    const register = async (doc: InvoiceDocument, hash: string, count: number, index: number, payer: Member) => {
+      const item = (await book.get(hash)).installments.find((i) => i.index === index)!;
+      expect(item.voucher, `${doc.id} ${index} has a voucher in the book`).not.toBeNull();
       const plan = planInstallments({ circle: contract, doc, firstEpoch: E + 1, count });
-      const unsigned = installmentVoucher(plan, index);
-      const { signature, ...voucher } = signVoucher(unsigned, payer.secretKey);
-      const r = await payer.account.call({ receiverId: contract, methodName: "register_cumulative", args: { voucher, signature }, deposit: 0n, gas: 100_000_000_000_000n }, "FINAL");
+      const rebuilt = signVoucher(installmentVoucher(plan, index), payer.secretKey);
+      expect({ voucher: item.voucher, signature: item.signature }).toEqual({ voucher: installmentVoucher(plan, index), signature: rebuilt.signature });
+      const r = await payer.account.call({ receiverId: contract, methodName: "register_cumulative", args: { voucher: item.voucher, signature: item.signature }, deposit: 0n, gas: 100_000_000_000_000n }, "FINAL");
       expect(r.failures, `${doc.id} ${index}`).toEqual([]);
     };
     const cycleThrough = async (epoch: number, solve: boolean) => {
@@ -155,9 +157,9 @@ describe.skipIf(!sandboxAvailable)("UM-086 invoice and installments of three epo
     await cycleThrough(E, false);
     const now = await view_<ContractAbi.EpochView>("get_epoch", {});
     expect({ epoch: now.epoch, phase: now.phase }).toEqual({ epoch: E + 1, phase: "open" });
-    await register(docX, 3, 1, maker);
-    await register(docY, 1, 1, supplier);
-    await register(docZ, 1, 1, retailer);
+    await register(docX, rx.invoiceHash, 3, 1, maker);
+    await register(docY, ry.invoiceHash, 1, 1, supplier);
+    await register(docZ, rz.invoiceHash, 1, 1, retailer);
     await commit(E);
     await catchUp(async () => {
       return (db.prepare("select count(*) as n from events_raw where event = 'voucher_registered'").get() as { n: number }).n >= 3;
@@ -178,7 +180,7 @@ describe.skipIf(!sandboxAvailable)("UM-086 invoice and installments of three epo
 
     // --- E+2: installment 2 alone
     expect((await view_<ContractAbi.EpochView>("get_epoch", {})).epoch).toBe(E + 2);
-    await register(docX, 3, 2, maker);
+    await register(docX, rx.invoiceHash, 3, 2, maker);
     await cycleThrough(E + 2, true);
     await commit(E + 2);
     const second = await view_<ContractAbi.EpochView>("get_epoch", { epoch: E + 2 });
@@ -186,7 +188,7 @@ describe.skipIf(!sandboxAvailable)("UM-086 invoice and installments of three epo
 
     // --- E+3: installment 3 alone
     expect((await view_<ContractAbi.EpochView>("get_epoch", {})).epoch).toBe(E + 3);
-    await register(docX, 3, 3, maker);
+    await register(docX, rx.invoiceHash, 3, 3, maker);
     await cycleThrough(E + 3, true);
     await commit(E + 3);
 
