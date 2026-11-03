@@ -36,6 +36,7 @@ A letter means "the process does this to the store in at least one step". The st
 | P4 / D1 | Raise the cash settlement history; a member leaving records `exit_requested_epoch`, then becomes `exited` | `ft_on_transfer`, `mt_on_transfer`, `request_exit`, `withdraw_stake` | `active` to `exited` |
 | P5 / D8 | Record an intent hash and the committed bundle with its per-leg limits; the owner of an intent takes it back and gets the slot of the book back | `post_intent`, `remove_intent`, `commit_bundle` (events `intent_posted`, `bundle_committed`) | bundle `active` |
 | P5 / D1 | Reserve headroom for each leg of a bundle; the reservation is a separate key beside D8, not a field of the member row | `commit_bundle` (view `headroom` shows it) | |
+| P5 / D1 | The arbiter of a deal with a bond rules: the bond of the guilty party passes to the other party, or both bonds are released | `rule_deal` (event `deal_ruled`; `bond_released` per bond) | bond locked to released or paid |
 | P5 / D2 | Register the obligation of a leg against the reserved headroom | `register_in_bundle` | |
 | P6 / D5 | Read members that did not pay, mark them | `finalize_epoch` | `due` to `defaulted`; shortfall shares the claims |
 | P6 / D6 | Cut the stake of a defaulter, reduce the reserve | `finalize_epoch` | |
