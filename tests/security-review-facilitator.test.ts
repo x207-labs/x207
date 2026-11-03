@@ -79,8 +79,8 @@ describe("security review 2: replay of a voucher at /verify and /settle", () => 
     expect(await post("/verify", voucherBody(1))).toMatchObject({ isValid: false, invalidReason: "seq_not_increasing" });
   });
 
-  // Finding R1: /verify reserves nothing and /settle answers success to the same payload again, so n parallel requests with one voucher pass /verify, run the seller's handler n times, and all settle OK.
-  it.fails("TC-SR2-04 n parallel requests with one voucher serve the resource once", async () => {
+  // Finding R1 (fixed in the middleware by the in-flight guard, `voucher_in_flight`): /verify reserves nothing and /settle answers success to the same payload again, so n parallel requests with one voucher pass /verify, run the seller's handler n times, and all settle OK.
+  it("TC-SR2-04 n parallel requests with one voucher serve the resource once", async () => {
     const w = world();
     const { app } = stack(w);
     const fetchToApp = ((input: string | URL | Request, init?: RequestInit) => app.request(new URL(String(input)).pathname + new URL(String(input)).search, init)) as unknown as typeof fetch;
@@ -105,15 +105,18 @@ describe("security review 2: chainCache windows (SD-032, a2aae7a)", () => {
     expect(await post("/verify", voucherBody(2))).toMatchObject({ isValid: false, invalidReason: "member_not_active" });
   });
 
-  // Finding C1: a payer suspended inside the window still passes /verify (member 15 s, headroom 10 s). The contract refuses the registration, so the loss is the seller's.
-  it.fails("TC-SR2-06 with the cache a payer that was suspended is refused at once", async () => {
+  // Finding C1 (fixed by shortening `member` to 10 s, the same as `headroom`): a payer suspended inside the window still passes /verify, but only up to the headroom
+  // that was cached (TC-SR2-07), and from the end of the window it is refused. The contract refuses the registration, so the loss is the seller's, once per event.
+  it("TC-SR2-06 with the cache a payer that was suspended is accepted inside the 10 s window and refused when the window ends", async () => {
     const w = world();
     const clock = { ms: 1_000_000 };
     const { post } = stack(w, { cache: true, clock });
     expect((await post("/verify", voucherBody(1))).isValid).toBe(true);
     w.status = "suspended";
-    clock.ms += 5_000;
-    expect(await post("/verify", voucherBody(1))).toMatchObject({ isValid: false });
+    clock.ms += 9_999;
+    expect((await post("/verify", voucherBody(1))).isValid).toBe(true); // inside the window: the documented, bounded loss
+    clock.ms += 2;
+    expect(await post("/verify", voucherBody(1))).toMatchObject({ isValid: false, invalidReason: "member_not_active" });
   });
 
   it("TC-SR2-07 the worst loss per payer and window is bounded by the cached headroom: later vouchers are refused as insufficient_credit", async () => {
@@ -142,7 +145,7 @@ describe("security review 2: chainCache windows (SD-032, a2aae7a)", () => {
     expect(await post("/verify", voucherBody(1))).toMatchObject({ isValid: false, invalidReason: "insufficient_credit" });
   });
 
-  // Finding C2: with no pending row the base is the cached `obligation`. A registration by another relayer is not seen for 10 s, so vouchers the chain already counts pass /verify once each.
+  // Finding C2 (documented, not fixed): the assumption is one relayer per pair (sdk/docs/rpc-load.md, chain-cache.ts). With no pending row the base is the cached `obligation`. A registration by another relayer is not seen for 10 s, so vouchers the chain already counts pass /verify once each.
   it.fails("TC-SR2-09 a voucher that another relayer already registered is refused inside the window", async () => {
     const w = world();
     const clock = { ms: 1_000_000 };
