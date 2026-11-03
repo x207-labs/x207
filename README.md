@@ -275,6 +275,9 @@ npm run demo:marketplace   # about 2.5 minutes; real contract, indexer, solver a
 
 The amounts are small on purpose so that each leg is a whole number of 0.02 calls. The seeker leg is named in the signed terms (`search_leg`) and the contract caps it at `max_search_share_bps` (default 500, 5%) of the sum of the legs of the bundle; a 10% share made the first version of this demo fail on the 0.0.5 contract, so the run uses a 4% share of a 0.5 listing (the seeker leg is 0.02 of 0.42 on the pay path); the 100 / 10 / 3 example of the F9 note is computed by the same functions with other parameters (`sdk/spec/marketplace.md`). The listing book, negotiation and seeker are off-chain (backend module M11); the contract only checks a bundle: one signature per participant over its `terms_hash` and the reserved headroom of each leg. Run on 2026-11-02; the test `tests/marketplace.sandbox.test.ts` asserts the same figures. Not shown: quality of goods or disputes (the protocol does not judge them), asset classes A to C with real delivery adapters, and the on-chain `post_intent` hash (the demo posts intents to the book only).
 
+Off-chain assets (a code, a seat, a domain) cannot be handed over atomically like a class A escrow. For assets of class B or C a match starts a delivery flow in the marketplace (`backend/docs/delivery.md`): the seller marks the asset delivered, the buyer confirms or disputes inside a 72 hour window, a silent buyer counts as confirming, and a bundle is not ready to commit until then. In a barter match the counterparty's own handover is tracked the same way. Two limits: a dispute is not ruled on (it needs an arbiter and a contract change, `contracts/docs/payment-hold.md`), and for a plain payment the backend only reports `payable`; the party that registers the voucher must check it. Not run against real traffic.
+
+
 ### Access asset block, class B (feature F8)
 
 ```bash
