@@ -24,5 +24,8 @@
     "demo:classb": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts classb",
     "demo:testnet": "DEMO_NETWORK=testnet vitest run --config demo/vitest.config.ts network",
     "demo:mainnet": "DEMO_NETWORK=mainnet vitest run --config demo/vitest.config.ts network"
+  },
+  "devDependencies": {
+    "jsdom": "30.1.3"
   }
 }
