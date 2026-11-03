@@ -38,6 +38,26 @@ Level is the one written in the review document. "Fixed" names the commit and th
 | Release | the wasm of releases up to v0.0.7 cannot be traced to a tag | medium | fixed for later tags in the pipeline (`d651a65`, `06b72f8`): build in a pinned container, twice, compared; first run on a runner pending | `contracts/docs/verify-release.md` |
 | Contract 0.0.9 | `mt_on_transfer`, `withdraw_intents_balance` | not reviewed by a second person | open: written and tested by the same author | `contracts/docs/security-review.md` (no section yet) |
 
+## Repeat the checks
+Every "fixed" row above has a test that failed before the fix. Run them from the folder of the repository named. A sandbox test needs `cargo near build non-reproducible-wasm` once (and Docker is not needed). Sandbox tests walk epochs and take about a minute each. Tests marked `it.fails` in the umbrella assert the safe behaviour and are green while the finding is open; they turn red when it is fixed.
+
+| Finding | Folder | Command |
+| --- | --- | --- |
+| F1 | `contracts` | `cargo test --lib escrow::tests` and `cargo test --test ct070_grants a_class_a_offer_must_name_its_nft_and_token` |
+| F2 | `contracts` | `cargo test --lib bundle::security_tests`, `cargo test --test ct065_bundle a_participant_is_in_at_most_16_bundles_per_epoch`, `cargo test --lib prune::tests`, `cargo test --test ct085_prune`, `cargo test --lib a_bundle_with_more_than_64_legs` |
+| F3 | `contracts` | `cargo test --lib escrow::tests::a_nft_contract_that_returns_a_long_value_still_delivers` |
+| F4 | `contracts` | `cargo test --lib grant::tests::a_reactivated_member_keeps_its_grants_against_a_stranger` |
+| F5 | `contracts`, `backend/broker` | `cargo test --test ct070_grants grants_of_pages_and_drops_ended_grants`; `npm test` in `backend/broker` (`watcher.test.ts`, `grants-api.test.ts`) |
+| F6 to F10, K-62 | `contracts` | `cargo test --test ct_security_review` and `cargo test --test ct084_bundle_economics` (what holds); the accepted ones are decisions, not code |
+| Gas, legs, upgrade | `contracts` | `cargo test --test ct086_gas_limits -- --nocapture --test-threads=1 \| grep GAS`; the upgrade test needs the 0.0.7 wasm in `target/near/x207_circle.wasm` and `X207_NEW_WASM=<new wasm> cargo test --test ct083_upgrade_from_0_0_7` |
+| Interface of 0.0.9 | `contracts` | `cargo test --test ct068_abi_freeze`, `cargo test --test be034_mt_on_transfer`, `cargo test --test be034_intents_withdraw` |
+| R1, C1, C2 | repository root | `npx vitest run tests/security-review-facilitator.test.ts` (build `sdk` first: `npm run build` in `sdk`, because the tests import `dist/`) |
+| B1 to B7 | `backend/broker` | `npx vitest run test/security-review.test.ts` |
+| G1, G2, L1, F1, F2 (SDK) | repository root | `npx vitest run tests/security-review-sdk.test.ts` (open findings: the `it.fails` tests) |
+| FE-1, FE-2 | `frontend` | `npx vitest run src/test/security.test.tsx src/components/Negotiation.test.tsx` |
+| Release | `contracts` | `scripts/repro-build.sh HEAD /tmp/a && scripts/repro-build.sh HEAD /tmp/b` and compare the two sha256 lines (needs Docker) |
+| Testnet runs | repository root | hashes in `docs/testnet-v10-*.json` and `docs/testnet-f8-v10.json`; look a hash up in the explorer of testnet |
+
 ## Not tested or not checked
 - Anything on mainnet. The rehearsals ran on testnet with a mock USDT; Intents has no code on testnet, so `mt_on_transfer` and `withdraw_intents_balance` ran against a mock that plays `intents.near`. The real answer of `ft_withdraw` is assumed from the reference contract.
 - A TEE: class C secrets are not sealed to an enclave key (BK-009, BK-010); the audit log of the broker is a plain file.
