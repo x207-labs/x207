@@ -22,3 +22,6 @@ dist/
 
 # Submission fields with personal data (scripts/submission-payload.mjs)
 /.secrets/
+
+# Cache of vitest
+.vitest/
