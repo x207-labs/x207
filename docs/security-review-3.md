@@ -1,0 +1,50 @@
+# Security review 3: the 0.0.9 contract read as an attacker
+
+Date: 2026-11-03. Contract: `contracts` HEAD at interface 0.0.9 (`mt_on_transfer`, `withdraw_intents_balance`, `on_intents_withdrawn`, `prune_epoch`, `remove_intent`, 64 intents per member, 16 bundles per member per epoch, 64 legs per bundle). The code was written by A2, who also reviewed it; this review was done by another session (Main B), so the reader is not the author. No file of `contracts` was changed. Tests: `tests/security-review-contract3.sandbox.test.ts` (real contract and the mock Intents in `near-sandbox`, `X207_SANDBOX=1`). A test with `it.fails` asserts the safe behaviour and passes only while the finding is open; it turns red when the contract is fixed, and `.fails` is then removed.
+
+This document does not say that the contract is safe. It says what was read, what was run, what was found and what was not looked at.
+
+## The five questions
+
+| # | Question | Answer | Evidence |
+| --- | --- | --- | --- |
+| 1 | Can pool D6 record one debt twice (`ft_on_transfer` and `mt_on_transfer`)? | **No.** Both paths end in `settle_transfer`, which needs phase `PaymentWindow` and a position with status `Due`, moves it to `Paid` and only then calls `d6_deposit_epoch_pool`. A second transfer, by either route, finds `Paid` and gets `ERR_NOT_DUE`. On the `mt_on_transfer` route the part that was not used is given back to the sender, and only `amount - refund` is booked as credit at Intents. | read: `stake.rs`, `settlement.rs`; `TC-SR3-08` (shape and caller checks, run) |
+| 2 | Can `intents_balance` go negative or get out of step after a failed callback? | **Not negative.** The credit is a `u128` that is only reduced with `saturating_sub(left)`, and `left = min(returned, amount)`. A failed `ft_withdraw`, a timeout or a result that is not a `U128` books nothing and clears the in-flight key, so the credit stays and the next call can try again. **It can stay too high** (never too low) if the real `intents.near` returns something other than a `U128` for a withdrawal that did happen: then the contract keeps a credit it no longer holds and a second call would ask Intents for more than is there; that call fails at Intents and the credit stays. This depends on the return type of the real `ft_withdraw`, which is **not verified** (see "Not checked"). | read: `intents_withdraw.rs`; A2's sandbox tests of the callback were not re-run here |
+| 3 | Can `prune_epoch` remove something that `claim`, `finalize_epoch` or the next epoch still needs? | **No.** It works on `Finalized` only. It removes the pairs and the edge index, the participant totals and index, and the bundles with their reservations, counters and hash markers. It keeps the epoch record, every D5 position and `position_accounts`, which are what `claim`, `net_position` and the history read. `take_back` (escrow) is the one code path that writes pairs and totals later, and it requires phase `Open` and `s.epoch == current_epoch`. The removed bundle hash marker cannot be used to replay a bundle: the signed terms contain the epoch (`terms_message`), and `commit_bundle` works on the current open epoch only. | read: `prune.rs`, `escrow.rs` (`take_back`), `bundle.rs` (`terms_message`); `TC-SR3-09` (a non-finalized or unknown epoch is refused for any caller, run). A full prune after a finalize was not run here (A2's `prune` tests were not re-run) |
+| 4 | Can the per-member limits be bypassed (`remove_intent`, then post again in one block)? | **The limit is on open intents, so yes by design, and it is not a rate limit.** The 65th is refused (`ERR_INTENT_LIMIT`), a removal gives the slot back, and a post after it works; cycles of post and remove leave the storage of the contract unchanged. An attacker cannot fill the 16 bundle slots of another member: `commit_bundle` needs a signature of every participant. | `TC-SR3-02` (run) |
+| 5 | Can an account call `withdraw_intents_balance` again and again to drain gas or the NEAR balance of the contract? | **No.** With nothing booked the call fails at once with `ERR_NOTHING_TO_WITHDRAW` and costs the caller the gas, not the contract; 8 repeated calls left the balance and the storage of the contract unchanged. Under 130 Tgas it fails with `ERR_GAS_TOO_LOW`. While one withdrawal is in flight a second one is refused (`ERR_WITHDRAW_IN_FLIGHT`). The 1 yocto for `ft_withdraw` is attached only after the checks. | `TC-SR3-07` (run); `intents_withdraw.rs` read |
+
+`mt_on_transfer` itself (`TC-SR3-08`, run): it is refused from any caller but `intents_id`, for any token other than `nep141:<usdt>`, for two tokens in one call, for an empty `previous_owner_ids`, for a `msg` that is not the `settle` action, and for a zero amount; a valid-looking `settle` outside the payment window changes nothing and `intents_balance` stays `0`.
+
+## Findings
+
+| Id | Level | Finding | Test |
+| --- | --- | --- | --- |
+| I-3 | **medium** (liveness, cost shifted to the contract) | `post_intent` is not payable, so the **contract** pays the storage of every intent, and only the owner can remove one. A member that joined with the minimum (join deposit 0.01 NEAR, stake of 1 unit = 0.000001 USDT) can post 64 intents. Measured in the sandbox: the join itself adds 317 bytes, the 64 intents add **6464 bytes = 0.0646 NEAR** of the balance of the contract, about 6.5 times the join deposit. An actor that creates n such members pins about 0.065 n NEAR of the contract balance for good (1000 members: about 65 NEAR) and pays about 0.01 n NEAR plus gas. When the free balance of the contract is gone, writes that need storage fail for everybody (joins, vouchers, positions). It is not a loss of stake or of USDT. | `TC-SR3-03a` (measures), `TC-SR3-03` (`it.fails`) |
+| I-1 | low | The key of an intent is the 32-byte hash alone and the first member that posts a hash owns it. A member that learns the hash of an intent another member is about to post can post it first; the second gets `ERR_INTENT_EXISTS`. The owner can post again with a different nonce, so it blocks nothing for good, but a book that lists an intent under the wrong owner could be shown to a counterparty. Same class as F8 of the first review ("first come"); it is listed again here because it is now measured and the 64-slot limit does not change it. | `TC-SR3-03a` (records the refusal), `TC-SR3-04` (`it.fails`) |
+| I-2 | low | `remove_intent` emits **no event** (the log is empty), while `intent_posted` is emitted. An indexer that follows events never learns that a slot is free or that an intent is gone, so the book it serves can list removed intents, and the count per member in the indexer can pass 64. | `TC-SR3-03a` (records the empty log), `TC-SR3-05` (`it.fails`) |
+
+### Proposed changes (for A2; nothing was changed in `contracts`)
+
+- **I-3.** Make `post_intent` charge the storage: either `#[payable]` with the cost of one record kept as a deposit that `remove_intent` gives back, or take the cost from the stake or the join deposit of the member (and refuse when it is not covered). A cheaper change that helps without a new deposit: let anybody remove the intents of a member that is no longer `active` (exited, suspended), and refund the storage to the contract. As a test for A2 the `it.fails` `TC-SR3-03` is ready: it asserts that what a minimal member can pin with intents is at most its join deposit.
+- **I-1.** Bind the key to the owner: key by `(owner, hash)` (then `remove_intent` needs no ownership lookup) or put the owner into the hash the contract checks. Test: `TC-SR3-04`.
+- **I-2.** Emit `intent_removed { intent_hash, owner }` in `remove_intent` and add it to the event list of the spec. Test: `TC-SR3-05`.
+
+## Not checked
+
+- The real `intents.near`: what `ft_withdraw` returns on success, how it refunds, and whether `mt_on_transfer` is called with the shapes of the mock. Everything here uses `probes/mock_intents`. The first mainnet or testnet-with-real-Intents run must read the balance before and after.
+- Whether `exit` or suspension of a member removes its intents (so whether I-3 is also true after a member leaves), and whether the join deposit comes back on exit. Not read.
+- The gas of `prune_epoch` with `max_items = 200` on an epoch with many bundles; the 200-item bound is by count of entries, not measured in gas here.
+- A full `prune_epoch` after a real finalize, and `claim` after it, in the sandbox. `TC-SR3-09` only shows the refusals. A2's own tests were not re-run.
+- Failure paths of `on_intents_withdrawn` (callback failure, timeout, non-`U128` result) with the mock in a sandbox. Read, not run.
+- Upgrade (`upgrade.rs`), grants and escrow (`grant.rs`, `escrow.rs`) beyond what `prune_epoch` touches, `clearing.rs`, `commit.rs`, `verifier.rs`, `risk.rs`.
+- Reentrancy and promise ordering beyond the callbacks named above.
+- Economics of a sybil actor with real USDT (limits, `limit <= stake`), already covered by the first review.
+
+## How to run
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/security-review-contract3.sandbox.test.ts
+```
+
+It needs `contracts/target/near/x207_circle.wasm` at interface 0.0.9 and `mock_intents.wasm` (see `assertMockIntentsWasm` in `sdk/test-support/circle.ts`). A run takes about 12 minutes on a busy machine (the first test deploys and joins, the third posts 64 intents twice).

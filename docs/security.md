@@ -26,17 +26,19 @@ Level is the one written in the review document. "Fixed" names the commit and th
 | Facilitator and SDK | R1 one voucher served n times by n parallel requests | high | fixed: `1eb2f57` (sdk, middleware) and `d279062` (broker) | `backend/docs/security-review-2.md` |
 | Facilitator and SDK | C1 payer suspended inside the cache window still passes `/verify` | medium | fixed `6ed92b6` (TTL 10 s); worst case per event is the cached headroom | same |
 | Facilitator and SDK | C2 a voucher registered by another relayer passes `/verify` for 10 s | low | accepted: documented, own registrations drop the cache | same |
-| Facilitator and SDK | G1 the in-flight id is taken before `/verify`: a forged request blocks the real voucher | medium | open, assigned to the SDK owner | same, "Cross review of the SDK" |
-| Facilitator and SDK | G2 a hung handler keeps the id; L1 gas key lanes without timeout | low | open, assigned | same |
-| Facilitator and SDK | F1 stale `mock_intents` wasm and F2 stale `dist` in test setups | low | open, assigned | same |
-| Facilitator and SDK | `exact` (NEP-366): the relayer pays the gas of settlements that fail; no limit per sender | medium | open; read only, not tested | same |
+| Facilitator and SDK | G1 the in-flight id is taken before `/verify`: a forged request blocks the real voucher | medium | fixed (`sdk`, SD-017): the id is taken after `/verify` answers valid; `TC-SR3-02` is a plain test now | same, "Cross review of the SDK" |
+| Facilitator and SDK | G2 a hung handler keeps the id; L1 gas key lanes without timeout | low | fixed: the id is given back on abort and after `maxHoldMs` (2 min); `GasKeyLanes` times out a nonce read or a `work` (60 s). A replay after the early give-back may run the handler twice, the voucher still settles once | same |
+| Facilitator and SDK | F1 stale `mock_intents` wasm and F2 stale `dist` in test setups | low | fixed: `deployCircle({ mockIntents: true })` checks the exports of the wasm and names the build command; the umbrella runs `tsc -b` in `sdk` before the tests (`tests/support/build-sdk.ts`) | same |
+| Facilitator and SDK | `exact` (NEP-366): the relayer pays the gas of settlements that fail; no limit per sender | medium | reduced: sponsored gas capped at 30 Tgas, a pause after 3 failed settlements per verified payer, a rate limit per client; the relayer balance is still the last limit (`sdk/docs/exact-limits.md`, tested TC-SR3-20 to 26) | same |
 | Broker | B1 `..%2f` walks out of the scope prefix of the class C proxy | high | fixed `95fa0ac` | same |
 | Broker | B2 method-override and forwarding headers reach the provider; B3 the provider echoes the secret to the lessee; B4 redirects carry the secret | medium | fixed `95fa0ac` | same |
 | Broker | B5 the quota is passed by parallel requests; B6 two lease payments send `AddKey` twice; B7 one voucher pays twice | medium | fixed `95fa0ac`, `d279062` | same |
 | Frontend | FE-1 the server decided what the voucher key signs | high | fixed (`frontend` `d0b5059`) | `frontend/docs/security-review.md` |
 | Frontend | FE-2 no script and connection policy | low | partly fixed: object, base, form and referrer only | same |
 | Release | the wasm of releases up to v0.0.7 cannot be traced to a tag | medium | fixed for later tags in the pipeline (`d651a65`, `06b72f8`): build in a pinned container, twice, compared; first run on a runner pending | `contracts/docs/verify-release.md` |
-| Contract 0.0.9 | `mt_on_transfer`, `withdraw_intents_balance` | not reviewed by a second person | open: written and tested by the same author | `contracts/docs/security-review.md` (no section yet) |
+| Contract 0.0.9 | `mt_on_transfer`, `withdraw_intents_balance`, `on_intents_withdrawn`, `prune_epoch`, `remove_intent`, the limits | reviewed by a second session (not the author) | no double deposit into D6, no negative or unbounded `intents_balance`, no drain by repeated calls, and nothing that `claim` needs is pruned (read; sandbox for the refusals); real `intents.near` not checked | `docs/security-review-3.md` |
+| Contract 0.0.9 | I-3 `post_intent` is not payable: a member with the minimum stake pins 64 intents = 0.065 NEAR of the contract balance (6.5 times its join deposit) for good | medium | open, reported to the contract owner; `it.fails` `TC-SR3-03` | `docs/security-review-3.md` |
+| Contract 0.0.9 | I-1 an intent hash is first come (second poster gets `ERR_INTENT_EXISTS`); I-2 `remove_intent` emits no event | low | open; `it.fails` `TC-SR3-04`, `TC-SR3-05` | same |
 
 ## Repeat the checks
 Every "fixed" row above has a test that failed before the fix. Run them from the folder of the repository named. A sandbox test needs `cargo near build non-reproducible-wasm` once (and Docker is not needed). Sandbox tests walk epochs and take about a minute each. Tests marked `it.fails` in the umbrella assert the safe behaviour and are green while the finding is open; they turn red when it is fixed.
@@ -53,7 +55,8 @@ Every "fixed" row above has a test that failed before the fix. Run them from the
 | Interface of 0.0.9 | `contracts` | `cargo test --test ct068_abi_freeze`, `cargo test --test be034_mt_on_transfer`, `cargo test --test be034_intents_withdraw` |
 | R1, C1, C2 | repository root | `npx vitest run tests/security-review-facilitator.test.ts` (build `sdk` first: `npm run build` in `sdk`, because the tests import `dist/`) |
 | B1 to B7 | `backend/broker` | `npx vitest run test/security-review.test.ts` |
-| G1, G2, L1, F1, F2 (SDK) | repository root | `npx vitest run tests/security-review-sdk.test.ts` (open findings: the `it.fails` tests) |
+| G1, G2, L1, F1, F2 (SDK) | repository root, `sdk` | `npx vitest run tests/security-review-sdk.test.ts tests/sdk-test-support.test.ts`; in `sdk`: `npx vitest run apps/facilitator/test/exact-limits.test.ts` |
+| I-1, I-2, I-3 (contract 0.0.9) | repository root | `X207_SANDBOX=1 npx vitest run tests/security-review-contract3.sandbox.test.ts` (about 12 minutes; the `it.fails` tests are the open findings) |
 | FE-1, FE-2 | `frontend` | `npx vitest run src/test/security.test.tsx src/components/Negotiation.test.tsx` |
 | Clearing verifier (property tests) | `contracts` | `cargo test --test ct030_clearing_property` (1000 cases each; 2 to 30 members; the verifier against an independent statement of the rules, mutated and random proposals, the real `submit_clearing` and `commit_epoch` of every accepted one, the order of submissions); `cargo test --lib leg_properties` (partly registered bundle legs). A failing case prints its smallest input and proptest keeps the seed in `proptest-regressions/`. No violation was found. |
 | Release | `contracts` | `scripts/repro-build.sh HEAD /tmp/a && scripts/repro-build.sh HEAD /tmp/b` and compare the two sha256 lines (needs Docker) |
