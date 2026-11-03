@@ -17,7 +17,7 @@ Dates are those of the commits (UTC+07:00). "Commit" is the commit of the reposi
 
 ---
 
-## 0.0.9 (in progress; `abi.json` has the version since `35dfca5`, 2026-11-03)
+## 0.0.9 (in progress; `abi.json` has the version since `35dfca5`, 2026-11-03; final ABI at `4936e58`)
 
 Residual payment through NEAR Intents (BE-034, spec section 18) and the decisions of ADR-41.
 
@@ -27,11 +27,12 @@ Residual payment through NEAR Intents (BE-034, spec section 18) and the decision
 - Event `intents_withdrawn { amount }`.
 - Errors: `ERR_NOTHING_TO_WITHDRAW`. Reused for the new paths: `ERR_WRONG_TOKEN`, `ERR_BAD_MSG`, `ERR_ZERO_AMOUNT`, `ERR_GAS_TOO_LOW`, `ERR_WITHDRAW_IN_FLIGHT`.
 
-**Decided, not yet in a contract commit (ADR-41, spec section 17; from the second security review, [docs/security-review-3.md](docs/security-review-3.md))**
+**Added by ADR-41 (contracts `d19a786` and `4936e58`; from the second security review, [docs/security-review-3.md](docs/security-review-3.md))**
 - `JOIN_STORAGE_DEPOSIT` rises from 0.01 NEAR to **0.32 NEAR**, which covers the worst storage of one member (31 282 bytes measured by the contract owner). The deposit is not returned when the member exits; only the part above it is returned.
-- `remove_intent` emits `intent_removed { intent_hash, account_id }`.
-- The intents of an `exited` member may be removed by anybody; `accept_grant` refuses an offer whose grantor is not `active`; `revoke_grant` with reason `defaulted` is allowed for a grantee that is `exited`.
-- The ABI of `0.0.9` is final only when these are committed. The SDK, the frontend and the tests that depend on them (the `it.fails` tests of the security reviews) are updated then.
+- `remove_intent` emits `intent_removed { intent_hash, account_id }` (33 events in total).
+- The intents of an `exited` member may be removed by anybody; `accept_grant` refuses an offer whose grantor is not `active` (`ERR_GRANT_NOT_ACTIVE_MEMBER`); `revoke_grant` with reason `defaulted` is allowed for a grantee that is `exited`.
+- No method changes its signature: the ABI of `0.0.9` has the same 66 methods and views plus the event `intent_removed`. The SDK pins it (`abi/x207-circle.abi.json`, pinned from `4936e58`).
+- The tag `v0.0.9` is not published yet, so this section stays "in progress" until it is.
 
 **Breaking for callers:** a client that attaches less than 0.32 NEAR to `join` is refused once ADR-41 is in the contract. A contract before 0.0.9 accepts 0.32 NEAR and returns what is above 0.01 NEAR (the onboarding sandbox tests of the SDK and the agents pass with the new deposit against the local `0.0.9` build made before ADR-41, whose minimum is still 0.01 NEAR).
 **Migration:** the credit booked at Intents is kept under its own storage key, so no change of the state layout was found in the code. An upgrade from `0.0.8` to `0.0.9` through `propose_upgrade` and `apply_upgrade` has not been run. The upgrade from `0.0.7` to `0.0.8` has (below).
