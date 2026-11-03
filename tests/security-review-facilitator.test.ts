@@ -146,7 +146,7 @@ describe("security review 2: chainCache windows (SD-032, a2aae7a)", () => {
   });
 
   // Finding C2 (documented, not fixed): the assumption is one relayer per pair (sdk/docs/rpc-load.md, chain-cache.ts). With no pending row the base is the cached `obligation`. A registration by another relayer is not seen for 10 s, so vouchers the chain already counts pass /verify once each.
-  it.fails("TC-SR2-09 a voucher that another relayer already registered is refused inside the window", async () => {
+  it.fails("TC-SR2-09 [expected failure: the assumption is ONE relayer per pair] a voucher that another relayer already registered is refused inside the window", async () => {
     const w = world();
     const clock = { ms: 1_000_000 };
     const { post } = stack(w, { cache: true, clock });
