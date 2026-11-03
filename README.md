@@ -295,6 +295,24 @@ An order is the agreement of a buyer and a seller on work. On the chain there is
 
 A dispute leaves the state as it was: a cumulative voucher cannot skip a milestone, so the next voucher never carries a disputed one. What this block does not show: the judgement of a dispute, the check of the target of a load test, and orders of a kind other than `audit` and `keeper` (each has its own test in `agents/test/services.test.ts`).
 
+### Content license block (pipeline P7)
+
+```bash
+npx vitest run agents/test/license.test.ts                     # agents against the purchase routes, in process, no sandbox
+X207_SANDBOX=1 npx vitest run tests/licenses.sandbox.test.ts    # real contract and indexer; about one minute
+```
+
+x207 does not store the file. The seller encrypts it, puts the ciphertext at a source of its choice (`https` or `ipfs`), and sells a license: the buyer's voucher is held by the backend, the seller releases the file key sealed to the buyer's key, and the buyer opens the file and checks it against the `content_hash` of the listing before it confirms (`sdk/docs/license.md`). Files larger than one block use `https`.
+
+| Do | See |
+| --- | --- |
+| `seller` lists a dataset; `buyer` buys it with a voucher of 50 credit | The purchase is `paid_held`; the answer has no voucher |
+| The seller posts the ciphertext and releases the key | `key_released`; the backend never sees the key of the file |
+| The buyer downloads, opens, checks the hash and confirms | `confirmed`; only now the voucher is in the answer, and the seller registers it: the pair holds 50 credit |
+| `second` buys a file whose hash is not the one of the listing | The buyer's SDK makes the proof, the backend checks it by itself: the purchase is `disputed`, no voucher leaves, the pair holds 0 |
+
+A seller who lies about the hash is caught by the buyer's own check, without a judge. What this block does not show: a source that serves other bytes than the ciphertext (the buyer's SDK refuses it and makes no proof), the 72-hour automatic confirmation, and the exclusive license with a bond (each has its own test in `agents/test/license.test.ts`).
+
 ### Marketplace block (feature F9)
 
 ```bash
