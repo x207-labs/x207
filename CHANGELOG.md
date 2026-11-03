@@ -1,15 +1,16 @@
-# Changelog of the contract interface (`x207-circle`), 0.0.1 to 0.0.9
+# Changelog of the contract interface (`x207-circle`), 0.0.1 to 0.0.11
 
 For reviewers and for users of the SDK. This file is the interface of the circle contract, version by version: methods, events, error codes, decisions, and whether a circle that already runs the previous version needs a migration. It is written from the Interface Spec of the contract (`vault/14 x207/04 Arsitektur/x207 - Spec Antarmuka Kontrak.md`, sections 1, 14 to 18), from the history of `abi.json` and from the commits of the repository `contracts`. Where the sources do not say something, this file says so; it does not fill the gap.
 
 **How versions work (spec section 1, rules of the `0.0.x` freeze).** While the version is `0.0.x`, every change that an outside caller can see raises the patch number: the name or arguments of a method, the return type of a view, a field of an event, an error code, the `msg` schema, the byte format of a voucher. The view `interface_version()` returns the version, and the field `version` of every NEP-297 event (`standard: "x207"`) carries it. A consumer refuses an event with a higher minor than it knows and ignores fields it does not know. The first release tagged `v0.1.0` changes the rule: after it, a minor raises for a break and a patch for a compatible addition. The SDK pins the version it was generated from: `X207_CIRCLE_ABI_VERSION` in `sdk/packages/core/src/contract/types.generated.ts` (today `"0.0.11"`, pinned from `contracts` `6d9ef76`; `be4da8f` has the same ABI).
 
-**Releases and reproducibility.** A release is a tag `vX.Y.Z` of the repository `contracts` with `x207-circle-vX.Y.Z.wasm`, `abi-vX.Y.Z.json` and `SHA256SUMS`. GitHub has the releases `v0.0.4` to `v0.0.9`. There is no tag for `0.0.1`, `0.0.2` and `0.0.3`: those are interface versions only.
+**Releases and reproducibility.** A release is a tag `vX.Y.Z` of the repository `contracts` with `x207-circle-vX.Y.Z.wasm`, `abi-vX.Y.Z.json` and `SHA256SUMS`. GitHub has the releases `v0.0.4` to `v0.0.9` and `v0.0.11`. There is no tag for `0.0.1`, `0.0.2`, `0.0.3` and `0.0.10`: those are interface versions only (the methods of `0.0.10` are in `v0.0.11`).
 
 | Release | Reproducible build | Basis |
 | --- | --- | --- |
 | `v0.0.4`, `v0.0.5`, `v0.0.6`, `v0.0.7`, `v0.0.8` | **No** | Built on a developer machine or by the earlier workflow, before the pinned container existed. `Cargo.toml` at each of these tags has no `reproducible_build` section (checked for `v0.0.7` and `v0.0.8`), and `contracts/docs/verify-release.md` says that versions up to `v0.0.7` are not reproducible. The `code_hash` of a deployment of these versions cannot be tied to the source of the tag. |
 | `v0.0.9` (tag on `b9236b1`, published 2026-11-03 07:25 UTC) | **Yes, the first** | Built twice in a pinned container (image by digest, `cargo near build non-reproducible-wasm --locked`, `Cargo.lock` committed); the release workflow publishes nothing if the two sha256 differ. `SHA256SUMS` of the release: wasm `fa8309059a84…` (full value in the file), ABI file `ea01ea625262…`; `shasum -a 256 -c SHA256SUMS` passes on the downloaded files. The coordinator reports the same wasm sha256 from the two builds of the runner; two builds of ours in the container at `1f9b618` gave the same value too. The earlier proof run (41575069378, CT-087) built another commit twice with `95515ee8f759…`. How to check a `code_hash`: `contracts/docs/verify-release.md`. Limit: the repository is private, so a third-party verifier such as SourceScan may compute another number until it is public. |
+| `v0.0.11` (tag on `be4da8f`) | **Yes** | Built in the same pinned container and checked the same way. Reported by the coordinator: wasm sha256 `a9d0c839149a6e84ce4f87c1898b2cf871d2eda117f1988e13d0c59ae13a2f39`, which as a NEAR `code_hash` (base58) is `CRtYqTc47ADcDkHp7UJaRPLXu5XHS7KYftrTNUnZ8bNx`; the release is https://github.com/x207-labs/contracts/releases/tag/v0.0.11. The release carries the interface `0.0.10` (token escrow, CT-090 and CT-091) and `0.0.11` (multi-token escrow, CT-092). Same limit as `v0.0.9`: the repository is private, so a third-party verifier may compute another number until it is public. How to check a `code_hash`: `contracts/docs/verify-release.md`. |
 
 A rehearsal or a mainnet deployment uses the wasm of a release and records its `code_hash` ([docs/mainnet-runbook.md](docs/mainnet-runbook.md)).
 
@@ -17,7 +18,7 @@ Dates are those of the commits (UTC+07:00). "Commit" is the commit of the reposi
 
 ---
 
-## 0.0.11 (not released; interface in `contracts` `be4da8f`, first written in `6d9ef76`, 2026-11-03)
+## 0.0.11 (released as `v0.0.11`, tag on `be4da8f`, reproducible; first written in `6d9ef76`, 2026-11-03)
 
 Class A escrow of an exact amount of one NEP-245 multi-token (CT-092). A new interface version because it adds a view, an event and three errors, and `0.0.10` was already pinned by the SDK.
 
@@ -33,7 +34,7 @@ Class A escrow of an exact amount of one NEP-245 multi-token (CT-092). A new int
 **Breaking for callers:** none that the sources name; no existing method changes its signature.
 **Migration:** not stated in the sources; the new map is under its own storage key. An upgrade from `0.0.10` was not run.
 
-## 0.0.10 (not released; interface in `contracts` `6124495`, 2026-11-03)
+## 0.0.10 (no tag of its own: its methods are in `v0.0.11`; interface in `contracts` `6124495`, 2026-11-03)
 
 Class A escrow of an exact amount of a fungible token (CT-090) and the tests of restricted tokens (CT-091). It is a new interface version because it adds a view, an event and three errors, so it could not share `0.0.9` with the tag `v0.0.9`.
 
