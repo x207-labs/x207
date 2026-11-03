@@ -148,6 +148,7 @@ cd contracts
 cargo near build non-reproducible-wasm                                            # the contract, about 30 seconds
 cargo near build non-reproducible-wasm --manifest-path probes/mock_ft/Cargo.toml  # the mock USDT token used by every sandbox run
 cargo near build non-reproducible-wasm --manifest-path probes/mock_nft/Cargo.toml # the mock NFT; only `tests/escrow-d9.sandbox.test.ts` needs it, no demo does
+cargo near build non-reproducible-wasm --manifest-path probes/mock_intents/Cargo.toml # the mock NEAR Intents; the tests of `mt_on_transfer` and `withdraw_intents_balance` need it (`tests/security-review-contract3*.sandbox.test.ts`), no demo does
 cargo test --no-run --test ct043_gas                                              # compiles one small test; the build script of near-workspaces downloads the near-sandbox binary (or set X207_SANDBOX_BIN)
 cd ..
 npm ci
