@@ -1,4 +1,5 @@
-// UM-032: demo end-to-end di jaringan nyata (testnet atau mainnet). Ditulis tetapi BELUM PERNAH dijalankan dengan transaksi.
+// UM-032: demo end-to-end di jaringan nyata (testnet atau mainnet). Sudah dijalankan satu epoch penuh di testnet (2026-11-03, docs/testnet-demo.json); belum di mainnet.
+// Variabel tambahan: DEMO_GAS_KEY_LANES, DEMO_CALL_PAUSE_MS, DEMO_SCHEDULER_MS, RPC_URLS, DEMO_RESUME_EPOCH, X207_DEMO_RECORD.
 //   DEMO_NETWORK=testnet npm run demo:testnet        (hanya mencetak rencana)
 //   DEMO_NETWORK=testnet X207_CONFIRM_REAL_TX=yes npm run demo:testnet
 //   DEMO_NETWORK=mainnet X207_CONFIRM_REAL_TX=yes X207_CONFIRM_MAINNET=yes npm run demo:mainnet
