@@ -1,0 +1,676 @@
+{
+  "network": "testnet",
+  "accounts": [
+    {
+      "id": "x207b-deploy.testnet",
+      "role": "owner and keeper of the demo circle (faucet account, own key)"
+    },
+    {
+      "id": "x207b-usdt.testnet",
+      "role": "mock USDT (mock_ft)"
+    },
+    {
+      "id": "x207b-circle.testnet",
+      "role": "circle contract of the network demo"
+    },
+    {
+      "id": "x207b-relayer.testnet",
+      "role": "relayer of the facilitator: exact (NEP-366) and gas key (NEP-611)"
+    },
+    {
+      "id": "x207b-buyer.testnet",
+      "role": "buyer outside the circle (SD-034)"
+    },
+    {
+      "id": "x207b-seller.testnet",
+      "role": "seller (SD-034)"
+    },
+    {
+      "id": "x207b-translator.testnet",
+      "role": "agent"
+    },
+    {
+      "id": "x207b-summarizer.testnet",
+      "role": "agent"
+    },
+    {
+      "id": "x207b-scraper.testnet",
+      "role": "agent"
+    },
+    {
+      "id": "x207b-image.testnet",
+      "role": "agent"
+    },
+    {
+      "id": "x207b-cleaner.testnet",
+      "role": "agent"
+    },
+    {
+      "id": "x207b-gpu.testnet",
+      "role": "agent"
+    },
+    {
+      "id": "x207b-circle2.testnet",
+      "role": "circle contract actually used by the network demo, owner = the DAO"
+    },
+    {
+      "id": "x207b.sputnikv2.testnet",
+      "role": "Sputnik DAO, owner of x207b-circle2; council x207b-deploy, x207b-image, x207b-gpu"
+    }
+  ],
+  "steps": [
+    {
+      "section": "sd-034-exact",
+      "step": "deploy mock USDT",
+      "account": "x207b-usdt.testnet",
+      "method": "deploy_contract",
+      "hash": "EMAbvNLgyZr4tFNKEbucy1UAetkb8oeNkjLdW7ud3cyi",
+      "note": "sha256 a113ca23796d1ded9ebe93d128c4fd038b15eb8ea30c503889b68c184cc2d1cb; first attempt with the mock_ft on x207b-usdt.testnet; abandoned: mock_ft has no storage_balance_of and /verify answered invalid_exact_near_storage_check_failed",
+      "at": "2026-11-02T23:42:38.218Z"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "init mock USDT",
+      "account": "x207b-usdt.testnet",
+      "method": "new",
+      "hash": "BqLoc6R77fhBejw7dVEMz2qAbnoN2uydkGimSN3Jepxo",
+      "at": "2026-11-02T23:42:41.498Z",
+      "note": "first attempt with the mock_ft on x207b-usdt.testnet; abandoned: mock_ft has no storage_balance_of and /verify answered invalid_exact_near_storage_check_failed"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "mint 5 USDT to the buyer",
+      "account": "x207b-usdt.testnet",
+      "method": "mint",
+      "hash": "D3xh3n1Yoknhpn9gRBKDixvufqi9qjnby6MLLj4qxo8S",
+      "at": "2026-11-02T23:42:45.497Z",
+      "note": "first attempt with the mock_ft on x207b-usdt.testnet; abandoned: mock_ft has no storage_balance_of and /verify answered invalid_exact_near_storage_check_failed"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "register the seller",
+      "account": "x207b-seller.testnet",
+      "method": "storage_deposit",
+      "hash": "DB5vTLzX9nCDNLCp3xobtnvTxUmzQcuviawjD4AfBusr",
+      "at": "2026-11-02T23:42:49.732Z",
+      "note": "first attempt with the mock_ft on x207b-usdt.testnet; abandoned: mock_ft has no storage_balance_of and /verify answered invalid_exact_near_storage_check_failed"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "register the seller",
+      "account": "x207b-seller.testnet",
+      "method": "storage_deposit",
+      "hash": "EusxyWu9eUijpkAbow2HN4ZwqARWia8nnbbZVwd92XT7",
+      "at": "2026-11-02T23:43:05.116Z",
+      "note": "first attempt with the mock_ft on x207b-usdt.testnet; abandoned: mock_ft has no storage_balance_of and /verify answered invalid_exact_near_storage_check_failed"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "register the seller",
+      "account": "x207b-seller.testnet",
+      "method": "storage_deposit",
+      "hash": "A1pLrhM57L9iLLPUtAQ42DymCBAjFKJhTjnXRkNbVvGd",
+      "at": "2026-11-02T23:43:37.408Z",
+      "note": "first attempt with the mock_ft on x207b-usdt.testnet; abandoned: mock_ft has no storage_balance_of and /verify answered invalid_exact_near_storage_check_failed"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "register x207b-buyer.testnet on the token",
+      "account": "x207b-buyer.testnet",
+      "method": "storage_deposit",
+      "hash": "7gcQMiuEJNquDUzqhpWASEwPXqshfvwijHv4exg6tPb1",
+      "at": "2026-11-02T23:44:28.340Z"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "register x207b-seller.testnet on the token",
+      "account": "x207b-seller.testnet",
+      "method": "storage_deposit",
+      "hash": "4ifzd3yGeVMcamJyXLswyZB3PK8UgLoUVPXvdzBC9b4V",
+      "at": "2026-11-02T23:44:33.008Z"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "mint 5 USDT.e to the buyer",
+      "account": "x207b-buyer.testnet",
+      "method": "mint",
+      "hash": "6a54iDXox5ech91HtbmqY6mzSn3DYYqSQPXMf6tfwcVh",
+      "at": "2026-11-02T23:44:37.709Z"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "exact payment settled by the relayer",
+      "account": "x207b-relayer.testnet",
+      "method": "submit SignedDelegate (ft_transfer)",
+      "hash": "JBtEAUQ78P1gQSqk4TjkjN2Lax8HVSU2KHv8TmcB7RS3",
+      "note": "buyer x207b-buyer.testnet pays 20000 to x207b-seller.testnet",
+      "at": "2026-11-02T23:44:46.848Z"
+    },
+    {
+      "section": "sd-034-exact",
+      "step": "balances",
+      "note": "USDT buyer 5000000->4980000, seller 0->20000; NEAR buyer delta 0 yocto, relayer paid 296872307314700000001 yocto",
+      "at": "2026-11-02T23:44:48.214Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "deploy circle contract (epoch_length 600, 0.0.7)",
+      "account": "x207b-circle.testnet",
+      "method": "deploy_contract",
+      "hash": "BEnJd3JUagjKyt9tW5apTkEA9zvruH2nfAQ2ZhT1z4Jb",
+      "note": "wasm sha256 3bc02dbb6f00357fdf0d30b53399bb42db8553c53a43de2fea756c57403b6639",
+      "at": "2026-11-02T23:46:47.517Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "init circle contract",
+      "account": "x207b-circle.testnet",
+      "method": "new",
+      "hash": "2UuRsaNYvRbdHe9vegzq1mWTdDSBygjW2SDfWfFs7t4u",
+      "at": "2026-11-02T23:46:47.555Z"
+    },
+    {
+      "section": "sd-031-gaskey",
+      "step": "probe: add a full-access gas key to the relayer with a random key (key discarded, probe only)",
+      "account": "x207b-relayer.testnet",
+      "method": "AddKey (gas key, 4 lanes)",
+      "hash": "AEanQSSGSiqTA41mxtDCu7TnVoeKU7Fe68RYHGmVxj2k",
+      "note": "testnet protocol 88, node 2.14.0-rc.5 accepts gas keys",
+      "at": "2026-11-02T23:46:47.592Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "create Sputnik DAO x207b (council x207b-deploy, x207b-image, x207b-gpu)",
+      "account": "x207b-deploy.testnet",
+      "method": "sputnikv2.testnet create",
+      "hash": "BcwcEDg9aFMTNUJhzCy2zb77dgufm1Gfsze6riysfQuE",
+      "at": "2026-11-02T23:48:12.738Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "deploy circle contract (owner = DAO, epoch_length 600, 0.0.7)",
+      "account": "x207b-circle2.testnet",
+      "method": "deploy_contract",
+      "hash": "AUsZ9huSEsDPVV1DPEbN1BHpTZx4RYy1nSHQNDaAf6Ke",
+      "note": "wasm sha256 3bc02dbb6f00357fdf0d30b53399bb42db8553c53a43de2fea756c57403b6639",
+      "at": "2026-11-02T23:48:20.002Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "init circle contract (owner = DAO)",
+      "account": "x207b-circle2.testnet",
+      "method": "new",
+      "hash": "HtLzRoEk4DpYbNwfA826aSryW9SqQCPiMEgQUijxgmKz",
+      "at": "2026-11-02T23:48:20.039Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "note: x207b-circle.testnet was deployed first (owner x207b-deploy) and is not used by the demo",
+      "at": "2026-11-02T23:48:20.076Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "4TxdxitLowprYGsTuXG1aVPicvk8bX8bp92WXkRBRFZJ",
+      "at": "2026-11-02T23:49:09.495Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "ErN1zrgkLxXAPU7fFNcZ9SW8dba6V5G29EtwMuN9Mzd2",
+      "at": "2026-11-02T23:49:13.076Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "FA4Dgs6eLRermsMz8AKtw2d4tvcJaNC4Z6KaxAWyifb6",
+      "at": "2026-11-02T23:49:16.787Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "Frt6EK6dWLnCo8cqrQVkpVrL4pCYarCGPxGPWh4z53kU",
+      "at": "2026-11-02T23:49:20.688Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "8GLFf26MEk4fYP53wUaKUkS68SNcPr6ytQSxJSxPUtaE",
+      "at": "2026-11-02T23:49:24.558Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "3hrJpXdrcFFjKo19SAxYnsK6DiwmbHxvVrU2Cg1i2Reh",
+      "at": "2026-11-02T23:49:28.586Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.join",
+      "hash": "5nVBpxTQxnnjpUuiCsxaXFqUWdSa9h94LVPdf9MDRZsi",
+      "at": "2026-11-02T23:49:32.810Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.ft_transfer_call",
+      "hash": "DE6ocYms22ZLuYqvojHnnRQxtjx6yqPHNZk2eRxnrHuh",
+      "at": "2026-11-02T23:49:37.925Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.join",
+      "hash": "4Q6zzvQmJ79f9TPARAyNz885UgiDf7MJXTK5VVYQEvRn",
+      "at": "2026-11-02T23:49:42.752Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.ft_transfer_call",
+      "hash": "HbnY19ncJSXLXgoipymkbzR4vtxMSwCCnbTr6mvMp5T4",
+      "at": "2026-11-02T23:49:48.506Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.join",
+      "hash": "HaUGW2wtoye46n9pBEUGN9y3ivUCJvJsEpYGw9AZMrUY",
+      "at": "2026-11-02T23:49:53.077Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.ft_transfer_call",
+      "hash": "3zGC6zkSJLSjaT8srYn3RiA6NzpzYyoJ85wau3RpoVdk",
+      "at": "2026-11-02T23:49:58.578Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.join",
+      "hash": "3uHDXUNnp5PRFECrr2rUufZWkA1tSjqYyvfPr94Rn2ZE",
+      "at": "2026-11-02T23:50:03.432Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.ft_transfer_call",
+      "hash": "BTqeJxP13yfZMak7LX3QRgk8n862ZLnrBN3tutikR31H",
+      "at": "2026-11-02T23:50:08.342Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.join",
+      "hash": "CM1zWKkkmWWVsD43LcK4HsxyoqvBpUpKRLjZ62BMwguc",
+      "at": "2026-11-02T23:50:12.260Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.ft_transfer_call",
+      "hash": "5cYddsovS7YpPKYtRLZxYDN4ahNB1jTE9PSMaGf3ZEK7",
+      "at": "2026-11-02T23:50:17.389Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.join",
+      "hash": "FisuEXmZFKJCkFyxfyFZJwGTgt8MYCeJ4RviukLJkNS6",
+      "at": "2026-11-02T23:50:21.128Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.ft_transfer_call",
+      "hash": "4aruJzUfnh3FM8EhCPd3tpTaWXV7N1yUduvAtDhBV1uL",
+      "at": "2026-11-02T23:50:26.386Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.add_gas_key",
+      "hash": "A8VN75NKb37xUwZUCymQAKthefe4k4ViKjKTkJon8dJK",
+      "at": "2026-11-02T23:50:28.634Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.fund_gas_key",
+      "hash": "3uaBha6jXaAbx5aMCQugv6fd4pqwZFnwPqG9WZdESCMs",
+      "at": "2026-11-02T23:50:30.622Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.commit_bundle",
+      "hash": "7hfsrtVMWRssexg6AWYbnSvc8dGsej6eX5qEfCYzrqZv",
+      "at": "2026-11-02T23:50:36.553Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 1 stopped: summarizer -> scraper, HTTP 503 (facilitator_unavailable) on the 18th paid call after the barter legs; the demo now retries a 503 and prints the reason",
+      "at": "2026-11-02T23:51:57.559Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "B1EJnZjCA7ERFeer9DPsheArdKBwTETXukbdSWXpa4nR",
+      "at": "2026-11-02T23:52:01.866Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "A8ksTNJnodwLvP1R7yRbosiow3Y8NHqyaj9MtgaDtKtg",
+      "at": "2026-11-02T23:52:06.144Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "DmBNrN7H4S1WyioxN9VZbxKBfQm8ToudDChLgSKMdQZg",
+      "at": "2026-11-02T23:52:10.581Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "3RiPzoV6HepPCKxWkcowegcwpmj1xt5NokMBg1yT4yBE",
+      "at": "2026-11-02T23:52:14.851Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "GU88hrvGzdguiok6UABoewbFqdRRo6LfoXRFaYmvR99L",
+      "at": "2026-11-02T23:52:18.441Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "FPhjkm7Hg3kQjaY7XgAAQntSCt27ifDFWLHwVEbuVMoJ",
+      "at": "2026-11-02T23:52:22.781Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 2 stopped at the barter step: commit_bundle ERR_BUNDLE_EXISTS (epoch 1 still open and run 1 had committed the same bundle); run 3 waits for the next epoch",
+      "at": "2026-11-02T23:54:34.360Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "65yN1JLqGTzqk8nT4y2XZpzoUoKw3sEDwufdWFLuyjvu",
+      "at": "2026-11-02T23:54:39.176Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "4HKm5XHpPNngAaUv3AEbfBNptLYJRiasCPkkTL6FFSwJ",
+      "at": "2026-11-02T23:54:43.373Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "DdnzzqE4iVni6KQFWcNKtaXyLdE9qTsfazdVFbJLeiAn",
+      "at": "2026-11-02T23:54:47.014Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "7kTZW2FvWqJf1zhBfidR8Jm927XD7tPMG9VaH8Nmsnja",
+      "at": "2026-11-02T23:54:51.564Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "7DSB1RnHYU17q85TSX2R3KAMRjW7gCdvK5RL6wqJpQ9L",
+      "at": "2026-11-02T23:54:55.805Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "CYrs4H7yN7pxj9hM1XuDAT165YvmL3jym4XS7noPVqFe",
+      "at": "2026-11-02T23:54:59.811Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "FThyJXHk6pnZ1bMSZaEFQxuHAVjKe1U9s3jvdG6A9eQ",
+      "at": "2026-11-02T23:58:21.567Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.commit_bundle",
+      "hash": "E79PCmv1R2W2t6F5hhmF1sczftCrcfqbfjg56VTrmFoC",
+      "at": "2026-11-02T23:58:26.413Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 3 stopped: scraper -> image HTTP 503 facilitator_unavailable (GET /supported HTTP 503); the logs show the free RPC answering HTTP 429 to the facilitator and the scheduler; run 4 adds NearRpc rateLimit retry and a 8 s scheduler tick",
+      "at": "2026-11-03T00:02:07.983Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "Ha4bamib7xJpwTrHiMnnHMvWhg3qvmhRLCngVhqR7yHS",
+      "at": "2026-11-03T00:02:19.576Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "8HYShFrnSBfvtQBR4coMcLSxThygxdVzHM2HdS3Kqacq",
+      "at": "2026-11-03T00:02:23.979Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "52gigJEDDHDL6ycKsYejUn8byoydFoA8LnuiLxHUV5ow",
+      "at": "2026-11-03T00:02:28.022Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "JCRFVHh5XAE8QWe52VRVuHN1Y7eMaiZQrZh8jtUxHoT2",
+      "at": "2026-11-03T00:02:32.371Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "BQRiXTJUY21cCPnkB3AUd4QpToQFpbaq5sMAgcwZojSU",
+      "at": "2026-11-03T00:02:36.517Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "6b7KbQ7SRZGRaw7Mbo26hMczGrHR3Y9jxVKixHm1BFrR",
+      "at": "2026-11-03T00:02:40.770Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "6KUhKwQVHG55Jaj1uicnJxJKDpYdSRgpQw4Gch8VAiQb",
+      "at": "2026-11-03T00:02:48.751Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 4 stopped at the barter step: ERR_BUNDLE_EXISTS (epoch 2 still open with the bundle of run 3); run 5 starts only when the open epoch has less than 225 s left",
+      "at": "2026-11-03T00:03:06.036Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "EALdH1abx2Nh6C833bLdbCQ9kBPXnj7oW5PZsWb9vGyk",
+      "at": "2026-11-03T00:04:36.393Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "2apyv1CZMjdXAHB7QwUqzCp8XD1FsC5Nj6xveE2wbHz8",
+      "at": "2026-11-03T00:04:40.920Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "DenyRPbTAtgaTEcXZY8uSjEzfkhxn3Gb57udyiMEGZx3",
+      "at": "2026-11-03T00:04:45.178Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "2U8ZnR4N8XYomnZGYoEp3caLQ6BAyUA7iQW7UyV1AwCv",
+      "at": "2026-11-03T00:04:49.187Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "2uurukDrF4vMEHRmb9GtAUckqhdiWnNR5hjn2jq75jZi",
+      "at": "2026-11-03T00:04:53.599Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "EZgtZPcdKCdnyBb49KcnpxzcPD8maRLhXWXpCPJmjQgo",
+      "at": "2026-11-03T00:04:57.550Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 5 stopped by a fetch ConnectTimeoutError (10 s) to a Cloudflare host right after the gas key step; run 6",
+      "at": "2026-11-03T00:12:54.594Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "BfSgAHMehGgeMqsPbkq8qUMDp9AbxgVJm5gd6J5sXwCr",
+      "at": "2026-11-03T00:13:00.314Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "7Zqtp7W5FroKyiTSgoFjAC1B7t2YE4jwE9cHiX8uhaAr",
+      "at": "2026-11-03T00:13:04.334Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "8BVFeNMpfhpW6tGFuaPDbxzzY9ec9V7BgLTjkgu44zKT",
+      "at": "2026-11-03T00:13:08.577Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "AvVeBsy4kJKeVE2fc2Cp9G2VCmKVzk8RWvWsJrYd9Sn3",
+      "at": "2026-11-03T00:13:12.800Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "7cU7uvbKAqCsFvX3TQhKSnwYgZs8NSDtLc9Ec2iUPtR8",
+      "at": "2026-11-03T00:13:17.160Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "7hkuW3ei2eoiXHJaMksU4mtDSXjBKwWzhCYDauLTgAL2",
+      "at": "2026-11-03T00:13:21.507Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "BkiPWV5svpx6yT4NeDAsGnojxDPrPvHRBUH6P8HXRjjB",
+      "at": "2026-11-03T00:13:28.385Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.commit_bundle",
+      "hash": "4oPt7aDR8VqN4Pwi9oQQjQ3p1y1HbvxFgKtbUxCdASqG",
+      "at": "2026-11-03T00:13:32.865Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "run 6 stopped: from the 18th paid call the free fastnear RPC timed out (10 s) or failed to connect for the facilitator and the scheduler, HTTP 503 after 6 retries; run 7: 60 calls, 1.5 s pause, four RPC endpoints in order",
+      "at": "2026-11-03T00:39:04.481Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "3uxonXeFfooF9gGNgwcy7sAR4yxQncGx2MCWAkbXJV9W",
+      "at": "2026-11-03T00:39:10.045Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "FrVWfiheQZgUSWJbDfwwdjCMLqTmxKfqsiZYGxxR2Hzi",
+      "at": "2026-11-03T00:39:13.629Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "CkFZ68sDzzMFddoHqkSGskb2v4ryo2FeZvV9p2qWxPRc",
+      "at": "2026-11-03T00:39:17.621Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "ExYVVAkcJknLDVCvuYB9hEvANDDZL8cCV6NsQ4dNjCUT",
+      "at": "2026-11-03T00:39:20.919Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "87faukK8u5tZ7pDCQso8UZwS2GYwm32m4eTUS7CpYeXa",
+      "at": "2026-11-03T00:39:25.051Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "9FhkBB3nsbBnmLedsH9xwuH9L9dNoQEcaLgNJRhWwDSQ",
+      "at": "2026-11-03T00:39:29.050Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "4qbS4zbMgV4TbyaqxoCw5b7dwk1rbJt9NtFFU5kPwDDq",
+      "at": "2026-11-03T00:39:36.190Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "Gr3iVXZQftbLgWios74awgADb2rX7UaAuMuMH2a6XBNZ",
+      "at": "2026-11-03T00:39:40.745Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "FVjwU6KHCFUNdVEmvhuqXM77rc2HBbsVeMXopsoxFBKh",
+      "at": "2026-11-03T00:39:44.687Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.commit_bundle",
+      "hash": "7cMDBZag4R6V83zEByEyqPzLNB7hE9hgSVSedFYMDxLD",
+      "at": "2026-11-03T00:39:50.312Z"
+    },
+    {
+      "section": "sd-031-gaskey",
+      "step": "parallel call on gas key lane 3",
+      "account": "x207b-relayer.testnet",
+      "method": "ft_total_supply (Transaction::V1, NEP-611)",
+      "hash": "1cwHDb3jter2BPu65amHWf3EnE7Hne58uyYFAejTpFm",
+      "at": "2026-11-03T00:48:00.953Z"
+    },
+    {
+      "section": "sd-031-gaskey",
+      "step": "parallel call on gas key lane 2",
+      "account": "x207b-relayer.testnet",
+      "method": "ft_total_supply (Transaction::V1, NEP-611)",
+      "hash": "3QR9RtzNbjuyhU3kWQvq34gyhBNYvGifGfHyaEEeTdf6",
+      "at": "2026-11-03T00:48:00.956Z"
+    },
+    {
+      "section": "sd-031-gaskey",
+      "step": "parallel call on gas key lane 1",
+      "account": "x207b-relayer.testnet",
+      "method": "ft_total_supply (Transaction::V1, NEP-611)",
+      "hash": "6KS67CQPpbchGzJsRg54uZqXXpT2FJ4rEYvK2a9MfvAf",
+      "at": "2026-11-03T00:48:00.956Z"
+    },
+    {
+      "section": "sd-031-gaskey",
+      "step": "parallel call on gas key lane 0",
+      "account": "x207b-relayer.testnet",
+      "method": "ft_total_supply (Transaction::V1, NEP-611)",
+      "hash": "Ct8PSsgW7j4GG3N3e7BLiewvk5asar4RVP7KAXwWRWzi",
+      "at": "2026-11-03T00:48:02.195Z"
+    },
+    {
+      "section": "sd-031-gaskey",
+      "step": "lane nonces",
+      "note": "before 275970032000000,275970032000000,275970032000000,275970032000000 after 275970032000001,275970032000001,275970032000001,275970032000001; 4 transactions in parallel",
+      "at": "2026-11-03T00:48:16.804Z"
+    }
+  ]
+}

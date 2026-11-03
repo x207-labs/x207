@@ -15,7 +15,7 @@
 // AGENT_ACCOUNT_TEMPLATE (default `{name}.<CIRCLE_CONTRACT>`, mis. `x207r-{name}.testnet`), DEMO_MINT_USDT=yes (mint USDT tiruan, hanya testnet),
 // DEMO_DEFAULT=<agent> (debtor itu tidak melunasi). Kunci pemilik di KEYS_DIR/<network>/<akun>.json (format scripts/create-accounts.mjs).
 import { execFile } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, writeSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { resolve } from "node:path";
@@ -34,6 +34,8 @@ import { createNearAiClient } from "../agents/shared/nearai.ts";
 import { AGENT_NAMES, AGENTS, type AgentName } from "../agents/shared/registry.ts";
 import { createAgentBuyer, createSellerPaywall } from "../agents/shared/x207.ts";
 import { runBarterRing } from "./barter-step.ts";
+import { recordStep } from "../sdk/test-support/demo-record.ts";
+import { Account, JsonRpcProvider, KeyPair, KeyPairSigner } from "../sdk/node_modules/near-api-js/lib/index.js";
 import { keeperPass } from "../scripts/lib/keeper.mjs";
 import { serveWeb } from "../agents/test/helpers.ts";
 
@@ -98,8 +100,14 @@ describe("demo jaringan nyata", () => {
     const operatorKey = (prefix: string, accountId: string): `ed25519:${string}` => (process.env[`${prefix}_SECRET_KEY`] as `ed25519:${string}` | undefined) ?? ownerKey(accountId);
     const defaulter = process.env.DEMO_DEFAULT as AgentName | undefined;
     if (defaulter && !AGENT_NAMES.includes(defaulter)) throw new Error(`DEMO_DEFAULT harus salah satu dari ${AGENT_NAMES.join(", ")}`);
+    // X207_DEMO_RECORD=<file>: every hash goes to that JSON file as soon as it exists (docs/testnet-demo.json), never keys.
+    const record = process.env.X207_DEMO_RECORD;
+    const note = (stage: string, hash: string) => {
+      hashes.push({ stage, hash });
+      if (record) recordStep(record, { section: "network-demo", step: stage, hash });
+    };
     const stamp = (label: string) => (info: { methodName?: string; hash: string }) => {
-      hashes.push({ stage: `${label}${info.methodName ? `.${info.methodName}` : ""}`, hash: info.hash });
+      note(`${label}${info.methodName ? `.${info.methodName}` : ""}`, info.hash);
       log(`   tx ${label}${info.methodName ? `.${info.methodName}` : ""} ${info.hash}`);
     };
     const view = createNearView(rpcUrl, contract);
@@ -124,7 +132,10 @@ describe("demo jaringan nyata", () => {
     const identity = Object.fromEntries(outcomes.map((o, i) => [AGENT_NAMES[i], o.identity])) as Record<AgentName, AgentIdentity>;
 
     const pending = new PendingStore(":memory:");
-    const rpc = new NearRpc({ urls: [rpcUrl], timeoutMs: 10_000 });
+    // The free testnet RPC answers 429 under load: ask again with backoff before the facilitator calls the chain unavailable.
+    // RPC_URLS=a,b,c: endpoints tried in order by the facilitator and the buyers; the first one answers 429 or times out under load.
+    const rpcUrls = (process.env.RPC_URLS ?? rpcUrl).split(",").map((u) => u.trim()).filter(Boolean);
+    const rpc = new NearRpc({ urls: rpcUrls, timeoutMs: 10_000, rateLimit: { attempts: 5, baseMs: 2_000 } });
     const circle = defineCircleConfig({ network: "x207:agents-main", circleContract: contract });
     const relayer = { accountId: env("RELAYER_ACCOUNT_ID"), privateKey: operatorKey("RELAYER", env("RELAYER_ACCOUNT_ID")) };
     const facilitatorApp = createApp(createFacilitatorService({ circles: [circle], rpc, pending, signers: [relayer.accountId] }));
@@ -138,9 +149,37 @@ describe("demo jaringan nyata", () => {
       servers.push(server);
       urls[name] = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
     }
+    // SD-031: DEMO_GAS_KEY_LANES=n puts a gas key (NEP-611) with n nonce lanes on the relayer, so registrations run in parallel.
+    // The key is kept in KEYS_DIR/<network>/<relayer>.gaskey.json (mode 0600) and reused; it is never printed.
+    const lanes = Number(process.env.DEMO_GAS_KEY_LANES ?? 0);
+    let gasKey: { privateKey: string; lanes: number } | undefined;
+    if (lanes > 0) {
+      const file = resolve(keysDir, network, `${relayer.accountId}.gaskey.json`);
+      const provider = new JsonRpcProvider({ url: rpcUrl });
+      const relayerAccount = new Account(relayer.accountId, provider, KeyPairSigner.fromSecretKey(relayer.privateKey));
+      if (existsSync(file)) gasKey = { privateKey: JSON.parse(readFileSync(file, "utf8")).secret_key, lanes };
+      else {
+        const key = KeyPair.fromRandom("ed25519");
+        writeFileSync(file, JSON.stringify({ account_id: relayer.accountId, secret_key: key.toString(), lanes }), { mode: 0o600 });
+        try {
+          const added = await relayerAccount.addFullAccessGasKey(key.getPublicKey(), lanes);
+          note("relayer.add_gas_key", added.transaction.hash);
+          const funded = await relayerAccount.transferToGasKey(relayer.accountId, key.getPublicKey(), 2n * 10n ** 24n);
+          note("relayer.fund_gas_key", funded.transaction.hash);
+        } catch (error) {
+          unlinkSync(file); // the key is not on the chain (or not funded): do not reuse it next time
+          throw error;
+        }
+        gasKey = { privateKey: key.toString(), lanes };
+      }
+      log(`== SD-031 gas key NEP-611 pada relayer ${relayer.accountId}, ${lanes} jalur nonce`);
+    }
+    const registrationChain = new NearRegistrationChain({
+      rpc, circleContract: contract, relayer, onHash: (hash) => stamp(gasKey ? "relayer.register(gas key)" : "relayer.register")({ hash }), ...(gasKey ? { gasKey } : {}),
+    });
     const scheduler = new RegistrationScheduler({
       circleContract: contract, store: pending, log: (e) => log(`   registrasi ${JSON.stringify(e)}`),
-      chain: new NearRegistrationChain({ rpc, circleContract: contract, relayer, onHash: (hash) => stamp("relayer.register")({ hash }) }),
+      chain: registrationChain, concurrency: registrationChain.concurrency,
     });
 
     // RPC dan Neardata publik testnet membatasi laju (429; 30 blok per menit), jadi backfill indexer tidak mungkin dalam satu sesi.
@@ -199,7 +238,7 @@ describe("demo jaringan nyata", () => {
     }
     const epoch = current.epoch;
     if (resume) log(`== Melanjutkan epoch ${epoch} (pembayaran dan registrasi sudah dilakukan di putaran sebelumnya)`);
-    if (!resume) scheduler.start(2_000);
+    if (!resume) scheduler.start(Number(process.env.DEMO_SCHEDULER_MS ?? 2_000));
     if (!resume && process.env.DEMO_BARTER === "yes") {
       const solverId = env("SOLVER_ACCOUNT_ID");
       await runBarterRing({
@@ -209,8 +248,21 @@ describe("demo jaringan nyata", () => {
     }
     if (!resume) log(`== F2 pembayaran voucher (epoch ${epoch})`);
     for (const { buyer, seller } of resume ? [] : planDensity(density, payments, Number(process.env.DEMO_SEED ?? 20261102))) {
-      const response = await createAgentBuyer(identity[buyer], { rpcUrls: [rpcUrl] })(`${urls[seller]}/api/${AGENTS[seller].verb}?input=halo`);
-      if (response.status !== 200) throw new Error(`${buyer} -> ${seller}: HTTP ${response.status}`);
+      // The free testnet RPC answers 429 now and then; the facilitator then answers 503 before the resource is served (nothing is paid).
+      // Ask again a few times, and say what the refusal was when it stays.
+      let response: Response;
+      for (let attempt = 0; ; attempt += 1) {
+        response = await createAgentBuyer(identity[buyer], { rpcUrls })(`${urls[seller]}/api/${AGENTS[seller].verb}?input=halo`);
+        if (response.status !== 503 || attempt >= 6) break;
+        log(`   ${buyer} -> ${seller}: HTTP 503, ulang ${attempt + 1}/6 setelah ${4 * (attempt + 1)} detik`);
+        await sleep(4_000 * (attempt + 1));
+      }
+      await sleep(Number(process.env.DEMO_CALL_PAUSE_MS ?? 0));
+      if (response.status !== 200) {
+        const required = response.headers.get("PAYMENT-REQUIRED");
+        const reason = required ? (JSON.parse(Buffer.from(required, "base64").toString("utf8")) as { error?: string }).error : undefined;
+        throw new Error(`${buyer} -> ${seller}: HTTP ${response.status}${reason ? ` (${reason})` : ""} ${(await response.text()).slice(0, 200)}`);
+      }
     }
     if (!resume) {
       log(`   ${payments} panggilan berbayar selesai`);
@@ -227,7 +279,7 @@ describe("demo jaringan nyata", () => {
     if (!solved.stdout.trim()) log(`   solver: ${(solved.stderr || "tanpa keluaran").trim().split("\n").slice(-2).join(" | ").slice(0, 200)}`);
     const solverTx = /tx[ =:]+([A-Za-z0-9]{40,})/.exec(solved.stderr)?.[1];
     log(`   solver: ${solverTx ? `proposal dikirim, tx ${solverTx}` : solved.stdout.trim() ? "proposal dihitung tetapi tidak dikirim" : "tidak ada yang dikliring"}`);
-    if (solverTx) hashes.push({ stage: "solver.submit_clearing", hash: solverTx });
+    if (solverTx) note("solver.submit_clearing", solverTx);
     await waitFor("commit_epoch", async () => ["payment_window", "finalized"].includes(await phase(epoch)));
     const members = AGENT_NAMES.map((n) => accounts[n]);
     for (const account of members) {

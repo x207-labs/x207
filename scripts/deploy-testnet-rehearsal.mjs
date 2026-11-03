@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // UM-032: deploy kontrak gladi testnet dengan params pendek (epoch 5 menit) ke akun faucet, bukan akun deployer bersama.
-//   node scripts/deploy-testnet-rehearsal.mjs --keys-dir .keys --circle x207r-circle.testnet --usdt x207r-usdt.testnet --owner x207r-deploy.testnet
+//   node scripts/deploy-testnet-rehearsal.mjs --keys-dir .keys --circle x207r-circle.testnet --usdt x207r-usdt.testnet --owner x207r-deploy.testnet [--epoch-length 600]
 // Hanya testnet. Kunci dibaca dari <keys-dir>/testnet/<akun>.json dan tidak dicetak. Mengulang tidak men-deploy ulang akun yang sudah memuat kode.
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -10,6 +10,10 @@ import { createHash } from "node:crypto";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 const { Account, JsonRpcProvider, KeyPairSigner } = createRequire(resolve(here, "../sdk/package.json"))("near-api-js");
+const optional = (name, fallback) => {
+  const i = process.argv.indexOf(`--${name}`);
+  return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : fallback;
+};
 const arg = (name) => {
   const i = process.argv.indexOf(`--${name}`);
   if (i < 0 || !process.argv[i + 1]) throw new Error(`--${name} wajib`);
@@ -23,7 +27,7 @@ const accountOf = (id) => new Account(id, provider, KeyPairSigner.fromSecretKey(
 const hasCode = async (id) => (await provider.viewAccount({ accountId: id })).code_hash !== "11111111111111111111111111111111";
 
 const SHORT_PARAMS = {
-  epoch_length: 300, payment_window: 900, proposal_window: 60, base_limit_ratio: 8000, limit_growth: 1000,
+  epoch_length: Number(optional("epoch-length", "300")), payment_window: 900, proposal_window: 60, base_limit_ratio: 8000, limit_growth: 1000,
   limit_cap: "1000000000", limit_decay: 0, fees: { clearing_fee_bps: 0, solver_fee_bps: 0 }, admission: "open",
 };
 const contracts = resolve(here, "../contracts/target/near");
