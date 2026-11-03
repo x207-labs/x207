@@ -342,6 +342,8 @@ A resource that is paid per unit of use is an x402 endpoint. `createMeteredEndpo
 | A long job is split in chunks and the budget is committed as a bundle (`JobBudget`, SD-067) | The buyer signs the voucher of chunk k only after chunk k-1 arrived; the seller works chunk k only after its voucher arrived |
 | The buyer stops paying, or the seller disappears inside a chunk | The seller worked nothing unpaid; the buyer lost one chunk at most (the one it prepaid) |
 
+The buyer keeps its own count (`BuyerMeter`, SD-068): it signs no voucher above the price of what it received plus what it asked for, so a bill of 10 GB for 2 GB gets no voucher above 2 GB.
+
 The contract does not change: the units live in the SDK, the listing and the voucher. The contract needs two legs in a bundle (`ERR_BAD_BUNDLE`), so the budget bundle carries a one-unit counter leg from the seller to the buyer. Proxy and bandwidth (#55) are subject to local law and a device at home (#90) leaves power and security to its owner; both carry a warning, they are not refused. See `sdk/docs/metered-endpoint.md`.
 
 ### What has and has not run
