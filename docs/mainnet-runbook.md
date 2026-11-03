@@ -32,7 +32,7 @@ NEAR (the owner funds each account):
 | --- | --- | --- | --- |
 | Circle contract account | Locked storage of the code (558 KB, 5.59 NEAR) and of the state (21.7 KB after 6 members and 3 epochs, 0.22 NEAR) plus gas of its own calls | 8.0 | *measured* 5.81 NEAR locked on testnet; 8.0 leaves about 2 NEAR for state growth |
 | Signer of the DAO factory (owner) | Factory deposit 7 NEAR; stays in the DAO account (a Sputnik `Transfer` proposal could move it out; not tried) | 7.2 | `contracts/dao/lib.mjs` (`FACTORY_DEPOSIT`); *measured* on testnet: the DAO account holds 7.0 and locks 5.41 NEAR for its storage |
-| Six agents | `join` deposit 0.01 NEAR and gas | 0.2 each, 1.2 | *measured* about 0.014 NEAR spent per agent over the whole testnet demo |
+| Six agents | `join` deposit (`JOIN_STORAGE_DEPOSIT` of `@x207/core`; 0.01 NEAR in 0.0.8, ADR-41 raises it to about 0.1 NEAR in 0.0.9, **not returned** on exit, only the part above it is) and gas | 0.2 each, 1.2 | *measured* about 0.014 NEAR spent per agent over the whole testnet demo at the old deposit (0.01 of it was the deposit); with 0.1 expect about 0.115. The preflight test fails if the figure in `@x207/core` outgrows the minimum |
 | Keeper | `close_epoch`, `commit_epoch`, `finalize_epoch` | 0.5 | *measured* gas below 0.05 NEAR per epoch |
 | Solver | `submit_clearing` | 0.5 | same |
 | Facilitator relayer | `register_cumulative` for every pair, about 4 Tgas each; a gas key (NEP-611) is optional and needs its own balance | 1.5 (0.5 without a gas key) | *estimate*: one `exact` transaction cost the relayer 0.0003 NEAR on testnet (measured) and a registration is about 4 Tgas; the testnet gas key was funded with 2 NEAR |

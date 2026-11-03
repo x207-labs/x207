@@ -85,3 +85,9 @@ test("TC-UM-009-17 base58ToHex turns a NEAR code_hash into the hex of the sha256
   assert.equal(base58ToHex("5Q"), "ff");
   assert.equal(base58ToHex("12"), "0001"); // a leading 1 is a zero byte
 });
+
+test("TC-UM-009-15 the NEAR minimum of an agent covers the join deposit of @x207/core (ADR-41 raises it) plus gas and a margin", async () => {
+  const { JOIN_STORAGE_DEPOSIT } = await import("../sdk/packages/core/dist/index.js");
+  const deposit = Number(JOIN_STORAGE_DEPOSIT / 10n ** 20n) / 1e4; // NEAR, four decimals
+  assert.ok(PLAN.nearMin.agent >= deposit + 0.05, `agent minimum ${PLAN.nearMin.agent} NEAR does not cover the join deposit ${deposit} NEAR plus 0.05`);
+});
