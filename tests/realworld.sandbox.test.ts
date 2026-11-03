@@ -49,7 +49,7 @@ describe.skipIf(!sandboxAvailable)("AG-021 tiga bisnis, invoice, kliring F3 dan 
     const first = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", {});
     const epoch = first.epoch;
 
-    // Invoice -> voucher kumulatif dengan resource = invoice:<hash>; didaftarkan oleh debitur sendiri
+    // Invoice -> voucher kumulatif dengan resource = x207:invoice:<hash>; didaftarkan oleh debitur sendiri
     const invoices = sampleInvoices(business);
     const netting = netInvoices(invoices);
     const members = [supplier, maker, retailer];
@@ -58,7 +58,7 @@ describe.skipIf(!sandboxAvailable)("AG-021 tiga bisnis, invoice, kliring F3 dan 
       secretKeys: Object.fromEntries(members.map((m) => [m.account.accountId, m.secretKey])),
     });
     for (const v of latestPerPair(vouchers)) {
-      expect(v.voucher.resource).toBe(`invoice:${v.hash}`);
+      expect(v.voucher.resource).toBe(`x207:invoice:${v.hash}`);
       const payer = members.find((m) => m.account.accountId === v.voucher.payer)!;
       const r = await payer.account.call({ receiverId: fx.circle.accountId, methodName: "register_cumulative", args: { voucher: v.voucher, signature: v.signature }, deposit: 0n, gas: 100_000_000_000_000n }, "EXECUTED_OPTIMISTIC");
       expect(r.failures).toEqual([]);

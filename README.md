@@ -250,11 +250,31 @@ npm run demo:realworld    # three businesses, invoices as vouchers, F3 netting, 
 | `business`: the `gpu` agent buys `translate` (on the owner's list, price 0.02) | HTTP 200 and a signed voucher; spent this epoch 20000 |
 | `business`: it asks for `summarize` (quoted 0.02 above the 0.01 limit) and `image` (not on the list) | Refused before payment: `price_above_service_limit`, `service_not_allowed`; no voucher signed |
 | `business`: it keeps buying until the 0.06 epoch budget is spent, then asks once more | `over_epoch_budget`; the contract shows `gpu -> translator` 40000 and `gpu -> cleaner` 20000, no edge to `summarizer`: on-chain debt equals the approved purchases (3 approved, 3 refused in the run) |
-| `realworld`: three businesses owe each other 100, 60 and 80 credit; each invoice becomes a voucher with `resource = invoice:<sha256>` | Three vouchers; the invoice text stays off-chain, only its hash is signed |
+| `realworld`: three businesses owe each other 100, 60 and 80 credit; each invoice becomes a voucher with `resource = x207:invoice:<sha256>` | Three vouchers; the invoice text stays off-chain, only its hash is signed |
 | `realworld`: close the epoch, run the solver, commit | Contract obligation 240 credit equals the invoice total; cleared 180 credit (60 around the ring on three edges); residual edges `maker -> supplier` 40 and `retailer -> maker` 20 |
 | `realworld`: read the F4 positions | Debtors owe 40 credit, creditors claim 40 credit; net cash is 40 of the 240 credit of invoices |
 
 The run on 2026-11-02 asserts these numbers against the contract (`obligation`, `get_clearing_proposal`, `list_positions`, `net_position`), so the printed totals before and after netting are the contract's. No new contract is involved: invoices are ordinary cumulative vouchers and the existing clearing. The `business` limits are enforced by the agent before it signs anything; the contract enforces its own credit headroom independently. What these blocks do not show: real-world invoice disputes, tax or legal status of an invoice, and payment of the residual through 1Click.
+
+### Invoice and installment block (pipeline P8)
+
+```bash
+npx vitest run agents/test/invoice-book.test.ts             # agents against the invoice book, in process, no sandbox
+X207_SANDBOX=1 npx vitest run tests/invoice.sandbox.test.ts  # real contract, indexer, solver and keeper; several minutes
+```
+
+An invoice is a claim of an issuer on a debtor outside x207. When the debtor signs it as an ordinary voucher (`resource = x207:invoice:<sha256 of the document>`) it becomes an edge of the ledger and is cleared with everything else. An invoice can be paid in 1 to 24 installments, one per epoch; the debtor signs all of them at once, each as `seq` 1 of the pair in its own epoch (`sdk/docs/invoice.md`).
+
+| Do | See |
+| --- | --- |
+| The issuer requests an invoice of 90 credit in three installments; the debtor checks the hash and the schedule against the plan of the SDK and approves | The book shows `approved` with epochs E+1, E+2, E+3, 30 credit each |
+| The issuer registers the voucher of each installment in its own epoch | `voucher_registered` is read by the indexer; the installment is `registered`, and the invoice is `registered` after the third |
+| Two more invoices of 30 credit close the ring in the first epoch (`maker -> supplier -> retailer -> maker`) | The ring is cleared: obligation 90, cleared 90, nothing left to pay |
+| Installment 2 and 3 have no ring | No cycle: 30 credit goes through the residual path F4 in each epoch |
+| An installment fails for lack of headroom (the contract answers `ERR_INSUFFICIENT_CREDIT`) | `scheduled` with reason `headroom`; the debtor shifts it once with a voucher signed **after** the failure; failing again is `missed` |
+| The debtor registers a voucher with a higher `seq` first | `missed` with reason `blocked_by_debtor`; no catch-up |
+
+There is no spare voucher signed in advance: the issuer could register it although the real installment was paid, and the debtor would pay twice. A signature in advance is evidence, not a guarantee of payment: the contract allows gaps in `seq`, so a debtor can block an installment. Reputation, the status `blocked_by_debtor` and the bond of CT-094 for a large invoice answer that (ADR-44). The invoice page of the frontend is `/invoice`.
 
 ### Marketplace block (feature F9)
 
