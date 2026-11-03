@@ -1,4 +1,4 @@
-# Changelog of the contract interface (`x207-circle`), 0.0.1 to 0.0.11
+# Changelog of the contract interface (`x207-circle`), 0.0.1 to 0.0.13
 
 For reviewers and for users of the SDK. This file is the interface of the circle contract, version by version: methods, events, error codes, decisions, and whether a circle that already runs the previous version needs a migration. It is written from the Interface Spec of the contract (`vault/14 x207/04 Arsitektur/x207 - Spec Antarmuka Kontrak.md`, sections 1, 14 to 18), from the history of `abi.json` and from the commits of the repository `contracts`. Where the sources do not say something, this file says so; it does not fill the gap.
 
@@ -17,6 +17,22 @@ A rehearsal or a mainnet deployment uses the wasm of a release and records its `
 Dates are those of the commits (UTC+07:00). "Commit" is the commit of the repository `contracts` in which the version appears in `abi.json`.
 
 ---
+
+## 0.0.13 (not released; in progress in `contracts`, 2026-11-03, CT-099)
+
+**Why.** NEAR limits the total log of one receipt to 16,384 bytes. `commit_epoch` wrote every edge (`clearing_applied`, chunks of 50) and every position (`epoch_committed`), so it failed with `TotalLogLengthExceeded` at about 180 edges (50 character names; about 100 with 64 character names) although `submit_clearing` accepts 300 (`MAX_EDGES_PER_TX`). A proposal that the verifier accepted could therefore never be committed. Found by the gas report (CT-098, `contracts/docs/gas.md`). Principle of the fix: **every proposal that `submit_clearing` accepts can be committed.**
+
+**Changed (events; readers must change)**
+- `clearing_applied` is now `{epoch, solver, cleared_total, edge_count, edges_hash, clearing_fee, solver_fee}`. The fields `edges`, `chunk` and `chunks` are **removed**. `edges_hash` is the sha256 of the compact JSON of the edges with `cleared > 0`, sorted by (debtor, creditor) as byte strings.
+- `epoch_committed` is now `{epoch, committed_at, payment_deadline, total_due, total_claimable, position_count, positions_hash, positions}`: all positions in **one** log (at most `MAX_MEMBERS` = 64), `chunk` and `chunks` **removed**. `positions_hash` is the sha256 of the compact JSON of the positions sorted by account id. The definitions and a golden vector are in `contracts/tests/vectors/clearing_hashes.json`, written and checked by `contracts/scripts/clearing_hashes.py` and compared with the contract by `ct099_hash_vectors`.
+- Log budget: with names of 64 characters and amounts of 13 digits the two logs of `commit_epoch` are about 13 KB, under 90 percent of the 16,384 bytes (a unit test and the sandbox tests keep it so).
+
+**Added**
+- View `get_proposal(epoch, from_index, limit)`: a page of the stored proposal (`solver`, `cleared_total`, `committed`, `edge_count`, `edges`) before `commit_epoch`. After the commit the edges are gone from it and `list_obligations` gives `cleared` per pair.
+
+**Not changed:** `clearing_submitted` (already a summary), `finalize_epoch` (its log budget cuts `member_defaulted` events first, tested with 63 defaults and names of 64 characters), `commit_bundle` (64 legs with names of 64 characters stay under the budget). The limit of 300 edges per proposal stays; SV-019 shows what it costs on dense circles (`solver/docs/benchmark.md`).
+
+**Upgrade from 0.0.12:** no migration; the stored data is the same. Indexers and SDK parsers must read the new shape of the two events and read the edges through the views (the indexer verifies them with `edges_hash`).
 
 ## 0.0.12 (not released; in progress in `contracts`, 2026-11-03, ADR-43)
 
