@@ -4,7 +4,7 @@
 // Run: X207_SANDBOX=1 npx vitest run tests/security-review-contract3.sandbox.test.ts
 import { appendFileSync } from "node:fs";
 import { afterAll, describe, expect, it } from "vitest";
-import { JOIN_STORAGE_DEPOSIT, base58Encode, createCircleViewFn, onboardMember, parseEventLog, type ContractCall } from "@x207/core";
+import { JOIN_STORAGE_DEPOSIT, base58Encode, formatNear, createCircleViewFn, onboardMember, parseEventLog, type ContractCall } from "@x207/core";
 import { SHORT_PARAMS, TERMS_HASH, deployCircle, type CircleFixture } from "../sdk/test-support/circle.ts";
 import { sandboxAvailable, type SandboxAccount } from "../sdk/test-support/sandbox.ts";
 
@@ -100,7 +100,7 @@ describe.skipIf(!sandboxAvailable)("security review 3: intents, withdrawals, lim
     const afterIntents = await contractState();
     measured.joinBytes = afterJoin.storage - before.storage;
     measured.intentBytes = afterIntents.storage - afterJoin.storage;
-    note(`join of a one-unit member: ${measured.joinBytes} bytes; 64 intents of it: ${measured.intentBytes} bytes = ${(measured.intentBytes * 1e19) / 1e24} NEAR (join deposit 0.01 NEAR)`);
+    note(`join of a one-unit member: ${measured.joinBytes} bytes; 64 intents of it: ${measured.intentBytes} bytes = ${(measured.intentBytes * 1e19) / 1e24} NEAR (join deposit ${formatNear(JOIN_STORAGE_DEPOSIT)} NEAR)`);
     expect(measured.intentBytes).toBeGreaterThan(0);
 
     // squatting: another minimal member posts a hash first; the owner of the intent then posts the same hash
