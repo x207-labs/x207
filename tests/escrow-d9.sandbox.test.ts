@@ -56,7 +56,7 @@ describe.skipIf(!sandboxAvailable)("CT-075 escrow in near-sandbox against D9", (
     const now = await sandbox.blockTimestampMs();
     const offer = await alice.account.call({
       receiverId: contract, methodName: "offer_grant", deposit: 0n,
-      args: { input: { asset_type: "nft:ticket", delivery_method: "escrow_nft", limits: { scope: "{}", quota: null, expires_at: (BigInt(now + 3_600_000) * 1_000_000n).toString() }, unit: "once", unit_price: PRICE, operator: null, proof_hash: null, proof_kind: null } },
+      args: { input: { asset_type: "nft:ticket", delivery_method: "escrow_nft", limits: { scope: JSON.stringify({ nft_contract: nft.accountId, token_id: "t1" }), quota: null, expires_at: (BigInt(now + 3_600_000) * 1_000_000n).toString() }, unit: "once", unit_price: PRICE, operator: null, proof_hash: null, proof_kind: null } },
     });
     expect(offer.failures).toEqual([]);
     const grantId = Number(offer.value);

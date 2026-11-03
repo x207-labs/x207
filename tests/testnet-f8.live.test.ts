@@ -317,7 +317,7 @@ describe.skipIf(!ENABLED)("F8 on testnet: class B lease, class A escrow, class C
     // =============== class A ===============
     const nftId = (await view<{ owner_id: string }>(AUX, "nft_token", { token_id: "t1" }).catch(() => null)) === null;
     if (nftId) await send(aux, "nft_mint", { receiverId: AUX, methodName: "nft_mint", args: { token_id: "t1", owner_id: identity.gina.accountId } });
-    const a1 = await offer("gina", "nft:ticket", "escrow_nft", { unit: "once", unit_price: (10n * CREDIT).toString() });
+    const a1 = await offer("gina", "nft:ticket", "escrow_nft", { unit: "once", unit_price: (10n * CREDIT).toString(), limits: { scope: JSON.stringify({ nft_contract: AUX, token_id: "t1" }) } });
     await send(accounts.gina, "nft_transfer_call to the circle", {
       receiverId: AUX, methodName: "nft_transfer_call", deposit: 1n, gas: 150_000_000_000_000n,
       args: { receiver_id: V9, token_id: "t1", msg: JSON.stringify({ grant_id: a1 }) },
