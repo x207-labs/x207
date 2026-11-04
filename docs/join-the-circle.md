@@ -1,6 +1,8 @@
 # Join the circle
 
-For the owner of an agent. About 15 minutes, on NEAR testnet, with a test token that has no value. You make two agent accounts, join the circle `x207-v013.testnet`, sell one x402 service that has an x207 entry, pay it from the second agent, and see the position on the dashboard. Every step is "do X, see Y", and every command below was run against the circle on 2026-11-04 with accounts made for this guide; the times are the ones measured.
+For the owner of an agent. About 20 minutes of work plus about 30 minutes of waiting for the epoch clock (step 6), on NEAR testnet, with a test token that has no value. You make two agent accounts, join the circle `x207-v013.testnet`, sell one x402 service that has an x207 entry, pay it from the second agent, see the position on the dashboard, and pay the residual of the buyer when the epoch is cleared, so that the buyer stays `active`. Every step is "do X, see Y", and every command below was run against the circle on 2026-11-04 with accounts made for this guide; the times are the ones measured.
+
+> **Do not stop before step 6.** A buyer that owes a residual and does not pay it inside the payment window **defaults**: at `finalize_epoch` its stake is cut by the amount due and the member is `suspended` (limit 0, new vouchers refused). That is what happened to the readers of an earlier version of this guide, which ended at the dashboard.
 
 > **The circle is shared testnet.** Other people's accounts, the team's own demo runs and every reader of this guide use the same circle and the same epochs. Your accounts and your obligation appear next to theirs on the dashboard and stay there; nobody cleans them up. Any member may close an epoch that has passed its cutoff (step 3), which changes the epoch for everybody, so do it only when the epoch is stalled. The stake is a test token with no value.
 
@@ -20,6 +22,8 @@ npm ci && npm run build --workspaces --if-present
 | Do | See |
 | --- | --- |
 | `node scripts/create-faucet-accounts.mjs --keys-dir .keys my-seller.testnet my-buyer.testnet` (use your own names; the faucet makes the accounts) | `created my-seller.testnet balance 10 NEAR`, the same for the buyer; the keys are in `.keys/testnet/<account>.json` (mode 0600) |
+
+The faucet has a per-client limit. If it answers `Rate limit exceeded, retry in 8 hours`, make the accounts as sub-accounts of an account you own that has a few NEAR and whose key is in `.keys/testnet/` (for example `my-seller.my-parent.testnet`): the same script creates them from the parent with 2 NEAR each. The run of 2026-11-04 behind this guide did that ([um130-guide-run.json](testnet-epochs/um130-guide-run.json)).
 | `node scripts/guide-testnet.mjs mint my-seller.testnet --keys-dir .keys` and the same for `my-buyer.testnet` | `minted 200 mock USDT to my-seller.testnet in 2359 ms` (about 2 seconds) (the stake is paid in this mock token; anybody can mint it on testnet) |
 | `node scripts/guide-testnet.mjs voucher-key`, once for each agent | A `secret ed25519:…` and a `public ed25519:…` line. The secret is the voucher key of the agent: it signs the payments and listings, and it is not a NEAR key. Keep it out of git |
 
@@ -92,7 +96,7 @@ FACILITATOR_URL=http://localhost:4021 CIRCLE_ID=agents-main PAY_TO=my-seller.tes
 | `curl -s localhost:4021/supported` | `batch-settlement` on `x207:agents-main`, `circleContract` `x207-v013.testnet`, the current `epoch`, and your relayer in `signers` |
 | `curl -si localhost:3000/api/summarize` | `HTTP/1.1 402 Payment Required`; the body `accepts` has `scheme` `batch-settlement`, `network` `x207:agents-main`, `amount` `20000` (0.02 credit) and `payTo` your seller account. This is the x207 entry |
 
-**If the answer later says `epoch_closing`:** no keeper runs on this circle all the time (the team moves its epochs by hand, last on 2026-11-04 with `scripts/keeper.mjs --once`), so an epoch that has passed its cutoff stays open until somebody closes it, and no voucher is accepted for it. Any member may close it: `node scripts/guide-testnet.mjs close-epoch my-buyer.testnet --keys-dir .keys` prints, for example, `closed epoch 9; epoch 10 is open (4348 ms)` and, on the next lines, `transaction <hash>` and its `https://testnet.nearblocks.io/txns/<hash>` link (example output: your epoch numbers and times will differ). The seller advertises the new epoch after about 45 seconds: retry `curl -s localhost:4021/supported` until it shows the new epoch, because before that a payment is refused with `epoch_mismatch`. When the epoch is still open the command says `nothing to close`. To move the circle further (commit and finalize what is due, any account with about 0.5 NEAR can do it): `KEEPER_SECRET_KEY=<secret key of that account> node scripts/keeper.mjs --rpc-url https://rpc.testnet.fastnear.com --contract x207-v013.testnet --account <that account> --once --lookback 7`; the hashes of the catch-up of 2026-11-04 are in [testnet-epochs/um118-catch-up.json](testnet-epochs/um118-catch-up.json).
+**If the answer later says `epoch_closing`:** no keeper runs on this circle all the time (the team moves its epochs by hand, last on 2026-11-04 with `scripts/keeper.mjs --once`), so an epoch that has passed its cutoff stays open until somebody closes it, and no voucher is accepted for it. Any member may close it: `node scripts/guide-testnet.mjs close-epoch my-buyer.testnet --keys-dir .keys` prints, for example, `closed epoch 9; epoch 10 is open (4348 ms)` and, on the next lines, `transaction <hash>` and its `https://testnet.nearblocks.io/txns/<hash>` link (example output: your epoch numbers and times will differ). The seller advertises the new epoch after about 45 seconds: retry `curl -s localhost:4021/supported` until it shows the new epoch, because before that a payment is refused with `epoch_mismatch`. When the epoch is still open the command says `nothing to close`. To move the circle further (commit and finalize what is due) see step 6; the hashes of the catch-up of 2026-11-04 are in [testnet-epochs/um118-catch-up.json](testnet-epochs/um118-catch-up.json).
 
 ## 4. Pay the service from the second agent
 
@@ -129,7 +133,52 @@ curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' \
 | Open <https://x207-dashboard.vercel.app/charts?epoch=10> (use your epoch) | After the read API has caught up (within a few minutes of the payment): `1 obligations worth 0.02 credit`, with your buyer as debtor and your seller as creditor. Before that the page says that the epoch is not in the read model yet |
 | Open [Risk](https://x207-dashboard.vercel.app/risk?epoch=10) | Your two accounts as members with stake 50 and limit 40 credit |
 
-What the guide does not do: the epoch is cleared by a solver and finalized by a keeper, and the debtor pays its residual then. Nobody runs those for this circle, so your obligation stays in the open epoch; the [sandbox demo](sandbox-demo.md) and the [testnet page](testnet.md) show a full epoch with clearing, residuals and claims. The hosted read API and the dashboard are there for the judging period; if the read API is down, the contract steps still work (`curl` the RPC as in step 4) and only the dashboard and the `/members` check wait for it, and for a circle of your own on your machine use `npm run demo:quick` and `npm run demo:mcp` ([README](../README.md#run-it-locally-5-minutes)).
+The position you see here is still an obligation of an open epoch; nothing has moved. Step 6 takes it through clearing and the payment of the residual. The [sandbox demo](sandbox-demo.md) and the [testnet page](testnet.md) show bigger epochs with several parties, a solver and claims. The hosted read API and the dashboard are there for the judging period; if the read API is down, the contract steps still work (`curl` the RPC as in step 4) and only the dashboard and the `/members` check wait for it, and for a circle of your own on your machine use `npm run demo:quick` and `npm run demo:mcp` ([README](../README.md#run-it-locally-5-minutes)).
+
+## 6. Pay the residual before the payment window ends
+
+When the epoch ends, the circle clears it (here a single obligation, so nothing cancels) and every net debtor owes its **residual** in USDT. The buyer owes the 0.02 credit of step 4. The epoch goes through four phases, and nobody runs them for this circle all the time, so you move them with the keeper script, one pass at a time (each pass does what is due and exits). Any account with about 0.5 NEAR can run it; the buyer account is fine:
+
+```bash
+KEEPER_SECRET_KEY=<secret_key of my-buyer.testnet> node scripts/keeper.mjs --rpc-url https://rpc.testnet.fastnear.com --contract x207-v013.testnet --account my-buyer.testnet --once --lookback 2
+```
+
+| Phase of your epoch (`get_epoch`) | What moves it | Wait |
+| --- | --- | --- |
+| `open` | nothing; vouchers are accepted until the cutoff | `epoch_length`, 600 s after the epoch opened (`cutoff_at`) |
+| `cutoff` | keeper pass: `close_epoch` | then the `proposal_window`, 60 s, for a solver |
+| `clearing` | keeper pass: `commit_epoch` | none |
+| `payment_window` | **you pay the residual** (below) | at most `payment_window`, 900 s (`payment_deadline`) |
+| after `payment_deadline` | keeper pass: `finalize_epoch` | |
+
+Look at the epoch and its deadlines (replace `21` by your epoch; times are nanoseconds since 1970):
+
+```bash
+ARGS=$(printf '{"epoch":21}' | base64)
+curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"x207-v013.testnet","method_name":"get_epoch","args_base64":"'"$ARGS"'"}}' \
+  | python3 -c 'import sys,json;d=json.loads(bytes(json.load(sys.stdin)["result"]["result"]).decode());print(d["epoch"],d["phase"],d["cutoff_at"],d["payment_deadline"])'
+```
+
+Run the keeper pass after the `cutoff_at` (it prints `close_epoch`), again after about 60 seconds (it prints `commit_epoch`; the phase is now `payment_window`), and pay as soon as it is. Pay with the buyer's `x207_settle`, which needs the NEAR key, `X207_ALLOW_OUTFLOWS` and `X207_ALLOW_FULL_ACCESS_KEY` like step 2 (the tool pays at most what is due, and refuses with "the agent owes nothing" while the phase is not `payment_window`):
+
+```bash
+npx @modelcontextprotocol/inspector --cli \
+  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207-backend-production.up.railway.app \
+  -e X207_MCP_WRITE=1 -e X207_AGENT_ACCOUNT=my-buyer.testnet -e X207_AGENT_VOUCHER_KEY=ed25519:… -e X207_AGENT_NEAR_KEY=ed25519:… \
+  -e X207_ALLOW_OUTFLOWS=1 -e X207_ALLOW_FULL_ACCESS_KEY=1 -e X207_MAX_SPEND_SESSION=60000000 \
+  node sdk/packages/mcp/dist/cli.js --method tools/call --tool-name x207_settle --tool-arg epoch=21
+```
+
+| Do | See |
+| --- | --- |
+| Keeper pass after the cutoff, then after 60 more seconds | `{"method":"close_epoch","epoch":21,…}` and later `{"method":"commit_epoch","epoch":21,…}` with a transaction hash each |
+| Call `x207_settle` for the buyer with your epoch | In about 3 seconds: `"paid": "20000"`, `"due": "20000"` |
+| `net_position` of the buyer (same `curl` as above with `"method_name":"net_position"` and `{"epoch":21,"account_id":"my-buyer.testnet"}`) | `"role":"debtor"`, `"status":"paid"`; the seller shows `"role":"creditor"`, `"status":"claimable"` |
+| Keeper pass after the `payment_deadline` | `{"method":"finalize_epoch","epoch":21,…}`; `get_epoch` says `finalized` |
+| `member` of the buyer (`"method_name":"member"`, `{"account_id":"my-buyer.testnet"}`) | `"status":"active"`, not `suspended`; `settled_history` is now `20000` and `limit` a little above the 40 credit of the join (`40002000` in the run of 2026-11-04) |
+
+If you skip the payment the last row reads `"status":"suspended"` and the stake is smaller by the amount due. The seller can take its credit with `x207_claim` once the epoch is committed.
 
 ## Stop
 

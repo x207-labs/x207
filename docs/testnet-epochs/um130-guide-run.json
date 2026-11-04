@@ -1,0 +1,36 @@
+{
+  "task": "UM-130: one reader follows docs/join-the-circle.md as written on x207-v013.testnet, pays the residual (step 6) and stays active",
+  "date": "2026-11-04, 15:23 to 15:48 UTC",
+  "circle": "x207-v013.testnet",
+  "epoch": 21,
+  "accounts": {
+    "seller": "um130s.x207-dep-r1.testnet",
+    "buyer": "um130b.x207b-buyer.testnet"
+  },
+  "deviation": "The faucet answered 'Rate limit exceeded, retry in 8 hours' (per-client limit), so the two accounts were made as sub-accounts of existing testnet accounts of the team (scripts/create-faucet-accounts.mjs does this for names with a parent). Everything after step 1 is the text of the guide. Nothing here touches mainnet.",
+  "steps": [
+    { "step": "1 mint 200 mock USDT, seller", "hash": "8wq62ggEbCLiujwkyqsXBRSr2PMbm5jPvmusQ29QP5mD" },
+    { "step": "1 mint 200 mock USDT, buyer", "hash": "6FmuzWvC9uzEPqV7ky7zuadfnsH9hdfs6u1yRSAfkwsB" },
+    { "step": "2 x207_join seller (join)", "hash": "J1ie46PR6ExeNKXE7984jXrPP3UHkcYyse741DWoALzG" },
+    { "step": "2 x207_join seller (stake transfer)", "hash": "5ZpVhkYkxrTcpz9mc2ViGA4gsZJwVM85NJgZhQ5rkRAZ" },
+    { "step": "2 x207_join buyer (join)", "hash": "H1Sb8xX2Jpt8St85VcXdSLaYcuUSPhef5amvYjeNCkJ3" },
+    { "step": "2 x207_join buyer (stake transfer)", "hash": "DUqnKUek9d1zLgcZ1Psrt2Q7jA8Mvt9BJRf6MYzajzAA" },
+    { "step": "3 close-epoch 20 (guide-testnet.mjs, by the buyer)", "hash": "4v72rs8qtzMKGBw1239dcETV4HJJtWn8YWN6zbnhg9Es" },
+    { "step": "4 x207_pay_request: voucher registered by the facilitator, epoch 21 seq 1, 20000", "hash": "4UYKhNYiJzvi5eCbLHCYw1o4V6pP4ukZtkezPPdzUE9P" },
+    { "step": "6 keeper pass 15:31: commit_epoch 20", "hash": "HcS4J1pbeoKoeWb2zRskYmeuK9Eyx3MPL3DjaDScTPYm" },
+    { "step": "6 keeper pass 15:31: close_epoch 21", "hash": "A6dXextVWTNpwm1w8W9s89jXsmLSKSrr5rWqEx3XkpDv" },
+    { "step": "6 keeper pass 15:32: commit_epoch 21", "hash": "87hCS3XXn3VwaRVcP8thMAXRuVYmzrLMCCJYV6kJ3UDH" },
+    { "step": "6 x207_settle epoch 21 by the buyer: paid 20000 of 20000 due, 15:33:00", "hash": "G7YLTfndVXX2nFS8Af6PZYSQemZSRU89FVJGDCZrUzxp" },
+    { "step": "6 keeper pass 15:48 (after payment_deadline 15:47:49): finalize_epoch 20", "hash": "VcYEKbdjzL196EKzvLBEdqtN3ZravRNMKrTL4i8pRcK" },
+    { "step": "6 keeper pass 15:48: finalize_epoch 21", "hash": "2yM9u7cCQgyY5auYyEpamT8bwAFRRshz1UVQpKc1hDXD" },
+    { "step": "6 keeper pass 15:48: close_epoch 22", "hash": "HTiyeshDSVVYs86SzYyL6cJqaTp3mrWbE3jqW1wMkZz8" }
+  ],
+  "result": {
+    "get_epoch_21": "phase finalized; payment_deadline 15:47:49 UTC; total_obligation 20000, total_cleared 0",
+    "net_position_buyer_21": "role debtor, status paid, amount 20000",
+    "net_position_seller_21": "role creditor, status claimable, amount 20000",
+    "member_buyer": "status active, stake 50000000, limit 40002000, settled_history 20000",
+    "member_seller": "status active, stake 50000000, limit 40000000"
+  },
+  "note": "keeper passes were made with the key of x207-v013-aux.testnet (from .secrets, never printed); the guide text says any account with about 0.5 NEAR can run them."
+}
