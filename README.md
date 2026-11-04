@@ -522,7 +522,16 @@ The keys are in no answer, no header, no log line of the broker and nothing the 
 | A listing whose terms do not state the rights | The buyer's check fails and the studio does not buy; nothing is paid |
 | A listing with a license kind that is not on the list (`stock-standard`) | `license_id_rejected` when it is posted |
 
-The backend checks the kind of license, not the text: the statement of rights is the buyer's check, and x207 cannot prove who holds the copyright (see the rights block below).
+The backend checks the kind of license, not the text: the statement of rights is the buyer's check, and x207 cannot prove who holds the copyright. What protects a buyer is the takedown:
+
+| Do | See |
+| --- | --- |
+| `musician` sells a track (`creative:licensed-asset`, `commercial`, 15 credit); the studio checks the terms, buys, opens, confirms | The pair holds 15 credit |
+| `reseller` lists footage and claims the rights; the studio pays, the voucher is held by the backend | `paid_held`, no voucher in the answer |
+| The studio, as the buyer, files a takedown | `takedown_invalid`: a buyer uses the dispute of its purchase |
+| `holder`, the member who owns the footage, files a takedown with a claim and the hash of its evidence | The listing is hidden, the unconfirmed purchase is `cancelled`, the voucher never reaches the seller, the pair stays at 0, and nobody can buy the listing |
+
+A confirmed sale stays (ADR-20): a takedown after the key was released and confirmed does not take the money back.
 
 ### Platform transfer block (ADR-49)
 
