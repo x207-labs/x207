@@ -37,7 +37,7 @@ export const CATALOG = [
   { no: 16, assetType: "dao:vote-delegation", cls: "B", name: "DAO voting delegation", delivery: ["dao_delegation"], proofs: ["zktls"], status: "roadmap" },
   { no: 17, assetType: "saas:team-seat", cls: "B", name: "Team seat of a SaaS", delivery: ["seat_invite"], proofs: ["zktls"], status: "roadmap; team plan terms" },
   { no: 18, assetType: "git:repo-collaborator", cls: "B", name: "Repository collaborator", delivery: ["repo_collaborator"], proofs: ["zktls"], status: "roadmap" },
-  { no: 19, assetType: "oauth:scoped-token", cls: "B", name: "OAuth token with a narrow scope", delivery: ["oauth_token"], proofs: ["zktls"], status: "roadmap; provider terms" },
+  { no: 19, assetType: "oauth:scoped-token", cls: "B", name: "OAuth token with a narrow scope", delivery: ["oauth_token"], proofs: ["zktls"], status: "built with a mock OAuth provider (BE-083, adapter oauth-scoped); provider terms" },
   { no: 20, assetType: "cloud:temporary-role", cls: "B", name: "Temporary cloud role", delivery: ["cloud_role"], proofs: ["zktls"], status: "roadmap" },
   { no: 21, assetType: "storage:signed-url", cls: "B", name: "Signed download URL", delivery: ["signed_url"], proofs: ["zktls"], status: "roadmap" },
   { no: 22, assetType: "ssh:restricted-key", cls: "B", name: "Restricted SSH key", delivery: ["ssh_key"], proofs: ["zktls"], status: "roadmap" },
