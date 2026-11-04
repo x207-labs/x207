@@ -1,0 +1,34 @@
+{
+  "token": "usdt.x207-deployer.testnet",
+  "note": "UM-125: one NEP-141 ft_transfer of 1 unit (1,000,000 = 1.0 with 6 decimals) between member accounts; mint hash is the setup",
+  "mint": "cVed7UUEJZ7AkRxoioby32R2VXJF1HaCvWdQXSkdoHc",
+  "transfers": [
+    {
+      "hash": "HuUGfekh9pmDEeBRfG54MQmQcvYdjLaQP6Bo78NHGLP2",
+      "from": "m10.x207-v013-aux.testnet",
+      "to": "m11.x207-v013-aux.testnet",
+      "amount": "1000000",
+      "gasBurnt": "2287309926851",
+      "tokensBurnt": "206412736435100000000",
+      "receipts": 3
+    },
+    {
+      "hash": "4ZonFf4VQWfJYcYCqKYgbvxi52zRynA7A5pzd8fApGX7",
+      "from": "m10.x207-v013-aux.testnet",
+      "to": "m12.x207-v013-aux.testnet",
+      "amount": "1000000",
+      "gasBurnt": "2287309926851",
+      "tokensBurnt": "206412736435100000000",
+      "receipts": 3
+    },
+    {
+      "hash": "F7KDpxgtBcHn4c45RmXZCWb7YdnNagFvYoLtD9Udrsd",
+      "from": "m10.x207-v013-aux.testnet",
+      "to": "m13.x207-v013-aux.testnet",
+      "amount": "1000000",
+      "gasBurnt": "2287309926851",
+      "tokensBurnt": "206412736435100000000",
+      "receipts": 3
+    }
+  ]
+}

@@ -1,0 +1,326 @@
+[
+ {
+  "step": "register m12->m09 0.9",
+  "method": "register_cumulative",
+  "hash": "K9p8yWPWqPWLsPPQducd3WoPLgNUvjN9E1NUXCsNykG",
+  "account": "m12.x207-v013-aux.testnet",
+  "gas": 5052709077610,
+  "tokens": 482952651511000000000,
+  "failed": false
+ },
+ {
+  "step": "register m10->m11 1.1",
+  "method": "register_cumulative",
+  "hash": "6YjDKYMnTddh769rajcnXgm2xJsr94j9UcJauJP78xco",
+  "account": "m10.x207-v013-aux.testnet",
+  "gas": 4843944862556,
+  "tokens": 462076230005600000000,
+  "failed": false
+ },
+ {
+  "step": "register m01->m02 2.5",
+  "method": "register_cumulative",
+  "hash": "Aq3RmaBhVihaiZ64P2iT1d3iDXWU1qPVkJqfBZoApAMa",
+  "account": "m01.x207-v013-aux.testnet",
+  "gas": 4842825006041,
+  "tokens": 461964244354100000000,
+  "failed": false
+ },
+ {
+  "step": "register m07->m08 4.25",
+  "method": "register_cumulative",
+  "hash": "Be6yh3Zqj4piqkmHxrsVxg2RGkWvMNzbxCtjFcr1WQRX",
+  "account": "m07.x207-v013-aux.testnet",
+  "gas": 4631363153118,
+  "tokens": 440818059061800000000,
+  "failed": false
+ },
+ {
+  "step": "register m02->m00 3",
+  "method": "register_cumulative",
+  "hash": "Q3zi36TWTDpPEKmRtw7ADC6AckFVYwutyHemygGwtcy",
+  "account": "m02.x207-v013-aux.testnet",
+  "gas": 5054452404118,
+  "tokens": 483126984161800000000,
+  "failed": false
+ },
+ {
+  "step": "register m04->m03 0.75",
+  "method": "register_cumulative",
+  "hash": "CQ3DQpBhZ5jPJMUK8rLFVExFQC9w2ZkWYQcmGgAdaDfb",
+  "account": "m04.x207-v013-aux.testnet",
+  "gas": 5149857947263,
+  "tokens": 492667538476300000000,
+  "failed": false
+ },
+ {
+  "step": "register m09->m10 2.4",
+  "method": "register_cumulative",
+  "hash": "52KgTiNyRsV1uRUwPkgC8D8qHtfp3pVGMsjsud6iUKr",
+  "account": "m09.x207-v013-aux.testnet",
+  "gas": 4843527725264,
+  "tokens": 462034516276400000000,
+  "failed": false
+ },
+ {
+  "step": "register m08->m05 1.8",
+  "method": "register_cumulative",
+  "hash": "97qhgYZV1pkF7YHBdcGjcHc57cPvAxxmSisBtsCgdo8V",
+  "account": "m08.x207-v013-aux.testnet",
+  "gas": 4843549939676,
+  "tokens": 462036737717600000000,
+  "failed": false
+ },
+ {
+  "step": "register m14->m13 0.45",
+  "method": "register_cumulative",
+  "hash": "HDveN3QVbswVArJqaL1asPNnn5WcUayqVY9s8eXSfRr7",
+  "account": "m14.x207-v013-aux.testnet",
+  "gas": 5051797378363,
+  "tokens": 482861481586300000000,
+  "failed": false
+ },
+ {
+  "step": "register m05->m06 5",
+  "method": "register_cumulative",
+  "hash": "3RZLUDcja4Ata7krh2xEWEfeBTDLz5dd2UcKGDMmSKsJ",
+  "account": "m05.x207-v013-aux.testnet",
+  "gas": 5054588158858,
+  "tokens": 483140559635800000000,
+  "failed": false
+ },
+ {
+  "step": "register m06->m07 3.5",
+  "method": "register_cumulative",
+  "hash": "EAtyGFKxiKWMs6hbBqja4nGy2ATQwNTcwPyRcLLbv5XW",
+  "account": "m06.x207-v013-aux.testnet",
+  "gas": 4843821449156,
+  "tokens": 462063888665600000000,
+  "failed": false
+ },
+ {
+  "step": "register m00->m01 4",
+  "method": "register_cumulative",
+  "hash": "5tGkGRgyEfEdu3TTScgYnnruTNqVTrCnFU2GB5oVFS39",
+  "account": "m00.x207-v013-aux.testnet",
+  "gas": 4631692255518,
+  "tokens": 440850969301800000000,
+  "failed": false
+ },
+ {
+  "step": "register m03->m04 1.2",
+  "method": "register_cumulative",
+  "hash": "Cnpj9iGzBAYcTPFwfMHmFkKbboBU2ZWkRjj46uNLeNBf",
+  "account": "m03.x207-v013-aux.testnet",
+  "gas": 4631692255518,
+  "tokens": 440850969301800000000,
+  "failed": false
+ },
+ {
+  "step": "register m11->m03 0.55",
+  "method": "register_cumulative",
+  "hash": "BT2a39zGxtwCbjXZFPin4Ma9oD7HdyT3NHAN2yAWA2WE",
+  "account": "m11.x207-v013-aux.testnet",
+  "gas": 4879737676287,
+  "tokens": 465655511378700000000,
+  "failed": false
+ },
+ {
+  "step": "register m13->m12 1.7",
+  "method": "register_cumulative",
+  "hash": "8UyUmAU537PKF8Q2t8PSTve2eAAdB6FSymhdyanjiFVN",
+  "account": "m13.x207-v013-aux.testnet",
+  "gas": 4980566811270,
+  "tokens": 475738424877000000000,
+  "failed": false
+ },
+ {
+  "step": "register m01->m05 0.95",
+  "method": "register_cumulative",
+  "hash": "EbsPf5UWFydWK3VxgyDKfn7vt8uwFbDcgA1sueiiagwC",
+  "account": "m01.x207-v013-aux.testnet",
+  "gas": 4879843858914,
+  "tokens": 465666129641400000000,
+  "failed": false
+ },
+ {
+  "step": "register m14->m00 0.35",
+  "method": "register_cumulative",
+  "hash": "8LHNfrqfDV3ifxLjWyfLa1PxcLSEmQYq29jSGdH6mLvV",
+  "account": "m14.x207-v013-aux.testnet",
+  "gas": 4761997226862,
+  "tokens": 453881466436200000000,
+  "failed": false
+ },
+ {
+  "step": "register m04->m12 0.65",
+  "method": "register_cumulative",
+  "hash": "2A6qhdKkCoj6CwGNJePibRGGqydoyh2pC9YwbMMyvpGS",
+  "account": "m04.x207-v013-aux.testnet",
+  "gas": 4980548908722,
+  "tokens": 475736634622200000000,
+  "failed": false
+ },
+ {
+  "step": "register m10->m04 0.4",
+  "method": "register_cumulative",
+  "hash": "FxHqJL9GHFy8pokHve6tdJ92cqYnsujQiBAGZTYhMojG",
+  "account": "m10.x207-v013-aux.testnet",
+  "gas": 4643505562713,
+  "tokens": 442032300021300000000,
+  "failed": false
+ },
+ {
+  "step": "register m02->m10 1.3",
+  "method": "register_cumulative",
+  "hash": "BjP4SVDuaAp4gAzhTkL2e7cBfJPU9UUGSbqY1rZrHZTQ",
+  "account": "m02.x207-v013-aux.testnet",
+  "gas": 4882260238326,
+  "tokens": 465907767582600000000,
+  "failed": false
+ },
+ {
+  "step": "register m08->m09 1.15",
+  "method": "register_cumulative",
+  "hash": "7eZruE7LQCQyzYo1b9MCQK3YnG3RDLKkQLaDvEryuGin",
+  "account": "m08.x207-v013-aux.testnet",
+  "gas": 4762845309243,
+  "tokens": 453966274674300000000,
+  "failed": false
+ },
+ {
+  "step": "register m09->m11 0.6",
+  "method": "register_cumulative",
+  "hash": "dqKwAo6cBnP72F6wP9bzeYYPFCRUXPhoKxzAVeT8PVH",
+  "account": "m09.x207-v013-aux.testnet",
+  "gas": 4880616512397,
+  "tokens": 465743394989700000000,
+  "failed": false
+ },
+ {
+  "step": "register m07->m14 0.8",
+  "method": "register_cumulative",
+  "hash": "Eq9sRJjj6LFSVe25cpefAUoNRsWF5YjHCBvEvizvBLfG",
+  "account": "m07.x207-v013-aux.testnet",
+  "gas": 4880451961197,
+  "tokens": 465726939869700000000,
+  "failed": false
+ },
+ {
+  "step": "register m06->m13 2.05",
+  "method": "register_cumulative",
+  "hash": "BVnLy3Nj2q5av7B1q87ZptchECxNfTENYMg33DTZnFLk",
+  "account": "m06.x207-v013-aux.testnet",
+  "gas": 4881666945651,
+  "tokens": 465848438315100000000,
+  "failed": false
+ },
+ {
+  "step": "close_epoch",
+  "method": "close_epoch",
+  "hash": "BuxEKN4CHXPY5KMKeCbyBRfLwrCzzuSF8oXm652Ae5KG",
+  "account": "x207-v013-aux.testnet",
+  "gas": 3033424457465,
+  "tokens": 281024189496500000000,
+  "failed": false
+ },
+ {
+  "step": "submit_clearing",
+  "method": "submit_clearing",
+  "hash": "7fuRk4xJCMGYmng1YTAvzRySiNVSeGrLvGQhanq3bW8P",
+  "account": "x207-v013-aux.testnet",
+  "gas": 5157414415018,
+  "tokens": 493423185251800000000,
+  "failed": false
+ },
+ {
+  "step": "commit_epoch",
+  "method": "commit_epoch",
+  "hash": "uuomfX8JzUiqpF9C6kodCmpndkYnyK8UH1f5caU14sp",
+  "account": "x207-v013-aux.testnet",
+  "gas": 23539957833928,
+  "tokens": 2331677527142800000000,
+  "failed": false
+ },
+ {
+  "step": "settle m07.x207-v013-aux.testnet 1550000",
+  "method": "ft_transfer_call",
+  "hash": "9v2jQEhkVH8NBZoXrkqZsMRA15fvpc3TZBwZZH37xcQ3",
+  "account": "m07.x207-v013-aux.testnet",
+  "gas": 7892988579542,
+  "tokens": 722344089204200000000,
+  "failed": false
+ },
+ {
+  "step": "settle m05.x207-v013-aux.testnet 2250000",
+  "method": "ft_transfer_call",
+  "hash": "8B6MqJFJfrr6nnWQwMRAUgEhotCAnNaZLeZZtVkx4uZW",
+  "account": "m05.x207-v013-aux.testnet",
+  "gas": 7658148579542,
+  "tokens": 698860089204200000000,
+  "failed": false
+ },
+ {
+  "step": "settle m02.x207-v013-aux.testnet 1800000",
+  "method": "ft_transfer_call",
+  "hash": "F2xVw1KZPoV3SayoWh9oQ6gppSHPWhsYUtsjq5yfrseL",
+  "account": "m02.x207-v013-aux.testnet",
+  "gas": 7658148579542,
+  "tokens": 698860089204200000000,
+  "failed": false
+ },
+ {
+  "step": "settle m09.x207-v013-aux.testnet 950000",
+  "method": "ft_transfer_call",
+  "hash": "8kX8bbuegcJmMnH2Ukw53VhGnLjuB8FZ3T5YzJ2y8TCw",
+  "account": "m09.x207-v013-aux.testnet",
+  "gas": 7656935796981,
+  "tokens": 698738810948100000000,
+  "failed": false
+ },
+ {
+  "step": "settle m00.x207-v013-aux.testnet 650000",
+  "method": "ft_transfer_call",
+  "hash": "EAc1vQ8KDwsLYeAejBtw5GAApVGJQAiNueU4ERp6inkP",
+  "account": "m00.x207-v013-aux.testnet",
+  "gas": 7656935796981,
+  "tokens": 698738810948100000000,
+  "failed": false
+ },
+ {
+  "step": "finalize_epoch",
+  "method": "finalize_epoch",
+  "hash": "BLsJyPoQykcQr2X5VaqxMH2dY2bon1B1U4d71FNc4bRi",
+  "account": "x207-v013-aux.testnet",
+  "gas": 15357380155994,
+  "tokens": 1513419759349400000000,
+  "failed": false
+ },
+ {
+  "step": "claim m10.x207-v013-aux.testnet 2200000",
+  "method": "claim",
+  "hash": "7PRVh3mfGZoMc8eP3vhkbfNEfg5SvTQutzNX6Qqj1g3G",
+  "account": "m10.x207-v013-aux.testnet",
+  "gas": 8017495990377,
+  "tokens": 734794830287700000000,
+  "failed": false
+ },
+ {
+  "step": "claim m12.x207-v013-aux.testnet 1450000",
+  "method": "claim",
+  "hash": "44u6YtdmUG9wYysB57WRS2hWRJ9tEuQwbnQScX2HyYze",
+  "account": "m12.x207-v013-aux.testnet",
+  "gas": 8017495990377,
+  "tokens": 734794830287700000000,
+  "failed": false
+ },
+ {
+  "step": "claim m08.x207-v013-aux.testnet 1300000",
+  "method": "claim",
+  "hash": "Aa7ybftppPeoRwtxojxK96mV4jPV9DaTUTLU8kJd3cPH",
+  "account": "m08.x207-v013-aux.testnet",
+  "gas": 8017495990377,
+  "tokens": 734794830287700000000,
+  "failed": false
+ }
+]
