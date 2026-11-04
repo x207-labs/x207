@@ -9,7 +9,7 @@
 
 x402 lets agents pay. x207 lets many agents settle at once.
 
-For judges: criteria and tracks are mapped in Appendix A; the runs are in section 4, and what has not run on a real network is listed in section 4 under "What has and has not run".
+For judges: [CLAIMS.md](CLAIMS.md) maps every claim to its test and testnet transaction (`npm run check:claims` checks that they exist); criteria and tracks are mapped in Appendix A; the runs are in section 4, and what has not run on a real network is listed in section 4 under "What has and has not run".
 
 x207 is a mutual credit settlement layer for x402 agent payments on NEAR.
 Agents in a credit circle pay each other with signed credit vouchers, a solver
@@ -528,6 +528,24 @@ The order is the rule, and the vouchers are cumulative: the voucher of the crede
 | `second` pays for a site whose domain never moves; 7 days pass | The domain transfer is `cancelled` (`transfer_window_passed`); the credentials are never handed over, the seller gives up that sale, the pair holds 0 |
 
 The credentials, their salt and the key of the file are in no table of D9 (the test searches all of them). What this block does not show: a real registrar or admin panel (both are fakes), a site worth more than 20 credit in credentials (a larger price needs a different handover), the files and the database of the site (they are the seller's to hand over by the same credentials), and what happens if the seller registers the later voucher before the earlier one (a cumulative voucher pays the earlier part too: the buyer confirms the credentials last for this reason).
+
+### Community role block (pipeline P2 group D, #24 and #85)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/community-role.sandbox.test.ts   # real contract, indexer, facilitator and broker; several minutes
+```
+
+A role of a community is rented by the day. The broker of the grantor holds the bot of the community and gives the role with the REST calls of Discord (the real `discord` adapter; the server of the test is a mock that keeps the roles of its members). A role gives no expiry of its own, so the broker takes it back: at the end of the paid day, or when the grantor revokes. Paying is an ordinary voucher through the facilitator, one day each time, and a day paid before the first ends is added to its end. The id of the member is only checked to exist on the server unless Discord OAuth is set up on the broker (the answer then carries the warning `grantee_unproven`).
+
+| Do | See |
+| --- | --- |
+| #24 paid role: `scraper` offers the role, `translator` accepts and pays a day | The member holds the role on the server; the answer has the guild and the role |
+| `translator` pays a second day before the first ends | The paid end moves by one day; the role stays |
+| The paid end passes and nobody pays | The broker's tick removes the role; the access is no longer `active` |
+| #85 own group: `gpu` rents the member role of its group, `image` pays a day | The member holds the role |
+| `image` leaves the circle (`request_exit`) and tries to pay the next day | The voucher is refused; the role stays until the paid end, then the broker takes it away |
+
+What this block does not show: a real Discord server (the REST calls are mocked), the OAuth proof of the id of the member, and a rate limit of Discord (the retry of the broker has its own test).
 
 ### Access rent block (pipeline P2)
 
