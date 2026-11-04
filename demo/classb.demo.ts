@@ -11,6 +11,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createViewAccessKeyFn, signVoucher, type AccessGrant, type ContractAbi, type ContractCall } from "@x207/core";
 import { createNearSender } from "@x207/core/signer";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { startBroker, type RunningBroker } from "../backend/broker/src/index.ts";
 import { acceptRental, offerRental } from "../agents/onboarding/rental.ts";
 import { RENTAL_DAY_MS, assertProbe, payLease, probeKey, rentalScope, type CallWithKey } from "../agents/scenario/classb.ts";
@@ -53,6 +54,7 @@ describe("demo F8 class B: rent a function-call key and revoke it on default", (
     const indexer = new Indexer({
       db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), contract, 1), circleId: "agents-main",
       contractId: contract, startBlock: 1, fetchParams: () => view<ContractAbi.Params>("get_params"),
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, contract, epoch),
     });
     await indexer.bootstrap();
     api = createApiServer({ db });

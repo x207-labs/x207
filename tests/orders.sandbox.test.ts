@@ -11,6 +11,7 @@ import type { AddressInfo } from "node:net";
 import { afterAll, describe, expect, it } from "vitest";
 import { createCircleViewFn, onboardMember, parseEventLog, type ContractAbi, type ContractCall, type OrderDocument, type Voucher } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { marketplaceRoutes } from "../backend/src/marketplace/index.ts";
 import { keeperPass } from "../scripts/lib/keeper.mjs";
 import { TERMS_HASH, deployCircle, type CircleFixture } from "../sdk/test-support/circle.ts";
@@ -83,6 +84,7 @@ describe.skipIf(!sandboxAvailable)("UM-087 service orders: two milestones, a dis
     const indexer = new Indexer({
       db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), contract, startBlock), circleId: "agents-main",
       contractId: contract, startBlock, fetchParams: () => view_("get_params", {}) as Promise<ContractAbi.Params>,
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, contract, epoch),
     });
     await indexer.bootstrap();
     // The indexer reads final blocks, and the sandbox makes blocks slowly when nothing is sent: nudge the clock a little while waiting.

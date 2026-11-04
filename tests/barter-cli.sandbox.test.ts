@@ -14,6 +14,7 @@ import { promisify } from "node:util";
 import { afterAll, describe, expect, it } from "vitest";
 import { postListing, signBundle, termsHash, type BundleTerms, type ContractAbi, type Listing } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { marketplaceRoutes } from "../backend/src/marketplace/index.ts";
 import { rpcViewFunction } from "../backend/src/settlement/intents.ts";
 import { CALL_PRICE } from "../agents/scenario/ring.ts";
@@ -44,6 +45,7 @@ describe.skipIf(!sandboxAvailable)("x207-barter against the live backend in near
     const indexer = new Indexer({
       db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), contract, 1), circleId: "agents-main",
       contractId: contract, startBlock: 1, fetchParams: () => fx.sandbox.view(contract, "get_params", {}) as Promise<ContractAbi.Params>,
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, contract, epoch),
     });
     await indexer.bootstrap();
     api = createApiServer({ db, extraRoutes: marketplaceRoutes(db, { chainView: rpcViewFunction(rpcUrl) }) });

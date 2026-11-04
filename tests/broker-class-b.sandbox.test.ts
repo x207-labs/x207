@@ -10,6 +10,7 @@ import type { AddressInfo } from "node:net";
 import { afterAll, describe, expect, it } from "vitest";
 import { createViewAccessKeyFn, signVoucher, type AccessGrant, type ContractAbi } from "@x207/core";
 import { Indexer, FailoverRpcClient, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { startBroker, type RunningBroker } from "../backend/broker/src/index.ts";
 import { createAgentBuyer } from "../agents/shared/x207.ts";
 import { startStack, type Stack } from "../agents/test/stack.ts";
@@ -52,6 +53,7 @@ describe.skipIf(!sandboxAvailable)("F8 class B in near-sandbox: lease, renewal, 
     const indexer = new Indexer({
       db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), contract, 1), circleId: "agents-main",
       contractId: contract, startBlock: 1, fetchParams: () => view<ContractAbi.Params>("get_params"),
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, contract, epoch),
     });
     await indexer.bootstrap();
     api = createApiServer({ db });

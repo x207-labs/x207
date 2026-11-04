@@ -7,6 +7,7 @@ import { join, resolve } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { createCircleViewFn, onboardMember, signVoucher, type ContractAbi, type ContractCall } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { SHORT_PARAMS, TERMS_HASH, deployCircle, type CircleFixture } from "../sdk/test-support/circle.ts";
 import { sandboxAvailable, type SandboxAccount } from "../sdk/test-support/sandbox.ts";
 
@@ -74,6 +75,7 @@ describe.skipIf(!sandboxAvailable)("CT-075 escrow in near-sandbox against D9", (
     const indexer = new Indexer({
       db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), contract, 1), circleId: "agents-main",
       contractId: contract, startBlock: 1, fetchParams: () => view<ContractAbi.Params>("get_params"),
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, contract, epoch),
     });
     await indexer.bootstrap();
     api = createApiServer({ db });

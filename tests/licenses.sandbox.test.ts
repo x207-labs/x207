@@ -9,6 +9,7 @@ import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { contentHash, createCircleViewFn, httpsSource, onboardMember, type ContentRef, type ContentSource, type ContractAbi, type ContractCall } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { marketplaceRoutes } from "../backend/src/marketplace/index.ts";
 import { TERMS_HASH, deployCircle, type CircleFixture } from "../sdk/test-support/circle.ts";
 import { sandboxAvailable, type SandboxAccount } from "../sdk/test-support/sandbox.ts";
@@ -82,6 +83,7 @@ describe.skipIf(!sandboxAvailable)("UM-088 license of content: matching hash sol
     const indexer = new Indexer({
       db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), contract, startBlock), circleId: "agents-main",
       contractId: contract, startBlock, fetchParams: () => view_("get_params", {}) as Promise<ContractAbi.Params>,
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, contract, epoch),
     });
     await indexer.bootstrap();
     // The indexer reads final blocks, and the sandbox makes blocks slowly when nothing is sent: nudge the clock a little while waiting.

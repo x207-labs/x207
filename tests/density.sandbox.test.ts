@@ -7,6 +7,7 @@ import { promisify } from "node:util";
 import { afterAll, describe, expect, it } from "vitest";
 import { parseEventLog, type ContractAbi } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { DENSITIES, planDensity, summarize, type Density } from "../agents/scenario/density.ts";
 import { AGENT_NAMES, AGENTS } from "../agents/shared/registry.ts";
 import { createAgentBuyer } from "../agents/shared/x207.ts";
@@ -38,6 +39,7 @@ describe.skipIf(!sandboxAvailable)("AG-010 density variation and AG-009 TC-04", 
       db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), fx.circle.accountId, 1),
       circleId: "agents-main", contractId: fx.circle.accountId, startBlock: 1,
       fetchParams: () => fx.sandbox.view(fx.circle.accountId, "get_params", {}) as Promise<ContractAbi.Params>,
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, fx.circle.accountId, epoch),
     });
     await indexer.bootstrap();
     api = createApiServer({ db });

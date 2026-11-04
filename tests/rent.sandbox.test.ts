@@ -12,6 +12,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { DailyRent } from "@x207/scheme";
 import { encodeGranteeProof, nep413SigningHash, signHash, signSshChallenge, sshEd25519Line, type AccessGrant, type ContractAbi } from "@x207/core";
 import { Indexer, FailoverRpcClient, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { MockProviderAdapter, SshAdapter, sshdAccepts, startBroker, stopNoticeText, type RunningBroker } from "../backend/broker/src/index.ts";
 import { createAgentBuyer } from "../agents/shared/x207.ts";
 import { startStack, type Stack } from "../agents/test/stack.ts";
@@ -49,6 +50,7 @@ describe.skipIf(!sandboxAvailable)("UM-089 rent of three accesses in near-sandbo
     const indexer = new Indexer({
       db, source: new RpcBlockSource(rpcChainReader(new FailoverRpcClient({ endpoints: [rpcUrl] })), contract, 1), circleId: "agents-main",
       contractId: contract, startBlock: 1, fetchParams: () => view<ContractAbi.Params>("get_params"),
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, contract, epoch),
     });
     await indexer.bootstrap();
     api = createApiServer({ db });

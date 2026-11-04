@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { afterAll, describe, expect, it } from "vitest";
 import { onboardMember, createCircleViewFn, parseEventLog, signVoucher, type ContractAbi, type ContractCall } from "@x207/core";
 import { Indexer, RpcBlockSource, createApiServer, FailoverRpcClient, openDatabase, rpcChainReader } from "../backend/src/index.ts";
+import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { keeperPass } from "../scripts/lib/keeper.mjs";
 import { TERMS_HASH, deployCircle, type CircleFixture } from "../sdk/test-support/circle.ts";
 import { sandboxAvailable, type SandboxAccount } from "../sdk/test-support/sandbox.ts";
@@ -93,6 +94,7 @@ describe.skipIf(!sandboxAvailable)("AG-021 three businesses, invoices, F3 cleari
       db, source: new RpcBlockSource(rpcChainReader(client), fx.circle.accountId, startBlock), circleId: "agents-main",
       contractId: fx.circle.accountId, startBlock,
       fetchParams: () => fx.sandbox.view(fx.circle.accountId, "get_params", {}) as Promise<ContractAbi.Params>,
+      fetchClearedEdges: (epoch) => viewClearedEdges(rpcUrl, fx.circle.accountId, epoch),
     });
     await indexer.bootstrap();
     // Indexer membaca blok final; setelah fast_forward head final menyusul beberapa detik kemudian.
