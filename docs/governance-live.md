@@ -15,6 +15,10 @@ One real `set_params` proposal went through the Sputnik DAO `x207v8.sputnikv2.te
 - Read API (Railway): `GET /x207/circles/agents-main/proposals` lists proposal 4 as `Approved`, method `set_params`, council votes `[2,0,0]`; `GET .../params` first showed it as `nextEpoch` with `nextEpochEffective` 20.
 - Dashboard: [x207-dashboard.vercel.app/governance](https://x207-dashboard.vercel.app/governance) shows, in the parameter table, "3 epochs, effective from epoch 20" for the prune delay, proposal 4 under "Closed proposals" (`Approved`, votes 2 / 0 / 0, proposer `x207-dao-v8.testnet`) and a line in "Change history" (`prune_delay_epochs`, 2 to 3, epoch 20).
 
+## The same step in the demo script (UM-036)
+
+The network demo has the step: with `DEMO_DAO_ACCOUNT=<Sputnik DAO> DEMO_DAO_COUNCIL=<a,b> DEMO_DAO_PARAMS_FILE=<whole params json>` set, `npm run demo:testnet` (with `X207_CONFIRM_REAL_TX=yes`) adds the proposal as the first council member, votes with the others until the proposal is `Approved`, and prints `get_params` before and after ([demo/network.demo.ts](../demo/network.demo.ts)). It runs only when `get_owner` of the circle is that DAO, and it skips with a message otherwise. It ran that way on 2026-11-03 on its own circle (DAO `x207b.sputnikv2.testnet`, steps `dao.add_proposal` and `dao.vote.*` in [testnet-demo.json](testnet-demo.json), `limit_decay` 0 to 100, effective from epoch 11). The run on this page is the same flow on the live circle, with the dashboard evidence above. The mainnet DAO step is separate and needs the owner ([mainnet-runbook.md](mainnet-runbook.md), step 9).
+
 ## Notes
 
 - A proposal takes the whole `Params`: a file with only the changed field is refused by `contracts/dao/mainnet-set-params.mjs` (its dry run says which fields are missing). The council of this DAO has two members and both must approve.
