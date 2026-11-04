@@ -514,6 +514,26 @@ These two are not codes but a key that the grantor keeps: the class C proxy of t
 
 The keys are in no answer, no header, no log line of the broker and nothing the facilitator settled; the test searches for them. Not shown: a real AI or map provider (many forbid sharing a key, which is why both catalog rows carry a condition), and a broker inside a TEE (the key is in the environment of the broker process).
 
+#### Course gift code and organisation member with a budget (items 72 and 25, UM-113)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/codes-course.sandbox.test.ts      # about one minute, the pattern of the codes above
+X207_SANDBOX=1 npx vitest run tests/org-member.sandbox.test.ts        # about two minutes, real broker, real adapter, a mock organisation
+```
+
+| Do | See |
+| --- | --- |
+| A gift code for a course (item 72, issuer `courses.example`) is sold for 8 credit | `paid_held`, no voucher; the platform is asked once before the key is released and the code is valid; the handover does not redeem it |
+| The buyer redeems the code on the platform and confirms | The platform now says `used`; only now the voucher is in the answer and registered: the pair holds 8 credit |
+| A code that was redeemed before the sale, and a code the platform does not know (voided after a refund) | `code_used` (cancelled) and `code_unknown`: the key is not released, no voucher leaves, the pair holds 0 |
+| A course code bound to the recipient's account | `code_bound_to_identity` at the listing: nothing in the book |
+| The lessee pays one day for an organisation seat (item 25, adapter `org-member-budget`) with a daily budget of 20 USD | The broker invites the e-mail of the scope with its role and budget; the organisation keeps the budget |
+| The person accepts and spends: 12, then 10 more, then 8 | The organisation refuses the 10 (past the budget) and accepts the 8; the read of the access shows the real spend of the day, 20 credit units |
+| A second day paid before the first ends | The same member, the paid end moves by one day, no second invitation |
+| A day nobody pays | At the paid end the broker removes the member; the organisation refuses its next spend |
+
+Not shown: a real course platform or organisation (mocks ran). The organisation test moves the clock of the broker past the paid end and does not fast-forward the chain, which would take minutes; the grant on the contract lasts 30 days.
+
 **Design templates (#68) and licensed assets (#69), UM-114.** `X207_SANDBOX=1 npx vitest run tests/design-asset.sandbox.test.ts tests/licensed-asset.sandbox.test.ts --no-file-parallelism` (about one minute each). The license text is the `terms` of the listing and its sha256 is the `license_hash`; it names the kind of license (one of the accepted list of the backend, for example `commercial` or `personal`) and says that the licensor holds the rights.
 
 | Do | See |
