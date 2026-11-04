@@ -6,7 +6,7 @@ Accounts are listed in [`.env.example`](../.env.example): the contract account, 
 
 ## Budget
 
-The amounts per account, the total (about 22.3 NEAR with the DAO, 20 USDT) and their basis are in section 2 of [mainnet-runbook.md](mainnet-runbook.md); this file holds only the log, so that no figure is written twice. Two rehearsals must be covered by the balance.
+The amounts per account, the total (about 16.3 NEAR with the DAO, 20 USDT) and their basis are in section 2 of [mainnet-runbook.md](mainnet-runbook.md); this file holds only the log, so that no figure is written twice. Two rehearsals must be covered by the balance.
 
 ## Spending log
 
