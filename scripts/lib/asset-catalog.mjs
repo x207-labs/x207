@@ -47,7 +47,7 @@ export const CATALOG = [
   // C. a single secret, through the broker
   { no: 26, assetType: "api:delegated-key", cls: "C", name: "API key that may be delegated", delivery: ["proxy"], proofs: ["tee_attestation"], status: "built with a mock provider; no TEE yet" },
   { no: 27, assetType: "giftcard:code", cls: "C", name: "Gift card code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; issuer terms" },
-  { no: 28, assetType: "license:key", cls: "C", name: "Software license key", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; license terms" },
+  { no: 28, assetType: "license:key", cls: "C", name: "Software license key", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "built with a mock issuer (UM-100, near-sandbox): checked before and after the handover, paid after activation; a key bound to an account or a region is refused; license terms" },
   { no: 29, assetType: "domain:transfer-code", cls: "C", name: "Domain transfer code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; registrar terms" },
   { no: 30, assetType: "api:quota-proxy", cls: "C", name: "API quota used through the proxy", delivery: ["proxy"], proofs: ["tee_attestation"], status: "built with a mock provider" },
   // D. own resources and services, opened as x402 endpoints
@@ -90,7 +90,7 @@ export const CATALOG = [
   { no: 71, assetType: "course:own-class", cls: "D", name: "Own online course", delivery: ["x402_endpoint"], proofs: [], status: "roadmap; lawful when made by the giver" },
   { no: 72, assetType: "course:gift-code", cls: "C", name: "Course gift code from a platform", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; condition: platform" },
   { no: 73, assetType: "ticket:digital-event", cls: "C", name: "Digital event ticket with an official transfer feature", delivery: ["platform_transfer"], proofs: ["zktls"], status: "built (UM-096, platform_transfer with a mock platform); condition: only through the official transfer" },
-  { no: 74, assetType: "game:key-code", cls: "C", name: "Game code or activation key", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; condition: some publishers forbid resale" },
+  { no: 74, assetType: "game:key-code", cls: "C", name: "Game code or activation key", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "built with a mock issuer (UM-100, near-sandbox): checked before and after the handover, paid after activation; a key bound to an account or a region is refused; condition: some publishers forbid resale" },
   { no: 75, assetType: "game:tradable-item", cls: "C", name: "Game item through the official trade system", delivery: ["game_trade"], proofs: ["zktls"], status: "built (UM-096, platform_transfer with a mock Steam trade offer API); condition: only games that allow trade" },
   { no: 76, assetType: "promo:voucher-code", cls: "C", name: "Voucher and promo code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; condition: personal codes are usually not transferable" },
   { no: 77, assetType: "giftcard:digital-store", cls: "C", name: "Digital store gift card", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; condition: issuer (same as row 27)" },

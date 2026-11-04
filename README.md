@@ -403,6 +403,25 @@ A one-time code (a gift card code, a beta invitation code) is a secret that can 
 
 The code, its salt and the key of the file are in no table of the read model and in no console line of the run; the test searches for them in both. What this block does not show: a real issuer (only the mock ran), a code that the issuer cannot check (it is sold on the seller's word, within the 20 credit cap), and a proxy secret per call, which is the class C broker block of `tests/broker-class-c.sandbox.test.ts`.
 
+#### Software license keys and game keys (items 28 and 74, UM-100)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/codes-keys.sandbox.test.ts            # same pattern, about one minute
+```
+
+A license key (item 28, issuer `licenses.example`) and a game or activation key (item 74, issuer `games.example`) are sold once each as a `secret_release`, with the issuer asked before and after the handover.
+
+| Do | See |
+| --- | --- |
+| `buyer` buys a license key (6 credit) | `paid_held`, no voucher in the answer, the pair holds 0 |
+| The seller releases the key | The backend asked the issuer once and the key was valid; the issuer still says `valid` (the handover does not use the key) |
+| The buyer activates the key at the issuer and confirms | The issuer now says `used`; only now the voucher is in the answer, the seller registers it, the pair holds 6 credit |
+| The same flow for a game key (4 credit) | The voucher continues from the registered one: the pair holds 10 credit |
+| A key that was activated before the sale is listed and sold to `second` | `code_used`: refused before the handover, `cancelled`, no key, no payment, the pair holds 0 |
+| A key bound to an account or a region (`identity_bound`) is listed | `code_bound_to_identity` at the listing: nothing is in the book (such a key stays class X) |
+
+Keys, salts and file keys are in no table of the read model and in no console line; the test searches for them. Not shown: a real issuer (a mock ran), and a publisher that forbids resale (the seller must check the terms of the publisher).
+
 ### Platform transfer block (ADR-49)
 
 ```bash
