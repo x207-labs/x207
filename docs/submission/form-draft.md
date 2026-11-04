@@ -40,12 +40,12 @@ Numbers below are the ones of the README and of the hosted read API on 2026-11-0
 | Vouchers in the epoch | 24, worth 41.35 credit, among 15 participants | `/epochs/8/metrics`: `voucherCount`, `totalVoucherValue`, `graph.participants` |
 | Cancelled by the clearing | 21.8 credit (ratio 0.527) | `cleared`, `clearedRatio` |
 | Left as residual obligations | 19.55 credit | `debtAfter` |
-| What those residuals net to | 7.75 USDT due from six debtors; five paid, one (`m06`) did not and was cut from its stake | `netDebt`; `docs/testnet-0.0.13-realistic.json` |
+| What those residuals net to | 7.75 USDT due from six debtors: five paid 7.2 USDT, and the 0.55 of `m06`, which did not pay, was taken from its stake | `netDebt`; `docs/testnet-0.0.13-realistic.json` (`positions.debtors`, `finalize.defaulted`) |
 | `residualTransfers` | 14 = six members paying in and eight claiming out (members with a net position), not 14 payments | `residualTransfers` |
 | Load test | epoch 2: a complete graph of 210 obligations among 15 participants, cleared in four transactions (`close_epoch`, `submit_clearing`, `commit_epoch`, `finalize_epoch`) | `contracts/docs/gas-and-cost.md` |
 | Local `demo:quick` | 120 payments became 6, cleared ratio 0.6333, one clearing transaction (sandbox, not testnet) | output of `npm run demo:quick` on a clean clone, 2026-11-04 |
 
-Say "21.8 cancelled, 19.55 left, netting to 7.75 USDT". Do not say "half of the credit never moves": only 7.75 of 41.35 credit moves as USDT (18.7%), and 21.8 is the part cancelled.
+Say "21.8 cancelled, 19.55 left, netting to 7.75 USDT due, of which five debtors paid 7.2 and 0.55 came from the stake of the one that defaulted". Do not say "half of the credit never moves": 7.75 of 41.35 credit is due as USDT (18.7%), 7.2 of it was paid by debtors, and 21.8 is the part cancelled.
 
 What has not run, and must not be implied: any mainnet transaction, NEAR Intents on testnet (`intents.testnet` has no code; the residual batch ran against the real Intents wasm in `near-sandbox`), a real wallet through NEAR Connect on the dashboard, the TEE broker, a proof by a third party outside the team.
 

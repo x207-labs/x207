@@ -2,12 +2,12 @@
 
 Status: a draft. **Nothing was posted.** The human publishes the post, attaches the video or screenshots, and copies the post URL into `demoUrl` of the form ([form-draft.md](form-draft.md)). The hackathon asks the post to say that the project was built at NEAR HACKATHON and to show a demo video or screenshots.
 
-## Post (one tweet, 252 characters with the link counted as 23; check the count in the composer)
+## Post (one tweet, 268 characters with the link counted as 23; check the count in the composer)
 
 ```
 We built x207 at NEAR HACKATHON: mutual credit + clearing for x402 agent payments on NEAR.
 
-Real testnet epoch: 24 vouchers (41.35) → one clearing cancelled 21.8; the 19.55 left nets to 7.75 USDT. Try it, read-only MCP included:
+Testnet epoch: 24 vouchers (41.35), one clearing cancels 21.8; the 19.55 left nets to 7.75 USDT (5 paid 7.2, 0.55 from a stake). Read-only MCP included:
 https://github.com/x207-labs/x207
 ```
 
@@ -23,6 +23,6 @@ Attach: the video ([video-script.md](video-script.md)), or three screenshots: th
 ## Rules for the text
 
 - Say "built at NEAR HACKATHON"; name no partner as a sponsor of the project and tag nobody without the owner's choice.
-- Quote the three numbers together (21.8 cancelled, 19.55 left, 7.75 USDT net), never "half of the credit never moves".
+- Quote the three numbers together (21.8 cancelled, 19.55 left, 7.75 USDT net due; five debtors paid 7.2 and 0.55 came from a stake), never "half of the credit never moves".
 - Do not claim mainnet, NEAR Intents on testnet, a real wallet flow, or third-party users.
 - The repository and the three URLs must answer before the post goes out: `curl -s -o /dev/null -w "%{http_code}" <url>`.
