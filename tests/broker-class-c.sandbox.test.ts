@@ -65,7 +65,8 @@ describe.skipIf(!sandboxAvailable)("BK-008 class C proxy in near-sandbox", () =>
     broker = await startBroker({
       config: {
         readApiUrl: "http://127.0.0.1:1", circleId: "agents-main", contractId: contract, facilitatorUrl: stack.facilitatorUrl, rpcUrl: sandbox.rpcUrl,
-        brokerAccount: brokerAccount.accountId, brokerKey: brokerAccount.secretKey, leaseAccount: lease.accountId, leaseKey: lease.secretKey,
+        brokerAccount: brokerAccount.accountId, brokerKey: brokerAccount.secretKey, secretOwner: id.scraper.accountId, // B7-P1: the secret belongs to the grantor of the grant, who is the owner of this broker
+        leaseAccount: lease.accountId, leaseKey: lease.secretKey,
         port: 0, dbPath: ":memory:", pollSeconds: 15, providers: [{ assetType: "mock:echo", baseUrl: providerUrl, secretEnv: "MOCK_PROVIDER_KEY" }],
       },
       env: { MOCK_PROVIDER_KEY: SECRET }, poll: false, extraCacheMs: 0, log: (line) => log.push(line),
