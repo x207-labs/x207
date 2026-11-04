@@ -34,7 +34,7 @@ A NEAR binding of `batch-settlement` on the network `x207:<circleId>` (for examp
 
 **Status:** a reference implementation (`@x207/core`, `@x207/scheme` with the client, server and facilitator roles, and a facilitator app) and a NEAR contract run on NEAR testnet as the circle `x207-v013.testnet`. Epoch 8 cleared 24 vouchers between 15 members, with one default covered from stake. Everything else ran in a local `near-sandbox`. The USDT used is a mock token. **No mainnet transaction has been sent.** Results and limits: [what-has-run.md](https://github.com/x207-labs/x207/blob/main/docs/what-has-run.md).
 
-**Plan:** a spec-only pull request adding the file above together with the byte format of the voucher and the test vectors, opened right after this issue. Feedback on the approach, and on how to classify the trust model, is welcome.
+**Plan:** if the maintainers want it, a spec-only pull request adding the file above together with the byte format of the voucher and the test vectors. Feedback on the approach, and on how to classify the trust model, is welcome.
 
 ---
 
