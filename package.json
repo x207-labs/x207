@@ -13,6 +13,7 @@
     "agents"
   ],
   "scripts": {
+    "bench:solver": "npm run bench:solver -w @x207/solver",
     "check:pins": "node scripts/check-pins.mjs",
     "check:window": "node scripts/check-window.mjs",
     "check:claims": "node scripts/check-claims.mjs",
