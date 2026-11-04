@@ -1,0 +1,78 @@
+{
+  "contract": "x207-v013.testnet",
+  "note": "UM-122: attacks refused by the contract; hashes, names and the contract error only",
+  "attacks": [
+    {
+      "id": "replay-old-epoch-voucher",
+      "attack": "Replay a voucher that the payer really signed and the contract really booked in epoch 8, now that the circle is in a later epoch",
+      "sender": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9sJXYa1hfXVTUcnpQ2pDC3tVg8zwrBo4KnSWYAwWYuTk",
+      "refused": true,
+      "error": "Smart contract panicked: ERR_EPOCH_MISMATCH: voucher epoch 8, current 16"
+    },
+    {
+      "id": "set-params-not-owner",
+      "attack": "A member account that is not the DAO owner calls set_params to change the fees and the limit cap",
+      "sender": "m03.x207-v013-aux.testnet",
+      "method": "set_params",
+      "hash": "Asx6BQMTncJa3TwJDXeAHu4uRG9dbkp1nNT87gXW1yGe",
+      "refused": true,
+      "error": "Smart contract panicked: ERR_NOT_OWNER: m03.x207-v013-aux.testnet is not the owner"
+    },
+    {
+      "id": "fake-deposit",
+      "attack": "Call ft_on_transfer directly, as if the USDT contract had delivered a stake of 1,000,000 units to the attacker's member account",
+      "sender": "m04.x207-v013-aux.testnet",
+      "method": "ft_on_transfer",
+      "hash": "9kz4TGUL554yHisatL4hJTBxmq2B1YSRTZKpujd2ULw6",
+      "refused": true,
+      "error": "Smart contract panicked: ERR_WRONG_TOKEN: m04.x207-v013-aux.testnet"
+    },
+    {
+      "id": "claim-twice",
+      "attack": "The creditor m12.x207-v013-aux.testnet claims its residual of epoch 8 a second time, after the first claim was paid",
+      "sender": "m12.x207-v013-aux.testnet",
+      "method": "claim",
+      "hash": "7KjR1DhGrP6gEnMw45tV19ZzLYxpSZpGnqocT49m1RLQ",
+      "refused": true,
+      "error": "Smart contract panicked: ERR_NOT_CLAIMABLE: m12.x207-v013-aux.testnet is Claimed"
+    },
+    {
+      "id": "claim-as-debtor",
+      "attack": "The debtor m02.x207-v013-aux.testnet claims from the pool of epoch 8",
+      "sender": "m02.x207-v013-aux.testnet",
+      "method": "claim",
+      "hash": "CnY1fdR9FyDxGBSqQaAdekx62euya62NF9r2BVAhR12N",
+      "refused": true,
+      "error": "Smart contract panicked: ERR_NOT_CREDITOR: m02.x207-v013-aux.testnet"
+    },
+    {
+      "id": "submit-clearing-closed-epoch",
+      "attack": "Submit a clearing proposal that cancels 1,000,000 units on an edge that never existed, for the finalized epoch 8",
+      "sender": "m06.x207-v013-aux.testnet",
+      "method": "submit_clearing",
+      "hash": "74aD3tAoETq7cj57YvUcV8j1feRkVnZ3fkcasktg9AeH",
+      "refused": true,
+      "error": "Smart contract panicked: ERR_WRONG_PHASE: epoch 8 is Finalized, expected Clearing"
+    },
+    {
+      "id": "withdraw-stake-without-exit",
+      "attack": "An active member withdraws its stake without asking to exit and without the epoch of the exit being finalized",
+      "sender": "m07.x207-v013-aux.testnet",
+      "method": "withdraw_stake",
+      "hash": "B1zTtDJKSxMpjZYCF5ucpZmXfVkgbFk497Ywd3SKmM2z",
+      "refused": true,
+      "error": "Smart contract panicked: ERR_EXIT_NOT_READY: m07.x207-v013-aux.testnet has not asked to exit"
+    },
+    {
+      "id": "forged-voucher-signature",
+      "attack": "A voucher from m00.x207-v013-aux.testnet to m01.x207-v013-aux.testnet in the open epoch 16, signed with a key that is not the voucher key of the payer",
+      "sender": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "B2sk75AagKQ5kNsFABFxuw81DfWUyx6gTkQ9kXLPurq3",
+      "refused": true,
+      "error": "Smart contract panicked: ERR_BAD_SIGNATURE: ed25519 verification failed"
+    }
+  ]
+}
