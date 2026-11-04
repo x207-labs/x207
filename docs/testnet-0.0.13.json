@@ -1,0 +1,2984 @@
+{
+  "contract": "x207-v013.testnet",
+  "aux": "x207-v013-aux.testnet",
+  "owner": "x207v8.sputnikv2.testnet",
+  "usdt": "usdt.x207-deployer.testnet",
+  "build": {
+    "source": "scripts/repro-build.sh 8799ebe, twice",
+    "wasmSha256": "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054",
+    "codeHash": "DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh"
+  },
+  "steps": [
+    {
+      "step": "account m00",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "5h6UBRqDWZMh5VeXAMUM66QgLNJLdh83z7DG3rZ38UGM"
+    },
+    {
+      "step": "account m01",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "JC5CBQRpBq67shP2NE74xVictYjpaXR3sp8fKxYHEWxR"
+    },
+    {
+      "step": "account m02",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "3Xa5vSC6VAcBhg499wSzNZKWJBQ7Sbhgx4yDH8NRnCMU"
+    },
+    {
+      "step": "account m03",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "BrRogckZjSozRBA11vnp3rkrPCn87UqfTG7oM4XMun7A"
+    },
+    {
+      "step": "account m04",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "BiXkWBb9X3RUZitrUcDPspQJRsDdokG4E1Tkp5fcaeb5"
+    },
+    {
+      "step": "account m05",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "6eYG4mbU7XQF67hfW3cHdeV9kz8PEGUV4gKq5vAbc9ZN"
+    },
+    {
+      "step": "account m06",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "3uSUuxSctyc6CTnBopEQ5DpwPC1YemWTBTHcfm3Wxjf6"
+    },
+    {
+      "step": "account m07",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "6GracKgeVPVrEXPvxtr7JxjY7pt4i5baosnLdMb66vvw"
+    },
+    {
+      "step": "account m08",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "A4svYqVfV87eMYcdtNmxNEXW33i8W1QhKdRp5tmaPWXv"
+    },
+    {
+      "step": "account m09",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "JD586qPreaeLyd7SgtD2w76Qw7LScjiJ2nqcUY8BD8k6"
+    },
+    {
+      "step": "account m10",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "ArwfuRneaxLoJEUhhZLkmhzAsf4tDEsqhvadcJuVDydN"
+    },
+    {
+      "step": "account m11",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "AZapJAscqwk4qjGmZ3e3eGuvvNHpSHh7sjsUhVEPbrF1"
+    },
+    {
+      "step": "account m12",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "3p7Nu13VcAai3aAF4mjLfRXsDFairEjEDftsoH3fVzXm"
+    },
+    {
+      "step": "account m13",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "8LgEGZB6RHwBAAKztqpU8hXDck8LvUd1bKyGJajx4iHF"
+    },
+    {
+      "step": "account m14",
+      "account": "x207-v013-aux.testnet",
+      "method": "create_account",
+      "hash": "EfWmAyqs1FsNZqA3e3ZYZ4L79dUGkWWMX7EU7VbHyX4b"
+    },
+    {
+      "step": "deploy",
+      "account": "x207-v013.testnet",
+      "method": "deploy_contract",
+      "hash": "EhnsJArcdru4WaLwTRF52SbfR9B5EtQ5orQHLBRm3tHL"
+    },
+    {
+      "step": "init",
+      "account": "x207-v013.testnet",
+      "method": "new",
+      "hash": "2bk6ELv34kauFxVVU3AZyk8kWJBfa8AuWiT5s6SC71kM"
+    },
+    {
+      "step": "usdt m03",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "C1DKp2H7bKcMLw9pXjRG4zougrKHLmzCHYCg9kvUzPtZ"
+    },
+    {
+      "step": "usdt m00",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "4cn8VeWAAotvEZmDVHt3X7PuuVxN7E6NhvRiFBqGCXw1"
+    },
+    {
+      "step": "usdt m14",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "7x4hHL984pB7eywtZGyGtFf9rVcKcrRppRR6CKUpTUCF"
+    },
+    {
+      "step": "usdt m08",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "DCZGc31xEMDSSX8d7shyBp4q8vEUEyD4cc6vGH72CPHS"
+    },
+    {
+      "step": "usdt m09",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "Aoh2M8PoQ88HRPGLVJTB5uhdYmdues8vNVo8Rwq8L5Dx"
+    },
+    {
+      "step": "usdt m11",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "YZG3hKXQTe79ZL8JTxsTpUTfAwpb3YA2RErUVSywqK6"
+    },
+    {
+      "step": "usdt m13",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "5bezZQhwGgZWANRtGTigNqASWFUsvRXQsmBn1mogEbiM"
+    },
+    {
+      "step": "usdt m06",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "39a2Jy3ZaYjUFfawv9WeVxkPnuEpc3XTafKBEcLgd2od"
+    },
+    {
+      "step": "usdt m01",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "C74e8cSmKFTbQRv6ko8Xp6HEZLgYvm8eU9nEeNdwoBu9"
+    },
+    {
+      "step": "usdt m12",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "14noH18Gv4fLYH39WqmJN1R7Sqgv1JZpsdnWTiywQajv"
+    },
+    {
+      "step": "usdt m02",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "XgbzymjUkBZssCemEx2adk6tsPA3hRagprw4W4KEGKa"
+    },
+    {
+      "step": "usdt m07",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "SR4ZKffRBQG7pX5FSkDK3m8X5htFfk22XvB5C5ZJ6L2"
+    },
+    {
+      "step": "usdt m10",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "CGPbWjHTgyyxW3RuBQKy8ksJAnTdLaVHMk1mknfGY6nq"
+    },
+    {
+      "step": "usdt m04",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "GG7K6rVrtyFSycvFzcwhFv4xjoYAk9NUqait2xdjfLVs"
+    },
+    {
+      "step": "usdt m05",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "AyggN8rXFW9Pqd5RKDgo4MvzA3ofeUoAW7DdigjakzpF"
+    },
+    {
+      "step": "onboard m08",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "AcRRpf2rhHrsvnV1nf5mguUzkjykeG3V1gSNrnQUopBD"
+    },
+    {
+      "step": "onboard m14",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "3UeZvX2SrRrYtVp9WzUDxBkXBAxGh2sxmyHPH5GnmJmx"
+    },
+    {
+      "step": "onboard m11",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "CtJCL5wrhm6q8X3siCyC67MxChbSWZ5iAZ4RCJos6hdV"
+    },
+    {
+      "step": "onboard m09",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "47dP33jiFWuF5wz3tyuJWwD5NcV8jguMbK61qtzMxDuq"
+    },
+    {
+      "step": "onboard m13",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "2pkPDnjvsMoRSPYh1NJ3nAYaSCpNoy9ENZxbS4BMLtPu"
+    },
+    {
+      "step": "onboard m00",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "8pvmr6GWgB5Qhb4XW4xmCDn4wY6k3t5E6cXRG2aj9P3w"
+    },
+    {
+      "step": "onboard m06",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "jz25Xy3roNC7kFQqUEg9UXWSAczo5NEcg2QE65bEHHj"
+    },
+    {
+      "step": "onboard m03",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "AAv9HuDxDczEZKfnwNLWEN4ru6BwUa19jhAfzVHHX3Hr"
+    },
+    {
+      "step": "onboard m04",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "25R3kmZZCx1qtxcwV9hPJNyqXJhSAEqrJpSVTT3zmK3d"
+    },
+    {
+      "step": "onboard m02",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "51NZPx1eCw3TMjuMygeRxNaXUtvouz9LUuhB4nyu1u66"
+    },
+    {
+      "step": "onboard m07",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "83tN5ptvc6JHn4TtBpRerTUgoW66TmxWRPE15pLq1NmV"
+    },
+    {
+      "step": "onboard m01",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "8A32NxdzR6BcqjcMNxhXxV1fZxBWJngs23p6onvrztDW"
+    },
+    {
+      "step": "onboard m12",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "5ZxEeZpPvYzR1afdhwkbBF2ve78obBs2X42MxAyNx2BD"
+    },
+    {
+      "step": "onboard m10",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "Dqy88k8zcwzEdr5g9LeFrw7UgFrDaqzShW5oCMndMeg2"
+    },
+    {
+      "step": "onboard m05",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "join",
+      "hash": "4AFqfUTQZEtRvQBtA5Ms5443oMhMLrgitMRbjvg7Q868"
+    },
+    {
+      "step": "onboard m08",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "GCqshmiwPtNk881EspuHMKZBPYym4TgmA9ZQ96Tu1cdD"
+    },
+    {
+      "step": "onboard m14",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "7anf9ifdywsMgHVvmCWfqN2YkwgwGse1UEZ4BYcrQh6A"
+    },
+    {
+      "step": "onboard m00",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "B6kFfhEgqAVkfkWBkbXBaz4DSNFJUuyjYjgeP8gFobGc"
+    },
+    {
+      "step": "onboard m11",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "FF6nNGMRstzGWxkCTBtESXn1pZqo9NvcDTQDMXJUpYFC"
+    },
+    {
+      "step": "onboard m09",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "CPUECfiWrAAqpKet88W94LDPm46AK7ZpLRkRNSGUzFbw"
+    },
+    {
+      "step": "onboard m13",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "FokmUJgU6MtfYLSxQH3wegD3Y44oNynX6vZiqhGK2VfT"
+    },
+    {
+      "step": "onboard m06",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "DuGvF47C43RQN4xWD75zrswvu3QLtkK1BJCNZedYmJFP"
+    },
+    {
+      "step": "onboard m03",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "DUuowwJvKPZiTbo1rqFYBnBrQ45eTAMT6qxYFeedLE1d"
+    },
+    {
+      "step": "onboard m04",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "9MMgGC2Yh8Qxi7TwYTmw1GZaju94GzJBNymCi2KDYTHy"
+    },
+    {
+      "step": "onboard m01",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "JCnrJsv4SvZLdMN1Kr3hdEky9bUnXFtsM96oySzWj4Fz"
+    },
+    {
+      "step": "onboard m07",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "322vqDewWMzATocM6iu3RCgFWaStwJE8yupN5FB7pUgE"
+    },
+    {
+      "step": "onboard m02",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "FqQV1csevVTcV5GVev7NdsPu6W2q89KBi3g3rGRxbo9N"
+    },
+    {
+      "step": "onboard m12",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "8GsmmEPqPwxy8TCGMpDyh9rCfpaA5n8HzwjDQkzKweuE"
+    },
+    {
+      "step": "onboard m10",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "8UCHuWez88DwhsZeWuTm5qdsPHPoqC4KRupTu51oKxDs"
+    },
+    {
+      "step": "onboard m05",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "4MDV2JiPE6mhiirHKjiAeo2iBHxMbQxXm29rH6vMfLPg"
+    },
+    {
+      "step": "register m09->m00",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6bVntu1Msp3aZWHfnqMQr68UzhtPUa1FjgX853yxVooQ"
+    },
+    {
+      "step": "register m10->m00",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6Mft2wMG3iYzXdvCkgeMPP9qVf6VYKTD7NfRr2o1i6c8"
+    },
+    {
+      "step": "register m00->m01",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7A6HhHRfJr8nLuUJ1izZU2rLsyVxjaxqwcA23Rarf3bu"
+    },
+    {
+      "step": "register m12->m00",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3qPvK6z7G34MKnkWujvkFYQqgtnxN1VxW9iHJs67vxLf"
+    },
+    {
+      "step": "register m01->m00",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Akte8FPUBCkPi9xv5uB9ttsCFaQnLo6UtoqXue8M9TVy"
+    },
+    {
+      "step": "register m08->m00",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "fpfEgxjyNkUiTXf5mFkbSkPSxU9zZNkQAsifPxHzqvR"
+    },
+    {
+      "step": "register m04->m00",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5G5jLHaK6yZA6SHiWawEjeZTNQwnrAVu7HeTyZLmwm1t"
+    },
+    {
+      "step": "register m03->m00",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HkwxDGWF5Pw4EdteUmMG6uHWKi7Qqa4Ev6LPs3quzCba"
+    },
+    {
+      "step": "register m02->m00",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5r3bQZA9SyCxMG5HNRNpLbBhrxUW5uH9xTVjHuszpM5r"
+    },
+    {
+      "step": "register m14->m00",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4Rty4FqCU9tkwW6eMg6YnPeGDuEKn5BeA1syngc1nrTL"
+    },
+    {
+      "step": "register m13->m00",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FWZu3YTB5VLEdkDS9qbGaa43GcrogVZaYnZdMPUaAfzx"
+    },
+    {
+      "step": "register m11->m00",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HvwhyMLsfh111Yp3qNT1tE4BGUEiBGwxqG2Dg7YDS5Mk"
+    },
+    {
+      "step": "register m06->m00",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2Lx33md5hPsCEkip7kfzVU5sdfJcjHU9qAzQSH6fq6Kn"
+    },
+    {
+      "step": "register m05->m00",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6PZXZMQUq5WfiVq72AdbKHeqJeoCLnybtqymvCiE6UcS"
+    },
+    {
+      "step": "register m07->m00",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CCjXNgZ6fq8ZMovZWnW571V8RQjVzZgEcExWdDFFSSSL"
+    },
+    {
+      "step": "register m02->m01",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4Za4GfZzDpiyWTLNVXVpsgu8kCKCRp7jg4PUwR6R2gxL"
+    },
+    {
+      "step": "register m00->m02",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "myFgagQ1mxjDdNQNUnqhd9karFCWNhLsjrLR7R3skjw"
+    },
+    {
+      "step": "register m03->m01",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GBMrwBaMzFosUF3H1iJL7cvGiv8CiNbUaPqcCDh9SMVQ"
+    },
+    {
+      "step": "register m14->m01",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FpuFEatJK3BMr4FkLxjuGyYqWhCAzASs74bQjqu6LbES"
+    },
+    {
+      "step": "register m01->m02",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EQAkXzusbz8oyeDpAoW7JLoMuxP2W5z6FgibVYKrLWwa"
+    },
+    {
+      "step": "register m07->m01",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AGHRuGsxga1TYRSou4eTPwnhpmjKY89ygoexVmbiEh5K"
+    },
+    {
+      "step": "register m09->m01",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DFm4U2ZNAsfJoKDAjAVPH4hrtpFG1gNeMg9QFQmyLKQB"
+    },
+    {
+      "step": "register m06->m01",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3DDdHekZBmCuixzw8nEXCz7LnPCY3bWHupYjkcP9zG7A"
+    },
+    {
+      "step": "register m04->m01",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "14ZqTbcqeQYT72cUcyay9XyMx5oL5YyZEiYLXZupWVet"
+    },
+    {
+      "step": "register m05->m01",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "A6XLNwMAj5ijg2866Q5ppzLHneZJp6UKBcNtbVeHwXUg"
+    },
+    {
+      "step": "register m13->m01",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AxdDzQcMdgxH5ApS6AKmMrEyHjPVa9QqfqRsoVxhoHbU"
+    },
+    {
+      "step": "register m10->m01",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BEWeA3QUstZMoA7HdtXhtgGtEYTLZSk53KZbAwMPN64f"
+    },
+    {
+      "step": "register m11->m01",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7YieCGoYSP3sQX1fpFNW1jsfm2p8jmmFxAdwmPbZt1yK"
+    },
+    {
+      "step": "register m12->m01",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DzwCcR3FRewQZsd99LDnMnYxDpgwCR5ngggAsr7oJwR2"
+    },
+    {
+      "step": "register m08->m01",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5cLAq8q4cTBf1fhsqmxGP87UZm65TdzamdMuR9Weutoa"
+    },
+    {
+      "step": "register m09->m02",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3eKF67apyeLe1uDcWTLq6weRo1UsJPTaPK2G84TrzYRL"
+    },
+    {
+      "step": "register m00->m03",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7T3N545FUQNRrcgCXz3xHkCQYzgAQmSoFnQu3Vz8ZFPZ"
+    },
+    {
+      "step": "register m02->m03",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FL5kh6hD2hcJokaWwX8Pb5DxEpHm6dZn75NMPRXkRmVx"
+    },
+    {
+      "step": "register m03->m02",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "377HBL3xZaMvRzNe9y2HfmsF6pjKFyLZ1La3GS9tK5qX"
+    },
+    {
+      "step": "register m14->m02",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "545QDiQtQiAGDHettPpjhFatUfCKgZR3u2HbJfzAR2Rg"
+    },
+    {
+      "step": "register m07->m02",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Dys1hhkstLkgkTsuuPBRUqTBKZHmzCfG1FZNXjnnvtx"
+    },
+    {
+      "step": "register m05->m02",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GwSCcZAKNefwd3ZdAC4dHznsHNvboEX5tUcEzpTi8rjJ"
+    },
+    {
+      "step": "register m06->m02",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CEJs5uKtjBhgyt4fwopaatTBQNfhkaZht5B12cUUv4e5"
+    },
+    {
+      "step": "register m13->m02",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DPKdyb1wFJUQnokaEKiwfqmCMCdP1dUfxzba62ttf78X"
+    },
+    {
+      "step": "register m01->m03",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Hv4Aewh2pFbhLFJ9MPxungNQ51FmmcG1gty3LnZ3nvcJ"
+    },
+    {
+      "step": "register m04->m02",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2UhW7X4L5iMYLmwDRZj1ULXd787v3Lw1KeYZrHNk1eos"
+    },
+    {
+      "step": "register m08->m02",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "G7uHznWsN86tU3DBqdAHZ8wuV9zWr4QiRxopJrHKHKXQ"
+    },
+    {
+      "step": "register m08->m03",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9aqXWwf4n18eEBzszHTG5RoU4jBKkCZrQPYFxeCFw6S8"
+    },
+    {
+      "step": "register m14->m03",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HwWUrz273zUgAhzSYQaVgjgcyfreWUq371knEQmdCZnC"
+    },
+    {
+      "step": "register m00->m04",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GsrKbPU3wMs5EGD4Q8uU7d35FDkAMHKxn4qF6qCdyhRr"
+    },
+    {
+      "step": "register m02->m04",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "39UkyHHCNcqCSG2vmpKq7MGqeaLGZmDPit7WiLQ2jjnn"
+    },
+    {
+      "step": "register m03->m04",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2q3Z6MdoMYLynZsCPWejfdYdeSGh2bqVUefJv1naZ2Te"
+    },
+    {
+      "step": "register m05->m03",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2mGpgcArFj61nsb4tpLNVLneFKQfwg5bbUfcWctQo6hN"
+    },
+    {
+      "step": "register m06->m03",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BPWnuMZXyRaZ56SDe5cWhPRNykNeNyh3Kx9EBzwbrLpi"
+    },
+    {
+      "step": "register m07->m03",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DyUMYtmJTabCQ2sMB6R6vb53fqN94nvVGDK1a5crQqvS"
+    },
+    {
+      "step": "register m08->m04",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BWQyrjz2wLWHeSQMfwBfzKFKzhaMnPbyjRTo1UL4FdDt"
+    },
+    {
+      "step": "register m10->m02",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4AqD2cZdmN2HsUFh6DqNTdyXpwGvytU3nRUT5rKRowEV"
+    },
+    {
+      "step": "register m11->m02",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4EZWFiW9xu4oR14wGPw5ZdXEeZ6XyNQ8jJbNTyCFWTZ8"
+    },
+    {
+      "step": "register m12->m02",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5CWsJrXGWeSSFNn1kGCyNa4YtppLjiqiZCEJVPoQMGYr"
+    },
+    {
+      "step": "register m02->m05",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FB1bSsnytfcrap4FewvtuREU9AJY9vxC2wxA5eiKkWsr"
+    },
+    {
+      "step": "register m14->m04",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6CiuLAPPfRpF1Cyh7CYsf7fcFT9q5mv9zVgKmVWPDt9B"
+    },
+    {
+      "step": "register m00->m05",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CE9JCkpTciRdEB3DChksMdcXHraSDgjBAMHpWTjMsP5X"
+    },
+    {
+      "step": "register m03->m05",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "29AGMyq1fQMnBA6Pb4Tme5cgLHbLLpMperDeqzE5PGmR"
+    },
+    {
+      "step": "register m07->m04",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GUmLp69pZjRZSmLfqcEzjdEpTbT8L8ShwWUAPw8ZgyWK"
+    },
+    {
+      "step": "register m13->m03",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CMXc7GnkKqp7QkBAUrm3YfdvPduoAFrnEEri9SRUxn72"
+    },
+    {
+      "step": "register m08->m05",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7nqSq1eKnYw4pcVpttFCvA3zXxS9bmgTRsnRu9JhEWAw"
+    },
+    {
+      "step": "register m04->m03",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4beJrzEPLH1ZYSRJnjV96PjEg8PUG18JoyNMjtGZgLno"
+    },
+    {
+      "step": "register m13->m04",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5NUcK36um4B1LDJQfxTpjc81iZReweZioZcjAxSX1Bj9"
+    },
+    {
+      "step": "register m08->m06",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8jsvqpzQkZgW5UAtCuyJW6Tct7tcVCmTKC85sdXUiQzT"
+    },
+    {
+      "step": "register m02->m06",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CPZHAhUWpKxUQebkFyFkKzTRTyDkn5fUcQf6ugfAMiZP"
+    },
+    {
+      "step": "register m14->m05",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2eYZG5bRQAFkkkM4EThDkNBrdErLoWEXvDDJbPgNEibk"
+    },
+    {
+      "step": "register m03->m06",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Cjuyu2ghKEFaADXSggBKPQ7iunVhLeA2UqvZ4aHx8VAt"
+    },
+    {
+      "step": "register m12->m03",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6PZGjwJG8h62CreBfh1QjacEJebkx2GnmJ82VSh72Emz"
+    },
+    {
+      "step": "register m00->m06",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "NwujcZ6J6JunwLTPVZrDmGWXa8LisBnqecuLDt3L45Z"
+    },
+    {
+      "step": "register m07->m05",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4QDifykBYXNKvWVqwC9QnGmw49JsiJwe8cfamh7NuxuR"
+    },
+    {
+      "step": "register m05->m04",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8fucygMxhNAAMx2Jh69e2vJKKXiG8wQh43NfgdZw1VSu"
+    },
+    {
+      "step": "register m06->m04",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "APWMb6nk1e17N72tD91SNJN1RvpP6FfHToWF18csX9Z3"
+    },
+    {
+      "step": "register m08->m07",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AtpMtbkhCjAJXWJbWLwgtxKMPPmvJNQJ7QRJyjgdhXWW"
+    },
+    {
+      "step": "register m13->m05",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6m5oKke3qZQmq9xHs2KsVk5we1yxo4zGBAiqWmMsZ6qq"
+    },
+    {
+      "step": "register m04->m05",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7Vjnt16CbFCzcJLHtgYk15x3xqJAiYvMpJHbcqJA1Dpk"
+    },
+    {
+      "step": "register m01->m04",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5MJYqCrc8YWG7n7XZWgekegKGhbAMjgEQLiLiVVYBNnc"
+    },
+    {
+      "step": "register m02->m07",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BanqbhNRZD3w4wXBr21uRXqVswZ54jJjV2DfhmS2yYfe"
+    },
+    {
+      "step": "register m11->m03",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "84qfL5rQThbPLLAo34DQ4aRicRvmiJqgDUpPMUadBQCu"
+    },
+    {
+      "step": "register m05->m06",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BjQdzEwaT57qx91P2hhGk3HnnzFsA9qWMx1ybrChfn79"
+    },
+    {
+      "step": "register m13->m06",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3629LvrrdJgje2QumhFHd9HHbtGfXMg8q7yCUAXLpvAz"
+    },
+    {
+      "step": "register m06->m05",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Npbiiwp5ebrfVvGKcdXxKCxZDRtfifSsjWrJHi95q5W"
+    },
+    {
+      "step": "register m08->m09",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "12e448HBrmVNWUgDNTkRmWTvAG7SmV5ENcaNYrBLJ5TQ"
+    },
+    {
+      "step": "register m01->m05",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2Wd4SE88Kkzt7qwf7EgNYWf6dGdrZmdKPj6vRBJ9LBZb"
+    },
+    {
+      "step": "register m04->m06",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HSAGCsTLaLQX3ixFuvdYnP1oPDKaZyfJukFWU3dVP5WG"
+    },
+    {
+      "step": "register m02->m08",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "25hCRSdJ4r4L8TwRjE9kzH8DTdyURHhqDBGXJJ6TrMTj"
+    },
+    {
+      "step": "register m11->m04",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3aNfbLGrCwqz5vw9txgzw8joueNYozCTh6yVW5cgsX4w"
+    },
+    {
+      "step": "register m10->m03",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2JboZjcELaYoaQVr6rDByEAFciGiWSSA8QpDoc4b9GDg"
+    },
+    {
+      "step": "register m09->m03",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CqF6rzhGV9kfyGxXCGmh9THzx55f36zXRjkyHfK4Hf6Z"
+    },
+    {
+      "step": "register m05->m07",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BGN7Z5njkw4xBsrRbZYShVcgehf4PUxHc6tAWJQfxgBF"
+    },
+    {
+      "step": "register m14->m06",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8y1inM3peU34eVbDiA55b7H9iMQq3J627JotQuWYDZuB"
+    },
+    {
+      "step": "register m07->m06",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7n4bgT7XVXDLhJEnEoKZZqNDys7h8onoagMuV9e5SWDq"
+    },
+    {
+      "step": "register m11->m05",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3Mj3gcC2BiexTWQNHRJcvTRQW15PdeFtZFC5XyZkAA9B"
+    },
+    {
+      "step": "register m13->m07",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FdCBw7JDGcNYTHxPxJZjMg88Vcf8VKrmxH7gV91yD8TF"
+    },
+    {
+      "step": "register m06->m07",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Fn7sm8gdBjn1GKmVZQdiHauscCowTK4C8BZTtUz96xej"
+    },
+    {
+      "step": "register m08->m10",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9AjZHHYiTD5d59dEg1Un4LDy3PVq6mzXC3QNJAZiV23U"
+    },
+    {
+      "step": "register m04->m07",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FSxWSepuzpVpaWu1w5ka5WnQWZRJubzhASEgfMcDmWZU"
+    },
+    {
+      "step": "register m09->m04",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CtAvQmn9KEECzbkQd4CJsmN6GgM9bngHxNauA23DqWUe"
+    },
+    {
+      "step": "register m11->m06",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GBwD4g4cdUfyUW6aaxBVX3fbgqhkxmgniH5xvCbwjkRj"
+    },
+    {
+      "step": "register m10->m04",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4JCcqhWKtFPw6ycNWPVBCoBoiSxa8Koyq5ccy3hiJyYR"
+    },
+    {
+      "step": "register m03->m07",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6z5hn7LkTV6vyoe99tML7tTX3CijX1kf39qoZN3Cq63r"
+    },
+    {
+      "step": "register m00->m07",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "26FnJ3zLkMMShBxEUCwUx51uJhibz7P8N15LgAFuoPJ1"
+    },
+    {
+      "step": "register m12->m04",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "B6N2Q51An6tPcqD7yYyn9kvERaKUNsB72ttxtMicfS92"
+    },
+    {
+      "step": "register m06->m08",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Bgw2FdA8JS2Z5xwayKX3dMyHby5GDwb1khhE555jD5Rh"
+    },
+    {
+      "step": "register m13->m08",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "59XgzYL5YhSzrQS4EZtkKBqETPNGNqLAf6rTXab5ytXN"
+    },
+    {
+      "step": "register m01->m06",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "H6PvNXU5F1QUfZSK3xHf1gEhyHVs5xCobHaPoEBRqiMS"
+    },
+    {
+      "step": "register m09->m05",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BSWJ9nA5AgPF2t5RVTzFAGus8QVQcy5P6rnojQg3oEqz"
+    },
+    {
+      "step": "register m01->m07",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "ALf7PoYR3PpR6oJhuNfUEBmfTPLsaWovSPHfKj6C2PmZ"
+    },
+    {
+      "step": "register m07->m08",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9YDWxeGkdTVtyhnUuFMPgnimF7Cs6XyKTdg1B6TMrzk6"
+    },
+    {
+      "step": "register m05->m08",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EiLQHf6bZAfGo1DfnXRY7WiifRNB7EqsSjZtGvQfSeJW"
+    },
+    {
+      "step": "register m02->m09",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5PjziJqXvPntMYs8qxgAJpgLtpnwVA1m6MNp1ta3fKYD"
+    },
+    {
+      "step": "register m08->m11",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AXmthMhJPjPgCMWEkejNTnQRWc59wALhYx26nm7oEBbQ"
+    },
+    {
+      "step": "register m10->m05",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2oTAEd2XhxGDXYnURoDDs7TunmPnWUseSDcoi7SmC9At"
+    },
+    {
+      "step": "register m11->m07",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "35Jh5y6wbLzVs6h8wdLciJaFUNnqUKkyxzDGxTunDGDb"
+    },
+    {
+      "step": "register m12->m05",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2iTLeeju4W91N16M6BNRZzkHKBxyj5JnS4ziB29cWG3g"
+    },
+    {
+      "step": "register m13->m09",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CAqRDNDPp5anp29NstKoT3iH6Y74Jsz1ebFRfL2jRqAu"
+    },
+    {
+      "step": "register m06->m09",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8puFTwbVs7E5QP3bsMRdqNP3J1ybCeyNAxGu1ALhwMqD"
+    },
+    {
+      "step": "register m00->m08",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Be569Za4WCSHiTMRs2M78nsjHd9UvsmToruKPfp5k8YK"
+    },
+    {
+      "step": "register m03->m08",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FpN2yV5Gr6zZdd9NUQRTQbvQ93fFQ57smt8gBjUCsAdU"
+    },
+    {
+      "step": "register m10->m06",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7aqAMKmWfyFFBDZXPPKmbwiMwAwzc4woQqRPkY4BNojr"
+    },
+    {
+      "step": "register m04->m08",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4t2JYKtxG3xfjF4oE5koRpiJn8Dv8vBH9u2biT14mh67"
+    },
+    {
+      "step": "register m04->m09",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DJKJSXUjPUVELaCXBRuaAys3wpFwimVVUoBJpy7JWL58"
+    },
+    {
+      "step": "register m10->m07",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Hx6EYdjv7esZGTWz27JFPjk2VTQFG3xTnVd7zXGKzhHk"
+    },
+    {
+      "step": "register m08->m12",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Hd9GPV3uR4CaeUNJ89CUac4cmSW8PLua5amUmyhARVWs"
+    },
+    {
+      "step": "register m02->m10",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4Jz8xCQp6fhK1BKiUFGq3D21d2JuQS4APDZCQdGjep5S"
+    },
+    {
+      "step": "register m14->m07",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "G22ZYqZgXT9tfi5xZVCBqLTTu6954KLASS1baFHU5tjk"
+    },
+    {
+      "step": "register m11->m08",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7GNg9qfqNYLPMh6kxX3JfNGivucmYv35mz6CXQ7vgC1H"
+    },
+    {
+      "step": "register m04->m10",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BzZaQqAkGbgriKvvDurWSXsUgcWsy1APVwAsDoEemVNN"
+    },
+    {
+      "step": "register m06->m10",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3Y93x9Xi9bEApnTUNVehV5pQfWGd5igdDN79fZQ78SjL"
+    },
+    {
+      "step": "register m12->m06",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DTkTS3APSJVhvspEutKNdmVBRjZ5eXNWfUKtNi4HxN1L"
+    },
+    {
+      "step": "register m13->m10",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EquJipZe42hUF4qbAaFqnUWDmquF8iqtHKq48bpADVB3"
+    },
+    {
+      "step": "register m03->m09",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3MnLzw5i4q1eR2wxfX9uZDgQU4QaWDwvBPDFy77jevcJ"
+    },
+    {
+      "step": "register m00->m09",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5P7Hd5ByH2JWX8h1QprhK7tTVMQYbqkWhARYB1Tkujpk"
+    },
+    {
+      "step": "register m10->m08",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DXaaqFEXibTt5WKtg5MwxnNtekXeCyLYRXTrAVhiz3tH"
+    },
+    {
+      "step": "register m14->m08",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2WNPhub5BAKzp1eMfG1zddn9LNJrzW6njVn2Ug3AzL5V"
+    },
+    {
+      "step": "register m02->m11",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2R6R6Y2P4eCR4Ui3Zvc3PwU3RteNKbcqukVwfHZuNSmU"
+    },
+    {
+      "step": "register m11->m09",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7LYm6BRGZhEXuWNyvH9MG2KVB22XXjUcNDf6GYXMziDH"
+    },
+    {
+      "step": "register m14->m09",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GdnH6PZxxdghFLpCmKCRTo28Mo1NyKiW2zpg4icozjuB"
+    },
+    {
+      "step": "register m08->m13",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8RzX2cs6cmpGTe6bVpbxffLHQnbQr8cMEJPYKKzS2CvR"
+    },
+    {
+      "step": "register m02->m12",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5RiJXSLaywtKXdByFakTj4fXyeFwQz8xM18mMPucaU3L"
+    },
+    {
+      "step": "register m11->m10",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "34rBpRG4zro7d4z7sebw1GbW84xfUZb6Kje2F6qTwnUP"
+    },
+    {
+      "step": "register m04->m11",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4hjL1EK14MkAcV8eSMT361DXRoaA17MQrVaJrfgzZzeH"
+    },
+    {
+      "step": "register m06->m11",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5V8iVKbaNWMW938fZiT7jxEX9ud8VzrN7LfhUYHgHVMm"
+    },
+    {
+      "step": "register m03->m10",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Gky6PygGzsixhUBX2pRvhhNpX2NKkKD8wYDLyNsaLwCR"
+    },
+    {
+      "step": "register m12->m07",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GokFTCcCC7hTL58cjH9EUU25knMDSougKVsNB1tx6BUU"
+    },
+    {
+      "step": "register m13->m11",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AZmkAt6Sm9db9rC37jt4nbUGTdZdedviYgNPDKTkQh38"
+    },
+    {
+      "step": "register m00->m10",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9Av8eDUXrY56RqQKuKBJtSPfQzA6UiT364wTBnBCMiG8"
+    },
+    {
+      "step": "register m10->m09",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BPD66itvDRVYvoifvtn41wbh3uKGApsUNr9su1VAnzQ9"
+    },
+    {
+      "step": "register m08->m14",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "J8BR7jp3HfM2fWzHQg7h4J35JsjjYvaqTQwEZVyg1SzL"
+    },
+    {
+      "step": "register m14->m10",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FbL3NpkJgkXeXrUowtkSPzS5cQ5gjd9dvB3PqB6oMEzx"
+    },
+    {
+      "step": "register m02->m13",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4RgBJ9zYps9PawW1vPWGrsJ4reUuMJfGvhWv58hGEFRF"
+    },
+    {
+      "step": "register m11->m12",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Hbm5eTmY9LEAc9SgqqqGRRYinU6TB6EeKW35J5TPyrMn"
+    },
+    {
+      "step": "register m11->m13",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "F7kBExHJYLh6D4cBybQTL24fToesd1DA37AADtcXJbK5"
+    },
+    {
+      "step": "register m04->m12",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EyzJeHHRBLJCEgqpws6DCJtPmfNocxSCzftRXMLb1wC6"
+    },
+    {
+      "step": "register m06->m12",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AUKCxTYtXVGRpyePnFRj6K9BgFiGx91NhnCJX41kQbRN"
+    },
+    {
+      "step": "register m14->m11",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2KZVzHyV7e85HiForxTwpQnHTyPCtpFYcJCDQFZirAxz"
+    },
+    {
+      "step": "register m10->m11",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "A89RV5ptsrqupCPY9daHstRxSXnvu77jHTTpGHNsXQug"
+    },
+    {
+      "step": "register m02->m14",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Hp45624Ro9XWbnBh3WtEykWK9L9tpM5NPZNepD1yNbkT"
+    },
+    {
+      "step": "register m11->m14",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4oxFN8iEm58JraGdR7wB7PdQU7gnYMe7j4hQ3Bj8LsaZ"
+    },
+    {
+      "step": "register m04->m13",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BjzNy351pcuFsfQaNAejdf2XTGPUCiC8EZcXzTbuMNQx"
+    },
+    {
+      "step": "register m06->m13",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2CmQWc7W4zpTqmtWzuDCGdNUN43Vpwoi7pjQb8D6dwVH"
+    },
+    {
+      "step": "register m14->m12",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Hq2jJh7e3nbBwjYU49P1QHjufGWMLn1BVmDnQ7qLo1i9"
+    },
+    {
+      "step": "register m10->m12",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Gep3iejhPzrjaC6kgbhaGqzXziG8DsyELchYbMJrxZtP"
+    },
+    {
+      "step": "register m13->m12",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Eo8W2Y7DRTnB1Dhb5mc4ES7BjfGH5RGh6AwPYkpr8hPV"
+    },
+    {
+      "step": "register m03->m11",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "142LJ76oRaaB2rCRELyXxBxt7U7pUBEi5nVV8PfGmqfq"
+    },
+    {
+      "step": "register m12->m08",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EzTZj4cw7bk24Pz3xaPrCgdVvtpSaBTi1Kj95xWBKGEU"
+    },
+    {
+      "step": "register m00->m11",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6Yu9kEPV4LTX5JEMAVNfxY73HAfx2gNTXfiDETkmjDAq"
+    },
+    {
+      "step": "register m06->m14",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8D2AyVFuRP3c1qWj8xx9GiTn6xdzA5WxWrER1QDYWqPc"
+    },
+    {
+      "step": "register m10->m13",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4aSZeQYaMQKtHZao3Q19S4hFs5rVivn1t81GU7L67XJS"
+    },
+    {
+      "step": "register m14->m13",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "671k8EbWfV33iREA9sypHAfZnrk1wVYwX3DqqKDxhzgt"
+    },
+    {
+      "step": "register m10->m14",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Pv1tAM5eKVUzoT9e6UFhVgRoFN3ApSNkJVqmxWryEVQ"
+    },
+    {
+      "step": "register m13->m14",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7xhqqVV8M4C52e43qHmQfDuLza3A4soxoWAT5hVz9hvU"
+    },
+    {
+      "step": "register m12->m09",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4KrqVhqdS8mv82TDrnN9ULjsTk5Y74zDTCY67Xa2dBWp"
+    },
+    {
+      "step": "register m03->m12",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2K2foTH96tqk8WCgUPZ729cJRpzPQbnVawRQYfk6ky9V"
+    },
+    {
+      "step": "register m00->m12",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Bm28ofdK5WvbhfJXByuxzJrqWcC9eJJtt6KjusfCyZGS"
+    },
+    {
+      "step": "register m04->m14",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CbKehMNk2x9ga1TYGBpmqNDgTNZgwVnJwq4JkVpiXLY"
+    },
+    {
+      "step": "register m12->m10",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "J7XDVrnMYCV5gnZU5eW3CRjN5BDZbK3z5PXw7kGhuuFR"
+    },
+    {
+      "step": "register m03->m13",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CWNzdzDGnh24FYXSf3UYUqT8K1fxjvL8UU7ijTboPj4E"
+    },
+    {
+      "step": "register m00->m13",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BfMuyGiFtp7amwy4haQtDyNyMbUsZMWwKf2uZVmsYwGf"
+    },
+    {
+      "step": "register m07->m09",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GbyLSL6v6Q2oZqTCDX6fYcveXBTT6hmFNgF36USt4C27"
+    },
+    {
+      "step": "register m01->m08",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "92j2DcZaMvcTqM8ygmuRXMZnxy3nGig1gKDcxKgqregf"
+    },
+    {
+      "step": "register m09->m06",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6Y2mubMDmQb2NUUyCcMtEQhztjvRDjL9H6h9oDhoGxqy"
+    },
+    {
+      "step": "register m05->m09",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DkJiwVn1qCHc6cv4Kcwzk7quzGj9CpFSwdnYdPiWnu4w"
+    },
+    {
+      "step": "register m12->m11",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Fv4Aoav8a5ZfYKLq1hssH63AASrS1K2b2iRqqYDBLHEX"
+    },
+    {
+      "step": "register m03->m14",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "77RZizuVRQmygm1SyBy4tdK7tE3kgn8WuE3JQnfXTTxg"
+    },
+    {
+      "step": "register m00->m14",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "sAcugEiEz2apAww98dyvPJGAKxm54UREY8UBCtvBJbL"
+    },
+    {
+      "step": "register m09->m07",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "64Dv9nNjfAnF2YF1zU6RMErLvsmrt7cD5H2YX2GVtw2g"
+    },
+    {
+      "step": "register m01->m09",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HCDwkbUGxc3a17W7SjFCmQwyFokxWXg5dBoGZEPeGnvo"
+    },
+    {
+      "step": "register m07->m10",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3PpHveXuHKouWErzaZPyDaQQ8rtUe1yxh7iVK8q7x4sB"
+    },
+    {
+      "step": "register m05->m10",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GNq6q35Rjrrz1a9rp61K2yTLq2anTisXiCxznLPhRaYj"
+    },
+    {
+      "step": "register m12->m13",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6VuULpgSX6Rsc81D22xnukHkfoa4RbTqfrmFib7yTvEW"
+    },
+    {
+      "step": "register m09->m08",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "64ov7eNBqNMSbj12QqsssZCbyZRNF41hpLtr49ka8VY2"
+    },
+    {
+      "step": "register m01->m10",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Ea3vEWECXSgU1kGXwf7dVTeobhygdS7nNfM89US2rxym"
+    },
+    {
+      "step": "register m05->m11",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7V8qkg1FcqmpibrBJ4H1nQ1c8oGoHQueK4DYLNpQXCDE"
+    },
+    {
+      "step": "register m07->m11",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9vupF71NTBJZVT97WCvpyqxZ4zTBMNsn6GVV52m6Ukdf"
+    },
+    {
+      "step": "register m12->m14",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8QHPS4WR7SKV7XS7LoQpdTAhLQV2x5tzLE5FitHmrUbX"
+    },
+    {
+      "step": "register m07->m12",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BeY5uRSJBBrKrg3LXpod3xsS1BZpUR1ydnHgrr2hQZEy"
+    },
+    {
+      "step": "register m09->m10",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2ZaiBiAkyVrRpRHpdbBkkMUsoq5btr65NZEHcMnGTpsR"
+    },
+    {
+      "step": "register m01->m11",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4vsvmVNHjcrgA616WdDXZvyv3LfwcHNaSuVaTN9VjmW8"
+    },
+    {
+      "step": "register m05->m12",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Do4GGH5Wgs8owpkW8UDCQVaB9nVAe19chGamoGNz1rd5"
+    },
+    {
+      "step": "register m09->m11",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "A5pM59wYtF8k8ZqAK5zpNEHjTZjQKKQtEeMHQUA8DxQE"
+    },
+    {
+      "step": "register m01->m12",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3izcEXZXvrzmdEBZoZUPqfLPCBUpyTonY2aLy7x2DPAa"
+    },
+    {
+      "step": "register m07->m13",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9XPkGFbWczyByPWMPc9WpP1Z6iz2CC3D8EbqhTZqWJix"
+    },
+    {
+      "step": "register m05->m13",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2HXM9CcG5Bn5a8TS3QxFJVyjKtpxrnMG56quEYBFq1aZ"
+    },
+    {
+      "step": "register m01->m13",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3D3nRh1B72BVo1XBQkBAuxTQoomxbwssRtdEZuMALiLu"
+    },
+    {
+      "step": "register m05->m14",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Ajjk5JgyW6Cgs2i5VkZisoLy2z1UYMkbokXA8jYtK5Zo"
+    },
+    {
+      "step": "register m09->m12",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5umBnEbFWDnxtfSYQsNKwEDpF2czcHcht2WjRW3i27s8"
+    },
+    {
+      "step": "register m07->m14",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6VXEMsHc2aPGD8M4K1bnvU4HMZ1YqkbCi7jjVwjxL9s1"
+    },
+    {
+      "step": "register m09->m13",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3RbB5FuTWFUK9jw1i9eaPohGpBqYgTJLo7D7yHrxP4dN"
+    },
+    {
+      "step": "register m01->m14",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DzoCRHpxmyYGLGWS3dw6aSZWM2qgmFUP8Bn14FgiYSxV"
+    },
+    {
+      "step": "register m09->m14",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "99LC6QjEsD7ATUkpJeJGz87UmWa5kfJnCdbD5vqKyzJD"
+    },
+    {
+      "step": "close_epoch",
+      "account": "x207-v013.testnet",
+      "method": "close_epoch",
+      "hash": "EeHvGgktBR5TJ57XRSGk2F4iTZie7VyKKC2iC8xgmQJf"
+    },
+    {
+      "step": "register m05->m00",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5vxExeSZ5nmLMfGUCoDyocyL7xbjr7uVFRHktHeBpxsj"
+    },
+    {
+      "step": "register m07->m00",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6DkLJdGX2iQjKJNYmJX1HFVRujuZ4G2GiZSqT1jB9n2z"
+    },
+    {
+      "step": "register m01->m00",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6MKLuZdSwD4jCfkQoFses7tkGs2JDvaPKbSfninjJpD4"
+    },
+    {
+      "step": "register m08->m00",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BYsz5mhACPmT1qpxktN43jFPqGoziSdoDjXmDN587gbz"
+    },
+    {
+      "step": "register m02->m00",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4wgLJ3LUmGoVRsNWd9auo9e6mFt6S4c81WQUYhKdovuk"
+    },
+    {
+      "step": "register m00->m01",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CJ81oze7dDQGs7ovpYvVGh5sQ66EBcrBsMFKmNcqFnQk"
+    },
+    {
+      "step": "register m04->m00",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "G6NQjfgz6vf12vDq5SvQ92RGCS1g1sCdmV2vUxChx2vy"
+    },
+    {
+      "step": "register m13->m00",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8iufT9jtrtkE7xjCNQqxy6hqoTth236Uj4iUR4t4w9HW"
+    },
+    {
+      "step": "register m03->m00",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "C9w5dWpBwjPuNenoRaToPCb93vvwtic2DhvcB5AjaSh6"
+    },
+    {
+      "step": "register m12->m00",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Az66Q3QXpae6EhUHUjQkokDdJoDK8StrVvfcaywr9jsr"
+    },
+    {
+      "step": "register m10->m00",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HZjvcdSeK6kFYLvKmcGvgLG3BoyKKVyBsUV9SsqHJ7rH"
+    },
+    {
+      "step": "register m11->m00",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GHF4RAn5fUkTRMPs51egtk2cHv1daBkjoFqU6DRANrex"
+    },
+    {
+      "step": "register m14->m00",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Cfsn25Cgzz3gXWpJLf85fjZqGm5oMb8jo4yhdkChwJTV"
+    },
+    {
+      "step": "register m09->m00",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2y42sy4AExVhb6mipUi5n6U1DUJm93E645gZk4pHTmpt"
+    },
+    {
+      "step": "register m06->m00",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "98eJv1ZfrgfU9HKkwAgUwnvEAV8AfNYxaSm9X1GBBeAU"
+    },
+    {
+      "step": "register m09->m01",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GYE3aGBgHzX2VYC893ZwGsvu1jDS2eo3jq9i61RfAQzf"
+    },
+    {
+      "step": "register m00->m02",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "B7oKMqdx3H67Ld3VV6Mitf7SCLdCKNz8tS3aXrCwKDYe"
+    },
+    {
+      "step": "register m05->m01",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3W2aZ9dBLzU6afae7zUM7NJyL3yQmjzieuf5Lr6D3kvy"
+    },
+    {
+      "step": "register m08->m01",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "1er2V9cWUvDNL8aK4f5wK1B9v3SpVquHzxGAdgwYz4m"
+    },
+    {
+      "step": "register m07->m01",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "TpmLKRVoBizaexrYjLXuNt5Nop6A9vLguZVs8EVFmzU"
+    },
+    {
+      "step": "register m14->m01",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5MMdQxPK8dniniD5tpzAZcwebDvrHi28SnzV9XuUCivj"
+    },
+    {
+      "step": "register m06->m01",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GhryPQj8CtAjEAfp8yrqAQpG6gv2P42cbrMgSCkkbQ78"
+    },
+    {
+      "step": "register m03->m01",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Dq4CgDNQuzmbbw1bfXYMZM2nxTXzmFeRZfzivM3utXNW"
+    },
+    {
+      "step": "register m02->m01",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HWpedaPj7QKg7QcFpzWcL9WC38PsftL1i1uLcRk6tSHF"
+    },
+    {
+      "step": "register m13->m01",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DfH5HqMHpEiW9fV1TnDbqWZG8bRaVjckU6ZcG1Qqeiqk"
+    },
+    {
+      "step": "register m12->m01",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9y4StYLqhzA8WLSaV3naR9ds9bjUT6RUsxcUF2cfA83Z"
+    },
+    {
+      "step": "register m04->m01",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8m44qdv9Y9T4EEZ71GAoAENQNQKvGuvuUUvZMQ55hSpe"
+    },
+    {
+      "step": "register m01->m02",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GNo2vUaDqVKz9Wz9tvJy7NEiZd1SeWB6c26MvUtQvLL5"
+    },
+    {
+      "step": "register m11->m01",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3T2TCNLczjzMgsuPn9UfKG1R2PSJeyTZuv5vxMyhmNcF"
+    },
+    {
+      "step": "register m10->m01",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "G2p25Ctp5yyDhhKAtXE7zdomoUvrieLDQed6iFtWtoEU"
+    },
+    {
+      "step": "register m05->m02",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EVRbLLx8nVUQaWJfyocRzn1t4L3WgbMgeUZTi8HLJMiG"
+    },
+    {
+      "step": "register m00->m03",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4QBhXrjbXP1sH4rVKk4yPSVzsBSRKZ8XtN4dmrZ343iJ"
+    },
+    {
+      "step": "register m07->m02",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AU8DzM1gW7ACDiJf5vgQBP4BpQGifh6AEgzCXz258NHU"
+    },
+    {
+      "step": "register m09->m02",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Acni55oLZQRfzHuPnYWLghzEYy8yYzNCBXdcDpRisi2m"
+    },
+    {
+      "step": "register m14->m02",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GBG6xqomLVSr1GWw9GGZqj4zB5P9HuNLfL1ZQsN8hhxY"
+    },
+    {
+      "step": "register m08->m02",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Eq7ejNyR39CYGm9bYBa1PxmQePD5vrbXa2DBUdd69hBQ"
+    },
+    {
+      "step": "register m06->m02",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DhRzdeaaCJFJrmM57CVJjgy4jeW5FdrHAfPgwf6G89PE"
+    },
+    {
+      "step": "register m02->m03",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GnoJko7SEvtMR3Yeis87mcgRFLGwsFXXZPoYkdX1sVHp"
+    },
+    {
+      "step": "register m11->m02",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BM2njf28JUHxqZh7FeYxDDBP6Cca2CVki5mRU8tqHmzH"
+    },
+    {
+      "step": "register m13->m02",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DyDwrAsFHJFAfHpzW4mGvsHXYRxqscFNvfTjUWWFpSWX"
+    },
+    {
+      "step": "register m04->m02",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BnDpR1rVpcW6urLcKD8UL15WAmp8ZEE6y1HbHonMqPzH"
+    },
+    {
+      "step": "register m10->m02",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BviWJuZA2fn1RUiRoE5o4ejqGqQhb6fiym91KRDahhYM"
+    },
+    {
+      "step": "register m01->m03",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FPZkWfMqNgNbEKNReSSmvAoXdQSeN1u2wWd4sabZGfam"
+    },
+    {
+      "step": "register m12->m02",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DvWgHwcHCRkCgLQqUNbmuXtymVH6JHRXHd35zXWrwvub"
+    },
+    {
+      "step": "register m03->m02",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Ey7KjxsX2eY89Kn9rWEzd2a7erTTD7YL8rgCUUd4XRWn"
+    },
+    {
+      "step": "register m06->m03",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FDuisidSouiiTHr3muEwAzq3eSLWDMxUHNtjbwsJFPks"
+    },
+    {
+      "step": "register m14->m03",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FixQFtgb483UsJ2j6tdfT6Jsjie6TtH5CMMEvf4KMfb9"
+    },
+    {
+      "step": "register m09->m03",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5Kgs9MiS6yQgU836jJ8y2G8tcD3EzFFj1dSK814PDLSv"
+    },
+    {
+      "step": "register m08->m03",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7VLHRpzHvg6juSyjHU1semXKvKZv5o6JA7hP8iwNEGdK"
+    },
+    {
+      "step": "register m00->m04",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4BsLBM2iGtK8qzGQzdyWy8iXVJJ1VPbmV8JpxeQdgiUJ"
+    },
+    {
+      "step": "register m07->m03",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "829cHUjXTR5Ncgvw5oANTwckWYfMFsDzxNJArPWv518X"
+    },
+    {
+      "step": "register m02->m04",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3AKL675F5EaL5PrDF7j3FvCCqKXvoqzZizaFCaUBwity"
+    },
+    {
+      "step": "register m13->m03",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "78g1ewUHM2zqSmf2z2dtatAKzAbmGi45qgAvrkpbrHWD"
+    },
+    {
+      "step": "register m04->m03",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DztRZCBdd6STiT9ftYcrbnEpfqRsMyQUYgHWPRWoWyjh"
+    },
+    {
+      "step": "register m11->m03",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2gqYd73qL62YgK3oNquR2D6YjpLUPEygMCCAi4Uvk8Jh"
+    },
+    {
+      "step": "register m01->m04",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Fqi3mDvqYNxiWUQDq8Uk8dChtWy7AzVcBy8TnqJUcmCg"
+    },
+    {
+      "step": "register m12->m03",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Ea4YPRuyPFmC9Uu4AvDVizMMbotrKqXmD3xNr3XpJbSc"
+    },
+    {
+      "step": "register m10->m03",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "B7VLmm3bm2Ui4NmcKAkGenpc6kS81Nn3cwQyHQqSfMTA"
+    },
+    {
+      "step": "register m03->m04",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3pLUtNhVFZxKLmQxqAdV2ALqeFwkV5n7wrojPhmFEwPs"
+    },
+    {
+      "step": "register m05->m03",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2ZTHSQptRAqJwoQPJeGWUd7foL9aBXMsdcXNBPAw6htD"
+    },
+    {
+      "step": "register m06->m04",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3TnBJu36mHDiY7pKme8PacYgbARy5TXEEAjXh9w6rF9d"
+    },
+    {
+      "step": "register m09->m04",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HCJkuusTWdPmeY9Ri3NXHUPW2mHRD9Hbhoq73XxQKRPy"
+    },
+    {
+      "step": "register m14->m04",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6kuvSu6JzDAWoYrWhcxTfhhxEe7gh78fF4rJUYccKXaF"
+    },
+    {
+      "step": "register m02->m05",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DviF6EDoyoyVCKaaYsXJmkhKqPsvHePQZryyJtPBq4yy"
+    },
+    {
+      "step": "register m07->m04",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GzahSxGEVMBc5PBo3NhpJVjEKHJndV7RJscvK6hX4KNm"
+    },
+    {
+      "step": "register m00->m05",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "F5eoFc7vWcuEgNuZLBV3iB5su5RYsqpeWL9aCd8HJrR3"
+    },
+    {
+      "step": "register m08->m04",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AwD4sQuyBhJa13nSfXS4NZ3SBMQJNWDRmPY9EZiaYjVg"
+    },
+    {
+      "step": "register m01->m05",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FVUtjwLD6chF9DHgSpaYi7YqtZgegB9eQjWvDNiEfLvw"
+    },
+    {
+      "step": "register m11->m04",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4SXYpk7sJyX5xiTwkyWBnyZarEmaLqqqk3diNerdcLX3"
+    },
+    {
+      "step": "register m13->m04",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CivzQzhwhXjTcQgmyAz2YWpbG7MsEEHc4NF3f3j3wktr"
+    },
+    {
+      "step": "register m12->m04",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5bi8SgALMu6H25RmwAxWi2cDM4oGLZ9RPrFCQM93JDiv"
+    },
+    {
+      "step": "register m04->m05",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9Rj6UAiWdkzARaSXyQhvJYrgY6mZ4JePXDgd9kj7Bjs7"
+    },
+    {
+      "step": "register m10->m04",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4bHhM5rFafWnVCApECaV8JWWmThX3JzLK2EaSr1BtGRT"
+    },
+    {
+      "step": "register m03->m05",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CdGk1RqxiunxmgKJo8kJogX7o4CeEKmQDNcM66j7p5mg"
+    },
+    {
+      "step": "register m05->m04",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CJ8mgketRKwNtRVCXraRc8ZAwQP5rYbNRXRbUmUXCKH7"
+    },
+    {
+      "step": "register m06->m05",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EkmvJe6EBtD7z3B7aFpfXUALcR8heSDwxCN1S3Tqhfjm"
+    },
+    {
+      "step": "register m14->m05",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CvwkUrS4XXAo1btZgrs23CeeyrmX9YTeN2YXy8eonrhf"
+    },
+    {
+      "step": "register m02->m06",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "27nQVEaN9pb1jrkSdkbfBWeu7cwehfHYy21Wq9E3Xeas"
+    },
+    {
+      "step": "register m09->m05",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "E2r7BWZYjSogyX17arBBJKbWatar1SXdjfeuP6zVEoPV"
+    },
+    {
+      "step": "register m08->m05",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "dVhRsRxLyTUhbXD6xvSR2YJrGhKmFtA7p4icp2BKLPs"
+    },
+    {
+      "step": "register m00->m06",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6JW1eJQQStqTdwgF3Uon28zrr994WSuiBwhVkf8gWBb7"
+    },
+    {
+      "step": "register m07->m05",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EwKX5YHqCFBp85S85afTRGAJmmaT7iU351wKRDygJUYb"
+    },
+    {
+      "step": "register m01->m06",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "aGJJnyjsCaKNGCqiqL8zia6y8jWqqx5m3nkEqV7FDAg"
+    },
+    {
+      "step": "register m12->m05",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4W9swU8fiodupRarDQdubUx4JybnFhWXUc1p9hc5PX3F"
+    },
+    {
+      "step": "register m13->m05",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AdmVjESZ67mvX3CYdZJRPNQ3EPTy9Phwo4NyHvoqh6vy"
+    },
+    {
+      "step": "register m05->m06",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6Ts3Wps7wR8S4Dq6cb4JNUsJiZ3cdqQ81XvDUVDEusn4"
+    },
+    {
+      "step": "register m04->m06",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5gm7s1uYdRUHcNtdvCvaVfSsX9kiAURffQLQYYnHi4ZE"
+    },
+    {
+      "step": "register m11->m05",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "63Bk73soV2DxxA2xTUwk7Gh2ymCeLun439Za7PD9TpDj"
+    },
+    {
+      "step": "register m03->m06",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6Dosafz6YUsZmC3hFKi1XmjJ96U9fWQbrrjLWk9pX98P"
+    },
+    {
+      "step": "register m10->m05",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DoRW7jUKxv7AeRPeHRc2ZYKqp9eQFbSkPZWiwwWRNgUf"
+    },
+    {
+      "step": "register m09->m06",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "36ZRGAbDAFe4XNgS2STJL6ER3A4Tz54tMgeDeDN5geM6"
+    },
+    {
+      "step": "register m07->m06",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FpYhp5jvNrN2HHaqGNLhetbjUsfhnurA9qNGcaut1Jh4"
+    },
+    {
+      "step": "register m14->m06",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9WqmHBeQgozAzczjsK2M4pvaaoNWe34HbuMYp23NFSYT"
+    },
+    {
+      "step": "register m02->m07",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2PJhTNE2pPn6Cm89vc1HkFSdRjDU1VRyZTcbHJZk6uns"
+    },
+    {
+      "step": "register m00->m07",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "E6ST91cTYUYmTdgv3xgxCZJBgsSvi5K6K69c9BFdykyS"
+    },
+    {
+      "step": "register m06->m07",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6tqkMBhHDWySFyn1FRxKQbguiRTtT93wmrXpCezXjv7M"
+    },
+    {
+      "step": "register m08->m06",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GuwGMqDxLQSLNgn9QjVnxQiMJGfzxnxpssxFVqJRDmLf"
+    },
+    {
+      "step": "register m09->m07",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FRqrAasFURo7zr9DqzVRkNPj5ycfMA3Hk6FzRUB9yDNj"
+    },
+    {
+      "step": "register m07->m08",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CuYJvfAWxbVj1W9jK8dccrY3uZdYUPNrZ9w43jbe6hZm"
+    },
+    {
+      "step": "register m06->m08",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9bbwfg36zKcp7vFZrA9hSPpTHtSMpDKteAF3khoBwabx"
+    },
+    {
+      "step": "register m00->m08",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5ePTuANipDGWYcYVB9CKSx6JvTesaYxNNXXuwntvfS15"
+    },
+    {
+      "step": "register m02->m08",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6KGXzkszkK9GU8SKJWVHxqz8zXxA5UE187HQJ2EFwAWp"
+    },
+    {
+      "step": "register m14->m07",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DUCaHwnRRzYFQJNbh3iFM9KtjwHBRRc3Pzk5gwqKVymk"
+    },
+    {
+      "step": "register m08->m07",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "JC2s9mkyrHQUpJbDmbJq1RDKBmnGhEsNBHMxLUHbX9UG"
+    },
+    {
+      "step": "register m12->m06",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "J78UnJGX8Va59FcQp1pwYYNATfmdpGVUMw5cVPqd61yv"
+    },
+    {
+      "step": "register m05->m07",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8QBHUoy1Yradk4pFXvhgy8y1wnpErSL2Djkuf78in9wW"
+    },
+    {
+      "step": "register m01->m07",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "76T3iCyWCq3ajwixQZQLptdt9NbKx4eUH6c1iEdYMZCx"
+    },
+    {
+      "step": "register m11->m06",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CYFNDhpKHhq8YV4yS2sCcqfBxZjq4c6xPc9LLLTMjUeA"
+    },
+    {
+      "step": "register m04->m07",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9fthvWz7KDAeDX5ZE9Nh5i8AmN43aCxqQfJ7DVH6TKsQ"
+    },
+    {
+      "step": "register m10->m06",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9DM4NxVPrVjSbzusf5pnrL8FRBknPzrVZoeRsExwxVAS"
+    },
+    {
+      "step": "register m03->m07",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Fpz6hfDSxic6C56AtvF5Gs2q3pyM6bjUudvASo2HT9oE"
+    },
+    {
+      "step": "register m13->m06",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DVy5wtzv1SfYi589TVf5r42XKSpjh2VeVaKQUsTgmuVd"
+    },
+    {
+      "step": "register m09->m08",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9RSWKyGWoUH6y1s4kemsNBpEb2QqcufpRGnkEw46YXAw"
+    },
+    {
+      "step": "register m12->m07",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5J8VRgJtZ2vmNacqemhEcDRDnitRMqYkC13C3fdi75xh"
+    },
+    {
+      "step": "register m05->m08",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "ASC3JC5KiEJKQkr3DRkiHZsK9Z6kxN6ZVBAYV2jcNzqB"
+    },
+    {
+      "step": "register m01->m08",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5rqahQHNnEd5yKd9aCYmZJ1MpX9RHzvehYJcK6SQaZQV"
+    },
+    {
+      "step": "register m04->m08",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9v8Xoc7zHDuRRUBUGipR5MhgJ81TFbHb3N9dP3SprBTK"
+    },
+    {
+      "step": "register m11->m07",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EeHgzbKZWHtbwBWn1X8GgWV3WqD64zmsVtDHhePjcRBW"
+    },
+    {
+      "step": "register m03->m08",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BtB7U4AhU8CnK62vhcga7mDnfBvrsxxpFku1rnfd1xJA"
+    },
+    {
+      "step": "register m13->m07",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DxW25Zh3CykecZjWYuDYsiCmX7jQCLUWFAt6PrGGfUi4"
+    },
+    {
+      "step": "register m09->m10",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5hDJe3u1f3YRBgAw9wYAq8uAg6yzkpE7gKZDfBfGZxhs"
+    },
+    {
+      "step": "register m05->m09",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "D8uKc5WcECf8BdoEsKuS1tgzBGG16N3iV3LQbTurGXYs"
+    },
+    {
+      "step": "register m12->m08",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AJi13MHMv97uhsVAMMPv7E4ZwwyvfujQfvshC8kZwTKV"
+    },
+    {
+      "step": "register m04->m09",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8NW4PsMSQYhK5kqAEZDEgNuYAKo4QDnpi3ZDggY88Erh"
+    },
+    {
+      "step": "register m01->m09",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "G4vXrBe7APwiSzwPNcTvdPgvHpDujDNHd9yF8G4BTZoN"
+    },
+    {
+      "step": "register m10->m07",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BoP4WM2s8DjHnBCyQb8aTfqyGZxhYGQ9beYJFpm9UBhc"
+    },
+    {
+      "step": "register m05->m10",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3TuoBJbFZxTLkMTTetKqedP4VjEv9fYxqbGzkxKJjP7K"
+    },
+    {
+      "step": "register m12->m09",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GyGzhQfajsf2EA9wUYE6x32HTYVy22NtHacR4EDTs15F"
+    },
+    {
+      "step": "register m04->m10",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "89cAksCZh7VoSK8c1mdfHZwiX7LH7At76kW3ejcpfTVw"
+    },
+    {
+      "step": "register m01->m10",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "D3udxHWcNreA9B5mBSufFiF2rZ6P7eY6tBu8dbozwUPE"
+    },
+    {
+      "step": "register m03->m09",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3kfJ5eDcAmmHSRu4GpnHZy5mNsGgqKr6iNtw9TVrtgXQ"
+    },
+    {
+      "step": "register m13->m08",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6UHogFxvhBZR777Sz4uehxijhFBBzXQRB6Hxc7oFWYCF"
+    },
+    {
+      "step": "register m09->m11",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "ECenTh1jNCxq97XBmSs9VNqd4Ac5FoQU4XVLKfUMZSpD"
+    },
+    {
+      "step": "register m10->m08",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "98PMfe8qYwBeBaSWviWW2Av2Kn81yMhKLudcBGpN9smU"
+    },
+    {
+      "step": "register m05->m11",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5w7Eupik5K1RpbmuvzTnm27qoJsXoQtAfEL9nPxPSTzT"
+    },
+    {
+      "step": "register m12->m10",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HCw96PxisTfj1x4zgb2G9pma2Mh1TnbPfNw52GaVNT87"
+    },
+    {
+      "step": "register m10->m09",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HQjWxC8vPGDMybF7Pt7nJE5fQGu5XNiSa8zWefydBqZH"
+    },
+    {
+      "step": "register m11->m08",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BtoFp12K1tvZewrrkheLfs2GkLJz8Jipng3qHhEFXnWq"
+    },
+    {
+      "step": "register m01->m11",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CUPNKxWn5HDzuTEqn3iZbK4W5VPbmmGRBgyhWraPQM48"
+    },
+    {
+      "step": "register m03->m10",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "46eNCjKJry6hmGffX6f32xjoH6YKXR86q4ac69H57LcJ"
+    },
+    {
+      "step": "register m04->m11",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5hyyfxeNKGJ3HqecQVmgTJobNk8YoGv8qcXHofMvpDsC"
+    },
+    {
+      "step": "register m13->m09",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5YejBiRL94mXtkDtGaLKhcdGDm892bdj4mr1gVTBYCsX"
+    },
+    {
+      "step": "register m09->m12",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DgrPtcUuqGd8KTsfJxksLN448VLfbU3KmQZQpHRLvXa5"
+    },
+    {
+      "step": "register m10->m11",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BkbrSrkkou3Hopr3hFvJeyVJxgMhbZx7YjZVRzY57rdm"
+    },
+    {
+      "step": "register m11->m09",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BiMXomkS1rxY8XF6t9i9yo316Nr85s4w9tUuz12Y7Bxr"
+    },
+    {
+      "step": "register m12->m11",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2KZ8jZ4FyJLtpU7DGXNsbhxHRWotoXkwyHgPYMQWRk37"
+    },
+    {
+      "step": "register m05->m12",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GWEgw7tafWNuJvsM3WnZngvJDr4qkaWLp5qaAuREHRgb"
+    },
+    {
+      "step": "register m03->m11",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "36RDGPnhZ2uiYqJLeWgxfb3hQzvhdfM9SnTF1RjwaZzj"
+    },
+    {
+      "step": "register m13->m10",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3H7uKjaaJDcMdrJrJ6GMxxSxAFS3P4rKpPjmceSKiAYW"
+    },
+    {
+      "step": "register m01->m12",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7ZB4AfYNWCQtUAPCLhiKuvSEfBmUfbiCdiofR6sX785o"
+    },
+    {
+      "step": "register m04->m12",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AUa2TcwHfudw2eyuwXgzbC7srxtJ3oBNHYhvNFDQ8eSo"
+    },
+    {
+      "step": "register m09->m13",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2AH8yDS3meusC2oVPxvbmQZkzBMcG5ztEjUnhXV4ZDzi"
+    },
+    {
+      "step": "register m10->m12",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "ESSXFt2Lzc7PbZZUVt7PzzFoj5TiNA7MKULnvJKZuXXE"
+    },
+    {
+      "step": "register m03->m12",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "76cgFBiXHtxfUaw4UffSPDQJrbCaq41ArarzY3TtAHSk"
+    },
+    {
+      "step": "register m13->m11",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CpMZc724u4JHPSh6ZaUzFnWsrqA9oSrSTWeQiFgymd79"
+    },
+    {
+      "step": "register m04->m13",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HuGjTRXoGymMdcUzXQDzLaLuHVXeGScYXJFtsSbEJZEB"
+    },
+    {
+      "step": "register m01->m13",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Bv38b7KwFJjPncECA6ew21DQLXCX3eqdcKnf9nTpjJXv"
+    },
+    {
+      "step": "register m09->m14",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7sRtavqSMDxiFQyZmKwvuupLPHA5XR1hmB1mw4kJTgQw"
+    },
+    {
+      "step": "register m10->m13",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4F4nN43atQiLn1ey6R5cZ8Hd46vqEjtHrivZNGdAUC85"
+    },
+    {
+      "step": "register m03->m13",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "91Yb67RuxdET4sehZ58KZwhNxEmRDH2YjTrvA37Uv66U"
+    },
+    {
+      "step": "register m12->m13",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CGDujrZN5WLatjtmVKLQgiWasgic82atwT9ADRPBviHs"
+    },
+    {
+      "step": "register m11->m10",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "66eHGqVbokYB4fKRg31CvqsmB3s83nUEjznGSAkRQomg"
+    },
+    {
+      "step": "register m13->m12",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2LP9PrH74Gmrg8Wfj4KFgVZ6tX8TdwKGoNaDmUcEH5zi"
+    },
+    {
+      "step": "register m05->m13",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4jQMEeuUU3ETnwmTeRHkebMMe9g92TaHe2Qge9AFKSkA"
+    },
+    {
+      "step": "register m01->m14",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9y71MTzbv4DGsndFxy4ZU7iryqHqwADJyJ41fb1kDnnc"
+    },
+    {
+      "step": "register m04->m14",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EqmkfkH5qtG7ma1LV71TrjagRH1uydyMTKscNKY34DZQ"
+    },
+    {
+      "step": "register m00->m09",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Fv37AwiL8p3mPpu4k6ufMwSbg62xp224ZfMs3sSs5dem"
+    },
+    {
+      "step": "register m07->m09",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "43qsMWB3v7Q6zZiUuBvEmzrMku6b1KkTjuiEJbtnGRBr"
+    },
+    {
+      "step": "register m06->m09",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EZRT4ejYQp5nC2nM2emcRTnfPpT7FTomVxzBQ2wDVhM8"
+    },
+    {
+      "step": "register m14->m08",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6SgkNh9CeDFufxsaSBk5owwCQRqmWTkUYFab4ta1EoEm"
+    },
+    {
+      "step": "register m02->m09",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "w5yDjPaUBqdcRnezkgMqfLzfHk8jNTSGCEyJPwdnvU2"
+    },
+    {
+      "step": "register m08->m09",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5FaWB4tkxMK7VjvFUxCi23wZnb3Xn5jdCmxujKoJrJNR"
+    },
+    {
+      "step": "register m03->m14",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6kFo61gwLJ4SbQZ2ueuMZAwBU7zB5Tp5z1ffjw6b9wWb"
+    },
+    {
+      "step": "register m11->m12",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EBsa1wxiekEZQqbaQKgaiiyFn3QN6v3Ls2DPVXFEKJbL"
+    },
+    {
+      "step": "register m12->m14",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5KkykfwqTqGRFJvjFA2xhmbTKPF1N93C6zxcjkSTU8JG"
+    },
+    {
+      "step": "register m05->m14",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7eDbLWoRaYbaZ5G3ocL3JcgxzXw6cAxCjJDsdfAzSVsP"
+    },
+    {
+      "step": "register m13->m14",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "34EpZWmJhWZNBu7bqKiWh2t9cZ9Ks58o4XW5MtA1YUXA"
+    },
+    {
+      "step": "register m10->m14",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GyCmYmvtU2Mo4v52KmV1bGaVHPmwsW7YCWgopnsobAQ6"
+    },
+    {
+      "step": "register m11->m13",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "86QTaUq2KSjoLsrq9cWUV89bwh1tAJGncPEveoPunRjT"
+    },
+    {
+      "step": "register m00->m10",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8tt5aGKCJThWhDoUfzkbGnu9PWd6M6HgPSikvC11QD17"
+    },
+    {
+      "step": "register m14->m09",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6WQPcs7YM7Bshig1XsB7VLTAK5DT3ZT9TCt4Z1P94uvo"
+    },
+    {
+      "step": "register m06->m10",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2ebgZ8SDZyTfDFfpQgPE2vSm8b2C7BYbpqBbm22JaHoA"
+    },
+    {
+      "step": "register m02->m10",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2a8Az9GayaiYq1GvT45yvw9WuSVTTAXjV7YAiffQLEm5"
+    },
+    {
+      "step": "register m07->m10",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CdyVP2hmcS5fLdWjcxPwsPLv46zernJC8ctWkRLrUiwH"
+    },
+    {
+      "step": "register m08->m10",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "D8g6fdBgSTDDUUy295isYM7mQtGnPf8xKv5bVD98rGai"
+    },
+    {
+      "step": "register m11->m14",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3bFBBSTYSiYiHRHMraWJ8wHR8tqkRMwMW13YnqtJzbUT"
+    },
+    {
+      "step": "register m00->m11",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "A3WmFrtpM2HUVC5Etgubr32mAoYoDTQsMavvDiX6xKSE"
+    },
+    {
+      "step": "register m07->m11",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DwPt2SVZyww8RmwydmLW9ei31wsHi36RbpvZAuNw3JZo"
+    },
+    {
+      "step": "register m06->m11",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "9g4mJmenF3wXAVuJ7bko5MU48cmT6UAkUzP4PkJ3N3yF"
+    },
+    {
+      "step": "register m02->m11",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5Eh1zcw3qFS9FLdbyGXbX7Vw1CyADtNPAKjeCKRUmMb1"
+    },
+    {
+      "step": "register m14->m10",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4Ea8FKtD2A3VvQdCs2oEZUHfY5C5jL4eVWL2mi66qTB1"
+    },
+    {
+      "step": "register m08->m11",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Bz13ZPkpTVzHTVxeZgLVEju6KM1iKUj2hVNr1GCWByoc"
+    },
+    {
+      "step": "register m07->m12",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "G1MWt4qDzKnsb4ANPnvUREwfCx89uHfBAdvJXinRzWpf"
+    },
+    {
+      "step": "register m02->m12",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "F9JJvhcuRxs83vw6tiqdeBWqDMogS4GsTYam7WiQg2oL"
+    },
+    {
+      "step": "register m06->m12",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "E3oQVQigukS8p3wz12mzo5vgkFTCtvmWWHFXbt9WuTqn"
+    },
+    {
+      "step": "register m14->m11",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AWk5msjw9dTaDNzBBgxTHvQTM4JWkaBu6nykfqRvtdPw"
+    },
+    {
+      "step": "register m00->m12",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "DspmKWGYL3fzEKS1jEdLE1a9Ghgx68hw31u4Qc43ZExU"
+    },
+    {
+      "step": "register m08->m12",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7MD4WksmVnuFUpW43d5144rYeN2WQh5j5ZKHURwM8NeW"
+    },
+    {
+      "step": "register m02->m13",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AzYa83cB4iBv787qJ93p77WG76Kxy8vtmXSdGELvitfC"
+    },
+    {
+      "step": "register m06->m13",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "ExseKXuo3Msotpho1fLx6Zex6TkVPXqWVFLUkwDci7bF"
+    },
+    {
+      "step": "register m08->m13",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HUghFyJPZjGFXu2ywmjkUvBAf1nJaq52S7HvS9bd4SnD"
+    },
+    {
+      "step": "register m14->m12",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GUGWz7ps2AAephV2ZMFw76ke9pzZDZL4Hni5b2opF4Qt"
+    },
+    {
+      "step": "register m00->m13",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "D3aZvDQfwyNKr4Tz66wZGjNNXbFzCMA9YPgR2Pssufg1"
+    },
+    {
+      "step": "register m07->m13",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8kBSZXjbgeTaKPjoY9Rtv7e529x1y5NAmRjzwtT9b3GA"
+    },
+    {
+      "step": "register m06->m14",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3yEf6VsfRQjKv2cH9V7SQfN4jZDgFpY1gZ4bXxZ2gTwx"
+    },
+    {
+      "step": "register m08->m14",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5F4ATv81URPQ4jMvSfeXraiPD36APQJAo7ahmbULkaAa"
+    },
+    {
+      "step": "register m00->m14",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5YpCFL4BcS6NvRxwf3J978ur2YCr1S8ruSJnp1CeYP6E"
+    },
+    {
+      "step": "register m14->m13",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GPd13m1uRbbcS3vZLbcBxTr5u7ev1JUMd3ZWbZGuntBR"
+    },
+    {
+      "step": "register m02->m14",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AYn2iNf5Eji3b1MDi89VUHXVFqqxjMHojaaC6R6kdv3o"
+    },
+    {
+      "step": "register m07->m14",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "73UL2UCdun7mWpU5HqfMB85MaKfP73mvD3UsBBvffEet"
+    },
+    {
+      "step": "close_epoch",
+      "account": "x207-v013.testnet",
+      "method": "close_epoch",
+      "hash": "329TWFnAzGwvKjR2fdRdqTKqVzLLRki7t5wWzR7KL4ox"
+    },
+    {
+      "step": "submit_clearing",
+      "account": "x207-v013.testnet",
+      "method": "submit_clearing",
+      "hash": "7jL5ZiJDxUGDS1btrhKoa9SoRZBpeadrv3jkbz3xM7J5"
+    },
+    {
+      "step": "commit_epoch",
+      "account": "x207-v013.testnet",
+      "method": "commit_epoch",
+      "hash": "8xcQqNZXhPNHgAukL4B42n8CMTXmEqx9BRmawH1XL1pb"
+    },
+    {
+      "step": "finalize_epoch",
+      "account": "x207-v013.testnet",
+      "method": "finalize_epoch",
+      "hash": "DTXTVJaK55Pfubgh7215o3LtUAJPwb9TQu4NHSaJTtqi"
+    }
+  ],
+  "result": {
+    "codeHash": "DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh",
+    "edgesRegistered": {
+      "count": 210,
+      "seconds": 158
+    },
+    "commit": {
+      "hash": "8xcQqNZXhPNHgAukL4B42n8CMTXmEqx9BRmawH1XL1pb",
+      "edgeCount": 210,
+      "logBytes": 2487,
+      "edgesHash": "3dadebb9f100fe4e650aba40d844de1b5d30105ba5452c6aef7fa9f311fe21c9"
+    },
+    "finalize": {
+      "hash": "DTXTVJaK55Pfubgh7215o3LtUAJPwb9TQu4NHSaJTtqi"
+    },
+    "pruneTooEarly": {
+      "refused": "ERR_PRUNE_TOO_EARLY",
+      "edgesStillReadable": 210
+    },
+    "costs": {
+      "note": "gas_burnt and tokens_burnt of the whole transaction (all receipts), epoch 2, 210 edges, 15 members, fees 10 and 5 bps; testnet gas price 1e9 yoctoNEAR per gas at the time",
+      "deploy": {
+        "tgas": 49.5,
+        "near": 0.00493
+      },
+      "init": {
+        "tgas": 2.7,
+        "near": 0.00025
+      },
+      "close_epoch": {
+        "tgas": 3.0,
+        "near": 0.00028
+      },
+      "submit_clearing_210_edges": {
+        "tgas": 28.0,
+        "near": 0.00278
+      },
+      "commit_epoch_210_edges": {
+        "tgas": 69.4,
+        "near": 0.00692
+      },
+      "finalize_epoch": {
+        "tgas": 9.3,
+        "near": 0.00091
+      },
+      "minimum_balance_to_send": "a transaction reserves its prepaid gas times the gas price (1 Tgas = 0.001 NEAR on testnet) and refunds what is not burnt: prepaid 250 Tgas needs 0.25 NEAR, 60 Tgas for submit_clearing (28 used) needs 0.06 NEAR, 150 Tgas for commit_epoch (69 used) needs 0.15 NEAR"
+    },
+    "run1": "run 1 registered 210 edges of epoch 1 and closed it, then stopped at submit_clearing: the solver account m00 had 0.24 NEAR and the transaction reserved 0.25 NEAR for 250 Tgas of prepaid gas (NotEnoughBalanceError); the proposal window of epoch 1 passed, epoch 1 stays in clearing without a proposal. Run 2 used epoch 2 with the circle account as solver."
+  }
+}

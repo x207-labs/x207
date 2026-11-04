@@ -163,7 +163,7 @@ describe.skipIf(!ENABLED)("CT-100: interface 0.0.13 on testnet, an epoch of 210 
 
     // ---- the epoch: every member owes each other member one credit (a complete graph, 15 x 14 = 210 edges, balanced), registered by the debtors in parallel
     const epoch = (await view<{ epoch: number }>(CIRCLE, "get_epoch")).epoch;
-    expect(epoch).toBe(1);
+    // a resumed run uses the running epoch (epoch 1 of the first run was left without a proposal when its solver account ran out of NEAR)
     const t0 = Date.now();
     await Promise.all(
       accounts.map(async (account, i) => {
@@ -173,7 +173,7 @@ describe.skipIf(!ENABLED)("CT-100: interface 0.0.13 on testnet, an epoch of 210 
             { circle: CIRCLE, payer: ids[i]!, payee: ids[j]!, epoch, seq: 1, cumulativeAmount: "1000000", unit: "credit", resource: "https://x207.example/ct100" },
             saved[ids[i]!]!.voucher as `ed25519:${string}`,
           );
-          await send(account, `register ${names[i]}->${names[j]}`, { receiverId: CIRCLE, methodName: "register_cumulative", args: { voucher, signature }, gas: 100_000_000_000_000n });
+          await send(account, `register ${names[i]}->${names[j]}`, { receiverId: CIRCLE, methodName: "register_cumulative", args: { voucher, signature }, gas: 30_000_000_000_000n });
         }
       }),
     );
@@ -191,7 +191,7 @@ describe.skipIf(!ENABLED)("CT-100: interface 0.0.13 on testnet, an epoch of 210 
     await waitUntilChain(current.cutoff_at);
     await send(owner, "close_epoch", { receiverId: CIRCLE, methodName: "close_epoch", args: { epoch }, gas: 200_000_000_000_000n });
     const edges = registered.map((o: any) => ({ debtor: o.debtor, creditor: o.creditor, cleared: "1000000" }));
-    const solver = accounts[0]!;
+    const solver = owner; // the circle account has the NEAR for the large gas
     await send(solver, "submit_clearing", { receiverId: CIRCLE, methodName: "submit_clearing", args: { epoch, edges }, gas: 250_000_000_000_000n });
     const proposal = await view<{ edge_count: number; proposal_hash: string }>(CIRCLE, "get_proposal", { epoch, from_index: 0, limit: 300 });
     expect(proposal.edge_count).toBe(210);
