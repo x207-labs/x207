@@ -1,6 +1,6 @@
 # Adoption path: where x207 can be listed, step by step (UM-070)
 
-Status: **a checked list of targets. Nothing in it has been done by the team's tools: nothing was registered, posted, submitted or published.** Every step that goes outside the team is an action of the owner. Channels were read on 2026-11-04. **Checked** means the page with the steps was opened and read; **unchecked** means we only saw it in a search result or could not open it, so look again before acting. This page replaces the target list of [adoption-path.md](adoption-path.md), written on 2026-11-02 when the repositories and the npm packages were not public yet.
+Status: **a checked list of targets. Nothing in it has been done by the team's tools: nothing was registered, posted, submitted or published.** Every step that goes outside the team is an action of the owner. Channels were read on 2026-11-04. **Checked** means the page with the steps was opened and read; **unchecked** means we only saw it in a search result or could not open it, so look again before acting. It replaces an earlier draft of 2026-11-02, written when the repositories and the npm packages were not public yet, which was deleted.
 
 Measure the effect with `npm run metrics:adoption` (repositories, npm downloads, the issue below, members of the circle); the run of 2026-11-04 is [adoption-metrics-2026-11-04.json](adoption-metrics-2026-11-04.json): no stars, no forks, 19 views and 1,012 clones in 14 days (these include our own CI runs and clones), no npm downloads yet, issue open with 0 comments, 30 members of the testnet circle (26 active, 4 suspended).
 
@@ -9,7 +9,7 @@ Measure the effect with `npm run metrics:adoption` (repositories, npm downloads,
 | Step | State |
 | --- | --- |
 | Public repositories | the seven product repositories are public |
-| npm packages | `@x207/mcp` 0.0.2, `@x207/core` 0.0.1, `@x207/scheme` 0.0.1 are on npm |
+| npm packages | `@x207/mcp` 0.0.3, `@x207/core` 0.0.1, `@x207/scheme` 0.0.1 are on npm |
 | Proposal to the x402 Foundation | issue [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131), open; draft in [x402-binding-issue.md](x402-binding-issue.md). The spec is in [`sdk/spec`](https://github.com/x207-labs/sdk/blob/main/spec/scheme_batch_settlement_x207.md); a spec-only pull request is planned after a maintainer answers |
 
 ## Targets
