@@ -338,6 +338,13 @@
       "account": "alice.x207-v012.testnet",
       "method": "ft_transfer_call",
       "hash": "J9sxoWqybFhVwWYXwagRc8nCBVfaxAsNbG2qi1M412ng"
+    },
+    {
+      "step": "apply_freeze bob",
+      "account": "x207-v012-aux.testnet",
+      "method": "apply_freeze",
+      "hash": "BanPCEVeuhJCy2G5VX3mkca5nr26FYqTpYviRiSWQK3W",
+      "at": "2026-11-04T13:39 UTC, after the eta 13:37:31"
     }
   ],
   "result": {
@@ -354,9 +361,11 @@
       "stakeOfAccused": "878000000 -> 856000000"
     },
     "freeze": {
-      "state": "pending",
+      "state": "frozen",
+      "is_frozen": true,
       "eta": "1793799451518308958",
-      "waiting": "apply_freeze runs 24 hours after the proposal; run this test again after the eta"
+      "appliedBy": "x207-v012-aux.testnet",
+      "hash": "BanPCEVeuhJCy2G5VX3mkca5nr26FYqTpYviRiSWQK3W"
     },
     "officialContracts": {
       "assetType": "token:nep141",
