@@ -34,8 +34,8 @@ describe("UM-085 metered resources: registry, presets, backend and frontend agre
     expect(Object.keys(KIND_LABEL).sort()).toEqual([...METERED_KINDS].sort());
   });
 
-  it("TC-UM-085-04 the README block and docs/asset-catalog.md name every kind, asset type and its first unit", () => {
-    const readme = read("README.md");
+  it("TC-UM-085-04 the demo-blocks block (it left the README in UM-102) and docs/asset-catalog.md name every kind, asset type and its first unit", () => {
+    const readme = read("docs/demo-blocks.md"); // the block moved out of the README with the README diet (UM-102)
     const docs = read("docs/asset-catalog.md");
     expect(readme).toContain("### Metered resource block (pipeline P5, class D)");
     for (const kind of METERED_KINDS) {
