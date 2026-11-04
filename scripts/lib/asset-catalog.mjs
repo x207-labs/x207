@@ -97,7 +97,7 @@ export const CATALOG = [
   { no: 78, assetType: "telco:airtime-data", cls: "B", name: "Mobile airtime and data allowance", delivery: ["carrier_transfer"], proofs: ["zktls"], status: "roadmap; condition: only carriers with a transfer feature" },
   { no: 79, assetType: "loyalty:transferable-points", cls: "B", name: "Transferable loyalty points", delivery: ["program_transfer"], proofs: ["zktls"], status: "roadmap; condition: many programs forbid it" },
   { no: 80, assetType: "plan:family-or-team-seat", cls: "B", name: "Seat of a family or team plan that allows members outside the household", delivery: ["member_invite"], proofs: ["zktls"], status: "roadmap; condition: a plan that needs one fixed household is class X" },
-  { no: 81, assetType: "storage:shared-folder", cls: "B", name: "Shared cloud folder with a quota", delivery: ["folder_invite"], proofs: ["zktls"], status: "roadmap; lawful to share the content, not to sell an account" },
+  { no: 81, assetType: "storage:shared-folder", cls: "B", name: "Shared cloud folder with a quota", delivery: ["folder_invite"], proofs: ["zktls"], status: "built with a mock storage provider (BE-084, adapter cloud-folder-share); lawful to share the content, not to sell an account" },
   { no: 82, assetType: "content:own-work", cls: "D", name: "Own article, photo, video or design", delivery: ["file_handover"], proofs: [], status: "roadmap; lawful when made by the giver" },
   { no: 83, assetType: "service:freelance", cls: "D", name: "Freelance service", delivery: ["x402_endpoint"], proofs: [], status: "roadmap; lawful" },
   { no: 84, assetType: "service:consultation-slot", cls: "D", name: "Consultation or mentoring time", delivery: ["calendar_slot"], proofs: [], status: "roadmap; lawful" },
