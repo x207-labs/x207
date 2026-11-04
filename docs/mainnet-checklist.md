@@ -1,5 +1,7 @@
 # Mainnet checklist (UM-009, interface 0.0.12)
 
+> For the release **v0.0.13** use [mainnet-deploy-v0.0.13.md](mainnet-deploy-v0.0.13.md) (CT-049): one command per step, dry run by default, pinned sha256, cost per account. Below, `--dry-run` is now the default and sending needs `--execute`.
+
 Status: **a checklist for the owner. Nothing in it has run on mainnet.** No mainnet transaction was sent from this repository, no mainnet key exists here, and the testnet keys in `.secrets/` are never used on mainnet. [mainnet-runbook.md](mainnet-runbook.md) has the full plan and the rehearsals; this file is the short list for the day of the deploy, with the amounts updated for the join deposit of 0.35 NEAR (ADR-41) and the wasm of 0.0.12.
 
 ## 1. NEAR the owner must have

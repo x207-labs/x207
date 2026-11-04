@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 // UM-009: deploys the circle contract from the wasm of a GitHub RELEASE, with the Sputnik DAO as owner (ADR-20), and checks that the code on chain is the code of the release.
-// It is written to be rehearsed on testnet and to be run on mainnet only by the owner: for `--network mainnet` it refuses to send anything without `--yes-owner-approved`.
+// It is written to be rehearsed on testnet and to be run on mainnet only by the owner. CT-049: it only READS unless `--execute` is given; on mainnet `--execute` also needs
+// `--yes-owner-approved`. The sha256 of a known release is pinned in the script (KNOWN_SHA256) and `--expect-sha256` pins another; a mismatch stops before anything is signed.
 // Nothing in this repository ran it on mainnet.
 //
 //   node scripts/deploy-mainnet.mjs --network testnet|mainnet --circle <account> --owner <sputnik dao account> --release v0.0.12 \
 //        [--wasm <file> (instead of the download)] [--params-file <json>] [--usdt <account>] [--intents <account>] [--circle-id agents-main] \
-//        [--keys-dir <dir>] [--out <file>] [--dry-run] [--yes-owner-approved]
+//        [--keys-dir <dir>] [--out <file>] [--expect-sha256 <hex>] [--execute [--yes-owner-approved]]
 //
 // What it does, in order, and where it stops:
 //   1. arguments: `--network` is required; `--owner` must be a Sputnik DAO (view `get_policy` answers); on mainnet the token is `usdt.tether-token.near` and Intents is `intents.near`;
 //   2. the wasm: downloaded with `gh release download <tag> -R x207-labs/contracts` (or `--wasm`), its sha256 compared with the `SHA256SUMS` of the release; the expected `code_hash` is the base58 of it;
 //   3. views only: the owner is a DAO, the USDT contract answers `ft_metadata` with 6 decimals (testnet: a warning, the mock token has none), Intents has code (mainnet: required; testnet: a warning, `intents.testnet` has none), the circle account exists, has at
 //      least 8 NEAR and holds no code (or the very code of the release);
-//   4. `--dry-run` prints the plan and the `new` arguments and stops here. Nothing is signed, no key is read.
+//   4. (default, no flag) prints the plan and the `new` arguments and stops here. Nothing is signed, no key is read.
 //   5. otherwise (and on mainnet only with `--yes-owner-approved`): reads the key of the circle account from `<keys-dir>/<network>/<circle>.json`, deploys the wasm, calls `new`, and checks that the `code_hash` on chain equals the
 //      release, `interface_version` equals the tag, and `get_owner` answers the DAO. Every hash goes to `--out`.
 // A key of testnet is never read for mainnet: the keys folder must have a `mainnet` subfolder, and a folder whose path says `testnet` is refused for mainnet.
@@ -23,6 +24,7 @@ import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { estimateCosts } from "./lib/costs.mjs";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 
@@ -34,6 +36,10 @@ export const NETWORKS = {
 export const DEFAULT_PARAMS = {
   epoch_length: 600, payment_window: 900, proposal_window: 60, base_limit_ratio: 8000, limit_growth: 1000, limit_cap: "1000000000", limit_decay: 0,
   fees: { clearing_fee_bps: 0, solver_fee_bps: 0 }, admission: "open",
+};
+/** Releases whose sha256 was checked by a person (reproducible build, twice, byte-identical). A tag listed here must match, whatever SHA256SUMS says. */
+export const KNOWN_SHA256 = {
+  "v0.0.13": "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054",
 };
 export const MIN_CIRCLE_NEAR = 8n * 10n ** 24n;
 const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -54,12 +60,13 @@ export function base58OfHex(hex) {
 }
 
 export function parseArgs(argv) {
-  const flags = new Set(["--dry-run", "--yes-owner-approved"]);
-  const values = new Set(["--network", "--circle", "--owner", "--release", "--wasm", "--params-file", "--usdt", "--intents", "--circle-id", "--keys-dir", "--out"]);
-  const out = { dryRun: false, yes: false };
+  const flags = new Set(["--dry-run", "--execute", "--yes-owner-approved"]);
+  const values = new Set(["--network", "--circle", "--owner", "--release", "--wasm", "--params-file", "--usdt", "--intents", "--circle-id", "--keys-dir", "--out", "--expect-sha256"]);
+  const out = { dryRun: false, execute: false, yes: false };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === "--dry-run") out.dryRun = true;
+    else if (a === "--execute") out.execute = true;
     else if (a === "--yes-owner-approved") out.yes = true;
     else if (values.has(a)) {
       if (argv[i + 1] === undefined || argv[i + 1].startsWith("--")) fail(`${a} needs a value`);
@@ -83,16 +90,20 @@ export function planFrom(args) {
   if (args.network === "mainnet") {
     if (args.usdt && args.usdt !== net.usdt) fail(`on mainnet the token is ${net.usdt}, not ${args.usdt}`);
     if (args.intents && args.intents !== net.intents) fail(`on mainnet Intents is ${net.intents}, not ${args.intents}`);
-    if (!args.dryRun && !args.yes) fail("mainnet: refusing to send anything without --yes-owner-approved (the owner signs and funds mainnet; --dry-run reads only)");
+    if (args.execute && !args.yes) fail("mainnet: refusing to send anything without --yes-owner-approved (the owner signs and funds mainnet; without --execute the script only reads)");
+    if (!args.release && !args.expectSha256) fail("mainnet: pass --release <tag> or --expect-sha256 <hex>, the number a person checked");
     if (args.keysDir && /testnet/i.test(resolve(args.keysDir))) fail("mainnet: the keys folder looks like a testnet folder; a key of testnet is never used on mainnet");
   }
+  if (args.execute && args.dryRun) fail("--execute and --dry-run exclude each other");
+  if (args.yes && !args.execute) fail("--yes-owner-approved only means something together with --execute");
+  if (args.expectSha256 && !/^[0-9a-f]{64}$/.test(args.expectSha256)) fail("--expect-sha256 must be 64 lowercase hex characters");
   const usdt = args.usdt ?? net.usdt;
   if (!usdt) fail(`--usdt is required on ${args.network}`);
   const params = args.paramsFile ? JSON.parse(readFileSync(args.paramsFile, "utf8")) : DEFAULT_PARAMS;
   for (const k of Object.keys(DEFAULT_PARAMS)) if (!(k in params)) fail(`params file: missing ${k}`);
   return {
     network: args.network, circle: args.circle, owner: args.owner, usdt, intents: args.intents ?? net.intents, circleId: args.circleId ?? "agents-main",
-    release: args.release, wasm: args.wasm, params, dryRun: args.dryRun, send: !args.dryRun, keysDir: args.keysDir, out: args.out,
+    release: args.release, wasm: args.wasm, params, dryRun: !args.execute, send: Boolean(args.execute), expectSha256: args.expectSha256 ?? KNOWN_SHA256[args.release], keysDir: args.keysDir, out: args.out,
     initArgs: { owner_id: args.owner, circle_id: args.circleId ?? "agents-main", usdt_token_id: usdt, intents_id: args.intents ?? net.intents, params },
   };
 }
@@ -168,16 +179,17 @@ async function main() {
   const plan = planFrom(args);
   const release = plan.wasm ? (() => { const wasm = readFileSync(plan.wasm); return { wasm, sha: createHash("sha256").update(wasm).digest("hex"), source: `file ${plan.wasm}` }; })() : fetchRelease(plan.release);
   const expectedCodeHash = base58OfHex(release.sha);
+  if (plan.expectSha256 && release.sha !== plan.expectSha256) fail(`sha256 of the wasm is ${release.sha} but the pinned number is ${plan.expectSha256}: nothing was sent`);
   const provider = await loadChain(plan);
   const { facts, problems, warnings } = await inspect(plan, provider, expectedCodeHash);
-  const report = { network: plan.network, circle: plan.circle, owner: plan.owner, release: { tag: plan.release ?? null, source: release.source, wasmSha256: release.sha, codeHash: expectedCodeHash }, initArgs: plan.initArgs, facts, warnings, problems, steps: [] };
+  const report = { network: plan.network, circle: plan.circle, owner: plan.owner, release: { tag: plan.release ?? null, source: release.source, wasmSha256: release.sha, codeHash: expectedCodeHash }, initArgs: plan.initArgs, pinnedSha256: plan.expectSha256 ?? null, costs: estimateCosts({ wasmBytes: release.wasm.length }), facts, warnings, problems, steps: [] };
   console.log(JSON.stringify(report, null, 2));
   if (problems.length > 0) {
     console.error(`STOP: ${problems.length} problem(s), nothing was sent`);
     process.exit(1);
   }
   if (plan.dryRun) {
-    console.log("dry run: nothing signed, no key read");
+    console.log("dry run (default): nothing signed, no key read. To send, repeat the same command with --execute (and --yes-owner-approved on mainnet).");
     return;
   }
   const keysDir = plan.keysDir ? resolve(plan.keysDir) : fail("--keys-dir is required to send");

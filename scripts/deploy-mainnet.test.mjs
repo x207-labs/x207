@@ -1,15 +1,39 @@
 // UM-009: the guards of scripts/deploy-mainnet.mjs, without any network. Run: node --test scripts/deploy-mainnet.test.mjs
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { DeployError, base58OfHex, inspect, parseArgs, planFrom, sumOf } from "./deploy-mainnet.mjs";
+import { DeployError, KNOWN_SHA256, base58OfHex, inspect, parseArgs, planFrom, sumOf } from "./deploy-mainnet.mjs";
+import { estimateCosts, reserveNear } from "./lib/costs.mjs";
 
 const base = ["--network", "mainnet", "--circle", "x207-circle.near", "--owner", "x207.sputnik-dao.near", "--release", "v0.0.12"];
 const refuses = (argv, pattern) => assert.throws(() => planFrom(parseArgs(argv)), (e) => e instanceof DeployError && pattern.test(e.message));
 
-test("TC-UM-009-D01 mainnet refuses to send without --yes-owner-approved, and a dry run is allowed", () => {
-  refuses(base, /--yes-owner-approved/);
+test("TC-UM-009-D01 (CT-049) nothing is sent by default; mainnet --execute needs --yes-owner-approved, and --yes alone means nothing", () => {
+  assert.equal(planFrom(parseArgs(base)).send, false);
   assert.equal(planFrom(parseArgs([...base, "--dry-run"])).send, false);
-  assert.equal(planFrom(parseArgs([...base, "--yes-owner-approved", "--keys-dir", "/safe/keys"])).send, true);
+  refuses([...base, "--execute"], /--yes-owner-approved/);
+  refuses([...base, "--yes-owner-approved"], /together with --execute/);
+  refuses([...base, "--execute", "--dry-run", "--yes-owner-approved"], /exclude each other/);
+  assert.equal(planFrom(parseArgs([...base, "--execute", "--yes-owner-approved", "--keys-dir", "/safe/keys"])).send, true);
+});
+
+test("TC-CT-049-D01 the sha256 is pinned: v0.0.13 is known, another tag on mainnet needs --expect-sha256, a bad number is refused", () => {
+  const v13 = ["--network", "mainnet", "--circle", "x207-circle.near", "--owner", "x207.sputnik-dao.near", "--release", "v0.0.13"];
+  assert.equal(planFrom(parseArgs(v13)).expectSha256, KNOWN_SHA256["v0.0.13"]);
+  assert.equal(KNOWN_SHA256["v0.0.13"], "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054");
+  assert.equal(base58OfHex(KNOWN_SHA256["v0.0.13"]), "DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh");
+  assert.equal(planFrom(parseArgs([...base, "--expect-sha256", "a".repeat(64)])).expectSha256, "a".repeat(64));
+  refuses([...base, "--expect-sha256", "XYZ"], /64 lowercase hex/);
+  refuses(["--network", "mainnet", "--circle", "x207-circle.near", "--owner", "x207.sputnik-dao.near", "--wasm", "/tmp/x.wasm"], /--release <tag> or --expect-sha256/);
+});
+
+test("TC-CT-049-D02 costs per account come from the size of the wasm and the reserve rule", () => {
+  const r = estimateCosts({ wasmBytes: 682707 });
+  const by = Object.fromEntries(r.rows.map((x) => [x.account, x]));
+  assert.ok(by.circle.minimum > 6.8 && by.circle.recommended < 9);
+  assert.ok(by.keeper.minimum >= 0.16 && by.keeper.minimum < 0.2);
+  assert.ok(by.solver.minimum >= 0.07 && by.solver.minimum < 0.1);
+  assert.equal(reserveNear(150), 0.1509);
+  assert.throws(() => estimateCosts({ wasmBytes: 0 }), /wasmBytes/);
 });
 
 test("TC-UM-009-D02 --network is required and only testnet and mainnet exist; the account names must belong to the network", () => {
@@ -21,7 +45,7 @@ test("TC-UM-009-D02 --network is required and only testnet and mainnet exist; th
 
 test("TC-UM-009-D03 the owner is not the contract itself; on mainnet the token and Intents are the real ones and a testnet keys folder is refused", () => {
   refuses(["--network", "mainnet", "--circle", "a.near", "--owner", "a.near", "--release", "v1", "--dry-run"], /must be the DAO/);
-  refuses([...base, "--dry-run", "--usdt", "fake.near"], /usdt.tether-token.near/);
+  refuses([...base, "--usdt", "fake.near"], /usdt.tether-token.near/);
   refuses([...base, "--dry-run", "--intents", "fake.near"], /intents.near/);
   refuses([...base, "--yes-owner-approved", "--keys-dir", "/x/.secrets/testnet-deployer"], /testnet folder/);
   const plan = planFrom(parseArgs([...base, "--dry-run"]));
@@ -60,4 +84,17 @@ test("TC-UM-009-D06 inspect: a non-DAO owner, a token with the wrong decimals, a
   for (const want of [/not a Sputnik DAO/, /18 decimals/, /intents.near has no code/, /less than 8 NEAR/]) assert.match(text, want);
   const ok = await inspect(plan, { ...provider, callFunction: async ({ method }) => (method === "get_policy" ? { roles: [] } : { symbol: "USDt", decimals: 6 }), viewAccount: async ({ accountId }) => ({ amount: String(9n * 10n ** 24n), code_hash: accountId === "intents.near" ? "AbCdEf" : "11111111111111111111111111111111" }) }, "X");
   assert.deepEqual(ok.problems, []);
+});
+
+test("TC-CT-049-D03 print-class-proposals: one command per class, those already registered are left out, nothing signs", async () => {
+  const { commandsFor } = await import("./print-class-proposals.mjs");
+  const { CATALOG, toArgs } = await import("./lib/asset-catalog.mjs");
+  const o = { network: "mainnet", dao: "x207.sputnik-dao.near", contract: "x207-circle.near", signer: "a.near" };
+  const all = commandsFor(o);
+  assert.equal(all.length, CATALOG.length);
+  assert.match(all[0].command, /^near contract call-function as-transaction x207\.sputnik-dao\.near add_proposal/);
+  assert.match(all[0].command, /sign-as a\.near network-config mainnet/);
+  const existing = new Map([[CATALOG[0].assetType, toArgs(CATALOG[0]).entry]]);
+  assert.equal(commandsFor({ ...o, existing }).length, CATALOG.length - 1);
+  assert.equal(commandsFor({ ...o, only: [CATALOG[1].assetType] }).length, 1);
 });
