@@ -1,6 +1,6 @@
 # Security review, batch 8b (UM-063): the broker adapters, the MCP write tools and the code flow of 2026-11-04
 
-Not to be confused with `backend/docs/security-review-batch8.md`, the review of contract 0.0.13 (CT-099), whose findings are `B8-F1` to `B8-F4`. This one is written by the author of most of the code under review, so it
+Not to be confused with `backend/docs/security-review-batch8.md` (this file is `docs/security-review-batch8b.md`), the review of contract 0.0.13 (CT-099), whose findings are `B8-F1` to `B8-F4`. This one is written by the author of most of the code under review, so it
 is a self-review: it reads each piece as an attacker would, and it fixes what it finds with a test that failed before the fix. A review by another session is still open. Findings here are `B8b-n`.
 
 Scope (read, then fixed): the broker adapters `oauth-scoped`, `postgres-readonly`, `cloud-folder-share`, `messaging-subaccount`, `hosting-subaccount`, `saas-seat-scim` and `newsletter-reader`, with the
