@@ -346,6 +346,25 @@ x207 does not store the file. The seller encrypts it, puts the ciphertext at a s
 
 A seller who lies about the hash is caught by the buyer's own check, without a judge. What this block does not show: a source that serves other bytes than the ciphertext (the buyer's SDK refuses it and makes no proof), the 72-hour automatic confirmation, and the exclusive license with a bond (each has its own test in `agents/test/license.test.ts`).
 
+### Codes and secrets block (pipeline P3, catalog items 27 and 87)
+
+```bash
+npx vitest run agents/test/code.test.ts agents/test/code.book.test.ts   # agents against the code book, in process, no sandbox
+X207_SANDBOX=1 npx vitest run tests/codes.sandbox.test.ts                 # real contract and indexer; about one minute
+```
+
+A one-time code (a gift card code, a beta invitation code) is a secret that can be used only once. x207 sells it as a `secret_release`: the seller encrypts the code with a salt, the listing carries only the commitment `contentHash(salt || code)`, and the code is capped (20 credit when it cannot be checked, 100 credit when its issuer can check it; no bond or arbiter lifts the cap). The backend holds the buyer's voucher and asks the issuer before the key leaves the seller. In the test both issuers are mocks (`MockCodeIssuer`); a real issuer is an adapter registered by the operator.
+
+| Do | See |
+| --- | --- |
+| `seller` lists a gift card code (item 27, issuer `shop.example`); `buyer` buys it with a voucher of 5 credit | `paid_held`; the answer has no voucher |
+| The seller posts the ciphertext and releases the key | The backend asked the issuer once and the code was valid: `key_released` |
+| The buyer opens the code, redeems it at the issuer and confirms | `confirmed`; only now the voucher is in the answer, and the seller registers it: the pair holds 5 credit |
+| The same flow for a beta invitation code (item 87, another issuer), 3 credit | The voucher continues from the held one (`cumulative` 5 + 3): the pair holds 8 credit |
+| The gift code is listed again with another salt and sold to `second` | The issuer says it is used: `code_used`, the purchase is `cancelled`, no key is released, no voucher leaves, the pair holds 0 |
+
+The code, its salt and the key of the file are in no table of the read model and in no console line of the run; the test searches for them in both. What this block does not show: a real issuer (only the mock ran), a code that the issuer cannot check (it is sold on the seller's word, within the 20 credit cap), and a proxy secret per call, which is the class C broker block of `tests/broker-class-c.sandbox.test.ts`.
+
 ### Platform transfer block (ADR-49)
 
 ```bash
