@@ -110,7 +110,7 @@ Checks, a few seconds each: `npm run check:numbers` (every epoch 8 figure in thi
 
 | Topic | File |
 | --- | --- |
-| What x207 is, the problem and the gap, how it works (F1 to F9) | [docs/overview.md](docs/overview.md), [docs/problem-and-gap.md](docs/problem-and-gap.md), [docs/how-it-works.md](docs/how-it-works.md) |
+| What x207 is, the problem and the gap, how it works (F1 to F9) | [docs/overview.md](docs/overview.md), [docs/problem-and-gap.md](docs/problem-and-gap.md) (with [where cycles come from](docs/problem-and-gap.md#where-cycles-come-from), and why a star graph gains nothing), [docs/how-it-works.md](docs/how-it-works.md) |
 | Join the circle on testnet with two fresh accounts; quickstart for an x402 agent owner | [docs/join-the-circle.md](docs/join-the-circle.md), [docs/quickstart.md](docs/quickstart.md) |
 | The MCP server for AI agents | [docs/mcp.md](docs/mcp.md) |
 | The testnet circle, and how to check an epoch | [docs/testnet.md](docs/testnet.md) |
