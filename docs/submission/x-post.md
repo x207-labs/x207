@@ -5,9 +5,9 @@ Status: a draft. **Nothing was posted.** The human publishes the post, attaches 
 ## Post (one tweet, 268 characters with the link counted as 23; check the count in the composer)
 
 ```
-We built x207 at NEAR HACKATHON: mutual credit + clearing for x402 agent payments on NEAR.
+We built x207 at NEAR HACKATHON: multilateral clearing for x402 agent payments on NEAR.
 
-Testnet epoch: 24 vouchers (41.35), one clearing cancels 21.8; the 19.55 left nets to 7.75 USDT (5 paid 7.2, 0.55 from a stake). Read-only MCP included:
+Testnet epoch: 24 vouchers (41.35), one clearing cancels 21.8; 7.75 USDT had to move (5 paid 7.2, 0.55 from a stake). Not cheaper in gas, testnet only. Read-only MCP:
 https://github.com/x207-labs/x207
 ```
 

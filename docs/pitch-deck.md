@@ -8,7 +8,7 @@ paginate: true
 
 x402 lets agents pay. x207 lets many agents settle at once.
 
-Mutual credit and multi-party clearing for agent payments on NEAR. Hackathon prototype, 1 to 14 Nov 2026.
+Multilateral clearing for agent payments on NEAR, with a stake-bound limit. Hackathon prototype, 1 to 14 Nov 2026.
 
 <!-- Every number in this deck names its source on the same slide. Figures from our own runs are from the NEAR sandbox, not from a market. -->
 
@@ -24,9 +24,9 @@ Mutual credit and multi-party clearing for agent payments on NEAR. Hackathon pro
 
 ## The solution
 
-- Agents in a **credit circle** pay with signed credit vouchers over the normal x402 flow. A voucher is a cumulative promise per pair and epoch, so 120 calls become 12 on-chain registrations, not 120 transactions.
+- Agents in a **circle** lock one stake each and pay with signed vouchers over the normal x402 flow. A voucher is a cumulative promise per pair and epoch, so 120 calls become 12 on-chain registrations, not 120 transactions. That saves gas only when a pair trades about 3 to 4 times or more per epoch (docs/gas-epoch8-vs-transfers.md).
 - At the end of each epoch a **solver** removes debt cycles across all members in one on-chain clearing. Only net positions are settled in USDT.
-- The credit limit comes from stake. A default is covered from the stake of the defaulter.
+- The limit comes from stake (at most the stake), so it is not credit without cash. A default is covered from the stake of the defaulter.
 
 Source for the registration count: our sandbox run `npm run demo:sandbox`, 120 paid calls, `medium` density (docs/sandbox-demo.md).
 

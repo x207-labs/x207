@@ -8,4 +8,6 @@ How NEAR fits in: a Rust contract (x207-circle), NEP-141 USDT, x402 on NEAR (the
 
 Try it: a dashboard, a read API and a remote MCP server are hosted; npm run demo:quick and npm run demo:mcp run everything locally with no account.
 
+Limits: it burns more gas than plain transfers unless a pair trades about 3 to 4 times per epoch, a member locks a stake of at least 125% of its debt, and it helps only where debts go in cycles (measured x402 traffic on Base is mostly star-shaped: arXiv:2607.12575).
+
 Not done: no mainnet transaction, NEAR Intents not run on testnet, no real wallet through NEAR Connect, the TEE broker is not built.
