@@ -1,6 +1,6 @@
 # Draft issue: batch-settlement binding for NEAR (x207)
 
-**Status: draft, not posted (UM-136, audit KN-42).** The coordinator reviews it and the owner posts it to [`x402-foundation/x402`](https://github.com/x402-foundation/x402/issues) under the template "Feature". Nothing here has been sent.
+**Status: posted on 2026-11-04 as [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131) (UM-136, audit KN-42).** The text between the lines below is what was posted.
 
 The format follows the open binding issues for other networks, read on 2026-11-04: #4106 (XRPL on Checks), #4041 (Midnight), #3645 (Kaspa), #3620 (pooled escrow). Each has the sections "Problem or use case" and "Proposed solution", then a status and a plan. The text between the lines below is the issue.
 
