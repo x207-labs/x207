@@ -7,7 +7,11 @@ _Moved from the first, longer README (its section 2) and edited since. Paths are
 1. **Micro-payments are small and frequent.** Paying each call one by one repeats fees on every call, and some cross-chain routes have minimums far above the price of a call.
 2. **Agents buy from each other in both directions.** A translator buys summaries and a summarizer buys translations. Money moves back and forth although most of it could cancel out.
 3. **Existing solutions involve two parties.** They net or batch between one pair at a time, not across a chain of agents.
-4. **Agents cannot borrow safely.** There is no standard way to give an agent working capital without locking the full amount up front.
+4. **Paying call by call locks cash and moves more value than needed.** An agent must hold the full price of each call before it buys, and every payment moves its whole amount even when the parties owe each other in both directions. x207 answers with clearing and a bounded limit, and it is honest about the price:
+   - **What it saves.** The value that has to move: in epoch 8 of `x207-v013.testnet`, 7.75 of 41.35 credit of obligations (18.7%) became USDT payments, because 21.8 was cancelled by the clearing. The residual of several debtors can be paid in one NEAR Intents call, and a creditor can withdraw to another chain (run in `near-sandbox` only; see [what-has-run.md](what-has-run.md)). A member's limit grows from its cash settlement history, inside `limit ≤ stake`.
+   - **What it does not save.** Gas on NEAR: 109.7 Tgas for the epoch (226.6 with the 24 vouchers registered) against 54.9 Tgas for 24 plain transfers ([gas-epoch8-vs-transfers.md](gas-epoch8-vs-transfers.md)).
+   - **What it does not give.** Credit without cash. In the MVP the capital locked is at least 125% of the debt a member can run up (`limit ≤ stake`); in epoch 8 the stake was 1,499.10 against 41.35 of obligations. A limit above the stake is roadmap work, and nothing is borrowed from outside the circle.
+   - **When it helps.** Only where debts go in cycles (see [where cycles come from](#where-cycles-come-from)).
 
 ### What exists and the gap
 

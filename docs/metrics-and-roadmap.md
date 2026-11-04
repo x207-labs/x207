@@ -52,6 +52,7 @@ The chart marks the Sardex benchmark of 23% of value per monthly batch (Fleischm
 | F1–F4 in full, F6 core (default and limit), F7 `set_params`; F5 barter bundle and F9 marketplace in the sandbox (ADR-38) | F5 and F9 on mainnet and with real counterparties (a testnet rehearsal ran with five accounts of the team); asset classes A to C with real delivery; a book that more than one operator can run |
 | One circle, six demo agents, on `near-sandbox` and on testnet (circle `x207-v013.testnet`, mock USDT); no mainnet transaction yet (see [what-has-run.md](what-has-run.md)) | Many circles, clearing across circles |
 | Cumulative voucher per pair (ADR-17); per-request registration only as a demo mode | Registration of many pairs in one transaction |
+| A net debtor pays the residual in USDT inside the `payment_window`; a debtor that does not pay defaults and its stake is cut. A net creditor calls `claim` | Settle the residual from the member's stake without a default, and pay creditors without a manual `claim`. Both change the contract, so they need contract 0.0.14 and stay out of the MVP: a contract change this close to the deadline would need a new deploy and new tests, and the loss order of ADR-18 would have to be decided again (KN-39) |
 | Own facilitator | Proposal of the scheme spec to the x402 Foundation (`scheme_batch_settlement_x207.md`) |
 | Public ledger | Confidential settlement with Confidential Intents |
 
