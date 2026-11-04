@@ -43,6 +43,8 @@ Steps 1 to 4 and 6 are read-only and need no account or key; step 5 uses two tes
    { "mcpServers": { "x207": { "command": "npx", "args": ["-y", "mcp-remote", "https://x207-mcp-production.up.railway.app/mcp"] } } }
    ```
 
+   Tested with the MCP Inspector against this URL; the three commands above follow the documentation of Claude Code, Codex and Claude Desktop and were not run with those clients.
+
    The server answers from the testnet RPC and the hosted read API above, for the circle `agents-main` on `x207-v013.testnet`; like them, it is hosted for the judging period. The deploy folder is made by `scripts/railway-mcp-bundle.mjs`.
 
 4. **Ask Claude about the circle** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is not on npm yet, so build it from a recursive clone of this repository once (`git clone --recurse-submodules https://github.com/x207-labs/x207.git`, then `npm ci && npm run build --workspaces --if-present`), then add this to `claude_desktop_config.json` and restart Claude Desktop:
@@ -76,7 +78,9 @@ Steps 1 to 4 and 6 are read-only and need no account or key; step 5 uses two tes
    npm run demo:mcp      # an AI agent through the MCP tools on a local circle; about 2 minutes, prints every tool call and what it answered
    ```
 
-   `demo:quick` and `demo:mcp` download the wasm of the release v0.0.13 and the near-sandbox binary the first time, check the sha256 and run with them; the other ways to run the demos are in [docs/sandbox-demo.md](docs/sandbox-demo.md).
+   Each of `demo:quick` and `demo:mcp` fetches what it needs by itself, the first time, so you can run either one first: the wasm of the release v0.0.13 from GitHub (its sha256 is checked against the number written in this repository) and the near-sandbox 2.13.4 binary from build.nearprotocol.com, kept in `node_modules/.cache/x207-quick`. `node scripts/demo-quick.mjs --check-only` downloads and checks both and runs nothing. The other ways to run the demos are in [docs/sandbox-demo.md](docs/sandbox-demo.md).
+
+   `npm ci` on npm 11.20 or newer may print `install-scripts` warnings about dependencies that have install scripts. `package.json` answers them in `allowScripts`: only `better-sqlite3`, the native SQLite of the backend, may run its script, and the optional native speed-ups (`bufferutil`, `utf-8-validate`, `secp256k1`, `bigint-buffer`, `fsevents`) and two notices (`core-js-pure`, `protobufjs`) are denied, because each has a pure JavaScript fallback. If a warning still shows, it is harmless.
 
 The hosted read API and the dashboard are there for the judging period. If they are down, [Run the sandbox demo](docs/sandbox-demo.md#run-the-sandbox-demo) runs the same cycle locally.
 

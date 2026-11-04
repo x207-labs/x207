@@ -49,7 +49,7 @@ The tool runs over stdio, only with `X207_MCP_WRITE=1`, and only with the two sw
 }
 ```
 
-`X207_MAX_SPEND_SESSION` counts the stake too, so it must be at least the stake (here 50 USDT = `50000000`). Restart Claude Desktop and ask: "Join the x207 circle with terms hash `aaaa…a` (64 times `a`) and a stake of 50000000." The same call from a script, with the MCP Inspector, is:
+`X207_MAX_SPEND_SESSION` counts the stake too, so it must be at least the stake (here 50 USDT = `50000000`). **Tested with the MCP Inspector.** The calls in this guide were run with the MCP Inspector CLI (below) against the real testnet circle; the block above enters the same server and the same environment in Claude Desktop, and it was not run in Claude Desktop itself. Restart Claude Desktop and ask: "Join the x207 circle with terms hash `aaaa…a` (64 times `a`) and a stake of 50000000." The same call from a script, with the MCP Inspector, is:
 
 ```bash
 npx @modelcontextprotocol/inspector --cli \
