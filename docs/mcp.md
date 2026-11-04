@@ -30,3 +30,43 @@ Claude Desktop, read-only (`claude_desktop_config.json`; build once with `npm ru
 ```
 
 Then ask: "Give me the overview of the x207 circle", "Inspect the member `x207-demo-buyer.testnet`" or "Report epoch 8". The write tools are off unless you add `X207_MCP_WRITE=1`, the account and its keys, and spending caps (`X207_MAX_SPEND_SESSION`, `X207_MAX_PRICE_PER_CALL`); the table, the guards and the threat review are in [`sdk/packages/mcp/README.md`](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md) and [`docs/security-review-batch8b.md`](security-review-batch8b.md).
+
+## Connect a client
+
+Hosted server (read-only, Streamable HTTP): `https://x207-mcp-production.up.railway.app/mcp`.
+
+```bash
+claude mcp add --transport http x207 https://x207-mcp-production.up.railway.app/mcp          # Claude Code
+codex mcp add x207 --url https://x207-mcp-production.up.railway.app/mcp                       # Codex
+```
+
+Claude Desktop: Settings, Connectors, Add custom connector, with the URL above; or in `claude_desktop_config.json`, through the `mcp-remote` bridge:
+
+```json
+{ "mcpServers": { "x207": { "command": "npx", "args": ["-y", "mcp-remote", "https://x207-mcp-production.up.railway.app/mcp"] } } }
+```
+
+The commands above follow the documentation of Claude Code, Codex and Claude Desktop and were not run with those clients; the server was tested with the MCP Inspector.
+
+## Local stdio server from npm
+
+The package `@x207/mcp` is on npm and needs only Node 22.22.2 or newer. It signs nothing and holds no key. Add this to `claude_desktop_config.json` (Claude Desktop) or `.cursor/mcp.json` (Cursor), restart the app, and `npx` fetches the server the first time:
+
+```json
+{
+  "mcpServers": {
+    "x207": {
+      "command": "npx",
+      "args": ["-y", "@x207/mcp"],
+      "env": {
+        "X207_CIRCLE_CONTRACT": "x207-v013.testnet",
+        "X207_CIRCLE_ID": "agents-main",
+        "X207_BACKEND_URL": "https://x207-backend-production.up.railway.app"
+      }
+    }
+  }
+}
+```
+```
+
+It reads the testnet RPC and the hosted read API. The tools and the write tools that stay off are listed in [sdk/packages/mcp/README.md](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md).
