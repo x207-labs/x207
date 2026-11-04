@@ -29,7 +29,7 @@ const view = async (method, viewArgs) => (await provider.callFunction({ contract
 // SV-020: the balance is checked against the reserve (gas times gas price) before a transaction is signed; if it is short the keeper logs a warning with the amounts and does not send
 const reserveOk = async (gas) => {
   const balance = BigInt((await provider.viewAccount({ accountId: args.account })).amount);
-  const gasPrice = BigInt((await provider.gasPrice(null)).gas_price);
+  const gasPrice = BigInt((await provider.viewGasPrice(null)).gas_price);
   if (canReserve(balance, gas, gasPrice)) return true;
   console.error(JSON.stringify({ warn: "balance_short", account: args.account, balance: balance.toString(), needed: ((gas + 900_000_000_000n) * gasPrice * 10n).toString(), gasTgas: Number(gas / 1_000_000_000_000n), at: new Date().toISOString() }));
   return false;
