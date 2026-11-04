@@ -319,7 +319,7 @@ Claude Desktop, read-only (`claude_desktop_config.json`; build once with `npm ru
 }
 ```
 
-Then ask: "Give me the overview of the x207 circle", "Inspect the member `x207-demo-buyer.testnet`" or "Report epoch 8". The write tools are off unless you add `X207_MCP_WRITE=1`, the account and its keys, and spending caps (`X207_MAX_SPEND_SESSION`, `X207_MAX_PRICE_PER_CALL`); the table, the guards and the threat review are in [`sdk/packages/mcp/README.md`](sdk/packages/mcp/README.md) and [`docs/security-review-batch8b.md`](docs/security-review-batch8b.md).
+Then ask: "Give me the overview of the x207 circle", "Inspect the member `x207-demo-buyer.testnet`" or "Report epoch 8". The write tools are off unless you add `X207_MCP_WRITE=1`, the account and its keys, and spending caps (`X207_MAX_SPEND_SESSION`, `X207_MAX_PRICE_PER_CALL`); the table, the guards and the threat review are in [`sdk/packages/mcp/README.md`](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md) and [`docs/security-review-batch8b.md`](docs/security-review-batch8b.md).
 
 ### Try it on testnet (circle `x207-v013.testnet`, interface 0.0.13)
 
