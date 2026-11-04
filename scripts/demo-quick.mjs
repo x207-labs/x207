@@ -4,6 +4,7 @@
 //
 //   npm run demo:quick                    = node scripts/demo-quick.mjs --release-wasm      (v0.0.13)
 //   npm run demo:mcp                      = node scripts/demo-quick.mjs --release-wasm --demo mcp   (the MCP scenario, the same download and the same checks)
+//   npm run demo:swarm                    = node scripts/demo-quick.mjs --release-wasm --demo swarm   (AG-032: six agents, keeper and solver on their own, four epochs cleared one after the other)
 //   node scripts/demo-quick.mjs --release-wasm --tag v0.0.13 --cache <dir> --check-only     download and verify, run nothing
 //
 // What it needs besides Node: the packages installed (`npm ci`); if they are not built yet the script builds them once (`npm run build --workspaces --if-present`). What it fetches and checks:
@@ -25,7 +26,7 @@ export const SANDBOX_VERSION = "2.13.4";
 export const DEFAULT_TAG = "v0.0.13";
 
 /** The demos that this script can run with the downloaded wasm and sandbox: the npm script that runs each one directly (it needs X207_CIRCLE_WASM, X207_MOCK_FT_WASM and X207_SANDBOX_BIN, which this script sets). */
-export const DEMOS = { sandbox: "demo:sandbox", mcp: "demo:mcp:run" };
+export const DEMOS = { sandbox: "demo:sandbox", mcp: "demo:mcp:run", swarm: "demo:swarm:run" };
 
 export class DemoStop extends Error {}
 

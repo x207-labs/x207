@@ -63,6 +63,7 @@ git clone --recurse-submodules https://github.com/x207-labs/x207.git && cd x207
 npm ci && npm run build --workspaces --if-present
 npm run demo:quick    # one epoch of six agents: joins, paid calls, clearing, residuals, claims; about 5 minutes, most of it the sandbox clock
 npm run demo:mcp      # an AI agent through the MCP tools on a local circle; about 2 minutes, prints every tool call and what it answered
+npm run demo:swarm    # six agents trade for four epochs (20 minutes of chain time); the keeper and the solver clear each epoch on their own; about 5 minutes, prints one line per epoch
 ```
 
 Each of `demo:quick` and `demo:mcp` fetches what it needs by itself, the first time, so you can run either one first: the wasm of the release v0.0.13 from GitHub (its sha256 is checked against the number written in this repository) and the near-sandbox 2.13.4 binary from build.nearprotocol.com, kept in `node_modules/.cache/x207-quick`. `node scripts/demo-quick.mjs --check-only` downloads and checks both and runs nothing. The other ways to run the demos are in [docs/sandbox-demo.md](docs/sandbox-demo.md).
