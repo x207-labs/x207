@@ -41,7 +41,7 @@ export const CATALOG = [
   { no: 20, assetType: "cloud:temporary-role", cls: "B", name: "Temporary cloud role", delivery: ["cloud_role"], proofs: ["zktls"], status: "roadmap" },
   { no: 21, assetType: "storage:signed-url", cls: "B", name: "Signed download URL", delivery: ["signed_url"], proofs: ["zktls"], status: "roadmap" },
   { no: 22, assetType: "ssh:restricted-key", cls: "B", name: "Restricted SSH key", delivery: ["ssh_key"], proofs: ["zktls"], status: "roadmap" },
-  { no: 23, assetType: "database:readonly-user", cls: "B", name: "Read-only database user", delivery: ["db_user"], proofs: ["zktls"], status: "roadmap" },
+  { no: 23, assetType: "database:readonly-user", cls: "B", name: "Read-only database user", delivery: ["db_user"], proofs: ["zktls"], status: "built with a mock SQL client (BE-082, adapter postgres-readonly); not run against a real PostgreSQL" },
   { no: 24, assetType: "community:paid-role", cls: "B", name: "Paid community role", delivery: ["community_role"], proofs: ["zktls"], status: "roadmap; platform terms" },
   { no: 25, assetType: "org:spend-limited-member", cls: "B", name: "Organisation member with a spending limit", delivery: ["org_member"], proofs: ["zktls"], status: "roadmap; provider terms" },
   // C. a single secret, through the broker
