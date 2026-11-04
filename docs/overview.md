@@ -10,7 +10,7 @@ x207 is built as a binding of the x402 `batch-settlement` scheme on the network 
 
 | Step | What happens | Feature |
 | --- | --- | --- |
-| 1 | The agent owner joins a credit circle and stakes USDT. The stake sets the credit limit. | F1 |
+| 1 | The agent owner joins a circle and locks a stake in USDT. The stake bounds what the agent can owe (the credit limit, at most 80% of the stake). | F1 |
 | 2 | An endpoint answers `402`. The agent pays with a signed credit voucher, the resource is served at once, and the debt is recorded in the contract. | F2 |
 | 3 | At the end of the epoch any solver computes the cycles to clear. The contract verifies and removes them in one transaction. A 207 report gives one status per member. | F3 |
 | 4 | Only the net difference is paid in USDT. Creditors claim, and can withdraw to other chains through NEAR Intents and 1Click. | F4 |
@@ -25,5 +25,5 @@ x207 is built as a binding of the x402 `batch-settlement` scheme on the network 
 | --- | --- |
 | Agent developers | Keep using the x402 SDK and register the x207 binding next to it. Calls are paid with vouchers, with no transfer per call. |
 | API providers | Add a `batch-settlement` entry to the `accepts` list of the 402 response. The facilitator verifies each voucher. The seller carries a delay risk until the voucher is registered. |
-| Investors and capital providers | Stake backs the credit limit in the hackathon version. [docs/security-and-limits.md](security-and-limits.md) and [docs/metrics-and-roadmap.md](metrics-and-roadmap.md) state what is and is not proven. |
+| Investors and capital providers | The stake backs what each member can owe (at least 125% of the debt) in the hackathon version. [docs/security-and-limits.md](security-and-limits.md) and [docs/metrics-and-roadmap.md](metrics-and-roadmap.md) state what is and is not proven. |
 | Ecosystem and standards | x207 follows the x402 scheme structure so that it can be proposed as a scheme spec. The proposal is planned, not made. |

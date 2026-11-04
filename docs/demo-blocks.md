@@ -7,7 +7,7 @@ _Moved from the first, longer README (its section 4) and edited since. Paths are
 Two more sandbox blocks run from the root; each starts its own `near-sandbox` node and takes about 80 seconds.
 
 ```bash
-npm run demo:business     # procurement agent buys on credit inside the owner's limits
+npm run demo:business     # procurement agent buys against its stake inside the owner's limits
 npm run demo:realworld    # three businesses, invoices as vouchers, F3 netting, F4 residual
 ```
 

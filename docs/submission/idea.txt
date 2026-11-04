@@ -2,12 +2,12 @@ Problem: agents that pay per call (x402) settle every call on its own, so a thou
 
 What we built: x207, a multilateral clearing layer for x402 agent payments on NEAR. Agents in a circle lock one USDT stake that bounds what they can owe (limit at most the stake) and pay each call with a signed voucher, served at once. At the end of each epoch an open solver finds the debt cycles, one on-chain transaction cancels them, and only what is left is paid in USDT. A default is covered from the stake of the defaulter.
 
-Proof on NEAR testnet (circle x207-v013.testnet, contract 0.0.13, reproducible build): in a realistic epoch, 24 vouchers worth 41.35 credit among 15 participants were cleared by 21.8 credit; the 19.55 left netted to 7.75 USDT due from six debtors; five paid 7.2 USDT and the 0.55 of the one that defaulted was taken from its stake. A complete graph of 210 obligations was cleared in four transactions.
+Proof on NEAR testnet (circle x207-v013.testnet, contract 0.0.13): in a realistic epoch, 24 vouchers worth 41.35 credit among 15 participants were cleared by 21.8 credit; the 19.55 left netted to 7.75 USDT due from six debtors; five paid 7.2 USDT and the 0.55 of the one that defaulted was taken from its stake. A complete graph of 210 obligations was cleared in four transactions.
 
-How NEAR fits in: a Rust contract (x207-circle), NEP-141 USDT, x402 on NEAR (the exact scheme stays as fallback), Sputnik DAO for parameters, NEAR Intents for the residual payment, and an MCP server so an AI agent can read the circle and, with a key it holds, join and pay. The residual batch through the real Intents contract ran only in near-sandbox.
+How NEAR fits in: a Rust contract (x207-circle), mock NEP-141 USDT, x402 on NEAR, Sputnik DAO for parameters, NEAR Intents for the residual payment, and an MCP server so an AI agent can read the circle and, with a key it holds, join and pay. The residual batch through the real Intents contract ran only in near-sandbox.
 
-Try it: a dashboard, a read API and a remote MCP server are hosted; npm run demo:quick and npm run demo:mcp run everything locally with no account.
+Try it: hosted dashboard, read API and remote MCP server (@x207/mcp 0.0.3, also in the MCP Registry); npm run demo:quick runs it all locally, no account.
 
 Limits: it burns more gas than plain transfers unless a pair trades about 3 to 4 times per epoch, a member locks a stake of at least 125% of its debt, and it helps only where debts go in cycles (measured x402 traffic on Base is mostly star-shaped: arXiv:2607.12575).
 
-Not done: no mainnet transaction, NEAR Intents not run on testnet, no real wallet through NEAR Connect, the TEE broker is not built.
+Not done: no mainnet transaction (mock USDT; the team's keeper moves epochs until 2026-11-18), NEAR Intents not run on testnet, no real wallet through NEAR Connect, the TEE broker is not built.
