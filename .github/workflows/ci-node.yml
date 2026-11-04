@@ -80,6 +80,11 @@ jobs:
         if: inputs.sdk-ref == ''
         working-directory: ${{ inputs.working-directory }}
         run: npm run build --if-present
+      # Type-checks the tests too (`tsc -p tsconfig.test.json --noEmit`), which `build` leaves out.
+      - name: Typecheck
+        if: inputs.sdk-ref == ''
+        working-directory: ${{ inputs.working-directory }}
+        run: npm run typecheck --if-present
       # Not --if-present: a repository without tests must fail here, not pass silently.
       - name: Test
         if: inputs.sdk-ref == ''
@@ -130,6 +135,10 @@ jobs:
         if: inputs.sdk-ref != ''
         working-directory: x207/${{ github.event.repository.name }}
         run: npm run build --if-present
+      - name: Typecheck
+        if: inputs.sdk-ref != ''
+        working-directory: x207/${{ github.event.repository.name }}
+        run: npm run typecheck --if-present
       - name: Test
         if: inputs.sdk-ref != ''
         working-directory: x207/${{ github.event.repository.name }}
