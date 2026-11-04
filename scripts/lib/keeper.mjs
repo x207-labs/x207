@@ -16,6 +16,24 @@ export const PRUNE_GAS = 200_000_000_000_000n;
 export const PRUNE_MIN_GAS = 100_000_000_000_000n;
 
 /**
+ * SV-020: prepaid gas per method. A transaction reserves its prepaid gas times the gas price from the balance of the signer and refunds what is not burnt, so 200 Tgas for
+ * every call reserved 0.2 NEAR (testnet) for calls that burn 3 to 70 Tgas (CT-100: close_epoch 3.0, commit_epoch 69.4 for 210 edges, finalize_epoch 9.3; 64 defaults 64.4).
+ */
+export const KEEPER_GAS = {
+  close_epoch: 20_000_000_000_000n,
+  commit_epoch: 150_000_000_000_000n,
+  finalize_epoch: 100_000_000_000_000n,
+};
+
+/**
+ * The node reserves ten times the gas price (burn price 1e8, reserve 1e9 yoctoNEAR per gas on testnet) plus about 0.9 Tgas of fixed fees, that is 0.001 NEAR per Tgas
+ * (measured, solver/src/submit/rpc.ts). `true` when `balance` (yoctoNEAR) covers the reserve of `gas` at the burn price `gasPrice`.
+ */
+export function canReserve(balance, gas, gasPrice) {
+  return BigInt(balance) >= (BigInt(gas) + 900_000_000_000n) * BigInt(gasPrice) * 10n;
+}
+
+/**
  * @param {object} options
  * @param {(method: string, args: object) => Promise<any>} options.view view kontrak
  * @param {(call: { methodName: string, args: object }) => Promise<string>} options.send kirim transaksi, kembalikan hash
@@ -42,7 +60,7 @@ export async function keeperPass({ view, send, chainNowMs, log = () => {}, lookb
     else if (epoch.phase === "commit") method = "commit_epoch";
     else if (epoch.phase === "payment_window" && epoch.payment_deadline && nowNs >= BigInt(epoch.payment_deadline)) method = "finalize_epoch";
     if (!method) continue;
-    const hash = await send({ methodName: method, args: { epoch: n } });
+    const hash = await send({ methodName: method, args: { epoch: n }, gas: KEEPER_GAS[method] });
     const action = { method, epoch: n, hash, at: new Date().toISOString() };
     log(action);
     actions.push(action);

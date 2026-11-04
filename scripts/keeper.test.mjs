@@ -2,16 +2,17 @@
 // the contract says 0, and not again once the epoch has no pair left.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { keeperPass, PRUNE_GAS, PRUNE_MAX_ITEMS, PRUNE_MIN_GAS } from "./lib/keeper.mjs";
+import { canReserve, KEEPER_GAS, keeperPass, PRUNE_GAS, PRUNE_MAX_ITEMS, PRUNE_MIN_GAS } from "./lib/keeper.mjs";
 
 function chain(epochs, edgesLeft) {
   const sent = [];
+  const gases = [];
   const view = async (method, args) => {
     if (method === "get_epoch") return args.epoch === undefined ? epochs.at(-1) : epochs.find((e) => e.epoch === args.epoch) ?? null;
     if (method === "list_obligations") return edgesLeft[args.epoch] > 0 ? [{}] : [];
     throw new Error(method);
   };
-  return { view, sent, send: async ({ methodName, args }) => (sent.push([methodName, args.epoch]), `H${sent.length}`), chainNowMs: async () => 0 };
+  return { view, sent, gases, send: async ({ methodName, args, gas }) => (sent.push([methodName, args.epoch]), gases.push([methodName, gas]), `H${sent.length}`), chainNowMs: async () => 0 };
 }
 const finalized = (epoch) => ({ epoch, phase: "finalized" });
 const open = (epoch) => ({ epoch, phase: "open" });
@@ -52,4 +53,21 @@ test("TC-UM-022-23 prune_epoch carries at least 100 Tgas for 200 items (the revi
   const seen = [];
   await keeperPass({ ...c, prune: { lag: 1, call: async ({ epoch, maxItems }) => (seen.push([epoch, maxItems]), { hash: "H", removed: 0 }) } });
   assert.deepEqual(seen[0]?.[1], PRUNE_MAX_ITEMS);
+});
+
+// SV-020: each method carries its own prepaid gas (close 20, commit 150, finalize 100 Tgas), and the balance is checked against the reserve before sending
+test("TC-SV-020-01 the keeper attaches 20, 150 and 100 Tgas to close, commit and finalize", async () => {
+  assert.deepEqual(KEEPER_GAS, { close_epoch: 20_000_000_000_000n, commit_epoch: 150_000_000_000_000n, finalize_epoch: 100_000_000_000_000n });
+  const c = chain([{ epoch: 1, phase: "cutoff" }, { epoch: 2, phase: "commit" }, { epoch: 3, phase: "payment_window", payment_deadline: "1" }], {});
+  await keeperPass({ view: c.view, send: c.send, chainNowMs: async () => 10, log: () => {} });
+  assert.deepEqual(c.gases.map(([m, g]) => [m, Number(g / 1_000_000_000_000n)]), [["close_epoch", 20], ["commit_epoch", 150], ["finalize_epoch", 100]]);
+});
+
+test("TC-SV-020-02 the reserve is ten times gas times burn price plus 0.9 Tgas: 0.24 NEAR cannot reserve 250 Tgas (0.2509) but can reserve 150 Tgas (0.1509)", () => {
+  const price = 100_000_000n; // burn price on testnet
+  const balance = 240_000_000_000_000_000_000_000n;
+  assert.equal(canReserve(balance, 250_000_000_000_000n, price), false);
+  assert.equal(canReserve(balance, 150_000_000_000_000n, price), true);
+  assert.equal(canReserve(balance, KEEPER_GAS.commit_epoch, price), true);
+  assert.equal(canReserve(150_000_000_000_000_000_000_000n, KEEPER_GAS.commit_epoch, price), false, "0.15 NEAR is just below 0.1509");
 });

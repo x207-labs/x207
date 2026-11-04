@@ -7,7 +7,7 @@
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { keeperPass, PRUNE_GAS } from "./lib/keeper.mjs";
+import { canReserve, keeperPass, PRUNE_GAS } from "./lib/keeper.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const { Account, JsonRpcProvider, KeyPairSigner } = createRequire(resolve(here, "../sdk/package.json"))("near-api-js");
@@ -26,8 +26,17 @@ for (const [name, value] of [["--rpc-url", args["rpc-url"]], ["--contract", args
 const provider = new JsonRpcProvider({ url: args["rpc-url"] });
 const account = new Account(args.account, provider, KeyPairSigner.fromSecretKey(secretKey));
 const view = async (method, viewArgs) => (await provider.callFunction({ contractId: args.contract, method, args: viewArgs, blockQuery: { finality: "final" } })) ?? null;
-const send = async ({ methodName, args: callArgs }) => {
-  const result = await account.callFunctionRaw({ contractId: args.contract, methodName, args: callArgs, deposit: 0n, gas: 200_000_000_000_000n, waitUntil: "FINAL" });
+// SV-020: the balance is checked against the reserve (gas times gas price) before a transaction is signed; if it is short the keeper logs a warning with the amounts and does not send
+const reserveOk = async (gas) => {
+  const balance = BigInt((await provider.viewAccount({ accountId: args.account })).amount);
+  const gasPrice = BigInt((await provider.gasPrice(null)).gas_price);
+  if (canReserve(balance, gas, gasPrice)) return true;
+  console.error(JSON.stringify({ warn: "balance_short", account: args.account, balance: balance.toString(), needed: ((gas + 900_000_000_000n) * gasPrice * 10n).toString(), gasTgas: Number(gas / 1_000_000_000_000n), at: new Date().toISOString() }));
+  return false;
+};
+const send = async ({ methodName, args: callArgs, gas = 200_000_000_000_000n }) => {
+  if (!(await reserveOk(gas))) throw new Error(`balance of ${args.account} is below the reserve of ${methodName}`);
+  const result = await account.callFunctionRaw({ contractId: args.contract, methodName, args: callArgs, deposit: 0n, gas, waitUntil: "FINAL" });
   return result.transaction.hash;
 };
 // `--prune-lag N`: panggil prune_epoch untuk epoch finalized yang sudah N epoch di belakang (interface 0.0.8). Bukan bawaan: yang dibuang tidak terbaca lagi.
