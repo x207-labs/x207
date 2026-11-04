@@ -16,6 +16,7 @@
     "check:pins": "node scripts/check-pins.mjs",
     "check:window": "node scripts/check-window.mjs",
     "check:claims": "node scripts/check-claims.mjs",
+    "check:numbers": "node scripts/check-numbers.mjs",
     "check:links": "node scripts/check-links.mjs",
     "submission:draft": "node scripts/submission-payload.mjs --draft",
     "test:integration": "X207_SANDBOX=1 vitest run",
