@@ -425,6 +425,26 @@ A seat of a team plan has no API that x207 can call: the seller invites the buye
 
 What this block does not show: a real plan or invitation (the invitation is simulated by the notices), the 72 hour silence that confirms by itself (own backend test), and a seat at or above 100 credit (own block).
 
+### Website block (pipeline P4, #67)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/site-sale.sandbox.test.ts   # real contract and indexer; about one minute
+```
+
+x207 does not move a website or an online shop. A site is sold as **two sales with their own proofs**, because the backend keeps refusing the asset type `site:web-property` as one listing (`asset_roadmap_only`): the domain goes through the transfer ledger (the voucher is held until the registry shows the domain moved, as in the platform transfer block), and the admin credentials go once through `secret_release` (sealed to the buyer, as in the one-time code flow; credentials cannot be checked by an issuer, so that part is capped at 20 credit). `agents/scenario/site.ts` has the three steps of each side.
+
+The order is the rule, and the vouchers are cumulative: the voucher of the credentials is the later one of the pair and carries the price of the domain too. So the seller hands over the credentials only after the domain is proven, and the buyer confirms them only after it took control of the panel (logged in and changed the password).
+
+| Do | See |
+| --- | --- |
+| `seller` sets the TXT `x207-sell` on the domain, lists the domain (70 credit) and the admin credentials (20 credit); `buyer` pays both | Two purchases `paid_held`, no voucher released |
+| `seller` tries to hand over the credentials before the domain moved | Refused by the agent (`domain_not_proven`): the key stays with the seller |
+| The registry shows the domain `active` and the buyer's TXT is there | The domain transfer is `confirmed`; voucher 1 (70 credit) is released |
+| `seller` hands over the credentials; `buyer` logs in, changes the password and confirms | `confirmed`; voucher 2 (90 credit cumulative) is released; the old credentials stop working; `seller` registers both and the pair holds 90 credit |
+| `second` pays for a site whose domain never moves; 7 days pass | The domain transfer is `cancelled` (`transfer_window_passed`); the credentials are never handed over, the seller gives up that sale, the pair holds 0 |
+
+The credentials, their salt and the key of the file are in no table of D9 (the test searches all of them). What this block does not show: a real registrar or admin panel (both are fakes), a site worth more than 20 credit in credentials (a larger price needs a different handover), the files and the database of the site (they are the seller's to hand over by the same credentials), and what happens if the seller registers the later voucher before the earlier one (a cumulative voucher pays the earlier part too: the buyer confirms the credentials last for this reason).
+
 ### Access rent block (pipeline P2)
 
 ```bash
