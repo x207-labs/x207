@@ -1,0 +1,20 @@
+{
+  "note": "Answer of the view get_params on x207-v013.testnet (interface 0.0.13), read on 2026-11-04 from https://rpc.testnet.fastnear.com with request_type call_function, finality final, args_base64 e30=. scripts/check-numbers.mjs compares the parameters quoted in docs/what-has-run.md and docs/testnet.md with this file, and with the chain unless --offline is given.",
+  "account_id": "x207-v013.testnet",
+  "read_at_utc": "2026-11-04",
+  "get_params": {
+    "epoch_length": 600,
+    "payment_window": 900,
+    "proposal_window": 60,
+    "base_limit_ratio": 8000,
+    "limit_growth": 1000,
+    "limit_cap": "1000000000",
+    "limit_decay": 0,
+    "fees": { "clearing_fee_bps": 10, "solver_fee_bps": 5 },
+    "admission": "open",
+    "max_search_share_bps": 500,
+    "bond_threshold": "100000000",
+    "bond_bps": 2000,
+    "prune_delay_epochs": 2
+  }
+}

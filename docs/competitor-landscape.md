@@ -1,8 +1,10 @@
 # Competitors and funded neighbours (UM-021)
 
-What exists next to x207, and the gap x207 fills. Facts are taken from the project research report and the probes made during research. Adoption signals were checked in October 2026 and can have changed.
+_Kept in step with the [README](../README.md) by UM-120. Start there._
 
-The gap: none of these clears across more than two parties with mutual credit. The multi-party gap is in the "Multi-party netting" column.
+What exists next to x207, and the gap x207 fills. Facts are taken from the project research report and the probes made during research. Adoption signals were checked in October 2026 and can have changed; the rows were not re-checked on 2026-11-04.
+
+The gap, as far as this table shows: one player, ACH, nets across more than two parties on NEAR, but over obligations that are registered in the contract with limits set by its owner. No row combines signed vouchers that the seller serves at once, an open solver whose proposal the contract checks, and a default covered from the debtor's stake. That combination is what x207 builds, and the "Multi-party netting" column shows who clears across more than two parties.
 
 | Player | Model | Multi-party netting | Credit basis | Adoption signal | Source |
 | --- | --- | --- | --- | --- | --- |
@@ -20,3 +22,7 @@ One facilitator for NEAR exists: `fastnear/x402-facilitator`, live for the `exac
 The fastest threats are 4Mica turning on multi-party aggregation, x402 maintainers adding a credit binding, and Natural adding netting to its credit product.
 
 Kite is named in the backlog item. The research report has no sourced entry for it, so it is not in the table. Add it when a source is found.
+
+## Where x207 stands
+
+The contract (release v0.0.13) runs on NEAR testnet as the circle `x207-v013.testnet`. Epoch 8 there cleared 21.8 of 41.35 credit and left 7.75 USDT to move, paid in a mock USDT (testnet, `usdt.x207-deployer.testnet`); the figures and the commands that check them are in the [README](../README.md#what-epoch-8-showed) and in [what-has-run](what-has-run.md). The 1Click path that Loca also uses was only quoted (`dry: true`, BE-090), and NEAR Intents has not run on testnet. No mainnet transaction has been sent, so none of this is a claim of adoption.

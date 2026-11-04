@@ -64,3 +64,33 @@ test("'half of the credit never moves' is flagged as a claim and allowed as a wa
   assert.equal(checkText("t.md", "In epoch 8 half of the credit never moves.", truth).length, 1);
   assert.deepEqual(checkText("t.md", 'Do not say "half of the credit never moves" (epoch 8).', truth), []);
 });
+
+// UM-120: the parameters of the circle (`get_params`).
+import { checkParamsText, compareParams, cycleMinutes, flattenParams } from "./check-numbers.mjs";
+const record = JSON.parse(readFileSync(new URL("../docs/testnet-params.json", import.meta.url), "utf8"));
+const params = flattenParams(record);
+
+test("the record of get_params gives 600, 60 and 900 seconds, so one cycle is 26 minutes", () => {
+  assert.equal([params.epoch_length, params.proposal_window, params.payment_window].join(), "600,60,900");
+  assert.equal(params.clearing_fee_bps, 10);
+  assert.equal(cycleMinutes(params), 26);
+});
+
+test("parameters quoted in prose and in tables pass when equal to the record", () => {
+  const text = "The answer holds `epoch_length` 600, `payment_window` 900, `proposal_window` 60.\n| `epoch_length` | 600 s (10 minutes) | x |\n`admission` open, `bond_bps` 2000. One full cycle takes 26 minutes from the opening of the epoch.";
+  const counter = { n: 0 };
+  assert.deepEqual(checkParamsText("t.md", text, params, counter), []);
+  assert.equal(counter.n, 7);
+});
+
+test("a stale parameter or cycle is reported (the text 1 hour reads as 1); words after a name are not read as values", () => {
+  const stale = "| `epoch_length` | 1 hour |\n| `payment_window` | 1800 s |\n`bond_threshold` and `prune_delay_epochs`.\nOne cycle takes 100 minutes from the opening of the epoch.";
+  const found = checkParamsText("t.md", stale, params);
+  assert.deepEqual(found.map((f) => f.found), ["epoch_length 1", "payment_window 1800", "cycle 100 minutes"]);
+});
+
+test("the record and the chain are compared by name", () => {
+  assert.deepEqual(compareParams(record.get_params, structuredClone(record.get_params)), []);
+  const live = { ...record.get_params, epoch_length: 3600, fees: { clearing_fee_bps: 10, solver_fee_bps: 6 } };
+  assert.deepEqual(compareParams(record.get_params, live), ["get_params epoch_length: record 600, chain 3600", "get_params solver_fee_bps: record 5, chain 6"]);
+});

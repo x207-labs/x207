@@ -5,14 +5,22 @@
 // decimals the text writes. The rules read phrases such as "21.8 credit cancelled", "the 19.55 left", "7.75 USDT due", "ratio 0.527", "24 vouchers";
 // a figure outside these phrases is not checked. Reads files and the API only; changes nothing.
 //
-// Usage: node scripts/check-numbers.mjs [--root <umbrella dir>] [--api <base url>] [--offline] [--epoch-file docs/testnet-0.0.13-realistic.json]
-// Exit code 0 when everything agrees, 1 when a number differs (or the API cannot be read without --offline).
+// UM-120 adds the parameters of the circle: `docs/testnet-params.json` records the answer of the view `get_params` of `x207-v013.testnet`; the
+// figures that `docs/what-has-run.md` and `docs/testnet.md` quote (`epoch_length` 600, the 26 minutes of one cycle, and so on) must equal it, and the
+// record must equal the chain (the RPC `--rpc`, skipped by `--offline`).
+//
+// Usage: node scripts/check-numbers.mjs [--root <umbrella dir>] [--api <base url>] [--rpc <url>] [--offline] [--epoch-file docs/testnet-0.0.13-realistic.json]
+// Exit code 0 when everything agrees, 1 when a number differs (or the API or the RPC cannot be read without --offline).
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const DEFAULT_API = "https://x207-backend-production.up.railway.app/x207/circles/agents-main";
 export const FILES = ["README.md", "CLAIMS.md", "docs/submission/idea.txt", "docs/submission/form-draft.md", "docs/submission/video-script.md", "docs/submission/x-post.md"];
+
+export const DEFAULT_RPC = "https://rpc.testnet.fastnear.com";
+export const PARAMS_FILE = "docs/testnet-params.json";
+export const PARAM_FILES = ["docs/what-has-run.md", "docs/testnet.md"];
 
 const credit = (units) => Number(units) / 1e6;
 const near = (a, b) => Math.abs(a - b) < 1e-9;
@@ -92,6 +100,53 @@ export function checkText(name, text, truth, counter = { n: 0 }) {
   return findings.filter((f, i) => findings.findIndex((g) => g.line === f.line && g.found === f.found) === i);
 }
 
+/** The parameters of the recorded `get_params`, with `fees` flattened (`clearing_fee_bps`, `solver_fee_bps`). */
+export function flattenParams(record) {
+  const { fees, ...rest } = record.get_params;
+  return { ...rest, ...(fees ?? {}) };
+}
+
+/** Differences between two `get_params` answers (the record and the chain), by name. */
+export function compareParams(recorded, live) {
+  const a = flattenParams({ get_params: recorded });
+  const b = flattenParams({ get_params: live });
+  const out = [];
+  for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) if (String(a[key]) !== String(b[key])) out.push(`get_params ${key}: record ${a[key]}, chain ${b[key]}`);
+  return out;
+}
+
+/** Minutes of one cycle: `epoch_length` + `proposal_window` + `payment_window`, in seconds / 60. */
+export const cycleMinutes = (p) => (Number(p.epoch_length) + Number(p.proposal_window) + Number(p.payment_window)) / 60;
+
+/** Findings in one text: a parameter quoted as "`epoch_length` 600" or "| `payment_window` | 900 s |", the cycle "takes N minutes from the opening", and "`admission` open". */
+export function checkParamsText(name, text, params, counter = { n: 0 }) {
+  const findings = [];
+  text.split("\n").forEach((line, i) => {
+    for (const [key, value] of Object.entries(params)) {
+      if (typeof value === "string" && !/^\d+$/.test(value) && key !== "admission") continue;
+      const re = key === "admission" ? new RegExp("`admission`\\s*(?:\\|\\s*)?(open|closed|invite)\\b", "g") : new RegExp("`" + key + "`\\s*(?:\\|\\s*)?(\\d+)(?!\\d|\\.\\d)", "g");
+      for (const m of line.matchAll(re)) {
+        counter.n += 1;
+        if (String(m[1]) !== String(value)) findings.push({ file: name, line: i + 1, found: `${key} ${m[1]}`, expected: String(value), rule: "param" });
+      }
+    }
+    for (const m of line.matchAll(/(?:cycle )?takes (\d+) minutes from the opening/g)) {
+      counter.n += 1;
+      if (Number(m[1]) !== cycleMinutes(params)) findings.push({ file: name, line: i + 1, found: `cycle ${m[1]} minutes`, expected: String(cycleMinutes(params)), rule: "cycle" });
+    }
+  });
+  return findings;
+}
+
+async function fetchParams(rpc, account) {
+  const body = { jsonrpc: "2.0", id: 1, method: "query", params: { request_type: "call_function", finality: "final", account_id: account, method_name: "get_params", args_base64: "e30=" } };
+  const response = await fetch(rpc, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), redirect: "error", signal: AbortSignal.timeout(15_000) });
+  if (!response.ok) throw new Error(`get_params answered ${response.status}`);
+  const json = await response.json();
+  if (!json.result?.result) throw new Error(`get_params gave no result: ${JSON.stringify(json.error ?? json).slice(0, 120)}`);
+  return JSON.parse(Buffer.from(json.result.result).toString("utf8"));
+}
+
 async function fetchMetrics(api) {
   const response = await fetch(`${api.replace(/\/+$/, "")}/epochs/8/metrics`, { redirect: "error", signal: AbortSignal.timeout(15_000) });
   if (!response.ok) throw new Error(`GET /epochs/8/metrics answered ${response.status}`);
@@ -113,18 +168,34 @@ async function main(argv) {
   }
   const findings = [];
   const checked = {};
+  const paramRecord = JSON.parse(readFileSync(join(root, PARAMS_FILE), "utf8"));
+  const params = flattenParams(paramRecord);
+  if (!argv.includes("--offline")) {
+    try {
+      problems.push(...compareParams(paramRecord.get_params, await fetchParams(arg("--rpc", DEFAULT_RPC), paramRecord.account_id)));
+    } catch (error) {
+      problems.push(`get_params could not be read from the chain: ${error.message} (use --offline to check the files against the record only)`);
+    }
+  }
+  for (const file of PARAM_FILES) {
+    if (!existsSync(join(root, file))) continue;
+    const counter = { n: 0 };
+    findings.push(...checkParamsText(file, readFileSync(join(root, file), "utf8"), params, counter));
+    if (counter.n === 0) problems.push(`${file}: no parameter of get_params was recognised, so nothing was checked (did the wording change?)`);
+    checked[`${file} (get_params)`] = counter.n;
+  }
   for (const file of FILES) {
     if (!existsSync(join(root, file))) continue;
     const counter = { n: 0 };
     findings.push(...checkText(file, readFileSync(join(root, file), "utf8"), truth, counter));
     checked[file] = counter.n;
   }
-  for (const [file, n] of Object.entries(checked)) if (n === 0) problems.push(`${file}: no figure of epoch 8 was recognised, so nothing was checked (did the wording change?)`);
+  for (const [file, n] of Object.entries(checked)) if (n === 0 && !file.endsWith("(get_params)")) problems.push(`${file}: no figure of epoch 8 was recognised, so nothing was checked (did the wording change?)`);
   for (const p of problems) console.log(`source: ${p}`);
   for (const f of findings) console.log(`${f.file}:${f.line}: ${f.found} (expected ${f.expected})`);
   const rounded = (n) => Math.round(n * 1e4) / 1e4;
   console.log(`figures checked per file: ${JSON.stringify(checked)}`);
-  console.log(`epoch 8: ${truth.vouchers} vouchers, obligation ${rounded(truth.obligation)}, cleared ${rounded(truth.cleared)} (ratio ${truth.ratio}), left ${rounded(truth.left)}, due ${rounded(truth.due)} (paid ${rounded(truth.paid)}, from stake ${rounded(truth.fromStake)}); ${findings.length} difference(s) in ${FILES.length} files${argv.includes("--offline") ? ", API not asked" : ""}`);
+  console.log(`epoch 8: ${truth.vouchers} vouchers, obligation ${rounded(truth.obligation)}, cleared ${rounded(truth.cleared)} (ratio ${truth.ratio}), left ${rounded(truth.left)}, due ${rounded(truth.due)} (paid ${rounded(truth.paid)}, from stake ${rounded(truth.fromStake)}); ${findings.length} difference(s) in ${FILES.length + PARAM_FILES.length} files, get_params: epoch_length ${params.epoch_length}, proposal_window ${params.proposal_window}, payment_window ${params.payment_window}${argv.includes("--offline") ? ", API not asked" : ""}`);
   return problems.length + findings.length === 0 ? 0 : 1;
 }
 
