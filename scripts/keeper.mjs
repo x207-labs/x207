@@ -2,7 +2,7 @@
 // UM-022: keeper epoch. Memanggil close_epoch, commit_epoch, dan finalize_epoch tepat pada waktunya, tanpa input operator.
 //
 // Pakai (dari akar payung):
-//   KEEPER_SECRET_KEY=ed25519:... node scripts/keeper.mjs --rpc-url <url> --contract x207-circle.test.near --account keeper.test.near [--interval 10] [--once] [--prune-lag 2]
+//   KEEPER_SECRET_KEY=ed25519:... node scripts/keeper.mjs --rpc-url <url> --contract x207-circle.test.near --account keeper.test.near [--interval 10] [--once] [--prune-lag 2] [--lookback 3]
 // Kunci hanya dibaca dari env KEEPER_SECRET_KEY dan tidak pernah dicetak. Log: satu baris JSON per transaksi.
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
@@ -50,13 +50,15 @@ const prune = args["prune-lag"] && args["prune-lag"] !== true
       },
     }
   : undefined;
+// `--lookback N`: how many epochs behind the current one are checked (default 3). A circle that was left alone for longer needs a larger number to catch up (UM-118).
+const lookback = args.lookback && args.lookback !== true ? Number(args.lookback) : undefined;
 const chainNowMs = async () => Number(BigInt((await provider.viewBlock({ finality: "optimistic" })).header.timestamp_nanosec) / 1_000_000n);
 const log = (entry) => console.log(JSON.stringify(entry));
 
 const intervalMs = Number(args.interval ?? 10) * 1000;
 do {
   try {
-    await keeperPass({ view, send, chainNowMs, log, ...(prune ? { prune } : {}) });
+    await keeperPass({ view, send, chainNowMs, log, ...(lookback ? { lookback } : {}), ...(prune ? { prune } : {}) });
   } catch (error) {
     console.error(JSON.stringify({ error: error instanceof Error ? error.message : String(error), at: new Date().toISOString() }));
   }

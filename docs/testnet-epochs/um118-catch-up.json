@@ -1,0 +1,93 @@
+{
+  "task": "UM-118: the circle x207-v013.testnet was left alone from epoch 9; one catch-up run with scripts/keeper.mjs --once --lookback N (the key of x207-v013-aux.testnet, from .secrets, never printed)",
+  "date": "2026-11-04, 13:29 to 14:05 UTC",
+  "command": "KEEPER_SECRET_KEY=... node scripts/keeper.mjs --rpc-url https://rpc.testnet.fastnear.com --contract x207-v013.testnet --account x207-v013-aux.testnet --once --lookback 7",
+  "note": "no keeper runs on this circle all the time; anybody may close, commit and finalize an epoch. Epochs 9 to 13 had at most one obligation each (nothing to clear), so no submit_clearing was needed and commit_epoch cleared nothing. In epochs 10 and 11 the debtor (a reader of docs/join-the-circle.md) did not pay: defaulted, the creditor position is claimable.",
+  "steps": [
+    {
+      "epoch": 9,
+      "method": "commit_epoch",
+      "hash": "6NW9KtJcChpLJQB427hXdP4RPNafbCaosCGQ3FtjNfyB"
+    },
+    {
+      "epoch": 10,
+      "method": "commit_epoch",
+      "hash": "8BVkPjapqe2W3WLcz7UetFkb4JckemYcw9vPuVbL8wB1"
+    },
+    {
+      "epoch": 11,
+      "method": "commit_epoch",
+      "hash": "6qVA5LWAyoZjQDFxQ1SpJxT8P74yhQzQhPjmpVcWokA9"
+    },
+    {
+      "epoch": 12,
+      "method": "commit_epoch",
+      "hash": "BFVkAhKEYiX4mxCx6dQ5E1Zz13uNBeENcZ5BLsmXF6cS"
+    },
+    {
+      "epoch": 13,
+      "method": "close_epoch",
+      "hash": "6oFQvwL6ktrNKvr6buU2frEMWaZBhQZuYr7cgurGFjVZ"
+    },
+    {
+      "epoch": 13,
+      "method": "commit_epoch",
+      "hash": "8SHmpMkwStksifxfkHPqd7TTAGfcWvvMXUY37ohkNCR2"
+    },
+    {
+      "epoch": 9,
+      "method": "finalize_epoch",
+      "hash": "AYx1T8CSuytLLxQQrwQuEsgBcb87ShoaSmRLMNQgFRBs"
+    },
+    {
+      "epoch": 10,
+      "method": "finalize_epoch",
+      "hash": "BAAh4CrYco5ezY9X7svLSZccwuf4YZRdcBxfcnF5vncc"
+    },
+    {
+      "epoch": 11,
+      "method": "finalize_epoch",
+      "hash": "4CFBFJ1gu1HfGvPrG7B1PYq2TigeXg6Tc1NepBo1JoV5"
+    },
+    {
+      "epoch": 12,
+      "method": "finalize_epoch",
+      "hash": "5VGjNmfGbvioA8UDJvRCrPs9U7H7j6yrQD8st8jXh1xJ"
+    },
+    {
+      "epoch": 13,
+      "method": "finalize_epoch",
+      "hash": "CK9YzkmjCPQagSCLFov3iPQEzENvTDe1v8atenk7JVRf"
+    },
+    {
+      "epoch": 14,
+      "method": "close_epoch",
+      "hash": "2ReEu4HbRtDc4CS5Yp2K7EA1KwbqYBskp4Fn2eYV9Tdu"
+    },
+    {
+      "epoch": 14,
+      "method": "commit_epoch",
+      "hash": "GpJMAqXnp1Ze7heraFKExUH5MwVaRZkhLu61cUGLHfJ8"
+    },
+    {
+      "epoch": 14,
+      "method": "finalize_epoch",
+      "hash": "34E8wn7NLNFGqKGdWktxdKxvwWG6RpEkgV5YRqT6oDcM"
+    },
+    {
+      "epoch": 15,
+      "method": "close_epoch",
+      "hash": "5asx4uFxVM8PasTB4xUF6qUNHDZdzC6FA2h2WuXNBTx4"
+    },
+    {
+      "epoch": 15,
+      "method": "commit_epoch",
+      "hash": "2vdy8YYgoDMyzkb557uXwMQtUwTCTtvvWcqckdWM6EVj"
+    }
+  ],
+  "positions": {
+    "10": "x207-guide-buyer.testnet debtor defaulted (-20000), x207-guide-seller.testnet creditor claimable (20000)",
+    "11": "gs87744-buyer.testnet debtor defaulted (-20000), gs87744-seller.testnet creditor claimable (20000)"
+  },
+  "state_at_end": "epochs 9 to 14 finalized; epoch 15 in payment_window (payment deadline about 14:19 UTC), so it is not finalized yet; the circle opens a new epoch every 10 minutes and nobody closes them until somebody runs the command again"
+}

@@ -467,6 +467,6 @@
     "6": "finalized",
     "7": "finalized",
     "8": "finalized (the realistic epoch)",
-    "9": "cutoff (no keeper runs on this circle; anybody may close it)"
+    "9": "cutoff when this file was written (no keeper runs on this circle all the time; anybody may close, commit and finalize an epoch, and the team did so by hand on 2026-11-04, UM-118: see docs/testnet-epochs/um118-catch-up.json)"
   }
 }
