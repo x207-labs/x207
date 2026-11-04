@@ -1,0 +1,472 @@
+{
+  "contract": "x207-v013.testnet",
+  "aux": "x207-v013-aux.testnet",
+  "note": "UM-106: asymmetric graph, partial clearing, residuals, one default; hashes and names only",
+  "steps": [
+    {
+      "step": "top up m00.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "7237afyYZsWw8qQUD7t7wiazDT96WpEyDYx7ksVyg1rH"
+    },
+    {
+      "step": "top up m01.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "3ppjKY3y2K2b3AUbU3fFE4CFTmM91hhX67shbxHpr6fY"
+    },
+    {
+      "step": "top up m02.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "GSeBuWCKGdYusy7XTBNrcY44nGdHJNDPiMxxiyQHcWjz"
+    },
+    {
+      "step": "top up m03.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "2rQ7ARJasYqEVfaEF3Mx4Ty33odFH8z8Avpe9FTSvb8a"
+    },
+    {
+      "step": "top up m04.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "AazyzT5HAj5EzRoXMi2ZJadmxRuMo3nXECyFixyf9f1s"
+    },
+    {
+      "step": "top up m05.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "FdBdUwg3YBdWYsMYAnm4PNXdpepmyeDHNCkX7iiLQukk"
+    },
+    {
+      "step": "top up m06.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "8p3NPPS9uvau7QeEcpiHskrD9KDAUMoKMhxRZJ9E7ae2"
+    },
+    {
+      "step": "top up m07.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "DiNw478pq6dQ66czsyXsCBENZMZc7sEhVfGGBdKDMHMm"
+    },
+    {
+      "step": "top up m08.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "8nXx6L5mnnQk139KBDqjGsePGBKpCRhhe7PYW7Z6iaa9"
+    },
+    {
+      "step": "top up m09.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "4yGxgAV1YzuEZUaEMwNPa3noLygSAUPRfU9difkiPYUK"
+    },
+    {
+      "step": "top up m10.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "CQXwoH5spyKMNNyxS8RXDKeUg8gwWQfvBgwb1whYXffx"
+    },
+    {
+      "step": "top up m11.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "9QMQ2vSRmbyLSYBPv6KXXxqjJAcptM6BPnUvjTvZ8F5c"
+    },
+    {
+      "step": "top up m12.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "GQt2iHyNMEH5xmiifGGSLQeBXiKRAasAdmU3BLUbF8yN"
+    },
+    {
+      "step": "top up m13.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "E2tCWxXH55HTqJRwLGFpZLJumDuFtmwBDR9ZFQgn6W73"
+    },
+    {
+      "step": "top up m14.x207-v013-aux.testnet",
+      "account": "x207-v013.testnet",
+      "method": "transfer",
+      "hash": "5riYtvxq6RvokADyp1S1PtgAzvcWaGbH2yFVPA9sNnh4"
+    },
+    {
+      "step": "keeper commit_epoch",
+      "account": "x207-v013-aux.testnet",
+      "method": "commit_epoch",
+      "hash": "Ci25SWZfjXCHbLmzcpoc1pBPUAeQFnEa71MfG6ccaACv"
+    },
+    {
+      "step": "register m12->m09 0.9",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "K9p8yWPWqPWLsPPQducd3WoPLgNUvjN9E1NUXCsNykG"
+    },
+    {
+      "step": "register m10->m11 1.1",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6YjDKYMnTddh769rajcnXgm2xJsr94j9UcJauJP78xco"
+    },
+    {
+      "step": "register m01->m02 2.5",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Aq3RmaBhVihaiZ64P2iT1d3iDXWU1qPVkJqfBZoApAMa"
+    },
+    {
+      "step": "register m07->m08 4.25",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Be6yh3Zqj4piqkmHxrsVxg2RGkWvMNzbxCtjFcr1WQRX"
+    },
+    {
+      "step": "register m02->m00 3",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Q3zi36TWTDpPEKmRtw7ADC6AckFVYwutyHemygGwtcy"
+    },
+    {
+      "step": "register m04->m03 0.75",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "CQ3DQpBhZ5jPJMUK8rLFVExFQC9w2ZkWYQcmGgAdaDfb"
+    },
+    {
+      "step": "register m09->m10 2.4",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "52KgTiNyRsV1uRUwPkgC8D8qHtfp3pVGMsjsud6iUKr"
+    },
+    {
+      "step": "register m08->m05 1.8",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "97qhgYZV1pkF7YHBdcGjcHc57cPvAxxmSisBtsCgdo8V"
+    },
+    {
+      "step": "register m14->m13 0.45",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "HDveN3QVbswVArJqaL1asPNnn5WcUayqVY9s8eXSfRr7"
+    },
+    {
+      "step": "register m05->m06 5",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "3RZLUDcja4Ata7krh2xEWEfeBTDLz5dd2UcKGDMmSKsJ"
+    },
+    {
+      "step": "register m06->m07 3.5",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EAtyGFKxiKWMs6hbBqja4nGy2ATQwNTcwPyRcLLbv5XW"
+    },
+    {
+      "step": "register m00->m01 4",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "5tGkGRgyEfEdu3TTScgYnnruTNqVTrCnFU2GB5oVFS39"
+    },
+    {
+      "step": "register m03->m04 1.2",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Cnpj9iGzBAYcTPFwfMHmFkKbboBU2ZWkRjj46uNLeNBf"
+    },
+    {
+      "step": "register m11->m03 0.55",
+      "account": "m11.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BT2a39zGxtwCbjXZFPin4Ma9oD7HdyT3NHAN2yAWA2WE"
+    },
+    {
+      "step": "register m13->m12 1.7",
+      "account": "m13.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8UyUmAU537PKF8Q2t8PSTve2eAAdB6FSymhdyanjiFVN"
+    },
+    {
+      "step": "register m01->m05 0.95",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "EbsPf5UWFydWK3VxgyDKfn7vt8uwFbDcgA1sueiiagwC"
+    },
+    {
+      "step": "register m14->m00 0.35",
+      "account": "m14.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "8LHNfrqfDV3ifxLjWyfLa1PxcLSEmQYq29jSGdH6mLvV"
+    },
+    {
+      "step": "register m04->m12 0.65",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "2A6qhdKkCoj6CwGNJePibRGGqydoyh2pC9YwbMMyvpGS"
+    },
+    {
+      "step": "register m10->m04 0.4",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "FxHqJL9GHFy8pokHve6tdJ92cqYnsujQiBAGZTYhMojG"
+    },
+    {
+      "step": "register m02->m10 1.3",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BjP4SVDuaAp4gAzhTkL2e7cBfJPU9UUGSbqY1rZrHZTQ"
+    },
+    {
+      "step": "register m08->m09 1.15",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7eZruE7LQCQyzYo1b9MCQK3YnG3RDLKkQLaDvEryuGin"
+    },
+    {
+      "step": "register m09->m11 0.6",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "dqKwAo6cBnP72F6wP9bzeYYPFCRUXPhoKxzAVeT8PVH"
+    },
+    {
+      "step": "register m07->m14 0.8",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Eq9sRJjj6LFSVe25cpefAUoNRsWF5YjHCBvEvizvBLfG"
+    },
+    {
+      "step": "register m06->m13 2.05",
+      "account": "m06.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "BVnLy3Nj2q5av7B1q87ZptchECxNfTENYMg33DTZnFLk"
+    },
+    {
+      "step": "close_epoch",
+      "account": "x207-v013-aux.testnet",
+      "method": "close_epoch",
+      "hash": "BuxEKN4CHXPY5KMKeCbyBRfLwrCzzuSF8oXm652Ae5KG"
+    },
+    {
+      "step": "submit_clearing",
+      "account": "x207-v013-aux.testnet",
+      "method": "submit_clearing",
+      "hash": "7fuRk4xJCMGYmng1YTAvzRySiNVSeGrLvGQhanq3bW8P"
+    },
+    {
+      "step": "commit_epoch",
+      "account": "x207-v013-aux.testnet",
+      "method": "commit_epoch",
+      "hash": "uuomfX8JzUiqpF9C6kodCmpndkYnyK8UH1f5caU14sp"
+    },
+    {
+      "step": "usdt m00.x207-v013-aux.testnet",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "H1sQZWFy64ujKeccy16AM2atUrWqov4mApou2zEkDNkJ"
+    },
+    {
+      "step": "usdt m07.x207-v013-aux.testnet",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "EJHxzhDXvWjAWe43bVPoXADPHvVbHws7MUoQTEPX5biv"
+    },
+    {
+      "step": "usdt m02.x207-v013-aux.testnet",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "CkWMj9p5332eMXT1ii3LahzD2po17WLtjcaoykVQersV"
+    },
+    {
+      "step": "usdt m05.x207-v013-aux.testnet",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "AzTg5e8r5zpRdUZQN15FqVARPHEgufi4846SnK16crsJ"
+    },
+    {
+      "step": "usdt m09.x207-v013-aux.testnet",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "5hh9FEGQtWZkd8UQthFhRogZp7UPVpWdANLuVnb3UViL"
+    },
+    {
+      "step": "settle m07.x207-v013-aux.testnet 1550000",
+      "account": "m07.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "9v2jQEhkVH8NBZoXrkqZsMRA15fvpc3TZBwZZH37xcQ3"
+    },
+    {
+      "step": "settle m05.x207-v013-aux.testnet 2250000",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "8B6MqJFJfrr6nnWQwMRAUgEhotCAnNaZLeZZtVkx4uZW"
+    },
+    {
+      "step": "settle m02.x207-v013-aux.testnet 1800000",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "F2xVw1KZPoV3SayoWh9oQ6gppSHPWhsYUtsjq5yfrseL"
+    },
+    {
+      "step": "settle m09.x207-v013-aux.testnet 950000",
+      "account": "m09.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "8kX8bbuegcJmMnH2Ukw53VhGnLjuB8FZ3T5YzJ2y8TCw"
+    },
+    {
+      "step": "settle m00.x207-v013-aux.testnet 650000",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "EAc1vQ8KDwsLYeAejBtw5GAApVGJQAiNueU4ERp6inkP"
+    },
+    {
+      "step": "finalize_epoch",
+      "account": "x207-v013-aux.testnet",
+      "method": "finalize_epoch",
+      "hash": "BLsJyPoQykcQr2X5VaqxMH2dY2bon1B1U4d71FNc4bRi"
+    },
+    {
+      "step": "claim m10.x207-v013-aux.testnet 2200000",
+      "account": "m10.x207-v013-aux.testnet",
+      "method": "claim",
+      "hash": "7PRVh3mfGZoMc8eP3vhkbfNEfg5SvTQutzNX6Qqj1g3G"
+    },
+    {
+      "step": "claim m12.x207-v013-aux.testnet 1450000",
+      "account": "m12.x207-v013-aux.testnet",
+      "method": "claim",
+      "hash": "44u6YtdmUG9wYysB57WRS2hWRJ9tEuQwbnQScX2HyYze"
+    },
+    {
+      "step": "claim m08.x207-v013-aux.testnet 1300000",
+      "account": "m08.x207-v013-aux.testnet",
+      "method": "claim",
+      "hash": "Aa7ybftppPeoRwtxojxK96mV4jPV9DaTUTLU8kJd3cPH"
+    },
+    {
+      "step": "finish epoch 6 (left in the payment window by earlier runs)",
+      "account": "x207-v013-aux.testnet",
+      "method": "finalize_epoch",
+      "hash": "AvfEEG8svoLqscRxsLqP166dEXJ1vsnrijkTWnCXxyG4"
+    },
+    {
+      "step": "finish epoch 7 (an empty epoch, one voucher of the demo)",
+      "account": "x207-v013-aux.testnet",
+      "method": "finalize_epoch",
+      "hash": "EH2239H9i85ArohgkHcfmuPcUVnatnTvC3SMkLXUs6RJ"
+    }
+  ],
+  "result": {
+    "epoch": 8,
+    "edgesRegistered": {
+      "count": 24,
+      "seconds": 10,
+      "totalObligation": "41350000"
+    },
+    "clearing": {
+      "edges": 18,
+      "clearedTotal": "21800000",
+      "totalObligation": "41350000",
+      "clearedRatio": 0.527
+    },
+    "positions": {
+      "debtors": [
+        {
+          "account": "m06.x207-v013-aux.testnet",
+          "due": "550000"
+        },
+        {
+          "account": "m00.x207-v013-aux.testnet",
+          "due": "650000"
+        },
+        {
+          "account": "m09.x207-v013-aux.testnet",
+          "due": "950000"
+        },
+        {
+          "account": "m07.x207-v013-aux.testnet",
+          "due": "1550000"
+        },
+        {
+          "account": "m02.x207-v013-aux.testnet",
+          "due": "1800000"
+        },
+        {
+          "account": "m05.x207-v013-aux.testnet",
+          "due": "2250000"
+        }
+      ],
+      "creditors": [
+        {
+          "account": "m10.x207-v013-aux.testnet",
+          "claimable": "2200000"
+        },
+        {
+          "account": "m12.x207-v013-aux.testnet",
+          "claimable": "1450000"
+        },
+        {
+          "account": "m08.x207-v013-aux.testnet",
+          "claimable": "1300000"
+        },
+        {
+          "account": "m11.x207-v013-aux.testnet",
+          "claimable": "1150000"
+        },
+        {
+          "account": "m13.x207-v013-aux.testnet",
+          "claimable": "800000"
+        },
+        {
+          "account": "m01.x207-v013-aux.testnet",
+          "claimable": "550000"
+        },
+        {
+          "account": "m04.x207-v013-aux.testnet",
+          "claimable": "200000"
+        },
+        {
+          "account": "m03.x207-v013-aux.testnet",
+          "claimable": "100000"
+        }
+      ],
+      "defaulter": "m06.x207-v013-aux.testnet"
+    },
+    "finalize": {
+      "hash": "BLsJyPoQykcQr2X5VaqxMH2dY2bon1B1U4d71FNc4bRi",
+      "defaulted": [
+        {
+          "account": "m06.x207-v013-aux.testnet",
+          "due": "550000",
+          "fromStake": "550000",
+          "shortfall": "0"
+        }
+      ]
+    },
+    "claims": [
+      {
+        "account": "m10.x207-v013-aux.testnet",
+        "claimable": "2200000",
+        "status": "claimed"
+      },
+      {
+        "account": "m12.x207-v013-aux.testnet",
+        "claimable": "1450000",
+        "status": "claimed"
+      },
+      {
+        "account": "m08.x207-v013-aux.testnet",
+        "claimable": "1300000",
+        "status": "claimed"
+      }
+    ]
+  },
+  "epochs": {
+    "6": "finalized",
+    "7": "finalized",
+    "8": "finalized (the realistic epoch)",
+    "9": "cutoff (no keeper runs on this circle; anybody may close it)"
+  }
+}
