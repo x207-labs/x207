@@ -358,11 +358,12 @@ A domain, a game item or a ticket is not moved by x207: the seller moves it with
 | Do | See |
 | --- | --- |
 | `seller` sets the TXT `x207-sell=<listing_hash>` on the domain and lists it; `buyer` pays with a voucher of 40 credit | The transfer is `paid_held`; the answer has no voucher |
+| `seller` sets the transfer code (auth code, #29) at the registrar and hands it to `buyer` once, outside x207; `buyer` redeems it at the registrar (a wrong code and a second use are refused) | The registrar moves the domain (#66); the code is never sent to the backend |
 | The proof is asked before the registrar has finished, then while the registry still says `pending transfer` | `pending`, with the TXT that is missing; still no voucher, the pair holds 0 |
 | The registry shows the domain `active` and the buyer's TXT `x207-own=<transfer id>` is there | `confirmed`; only now the voucher is in the answer, and the seller registers it: the pair holds 40 credit |
 | `second` pays for a domain whose transfer never finishes, and the 7 day window passes | `cancelled` with `transfer_window_passed`; no voucher ever leaves, the pair holds 0 |
 
-A seller who does not transfer is not paid, and a buyer who has no domain is not charged: the voucher moves only on a proof. What this block does not show: a game item and a ticket (each has its own test in `agents/test/transfer.book.test.ts`), and the registrar itself (a real registry is not called in any test).
+The transfer code never appears in an answer or request of the API, in the log, or in any table of D9 (the test searches all three). A seller who does not transfer is not paid, and a buyer who has no domain is not charged: the voucher moves only on a proof. What this block does not show: a game item and a ticket (each has its own test in `agents/test/transfer.book.test.ts`), and the registrar itself (a real registry is not called in any test).
 
 ### Access rent block (pipeline P2)
 

@@ -1,11 +1,13 @@
-// UM-095: transfer of a domain through its registrar (P4, ADR-49) in near-sandbox. A seller and two buyers, members of a real circle on a real contract, the transfer ledger of the backend (BE-074)
+// UM-095 (#66 domain name, #29 transfer code of the domain): transfer of a domain through its registrar (P4, ADR-49) in near-sandbox. A seller and two buyers, members of a real circle on a real contract, the transfer ledger of the backend (BE-074)
 // and a fake internet for the platforms (DNS over HTTPS and the registry RDAP of AG-031; the backend refuses a loopback address, so they are injected as the agent tests do):
 //   - a domain is sold: the buyer's voucher is held while the registrar has not finished, `POST /transfers/{id}/proof` answers `pending` and says what is missing, the registry moves the domain,
 //     the proof is met, and only then the voucher is released; the seller registers it on the contract and the pair holds the price;
+//   - the transfer code (the auth code of the registrar, #29) is handed once, outside x207, and the registrar accepts it once; it never appears in an answer of the API, in the log or in any table of D9;
 //   - a domain whose transfer never finishes: the window of 7 days passes, the transfer is `cancelled` with `transfer_window_passed`, no voucher is ever handed out and nothing moves on the chain.
 import { afterAll, describe, expect, it } from "vitest";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
+import { randomBytes } from "node:crypto";
 import { TRANSFER_WINDOW_SECONDS, createCircleViewFn, onboardMember, type ContractAbi, type ContractCall } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
 import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
@@ -42,7 +44,30 @@ describe.skipIf(!sandboxAvailable)("UM-095 transfer of a domain through its regi
   // the clock of the backend: the window of the transfer is measured on it, so the test moves it instead of waiting 7 days
   const clock = { now: Date.now() };
 
+  // the registrar: it moves the domain only for the transfer code of the seller, once; then the registry shows the domain `active` and the buyer sets its TXT
+  const registrar = {
+    codes: new Map<string, string>(),
+    transfer(domain: string, code: string, buyerTxtValue: string, sellerTxtValue: string): void {
+      if (this.codes.get(domain) !== code) throw new Error("registrar: transfer code refused");
+      this.codes.delete(domain); // the code is used up
+      rdap.set(domain, { ldhName: domain, status: ["pending transfer"] });
+      dns.set(domain, [sellerTxtValue, buyerTxtValue]);
+    },
+    settle(domain: string): void { rdap.set(domain, { ldhName: domain, status: ["active"] }); },
+  };
+  // everything that crosses the API and everything the process writes to stderr, to look for the transfer code afterwards
+  const seen: string[] = [];
+  const realFetch = globalThis.fetch;
+  const realWrite = process.stderr.write.bind(process.stderr);
+  afterAll(() => { globalThis.fetch = realFetch; process.stderr.write = realWrite; });
+
   it("TC-UM-095-01 a domain is paid only after the registry shows it moved; a transfer that never finishes is cancelled and nothing is registered", async () => {
+    globalThis.fetch = (async (input: any, init?: any) => {
+      const res = await realFetch(input, init);
+      if (String(input?.url ?? input).startsWith("http://127.0.0.1")) seen.push(String(init?.body ?? "") + (await res.clone().text()));
+      return res;
+    }) as typeof fetch;
+    process.stderr.write = ((chunk: any, ...rest: any[]) => { seen.push(String(chunk)); return (realWrite as any)(chunk, ...rest); }) as typeof process.stderr.write;
     fx = await deployCircle();
     const rpcUrl = fx.sandbox.rpcUrl;
     const rpc = async (method: string, params: unknown) => ((await (await fetch(rpcUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) })).json()) as any).result;
@@ -120,17 +145,22 @@ describe.skipIf(!sandboxAvailable)("UM-095 transfer of a domain through its regi
     expect([bought.status, bought.platform, bought.proofMethod]).toEqual(["paid_held", "domain", "dns_txt"]);
     expect(bought.voucher).toBeUndefined();
     expect(bought.windowUntil - book.at()).toBe(TRANSFER_WINDOW_SECONDS.domain);
+    // the seller sets the transfer code at the registrar and hands it to the buyer once, outside x207 (it is not sent to the backend)
+    const transferCode = randomBytes(12).toString("hex");
+    registrar.codes.set("agent-shop.com", transferCode);
     // the registrar has not finished: pending, with what is missing, and no voucher
     const early = await book.proof(bought.transferId);
     expect(early).toMatchObject({ outcome: "pending", missing: { want: buyerTxt(bought) } });
     expect((await book.getTransfer(bought.transferId)).voucher).toBeUndefined();
+    // the buyer redeems the code at the registrar: a wrong code is refused, the right one works once and a second use is refused
+    expect(() => registrar.transfer("agent-shop.com", "0".repeat(24), buyerTxt(bought), shop.sellerTxt!)).toThrow("transfer code refused");
+    registrar.transfer("agent-shop.com", transferCode, buyerTxt(bought), shop.sellerTxt!);
+    expect(() => registrar.transfer("agent-shop.com", transferCode, buyerTxt(bought), shop.sellerTxt!)).toThrow("transfer code refused");
     // the domain moves but the registry still says the transfer is pending
-    dns.set("agent-shop.com", [shop.sellerTxt!, buyerTxt(bought)]);
-    rdap.set("agent-shop.com", { ldhName: "agent-shop.com", status: ["pending transfer"] });
     expect((await book.proof(bought.transferId)).outcome).toBe("pending");
     expect(pairOf(buyer, seller)).toBe("0");
     // the registry settles: the proof is met and the voucher is released
-    rdap.set("agent-shop.com", { ldhName: "agent-shop.com", status: ["active"] });
+    registrar.settle("agent-shop.com");
     const done = await waitForProof(book, bought.transferId, { tries: 3, wait });
     expect(done.outcome).toBe("confirmed");
     const { voucher, signature } = releasedVoucher((done as { transfer: any }).transfer);
@@ -139,6 +169,13 @@ describe.skipIf(!sandboxAvailable)("UM-095 transfer of a domain through its regi
     expect(r.failures).toEqual([]);
     await catchUp(() => pairOf(buyer, seller) === credit(40));
     expect(pairOf(buyer, seller)).toBe(credit(40));
+
+    // the transfer code never reached the backend: not in an answer or a request of the API, not in the log, not in any table of D9
+    const dump = (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all() as { name: string }[]).map((t) => JSON.stringify(db.prepare(`SELECT * FROM "${t.name}"`).all(), (_k, v) => (typeof v === "bigint" ? v.toString() : v))).join("\n");
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen.join("\n")).not.toContain(transferCode);
+    expect(dump).not.toContain(transferCode);
+    expect(JSON.stringify(await book.getTransfer(bought.transferId))).not.toContain(transferCode);
 
     // --- 2. a domain whose transfer never finishes: the window passes, the voucher never leaves
     const late = prepareTransfer(book, sellerA, { platform: "domain", ref: "slow-shop.com", price: credit(30), estimateSeconds: 3600, nonce: "um095-late", expiresAt });
