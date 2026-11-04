@@ -56,7 +56,7 @@ The API, the MCP server and the dashboard are hosted for the judging period. If 
 
 ## Run it locally (5 minutes)
 
-On your machine, in a local `near-sandbox`, with no account and no Rust. Needs Node 22.22.2 or newer and `git`.
+On your machine, in a local `near-sandbox`, with no account and no Rust. Needs Node 22.22.2 or newer, `git` and `tar`, on Linux (x64 or arm64) or macOS on Apple silicon: those are the platforms with a near-sandbox binary that the script downloads. On another system (Windows, Intel Mac) the script stops at once and says so; set `X207_SANDBOX_BIN` to a near-sandbox 2.13.4 binary of your own, or use the hosted steps above.
 
 ```bash
 git clone --recurse-submodules https://github.com/x207-labs/x207.git && cd x207
@@ -64,7 +64,10 @@ npm ci && npm run build --workspaces --if-present
 npm run demo:quick    # one epoch of six agents: joins, paid calls, clearing, residuals, claims; about 5 minutes, most of it the sandbox clock
 npm run demo:mcp      # an AI agent through the MCP tools on a local circle; about 2 minutes, prints every tool call and what it answered
 npm run demo:swarm    # six agents trade for four epochs (20 minutes of chain time); the keeper and the solver clear each epoch on their own; about 5 minutes, prints one line per epoch
+npm run check:numbers # every epoch 8 figure in this README, CLAIMS.md and docs/submission/ against docs/testnet-0.0.13-realistic.json; takes a second
 ```
+
+The other checks run the same way and take seconds: `npm run check:claims` (every path, id, function and hash that [CLAIMS.md](CLAIMS.md) names exists), `npm run check:links` (every link of the Markdown files resolves) and `npm run check:pins` (all dependencies pinned exactly).
 
 Each of `demo:quick` and `demo:mcp` fetches what it needs by itself, the first time, so you can run either one first: the wasm of the release v0.0.13 from GitHub (its sha256 is checked against the number written in this repository) and the near-sandbox 2.13.4 binary from build.nearprotocol.com, kept in `node_modules/.cache/x207-quick`. `node scripts/demo-quick.mjs --check-only` downloads and checks both and runs nothing. The other ways to run the demos are in [docs/sandbox-demo.md](docs/sandbox-demo.md).
 
