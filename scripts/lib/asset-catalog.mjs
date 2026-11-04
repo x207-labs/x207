@@ -35,7 +35,7 @@ export const CATALOG = [
   // B. limited access that can be revoked
   { no: 15, assetType: "near-rpc:access", cls: "B", name: "NEAR account access by function-call key", delivery: ["near_access_key"], proofs: ["rpc_access_key"], status: "built (testnet)" },
   { no: 16, assetType: "dao:vote-delegation", cls: "B", name: "DAO voting delegation", delivery: ["dao_delegation"], proofs: ["zktls"], status: "roadmap" },
-  { no: 17, assetType: "saas:team-seat", cls: "B", name: "Team seat of a SaaS", delivery: ["seat_invite"], proofs: ["zktls"], status: "roadmap; team plan terms" },
+  { no: 17, assetType: "saas:team-seat", cls: "B", name: "Team seat of a SaaS", delivery: ["seat_invite"], proofs: ["zktls"], status: "built with a mock SCIM service (BE-087, adapter saas-seat-scim); team plan terms" },
   { no: 18, assetType: "git:repo-collaborator", cls: "B", name: "Repository collaborator", delivery: ["repo_collaborator"], proofs: ["zktls"], status: "roadmap" },
   { no: 19, assetType: "oauth:scoped-token", cls: "B", name: "OAuth token with a narrow scope", delivery: ["oauth_token"], proofs: ["zktls"], status: "built with a mock OAuth provider (BE-083, adapter oauth-scoped); provider terms" },
   { no: 20, assetType: "cloud:temporary-role", cls: "B", name: "Temporary cloud role", delivery: ["cloud_role"], proofs: ["zktls"], status: "roadmap" },
