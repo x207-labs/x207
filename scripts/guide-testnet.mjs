@@ -43,9 +43,10 @@ if (command === "voucher-key") {
     console.log(`epoch ${epoch.epoch} is ${epoch.phase}: nothing to close`);
   } else {
     const started = Date.now();
-    await signer(account).callFunction({ contractId: circle, methodName: "close_epoch", args: { epoch: epoch.epoch }, gas: 20_000_000_000_000n, deposit: 0n, waitUntil: "FINAL" });
+    const outcome = await signer(account).callFunctionRaw({ contractId: circle, methodName: "close_epoch", args: { epoch: epoch.epoch }, gas: 20_000_000_000_000n, deposit: 0n, waitUntil: "FINAL" });
+    const hash = outcome?.transaction?.hash ?? outcome?.transaction_outcome?.id ?? "unknown";
     const next = await view(circle, "get_epoch");
-    console.log(`closed epoch ${epoch.epoch}; epoch ${next.epoch} is ${next.phase} (${Date.now() - started} ms)`);
+    console.log(`closed epoch ${epoch.epoch}; epoch ${next.epoch} is ${next.phase} (${Date.now() - started} ms)\ntransaction ${hash}\nhttps://testnet.nearblocks.io/txns/${hash}`);
   }
 } else {
   console.error("usage: guide-testnet.mjs voucher-key | mint <account> --keys-dir <dir> | close-epoch <account> --keys-dir <dir>");

@@ -62,12 +62,12 @@ npx @modelcontextprotocol/inspector --cli \
   --tool-arg "terms_hash=\"$(printf 'a%.0s' $(seq 64))\"" --tool-arg 'stake_amount="50000000"'
 ```
 
-(The Inspector turns `50000000` into a number, so the amount is quoted to stay a string; an agent sends a string by itself.)
+(The Inspector turns `50000000` into a number, so the amount is quoted to stay a string; an agent sends a string by itself.) The Inspector prints the MCP result as `{"content":[{"type":"text","text":"{…}"}]}`: the fields named in the "See" column of this guide are inside the JSON string `content[0].text`, not at the top level.
 
 | Do | See |
 | --- | --- |
 | Call `x207_join` for the seller, then for the buyer | In about 11 seconds each: `"status": "active"`, `"stake": "50000000"`, `"limit": "40000000"` (80% of the stake for a new member, and never above the stake; it grows with settlement history), and the voucher public key. The tool sent `join` with the 0.35 NEAR storage deposit and then the stake transfer |
-| `curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/members/my-seller.testnet` | The member, after the read API has caught up (a minute or two): `status` `active`, `limit` `40000000`. Before that it answers `member_not_found`; the contract already has the member |
+| `curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/members/my-seller.testnet` | The member, after the read API has caught up (within a few minutes): `status` `active`, `limit` `40000000`. Before that it answers `member_not_found`; the contract already has the member |
 
 To join from code instead of a tool, use `onboardMember` of `@x207/core` as in [docs/quickstart.md](quickstart.md); it does the same two transactions.
 
@@ -92,9 +92,11 @@ FACILITATOR_URL=http://localhost:4021 CIRCLE_ID=agents-main PAY_TO=my-seller.tes
 | `curl -s localhost:4021/supported` | `batch-settlement` on `x207:agents-main`, `circleContract` `x207-v013.testnet`, the current `epoch`, and your relayer in `signers` |
 | `curl -si localhost:3000/api/summarize` | `HTTP/1.1 402 Payment Required`; the body `accepts` has `scheme` `batch-settlement`, `network` `x207:agents-main`, `amount` `20000` (0.02 credit) and `payTo` your seller account. This is the x207 entry |
 
-**If the answer later says `epoch_closing`:** this circle has no keeper, so an epoch that has passed its cutoff stays open until somebody closes it, and no voucher is accepted for it. Any member may close it: `node scripts/guide-testnet.mjs close-epoch my-buyer.testnet --keys-dir .keys` prints, for example, `closed epoch 9; epoch 10 is open (4348 ms)` (example output: your epoch numbers and times will differ), and a few seconds later the seller advertises the new epoch (before that a payment is refused with `epoch_mismatch`). When the epoch is still open the command says `nothing to close`.
+**If the answer later says `epoch_closing`:** this circle has no keeper, so an epoch that has passed its cutoff stays open until somebody closes it, and no voucher is accepted for it. Any member may close it: `node scripts/guide-testnet.mjs close-epoch my-buyer.testnet --keys-dir .keys` prints, for example, `closed epoch 9; epoch 10 is open (4348 ms)` and, on the next lines, `transaction <hash>` and its `https://testnet.nearblocks.io/txns/<hash>` link (example output: your epoch numbers and times will differ). The seller advertises the new epoch after about 45 seconds: retry `curl -s localhost:4021/supported` until it shows the new epoch, because before that a payment is refused with `epoch_mismatch`. When the epoch is still open the command says `nothing to close`.
 
 ## 4. Pay the service from the second agent
+
+**First check the epoch.** This circle has no keeper, so the open epoch is often already past its cutoff, and then the first payment fails with `epoch_closing`. Run the command of step 3 now (`node scripts/guide-testnet.mjs close-epoch my-buyer.testnet --keys-dir .keys`): it prints `nothing to close` when the epoch is open, and closes it otherwise. After a close, wait about 45 seconds and retry `curl -s localhost:4021/supported` until it shows the new epoch; until then a payment is refused with `epoch_mismatch`.
 
 Add the buyer to the MCP config, without the NEAR key (paying only signs vouchers), and with `X207_ALLOW_PRIVATE_URLS=1` because the seller is on `localhost`. Ask: "Pay http://localhost:3000/api/summarize." Scripted:
 
@@ -109,13 +111,22 @@ npx @modelcontextprotocol/inspector --cli \
 | --- | --- |
 | Call `x207_pay_request` for the buyer | In about 8 seconds: `"status": 200`, `"paid": true`, the body `{"summary":"summary text"}`, and a `paymentResponse` whose decoded `extensions.x207` says, for example, `"epoch": 10, "seq": 1, "cumulativeAmount": "20000", "registration": "registered"` (example output: your epoch number will differ) |
 | Look at the log of the facilitator | `{"event":"registered","payer":"my-buyer.testnet","payee":"my-seller.testnet","epoch":10,"seq":1}` (example output: your epoch number will differ) |
-| Ask the contract: `curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"x207-v013.testnet","method_name":"list_obligations","args_base64":"'$(printf '{"epoch":10,"from_index":0,"limit":5}' \| base64)'"}}'` and decode `result.result` | `{"debtor":"my-buyer…","creditor":"my-seller…","cumulative":"20000","last_seq":1,…}`: the debt is in the contract. No USDT moved; it moves only as a residual after the clearing of the epoch |
+| Ask the contract (command below the table) | `{"debtor":"my-buyer…","creditor":"my-seller…","cumulative":"20000","last_seq":1,…}`: the debt is in the contract. No USDT moved; it moves only as a residual after the clearing of the epoch |
+
+To ask the contract, replace `10` with your epoch, run this and decode `result.result` (an array of bytes holding JSON):
+
+```bash
+ARGS=$(printf '{"epoch":10,"from_index":0,"limit":5}' | base64)
+curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"x207-v013.testnet","method_name":"list_obligations","args_base64":"'"$ARGS"'"}}' \
+  | python3 -c 'import sys,json;print(bytes(json.load(sys.stdin)["result"]["result"]).decode())'
+```
 
 ## 5. See the position on the dashboard
 
 | Do | See |
 | --- | --- |
-| Open <https://x207-dashboard.vercel.app/charts?epoch=10> (use your epoch) | After the read API has caught up (about a minute and a half after the payment in the run of this guide): `1 obligations worth 0.02 credit`, with your buyer as debtor and your seller as creditor. Before that the page says that the epoch is not in the read model yet |
+| Open <https://x207-dashboard.vercel.app/charts?epoch=10> (use your epoch) | After the read API has caught up (within a few minutes of the payment): `1 obligations worth 0.02 credit`, with your buyer as debtor and your seller as creditor. Before that the page says that the epoch is not in the read model yet |
 | Open [Risk](https://x207-dashboard.vercel.app/risk?epoch=10) | Your two accounts as members with stake 50 and limit 40 credit |
 
 What the guide does not do: the epoch is cleared by a solver and finalized by a keeper, and the debtor pays its residual then. Nobody runs those for this circle, so your obligation stays in the open epoch; the [sandbox demo](sandbox-demo.md) and the [testnet page](testnet.md) show a full epoch with clearing, residuals and claims. The hosted read API and the dashboard are there for the judging period; if the read API is down, the contract steps still work (`curl` the RPC as in step 4) and only the dashboard and the `/members` check wait for it, and for a circle of your own on your machine use `npm run demo:quick` and `npm run demo:mcp` ([README](../README.md#run-it-locally-5-minutes)).
