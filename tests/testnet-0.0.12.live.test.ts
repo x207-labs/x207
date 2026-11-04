@@ -7,6 +7,7 @@
 //   5. the list of official contracts: a token of another contract is refused at the offer, at the deposit (the tokens come back) and a held escrow of such a token cannot be bought.
 // Every transaction hash goes to X207_UM093_OUT (docs/testnet-0.0.12.json) from the first one on: names and hashes only, no keys. Testnet only; keys stay in .secrets/.
 // Create the two accounts first: node scripts/create-faucet-accounts.mjs --keys-dir ../../.secrets/testnet-deployer x207-v012.testnet x207-v012-aux.testnet
+// A later run (same circle) only applies the freeze (UM-135): it skips steps 2, 3 and 5 when docs/testnet-0.0.12.json already records them.
 // Run: X207_TESTNET=1 X207_RELEASE_WASM=/path/x207-circle-v0.0.12.wasm X207_UM093_OUT=$PWD/docs/testnet-0.0.12.json npx vitest run tests/testnet-0.0.12.live.test.ts
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -150,7 +151,10 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
     const codeHash = ((await rpc("query", { request_type: "view_account", finality: "final", account_id: CIRCLE })) as { code_hash: string }).code_hash;
     expect(codeHash).toBe(base58(wasmSha));
     expect(await view<string>(CIRCLE, "interface_version")).toBe("0.0.12");
-    const result: Record<string, unknown> = { codeHash };
+    // UM-135: a later run of the same test (same circle) must only apply the freeze. The record of the first run already holds the two deals and the official contracts, so those steps are not repeated and their record is kept.
+    const prior = (JSON.parse(readFileSync(outPath, "utf8")) as { result?: Record<string, any> }).result ?? {};
+    const resumed = Boolean(prior.confirmedDeal && prior.guiltyDeal && prior.officialContracts);
+    const result: Record<string, unknown> = { ...prior, codeHash };
     const finish = () => {
       const header = JSON.parse(readFileSync(outPath, "utf8")) as Record<string, unknown>;
       writeFileSync(outPath, JSON.stringify({ ...header, result }, null, 2));
@@ -206,6 +210,7 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
       return Number(e.find((x) => x.event === "bundle_committed")!.data[0].bundle_id);
     };
 
+    if (!resumed) {
     // a resumed run: deals that an earlier run left open are closed first (disputed: no fault; open: both confirm), so that their bonds do not take the slack
     for (let id = 1; id <= 30; id += 1) {
       const left = await view<{ state: string } | null>(CIRCLE, "get_deal", { bundle_id: id });
@@ -252,6 +257,8 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
     expect([await locked(A), await locked(B)]).toEqual(lockedBefore);
     result.guiltyDeal = { bundleId: guiltyId, bond: String(bondGuilty), stakeOfComplainant: `${aliceBefore} -> ${await stakeOf(A)}`, stakeOfAccused: `${bobBefore} -> ${await stakeOf(B)}` };
 
+    }
+
     // 4. a freeze: propose now; apply after the timelock (24 hours) in a later run of this test
     let freeze = await view<{ state: string; eta: string } | null>(CIRCLE, "get_freeze", { account_id: B });
     if (freeze === null) {
@@ -266,9 +273,10 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
         freeze = await view<{ state: string; eta: string }>(CIRCLE, "get_freeze", { account_id: B });
       }
     }
-    result.freeze = freeze!.state === "frozen" ? { state: "frozen", is_frozen: await view<boolean>(CIRCLE, "is_frozen", { account_id: B }) } : { state: "pending", eta: freeze!.eta, waiting: "apply_freeze runs 24 hours after the proposal; run this test again after the eta" };
+    result.freeze = freeze!.state === "frozen" && prior.freeze?.state === "frozen" ? prior.freeze : freeze!.state === "frozen" ? { state: "frozen", is_frozen: await view<boolean>(CIRCLE, "is_frozen", { account_id: B }) } : { state: "pending", eta: freeze!.eta, waiting: "apply_freeze runs 24 hours after the proposal; run this test again after the eta" };
     expect(await view<boolean>(CIRCLE, "is_frozen", { account_id: B })).toBe(freeze!.state === "frozen");
 
+    if (!resumed) {
     // 5. official contracts: the type is class A, the list names one token contract; a token of another contract is refused everywhere
     const nowS = Math.floor(Date.now() / 1000);
     const official = await deployMock("official", "mock_rwa/mock_rwa.wasm", 1_700_000_000_000_000_000_000_000n);
@@ -311,6 +319,8 @@ describe.skipIf(!ENABLED)("UM-093: interface 0.0.12 on testnet with the wasm of 
     await send(members.alice, "deposit official token", { receiverId: goodCall.receiverId, methodName: goodCall.methodName, args: goodCall.args as object, deposit: BigInt(goodCall.deposit ?? 0), gas: 150_000_000_000_000n });
     expect((await view<{ state: string }>(CIRCLE, "get_ft_escrow", { grant_id: goodId })).state).toBe("held");
     result.officialContracts = { assetType, list: [official.accountId], fakeOfferRefused: "ERR_CONTRACT_NOT_OFFICIAL", fakeDepositReturned: true, officialDepositHeld: true };
+
+    }
 
     finish();
   }, 3_600_000);
