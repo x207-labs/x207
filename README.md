@@ -158,7 +158,21 @@ Everything here is read-only and needs no account or key.
    ```
 
    The first call lists the epochs and their phases. The second gives the clearing result of epoch 8, the realistic example: 24 asymmetric obligations of 41.35 credit, 21.8 credit cleared (ratio 0.527), residuals paid by five debtors, and one member (`m06`) that did not pay and was cut from its stake. Epoch 2 is the load test of the same circle: a complete graph of 210 obligations, cleared in four transactions.
-3. **Ask Claude about the circle** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is not on npm yet, so build it from a recursive clone of this repository once (`git clone --recurse-submodules https://github.com/x207-labs/x207.git`, then `npm ci && npm run build --workspaces --if-present`), then add this to `claude_desktop_config.json` and restart Claude Desktop:
+3. **Connect your AI agent** to the hosted MCP server, `https://x207-mcp-production.up.railway.app/mcp` (Streamable HTTP, read-only: the six read tools, no key, no signing). Ask it, for example, "Give me the report of epoch 8 of the x207 circle".
+
+   ```bash
+   claude mcp add --transport http x207 https://x207-mcp-production.up.railway.app/mcp          # Claude Code
+   codex mcp add x207 --url https://x207-mcp-production.up.railway.app/mcp                       # Codex
+   ```
+
+   Claude Desktop: Settings, Connectors, Add custom connector, with the URL above; or in `claude_desktop_config.json`, through the `mcp-remote` bridge:
+
+   ```json
+   { "mcpServers": { "x207": { "command": "npx", "args": ["-y", "mcp-remote", "https://x207-mcp-production.up.railway.app/mcp"] } } }
+   ```
+
+   The server answers from the testnet RPC and the hosted read API above, for the circle `agents-main` on `x207-v013.testnet`; like them, it is hosted for the judging period. The deploy folder is made by `scripts/railway-mcp-bundle.mjs`.
+4. **Ask Claude about the circle** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is not on npm yet, so build it from a recursive clone of this repository once (`git clone --recurse-submodules https://github.com/x207-labs/x207.git`, then `npm ci && npm run build --workspaces --if-present`), then add this to `claude_desktop_config.json` and restart Claude Desktop:
 
    ```json
    {
@@ -177,7 +191,7 @@ Everything here is read-only and needs no account or key.
    ```
 
    Then ask, for example, "Give me the overview of the x207 circle and the report of epoch 2". The tools and the write tools that stay off are listed in [sdk/packages/mcp/README.md](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md).
-4. **The contract that runs it:** release [v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13), wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (the code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`, the same bytes in base58), `abi-v0.0.13.json` sha256 `c94a2955deab7b082d2e9f1ab396dae14b0323a4c12266fa09f43f1ca0a3bb53`. "Try it on testnet" below shows how to read the contract on chain and lists the transactions of a full epoch.
+5. **The contract that runs it:** release [v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13), wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (the code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`, the same bytes in base58), `abi-v0.0.13.json` sha256 `c94a2955deab7b082d2e9f1ab396dae14b0323a4c12266fa09f43f1ca0a3bb53`. "Try it on testnet" below shows how to read the contract on chain and lists the transactions of a full epoch.
 
 The hosted read API and the dashboard are there for the judging period. If they are down, [Run the sandbox demo](#run-the-sandbox-demo) runs the same cycle locally.
 
