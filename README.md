@@ -112,6 +112,12 @@ Checks, a few seconds each: `npm run check:numbers` (every epoch 8 figure in thi
 | Security, limits, threat model | [docs/security-and-limits.md](docs/security-and-limits.md), [docs/security.md](docs/security.md) |
 | Metrics and roadmap | [docs/metrics-and-roadmap.md](docs/metrics-and-roadmap.md) |
 | Judging criteria and tracks, glossary | [docs/appendices.md](docs/appendices.md) |
+| Sell over x402 on the circle (seller quickstart) | [sdk/docs/seller-quickstart.md](https://github.com/x207-labs/sdk/blob/main/docs/seller-quickstart.md) |
+| Gas and storage measurements of the contract | [contracts/docs/gas-measurements.md](https://github.com/x207-labs/contracts/blob/main/docs/gas-measurements.md) |
+| The contract against the real Intents wasm | [contracts/docs/real-intents-test.md](https://github.com/x207-labs/contracts/blob/main/docs/real-intents-test.md) |
+| Read API reference: limits, OpenAPI, health, metrics | [backend/docs/reference.md](https://github.com/x207-labs/backend/blob/main/docs/reference.md) |
+| Why a solver needs no trust, and its gas | [solver/docs/gas-and-trust.md](https://github.com/x207-labs/solver/blob/main/docs/gas-and-trust.md) |
+| Barter matching and random checks of jobs | [solver/docs/barter-and-spot-checks.md](https://github.com/x207-labs/solver/blob/main/docs/barter-and-spot-checks.md) |
 | Third-party libraries and services | [docs/third-party.md](docs/third-party.md) |
 
 ## Repositories
