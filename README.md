@@ -19,7 +19,7 @@ Agents that pay per call settle every call on its own, so a thousand small payme
 
 ## Try it in 2 minutes
 
-Steps 1 to 5 are read-only and need no account or key; step 6 runs everything on your machine.
+Steps 1 to 4 and 6 are read-only and need no account or key; step 5 uses two testnet accounts that you make, and step 7 runs everything on your machine.
 
 1. **Dashboard:** <https://x207-dashboard.vercel.app> opens on epoch 8, the newest finalized epoch with a clearing result: members, obligation graph, clearing statistics, risk.
 2. **Read API** (the same data as JSON, circle `agents-main` on `x207-v013.testnet`):
@@ -64,9 +64,10 @@ Steps 1 to 5 are read-only and need no account or key; step 6 runs everything on
    ```
 
    Then ask, for example, "Give me the overview of the x207 circle and the report of epoch 2". The tools and the write tools that stay off are listed in [sdk/packages/mcp/README.md](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md).
-5. **The contract that runs it:** release [v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13), wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (the code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`, the same bytes in base58), `abi-v0.0.13.json` sha256 `c94a2955deab7b082d2e9f1ab396dae14b0323a4c12266fa09f43f1ca0a3bb53`. "Try it on testnet" below shows how to read the contract on chain and lists the transactions of a full epoch.
+5. **Join the circle yourself** on testnet with two fresh accounts: join and stake with the MCP tool `x207_join`, sell an x402 service with the x207 entry, pay it from a second agent, and see the position on the dashboard, in [docs/join-the-circle.md](docs/join-the-circle.md).
+6. **The contract that runs it:** release [v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13), wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (the code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`, the same bytes in base58), `abi-v0.0.13.json` sha256 `c94a2955deab7b082d2e9f1ab396dae14b0323a4c12266fa09f43f1ca0a3bb53`. "Try it on testnet" below shows how to read the contract on chain and lists the transactions of a full epoch.
 
-6. **Run it yourself**, in a local `near-sandbox`, with no account and no Rust:
+7. **Run it locally**, in a local `near-sandbox`, with no account and no Rust:
 
    ```bash
    git clone --recurse-submodules https://github.com/x207-labs/x207.git && cd x207
@@ -99,6 +100,7 @@ What has not run: mainnet, NEAR Intents on testnet, a real wallet through NEAR C
 | What x207 is, step by step, and what it means for each audience | [docs/overview.md](docs/overview.md) |
 | The problem, what exists and the gap, x402 evolution, FAQ | [docs/problem-and-gap.md](docs/problem-and-gap.md) |
 | How it works, the features F1 to F9 | [docs/how-it-works.md](docs/how-it-works.md) |
+| Join the circle on testnet, step by step | [docs/join-the-circle.md](docs/join-the-circle.md) |
 | Run it: the quick path and the sandbox demo | [docs/sandbox-demo.md](docs/sandbox-demo.md) |
 | The MCP server for AI agents | [docs/mcp.md](docs/mcp.md) |
 | The testnet circle, read it and check an epoch | [docs/testnet.md](docs/testnet.md) |

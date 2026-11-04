@@ -1,0 +1,123 @@
+# Join the circle
+
+For the owner of an agent. About 15 minutes, on NEAR testnet, with a test token that has no value. You make two agent accounts, join the circle `x207-v013.testnet`, sell one x402 service that has an x207 entry, pay it from the second agent, and see the position on the dashboard. Every step is "do X, see Y", and every command below was run against the circle on 2026-11-04 with accounts made for this guide; the times are the ones measured.
+
+You need Node 22.22.2 or newer and a recursive clone of this repository, built once:
+
+```bash
+git clone --recurse-submodules https://github.com/x207-labs/x207.git && cd x207
+npm ci && npm run build --workspaces --if-present
+```
+
+`near` (near-cli-rs) must be on your `PATH` for step 1. Keep every key in a folder that is not in git (`.keys/` is ignored by this repository). The circle terms hash of `x207-v013.testnet` is `aaaa…a` (64 times `a`), the stake token is the mock USDT `usdt.x207-deployer.testnet`, and the read API is `https://x207-backend-production.up.railway.app`.
+
+> **Use a throwaway agent account.** The tools that join, settle and claim attach a NEAR deposit, which a function-call key cannot do, so they need a full-access key of the agent account. A full-access key can do anything the account can. Use an account made for the agent with a small balance, as here, never your main account (the security limit of [`@x207/mcp`](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md)).
+
+## 1. Two NEAR testnet accounts
+
+| Do | See |
+| --- | --- |
+| `node scripts/create-faucet-accounts.mjs --keys-dir .keys my-seller.testnet my-buyer.testnet` (use your own names; the faucet makes the accounts) | `created my-seller.testnet balance 10 NEAR`, the same for the buyer; the keys are in `.keys/testnet/<account>.json` (mode 0600) |
+| `node scripts/guide-testnet.mjs mint my-seller.testnet --keys-dir .keys` and the same for `my-buyer.testnet` | `minted 200 mock USDT to my-seller.testnet in 2359 ms` (about 2 seconds) (the stake is paid in this mock token; anybody can mint it on testnet) |
+| `node scripts/guide-testnet.mjs voucher-key`, once for each agent | A `secret ed25519:…` and a `public ed25519:…` line. The secret is the voucher key of the agent: it signs the payments and listings, and it is not a NEAR key. Keep it out of git |
+
+## 2. Join and stake with the MCP tool `x207_join`
+
+The tool runs over stdio, only with `X207_MCP_WRITE=1`, and only with the two switches that say you accept the risk. Put this in `claude_desktop_config.json` for the seller (a second entry with the buyer's account and keys does the same for the buyer; the NEAR key is the `secret_key` in `.keys/testnet/<account>.json`):
+
+```json
+{
+  "mcpServers": {
+    "x207-seller": {
+      "command": "node",
+      "args": ["/path/to/x207/sdk/packages/mcp/dist/cli.js"],
+      "env": {
+        "X207_CIRCLE_CONTRACT": "x207-v013.testnet",
+        "X207_CIRCLE_ID": "agents-main",
+        "X207_BACKEND_URL": "https://x207-backend-production.up.railway.app",
+        "X207_MCP_WRITE": "1",
+        "X207_AGENT_ACCOUNT": "my-seller.testnet",
+        "X207_AGENT_VOUCHER_KEY": "ed25519:<the voucher secret of step 1>",
+        "X207_AGENT_NEAR_KEY": "ed25519:<secret_key of the account>",
+        "X207_ALLOW_OUTFLOWS": "1",
+        "X207_ALLOW_FULL_ACCESS_KEY": "1",
+        "X207_MAX_SPEND_SESSION": "60000000",
+        "X207_MAX_PRICE_PER_CALL": "100000"
+      }
+    }
+  }
+}
+```
+
+`X207_MAX_SPEND_SESSION` counts the stake too, so it must be at least the stake (here 50 USDT = `50000000`). Restart Claude Desktop and ask: "Join the x207 circle with terms hash `aaaa…a` (64 times `a`) and a stake of 50000000." The same call from a script, with the MCP Inspector, is:
+
+```bash
+npx @modelcontextprotocol/inspector --cli \
+  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207-backend-production.up.railway.app \
+  -e X207_MCP_WRITE=1 -e X207_AGENT_ACCOUNT=my-seller.testnet -e X207_AGENT_VOUCHER_KEY=ed25519:… -e X207_AGENT_NEAR_KEY=ed25519:… \
+  -e X207_ALLOW_OUTFLOWS=1 -e X207_ALLOW_FULL_ACCESS_KEY=1 -e X207_MAX_SPEND_SESSION=60000000 \
+  node sdk/packages/mcp/dist/cli.js --method tools/call --tool-name x207_join \
+  --tool-arg "terms_hash=\"$(printf 'a%.0s' $(seq 64))\"" --tool-arg 'stake_amount="50000000"'
+```
+
+(The Inspector turns `50000000` into a number, so the amount is quoted to stay a string; an agent sends a string by itself.)
+
+| Do | See |
+| --- | --- |
+| Call `x207_join` for the seller, then for the buyer | In about 11 seconds each: `"status": "active"`, `"stake": "50000000"`, `"limit": "40000000"` (the limit is 80% of the stake, `limit ≤ stake`), and the voucher public key. The tool sent `join` with the 0.35 NEAR storage deposit and then the stake transfer |
+| `curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/members/my-seller.testnet` | The member, after the read API has caught up (a minute or two): `status` `active`, `limit` `40000000`. Before that it answers `member_not_found`; the contract already has the member |
+
+To join from code instead of a tool, use `onboardMember` of `@x207/core` as in [docs/quickstart.md](quickstart.md); it does the same two transactions.
+
+## 3. Sell one x402 service with the x207 entry
+
+The seller is an ordinary x402 endpoint whose 402 answer carries one more entry, `batch-settlement` on the network `x207:agents-main`, next to any `exact` entry. It needs a facilitator that verifies the vouchers and registers them in the contract. Here the seller account is also the relayer of its own facilitator, and pays the gas of the registrations (a few cents of testnet NEAR).
+
+```bash
+# a terminal for the facilitator (the NEAR key of the seller account is the relayer key)
+cd sdk/apps/facilitator
+NEAR_RPC_URLS=https://rpc.testnet.fastnear.com X207_CIRCLES=agents-main=x207-v013.testnet \
+X207_RELAYER_ACCOUNT_ID=my-seller.testnet X207_RELAYER_PRIVATE_KEY=ed25519:… X207_REGISTER_MODE=per_request \
+X207_PENDING_DB=/tmp/guide-pending.sqlite PORT=4021 node dist/main.js
+
+# a second terminal for the seller
+cd sdk/examples/seller
+FACILITATOR_URL=http://localhost:4021 CIRCLE_ID=agents-main PAY_TO=my-seller.testnet PORT=3000 node dist/main.js
+```
+
+| Do | See |
+| --- | --- |
+| `curl -s localhost:4021/supported` | `batch-settlement` on `x207:agents-main`, `circleContract` `x207-v013.testnet`, the current `epoch`, and your relayer in `signers` |
+| `curl -si localhost:3000/api/summarize` | `HTTP/1.1 402 Payment Required`; the body `accepts` has `scheme` `batch-settlement`, `network` `x207:agents-main`, `amount` `20000` (0.02 credit) and `payTo` your seller account. This is the x207 entry |
+
+**If the answer later says `epoch_closing`:** this circle has no keeper, so an epoch that has passed its cutoff stays open until somebody closes it, and no voucher is accepted for it. Any member may close it: `node scripts/guide-testnet.mjs close-epoch my-buyer.testnet --keys-dir .keys` prints `closed epoch 9; epoch 10 is open (4348 ms)`, and a few seconds later the seller advertises the new epoch (before that a payment is refused with `epoch_mismatch`). When the epoch is still open the command says `nothing to close`.
+
+## 4. Pay the service from the second agent
+
+Add the buyer to the MCP config, without the NEAR key (paying only signs vouchers), and with `X207_ALLOW_PRIVATE_URLS=1` because the seller is on `localhost`. Ask: "Pay http://localhost:3000/api/summarize." Scripted:
+
+```bash
+npx @modelcontextprotocol/inspector --cli \
+  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207-backend-production.up.railway.app \
+  -e X207_MCP_WRITE=1 -e X207_AGENT_ACCOUNT=my-buyer.testnet -e X207_AGENT_VOUCHER_KEY=ed25519:… -e X207_ALLOW_PRIVATE_URLS=1 \
+  node sdk/packages/mcp/dist/cli.js --method tools/call --tool-name x207_pay_request --tool-arg 'url="http://localhost:3000/api/summarize"'
+```
+
+| Do | See |
+| --- | --- |
+| Call `x207_pay_request` for the buyer | In about 8 seconds: `"status": 200`, `"paid": true`, the body `{"summary":"summary text"}`, and a `paymentResponse` whose decoded `extensions.x207` says `"epoch": 10, "seq": 1, "cumulativeAmount": "20000", "registration": "registered"` |
+| Look at the log of the facilitator | `{"event":"registered","payer":"my-buyer.testnet","payee":"my-seller.testnet","epoch":10,"seq":1}` |
+| Ask the contract: `curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"x207-v013.testnet","method_name":"list_obligations","args_base64":"'$(printf '{"epoch":10,"from_index":0,"limit":5}' \| base64)'"}}'` and decode `result.result` | `{"debtor":"my-buyer…","creditor":"my-seller…","cumulative":"20000","last_seq":1,…}`: the debt is in the contract. No USDT moved; it moves only as a residual after the clearing of the epoch |
+
+## 5. See the position on the dashboard
+
+| Do | See |
+| --- | --- |
+| Open <https://x207-dashboard.vercel.app/charts?epoch=10> (use your epoch) | After the read API has caught up (about a minute and a half after the payment in the run of this guide): `1 obligations worth 0.02 credit`, with your buyer as debtor and your seller as creditor. Before that the page says that the epoch is not in the read model yet |
+| Open [Risk](https://x207-dashboard.vercel.app/risk?epoch=10) | Your two accounts as members with stake 50 and limit 40 credit |
+
+What the guide does not do: the epoch is cleared by a solver and finalized by a keeper, and the debtor pays its residual then. Nobody runs those for this circle, so your obligation stays in the open epoch; the [sandbox demo](sandbox-demo.md) and the [testnet page](testnet.md) show a full epoch with clearing, residuals and claims. The hosted read API and the dashboard are there for the judging period.
+
+## Stop
+
+Stop the facilitator and the seller (`Ctrl-C` in their terminals). The stake stays in the circle; leaving it is the exit flow of the Onboarding page of the dashboard or the contract calls `request_exit` and `withdraw_stake` after the epoch is finalized.
