@@ -149,15 +149,15 @@ Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–
 
 Everything here is read-only and needs no account or key.
 
-1. **Dashboard:** <https://x207-dashboard.vercel.app> opens on the newest finalized epoch of the testnet circle: members, obligation graph, clearing statistics, risk.
+1. **Dashboard:** <https://x207-dashboard.vercel.app> opens on epoch 8, the newest finalized epoch with a clearing result: members, obligation graph, clearing statistics, risk.
 2. **Read API** (the same data as JSON, circle `agents-main` on `x207-v013.testnet`):
 
    ```bash
    curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs
-   curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs/2/metrics
+   curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs/8/metrics
    ```
 
-   The first call lists the epochs and their phases. The second gives the clearing result of epoch 2 (210 obligations, cleared ratio, residual transfers).
+   The first call lists the epochs and their phases. The second gives the clearing result of epoch 8, the realistic example: 24 asymmetric obligations of 41.35 credit, 21.8 credit cleared (ratio 0.527), residuals paid by five debtors, and one member (`m06`) that did not pay and was cut from its stake. Epoch 2 is the load test of the same circle: a complete graph of 210 obligations, cleared in four transactions.
 3. **Ask Claude about the circle** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is not on npm yet, so build it from a recursive clone of this repository once (`git clone --recurse-submodules https://github.com/x207-labs/x207.git`, then `npm ci && npm run build --workspaces --if-present`), then add this to `claude_desktop_config.json` and restart Claude Desktop:
 
    ```json
@@ -306,7 +306,17 @@ curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' -d 
 
 The answer holds `epoch_length` 600, `payment_window` 900, `proposal_window` 60, `bond_threshold` and `prune_delay_epochs`. Change `method_name` to `interface_version` to read `0.0.13`, or to `get_owner` to read the DAO that owns the circle (`x207v8.sputnikv2.testnet`).
 
-Check an epoch with the full 15 x 14 = 210 edge graph on [nearblocks](https://testnet.nearblocks.io/address/x207-v013.testnet) (paste a hash into `https://testnet.nearblocks.io/txns/<hash>`):
+The realistic epoch 8 (24 obligations among 15 members, partial clearing, five residuals, one default; every hash is in [docs/testnet-0.0.13-realistic.json](docs/testnet-0.0.13-realistic.json)):
+
+| Step | Transaction hash |
+| --- | --- |
+| `close_epoch` | `BuxEKN4CHXPY5KMKeCbyBRfLwrCzzuSF8oXm652Ae5KG` |
+| `submit_clearing` | `7fuRk4xJCMGYmng1YTAvzRySiNVSeGrLvGQhanq3bW8P` |
+| `commit_epoch` | `uuomfX8JzUiqpF9C6kodCmpndkYnyK8UH1f5caU14sp` |
+| `finalize_epoch` (one default) | `BLsJyPoQykcQr2X5VaqxMH2dY2bon1B1U4d71FNc4bRi` |
+| `claim` by `m10` | `7PRVh3mfGZoMc8eP3vhkbfNEfg5SvTQutzNX6Qqj1g3G` |
+
+The load test, epoch 2, with the full 15 x 14 = 210 edge graph, on [nearblocks](https://testnet.nearblocks.io/address/x207-v013.testnet) (paste a hash into `https://testnet.nearblocks.io/txns/<hash>`):
 
 | Step | Transaction hash |
 | --- | --- |
