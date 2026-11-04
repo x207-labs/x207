@@ -408,6 +408,23 @@ Airtime and data allowance (#78) and transferable loyalty points (#79) have no A
 
 What this block does not show: a ruling for the seller (`no_fault` and `complaint_false` have their own tests on the contract), a real carrier or program (the transfer is simulated by the notices), the automatic confirmation after 72 hours of silence (own backend test), and the transfer ledger of the platforms (domain, game item, ticket): it keeps refusing a value at or above the threshold with `transfer_arbiter_required`, because its voucher flow cannot carry a bond.
 
+### Team plan seat block (pipeline P2 group E, #80)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/team-seat.sandbox.test.ts   # real contract and indexer; about one minute
+```
+
+A seat of a team plan has no API that x207 can call: the seller invites the buyer once with the member feature of the plan, outside x207, and signs `delivered` (the hash of the invitation, never the invitation). The buyer accepts the invitation and signs `confirmed` (BE-047); only then is the payment registered on the contract. A plan that needs one fixed household is class X, so a seat of a family plan is disputed by a buyer who cannot use it. The deal is below the bond threshold (100 credit); at or above it the handover is a deal with a bond (see the group E block above).
+
+| Do | See |
+| --- | --- |
+| `seller` lists a team plan seat for 25 credit, `buyer` offers and `seller` accepts | The match is `awaiting`, not payable, `needsBond: false` |
+| `seller` signs `delivered`; the seller cannot sign `confirmed` | `403`: only the receiver confirms |
+| `buyer` accepts the invitation and signs `confirmed`; `seller` registers the voucher | `payable: true`; the pair holds 25 credit |
+| `second` buys a seat of a family plan, gets an invitation it cannot use and signs `disputed` (`not_as_described`) | `disputed`, never payable, a later `confirmed` is refused, the pair holds 0 |
+
+What this block does not show: a real plan or invitation (the invitation is simulated by the notices), the 72 hour silence that confirms by itself (own backend test), and a seat at or above 100 credit (own block).
+
 ### Access rent block (pipeline P2)
 
 ```bash
