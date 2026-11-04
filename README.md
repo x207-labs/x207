@@ -28,6 +28,70 @@ flowchart LR
   N -- "debtors pay, creditors claim USDT" --> A
 ```
 
+**One paid call.** The seller serves the call as soon as the voucher verifies; registering it on chain happens after.
+
+```mermaid
+sequenceDiagram
+  participant B as Buyer agent
+  participant S as Seller agent
+  participant F as Facilitator
+  participant C as x207-circle contract
+  B->>S: GET /api/summarize
+  S-->>B: 402 PAYMENT-REQUIRED (x207 batch-settlement, exact)
+  B->>S: retry with PAYMENT-SIGNATURE (signed cumulative voucher)
+  S->>F: /verify
+  F-->>S: valid
+  S-->>B: 200 + PAYMENT-RESPONSE
+  F->>C: register_cumulative (pending, retrying, registered)
+```
+
+**One epoch.** Keepers and solvers are anyone; the phases are those `get_epoch` reports.
+
+```mermaid
+stateDiagram-v2
+  [*] --> open
+  open --> cutoff: epoch time ends
+  cutoff --> clearing: close_epoch
+  clearing --> commit: proposal_window ends
+  commit --> payment_window: commit_epoch
+  payment_window --> finalized: finalize_epoch
+  finalized --> [*]
+  clearing: clearing - any solver may submit_clearing
+  payment_window: payment_window - net debtors pay
+  finalized: finalized - defaults covered by stake, creditors claim
+```
+
+**Data flow.** Rectangles are outside parties, circles are processes, cylinders are data stores.
+
+```mermaid
+flowchart LR
+  AG[Agents]
+  SO[Solver]
+  OP[Operators and DAO]
+  P1((Verify and register vouchers))
+  P2((Clear cycles))
+  P3((Settle residuals))
+  P4((Index and report))
+  D1[(Members, stakes and params)]
+  D2[(Obligations per epoch)]
+  D3[(Positions and claims)]
+  D4[(Read model)]
+  AG -- "signed voucher" --> P1
+  P1 -- "pair totals" --> D2
+  D1 -- "credit limit" --> P1
+  D2 -- "frozen snapshot" --> P2
+  SO -- "edges to clear" --> P2
+  P2 -- "net positions" --> D3
+  AG -- "USDT from debtors" --> P3
+  D3 --> P3
+  D1 -- "stake covers a default" --> P3
+  P3 -- "claim in USDT" --> AG
+  OP -- "set_params" --> D1
+  D1 & D2 & D3 -- "NEP-297 events" --> P4
+  P4 --> D4
+  D4 -- "dashboard, read API, 207 report, MCP" --> AG
+```
+
 Eight steps from stake to claim: [docs/overview.md](docs/overview.md). The contract checks every clearing a solver proposes, so nobody has to trust the solver: [solver](https://github.com/x207-labs/solver).
 
 ## Try it in 2 minutes
@@ -56,6 +120,14 @@ The API, the MCP server and the dashboard are hosted for the judging period. If 
 ## What epoch 8 showed
 
 The realistic testnet epoch: 24 vouchers worth 41.35 credit became 14 settlement movements (the metric `residualTransfers`: one for each member whose net position is not zero, here six debtors paying in and eight creditors claiming out).
+
+```mermaid
+xychart-beta
+  title "Epoch 8, in credit"
+  x-axis ["Obligations", "After clearing", "Moved as USDT"]
+  y-axis "credit" 0 --> 45
+  bar [41.35, 19.55, 7.75]
+```
 
 | Figure | Value |
 | --- | --- |
