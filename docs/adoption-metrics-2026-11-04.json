@@ -1,0 +1,176 @@
+{
+  "generatedAt": "2026-11-04T16:28:46.134Z",
+  "github": {
+    "organization": "x207-labs",
+    "repositories": [
+      {
+        "name": "x207",
+        "stars": 0,
+        "forks": 0,
+        "watchers": null,
+        "openIssues": 0,
+        "views": {
+          "count": 0,
+          "uniques": 0,
+          "days": 14
+        },
+        "clones": {
+          "count": 127,
+          "uniques": 1,
+          "days": 14
+        }
+      },
+      {
+        "name": "contracts",
+        "stars": 0,
+        "forks": 0,
+        "watchers": null,
+        "openIssues": 0,
+        "views": {
+          "count": 5,
+          "uniques": 1,
+          "days": 14
+        },
+        "clones": {
+          "count": 190,
+          "uniques": 2,
+          "days": 14
+        }
+      },
+      {
+        "name": "sdk",
+        "stars": 0,
+        "forks": 0,
+        "watchers": null,
+        "openIssues": 0,
+        "views": {
+          "count": 0,
+          "uniques": 0,
+          "days": 14
+        },
+        "clones": {
+          "count": 162,
+          "uniques": 2,
+          "days": 14
+        }
+      },
+      {
+        "name": "backend",
+        "stars": 0,
+        "forks": 0,
+        "watchers": null,
+        "openIssues": 0,
+        "views": {
+          "count": 14,
+          "uniques": 1,
+          "days": 14
+        },
+        "clones": {
+          "count": 128,
+          "uniques": 2,
+          "days": 14
+        }
+      },
+      {
+        "name": "frontend",
+        "stars": 0,
+        "forks": 0,
+        "watchers": null,
+        "openIssues": 0,
+        "views": {
+          "count": 0,
+          "uniques": 0,
+          "days": 14
+        },
+        "clones": {
+          "count": 139,
+          "uniques": 2,
+          "days": 14
+        }
+      },
+      {
+        "name": "solver",
+        "stars": 0,
+        "forks": 0,
+        "watchers": null,
+        "openIssues": 0,
+        "views": {
+          "count": 0,
+          "uniques": 0,
+          "days": 14
+        },
+        "clones": {
+          "count": 130,
+          "uniques": 2,
+          "days": 14
+        }
+      },
+      {
+        "name": "agents",
+        "stars": 0,
+        "forks": 0,
+        "watchers": null,
+        "openIssues": 0,
+        "views": {
+          "count": 0,
+          "uniques": 0,
+          "days": 14
+        },
+        "clones": {
+          "count": 136,
+          "uniques": 2,
+          "days": 14
+        }
+      },
+      {
+        "name": ".github",
+        "stars": 0,
+        "forks": 0,
+        "watchers": null,
+        "openIssues": 0,
+        "views": {
+          "count": 0,
+          "uniques": 0,
+          "days": 14
+        },
+        "clones": {
+          "count": 0,
+          "uniques": 0,
+          "days": 14
+        }
+      }
+    ]
+  },
+  "npm": {
+    "@x207/core": {
+      "unavailable": "package @x207/core not found",
+      "latest": "0.0.1"
+    },
+    "@x207/scheme": {
+      "unavailable": "package @x207/scheme not found",
+      "latest": "0.0.1"
+    },
+    "@x207/mcp": {
+      "unavailable": "package @x207/mcp not found",
+      "latest": "0.0.2"
+    }
+  },
+  "issue": {
+    "url": "https://github.com/x402-foundation/x402/issues/4131",
+    "title": "[Feature]: batch-settlement binding for NEAR (x207): clearing across many parties",
+    "state": "open",
+    "comments": 0,
+    "labels": [],
+    "reactions": {},
+    "updatedAt": "2026-11-04T15:51:55Z"
+  },
+  "circle": {
+    "circle": "x207-v013.testnet",
+    "network": "testnet",
+    "members": 30,
+    "byStatus": {
+      "active": 26,
+      "suspended": 4
+    }
+  }
+}
