@@ -514,6 +514,16 @@ These two are not codes but a key that the grantor keeps: the class C proxy of t
 
 The keys are in no answer, no header, no log line of the broker and nothing the facilitator settled; the test searches for them. Not shown: a real AI or map provider (many forbid sharing a key, which is why both catalog rows carry a condition), and a broker inside a TEE (the key is in the environment of the broker process).
 
+**Design templates (#68) and licensed assets (#69), UM-114.** `X207_SANDBOX=1 npx vitest run tests/design-asset.sandbox.test.ts tests/licensed-asset.sandbox.test.ts --no-file-parallelism` (about one minute each). The license text is the `terms` of the listing and its sha256 is the `license_hash`; it names the kind of license (one of the accepted list of the backend, for example `commercial` or `personal`) and says that the licensor holds the rights.
+
+| Do | See |
+| --- | --- |
+| `designer` lists a template with a `commercial` license; `studio` reads the terms and checks that their hash is the `license_hash`, that they name the kind of the listing, and that they state the rights | The check passes; the studio buys, the designer releases the key, the studio opens the file and confirms: the pair holds 25 credit |
+| A listing whose terms do not state the rights | The buyer's check fails and the studio does not buy; nothing is paid |
+| A listing with a license kind that is not on the list (`stock-standard`) | `license_id_rejected` when it is posted |
+
+The backend checks the kind of license, not the text: the statement of rights is the buyer's check, and x207 cannot prove who holds the copyright (see the rights block below).
+
 ### Platform transfer block (ADR-49)
 
 ```bash
