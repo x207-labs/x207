@@ -5,7 +5,7 @@ An honest comparison, with numbers from the chain. Epoch 8 of the circle `x207-v
 **Result in one line: x207 does not save gas. It burns more NEAR gas than 24 plain transfers; what it saves is the value that has to move.** Gas on testnet is cheap either way (a few thousandths of a NEAR); the point of clearing is the money, not the Tgas.
 
 ## Numbers
-Gas is the gas burnt by the whole transaction, callbacks included; NEAR is `tokens_burnt`, the same definition as [contracts/docs/gas-and-cost.md](../contracts/docs/gas-and-cost.md), which has the full per-call table for epoch 2 and the method for the largest sizes. This page does not repeat that table; it adds epoch 8 and the baseline.
+Gas is the gas burnt by the whole transaction, callbacks included; NEAR is `tokens_burnt`, the same definition as [contracts/docs/gas-and-cost.md](https://github.com/x207-labs/contracts/blob/main/docs/gas-and-cost.md), which has the full per-call table for epoch 2 and the method for the largest sizes. This page does not repeat that table; it adds epoch 8 and the baseline.
 
 | | Calls | Gas, Tgas | NEAR burnt |
 | --- | ---: | ---: | ---: |
@@ -38,4 +38,4 @@ So the claim that is supported: clearing moved 81% less value (7.75 of 41.35) in
 ## Limits
 - The token is a testnet mock. A `ft_transfer` of the real USDT on mainnet may burn more or less; the mock is a plain NEP-141 contract, and the same contract is the one the `ft_transfer_call` rows of A run through, so the two sides use the same token code. A mainnet figure is not claimed.
 - B leaves out what the 24 vouchers are for: without x402 payments in credit there are no vouchers, but also no netting, no limit and no default cover. The comparison is the cost of moving the same payments, not of the same service.
-- One epoch, one graph. The clearing steps grow with the number of edges (`commit_epoch` 69.4 Tgas for 210 edges in [gas-and-cost.md](../contracts/docs/gas-and-cost.md)), the plain transfers grow linearly with the number of payments; the cleared share, not the gas, decides where clearing pays off.
+- One epoch, one graph. The clearing steps grow with the number of edges (`commit_epoch` 69.4 Tgas for 210 edges in [gas-and-cost.md](https://github.com/x207-labs/contracts/blob/main/docs/gas-and-cost.md)), the plain transfers grow linearly with the number of payments; the cleared share, not the gas, decides where clearing pays off.
