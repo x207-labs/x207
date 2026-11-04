@@ -46,7 +46,7 @@ export const CATALOG = [
   { no: 25, assetType: "org:spend-limited-member", cls: "B", name: "Organisation member with a spending limit", delivery: ["org_member"], proofs: ["zktls"], status: "roadmap; provider terms" },
   // C. a single secret, through the broker
   { no: 26, assetType: "api:delegated-key", cls: "C", name: "API key that may be delegated", delivery: ["proxy"], proofs: ["tee_attestation"], status: "built with a mock provider; no TEE yet" },
-  { no: 27, assetType: "giftcard:code", cls: "C", name: "Gift card code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; issuer terms" },
+  { no: 27, assetType: "giftcard:code", cls: "C", name: "Gift card code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "built with a mock issuer (UM-094, near-sandbox): sold once, a used code refused before the handover, paid after the buyer redeems; issuer terms" },
   { no: 28, assetType: "license:key", cls: "C", name: "Software license key", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "built with a mock issuer (UM-100, near-sandbox): checked before and after the handover, paid after activation; a key bound to an account or a region is refused; license terms" },
   { no: 29, assetType: "domain:transfer-code", cls: "C", name: "Domain transfer code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; registrar terms" },
   { no: 30, assetType: "api:quota-proxy", cls: "C", name: "API quota used through the proxy", delivery: ["proxy"], proofs: ["tee_attestation"], status: "built with a mock provider" },
@@ -103,7 +103,7 @@ export const CATALOG = [
   { no: 84, assetType: "service:consultation-slot", cls: "D", name: "Consultation or mentoring time", delivery: ["calendar_slot"], proofs: [], status: "roadmap; lawful" },
   { no: 85, assetType: "community:own-paid-group", cls: "B", name: "Own paid group or community", delivery: ["invite_or_role"], proofs: ["zktls"], status: "built (UM-099, adapter discord with a mock server, rent by the day); lawful for the owner of the community" },
   { no: 86, assetType: "newsletter:own-archive", cls: "B", name: "Own newsletter or paid content", delivery: ["reader_account"], proofs: ["zktls"], status: "built with a mock publisher API (BE-088, adapter newsletter-reader); lawful for the publisher" },
-  { no: 87, assetType: "beta:invite-code", cls: "C", name: "Beta invitation code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; condition: product" },
+  { no: 87, assetType: "beta:invite-code", cls: "C", name: "Beta invitation code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "built with a mock issuer (UM-094, near-sandbox): sold once, a used code refused before the handover, paid after the buyer redeems; condition: product" },
   { no: 88, assetType: "service:product-testing", cls: "D", name: "Product testing and report", delivery: ["x402_endpoint"], proofs: [], status: "roadmap; lawful; a disguised paid review is not" },
   { no: 89, assetType: "data:own-anonymized", cls: "D", name: "Own anonymised data", delivery: ["consented_download"], proofs: [], status: "roadmap; lawful for one's own, anonymised data only" },
   { no: 90, assetType: "compute:home-device", cls: "D", name: "Idle home device for computing", delivery: ["x402_endpoint"], proofs: [], status: "roadmap; lawful; power and security are the owner's" },
