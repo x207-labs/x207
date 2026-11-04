@@ -346,6 +346,24 @@ x207 does not store the file. The seller encrypts it, puts the ciphertext at a s
 
 A seller who lies about the hash is caught by the buyer's own check, without a judge. What this block does not show: a source that serves other bytes than the ciphertext (the buyer's SDK refuses it and makes no proof), the 72-hour automatic confirmation, and the exclusive license with a bond (each has its own test in `agents/test/license.test.ts`).
 
+### Platform transfer block (ADR-49)
+
+```bash
+npx vitest run agents/test/transfer.book.test.ts                  # agents against the transfer ledger, in process, no sandbox
+X207_SANDBOX=1 npx vitest run tests/transfer.sandbox.test.ts      # real contract and indexer; about one minute
+```
+
+A domain, a game item or a ticket is not moved by x207: the seller moves it with the official feature of its platform (registrar, Steam trade, ticket transfer), and x207 only decides when the buyer's voucher is paid. The voucher is held by the backend until the platform shows that the transfer happened (`dns_txt`, `trade_api` or `buyer_confirm`); the window is 7 days for a domain, 1 day for a ticket and 1 hour for a game item. In the sandbox test the registrar is a fake internet (DNS over HTTPS and the registry RDAP are injected, because the backend refuses a loopback address).
+
+| Do | See |
+| --- | --- |
+| `seller` sets the TXT `x207-sell=<listing_hash>` on the domain and lists it; `buyer` pays with a voucher of 40 credit | The transfer is `paid_held`; the answer has no voucher |
+| The proof is asked before the registrar has finished, then while the registry still says `pending transfer` | `pending`, with the TXT that is missing; still no voucher, the pair holds 0 |
+| The registry shows the domain `active` and the buyer's TXT `x207-own=<transfer id>` is there | `confirmed`; only now the voucher is in the answer, and the seller registers it: the pair holds 40 credit |
+| `second` pays for a domain whose transfer never finishes, and the 7 day window passes | `cancelled` with `transfer_window_passed`; no voucher ever leaves, the pair holds 0 |
+
+A seller who does not transfer is not paid, and a buyer who has no domain is not charged: the voucher moves only on a proof. What this block does not show: a game item and a ticket (each has its own test in `agents/test/transfer.book.test.ts`), and the registrar itself (a real registry is not called in any test).
+
 ### Access rent block (pipeline P2)
 
 ```bash
