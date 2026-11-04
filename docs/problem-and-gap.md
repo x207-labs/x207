@@ -31,7 +31,12 @@ x207 is the binding of the official `batch-settlement` scheme on a new network, 
 
 x207 keeps the x402 flow (HTTP 402, a payment requirement, a signed payload, a facilitator) and registers a binding for the official `batch-settlement` scheme on a new network. Each row below names a limit of x402 as published, what x207 adds on top, and where the repository proves it. A row with no proof is not claimed.
 
-What we checked on 2026-11-02 in the public x402 repository (`coinbase/x402`, `specs/schemes`): the schemes `exact`, `upto`, `batch-settlement` and `auth-capture` exist. The `batch-settlement` document describes an EVM escrow channel with cumulative off-chain vouchers claimed in batches, one payer and one receiver per channel. It does not mention credit or netting between several parties, and it covers EVM only. We did not read the other scheme documents in detail and x402 changes, so recheck before relying on a row.
+What we checked on 2026-11-04 in the public x402 repository, now `x402-foundation/x402` (`specs/schemes`): the schemes `exact`, `upto`, `batch-settlement` and `auth-capture` exist. The `batch-settlement` spec has a general document and one document per network (`evm`, `svm`, `cloudflare`). The general document lets a network binding choose one of two trust models for backing the client's commitment:
+
+- **Capital-backed.** The commitment is backed by onchain capital committed before or during the session (pre-funded escrow, a payment channel, or a delegated authorization against a wallet balance). The trust anchor is the client's own funds. The EVM channel is of this kind.
+- **Credit-backed.** The commitment is backed by a verified identity tied to a billing account that a trusted network intermediary manages. No onchain capital is required from the client. The binding `cloudflare:402` is of this kind: Cloudflare authenticates the caller with HTTP Message Signatures and acts as merchant of record.
+
+**Where x207 sits.** x207 is not credit-backed in the x402 sense: no intermediary underwrites a buyer, and the facilitator is a relayer without custody. Its credit comes from capital that members lock in the contract (`limit ≤ stake` in the MVP), so the trust anchor is the members' own stake and a reserve fund, with explicit loss allocation (ADR-18). That puts it nearest to capital-backed. The design notes call this model "hybrid" because the stake is shared across a circle rather than escrowed per seller; the x402 spec itself defines only the two models above, and we do not claim that it recognizes a third. What x207 adds to the capital-backed model is clearing across members, so a seller does not need an escrow channel per buyer. It does not remove the need for capital: the capital locked is at least 125% of the debt in the MVP. We have not proposed the x207 binding to the x402 Foundation yet; it is a roadmap item. The scheme documents we did not read in full may differ, and x402 changes, so recheck before relying on a row.
 
 | x402 today (as checked) | What x207 adds | Proof in this repository |
 | --- | --- | --- |
@@ -53,7 +58,7 @@ The mechanism has been measured outside agents. Fleischman, Dini and Littera (JR
 | Value removed by clearing alone, per monthly batch | About 23–25% (23.1% of value, range 18.6–26.3%) |
 | Net internal debt removed by clearing and mutual credit together, in simulation | About 50% (about 25% with clearing alone) |
 
-These are results of other researchers on human firms, not results of x207. The simulation forced 100% participation.
+These are results of other researchers on human firms, not results of x207. The simulation forced 100% participation. Paper: [doi:10.3390/jrfm13120295](https://doi.org/10.3390/jrfm13120295).
 
 ### FAQ
 
