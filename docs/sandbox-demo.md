@@ -1,6 +1,6 @@
 # Run the sandbox demo
 
-_Moved from the README section 4. The content is unchanged; paths are relative to this folder. Start at the [README](../README.md)._
+_Moved from the first, longer README (its section 4) and edited since. Paths are relative to this folder. Start at the [README](../README.md)._
 
 ### Run the sandbox demo
 

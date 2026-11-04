@@ -1,6 +1,6 @@
 # What is x207
 
-_Moved from the README section 1. The content is unchanged; paths are relative to this folder. Start at the [README](../README.md)._
+_Moved from the first, longer README (its section 1) and edited since. Paths are relative to this folder. Start at the [README](../README.md)._
 
 ## 1. What is x207
 

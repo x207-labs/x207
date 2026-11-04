@@ -1,6 +1,6 @@
 # Security and limits
 
-_Moved from the README section 8. The content is unchanged; paths are relative to this folder. Start at the [README](../README.md)._
+_Moved from the first, longer README (its section 8) and edited since. Paths are relative to this folder. Start at the [README](../README.md)._
 
 ## 8. Security and limits
 

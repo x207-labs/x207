@@ -1,6 +1,6 @@
 # The problem, the gap and the FAQ
 
-_Moved from the README section 2. The content is unchanged; paths are relative to this folder. Start at the [README](../README.md)._
+_Moved from the first, longer README (its section 2) and edited since. Paths are relative to this folder. Start at the [README](../README.md)._
 
 ## 2. The problem
 

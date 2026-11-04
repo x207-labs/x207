@@ -1,6 +1,6 @@
 # Architecture, NEAR and the mechanism
 
-_Moved from the README sections 5 to 7. The content is unchanged; paths are relative to this folder. Start at the [README](../README.md)._
+_Moved from the first, longer README (its sections 5 to 7) and edited since. Paths are relative to this folder. Start at the [README](../README.md)._
 
 ## Diagrams
 
