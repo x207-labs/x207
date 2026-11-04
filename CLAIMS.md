@@ -1,0 +1,45 @@
+# CLAIMS: what x207 claims and what proves it
+
+Every row names a claim, the test or script that proves it, and, where the claim ran on a real network, the testnet transactions of the circle `x207-v013.testnet` (interface 0.0.13, release v0.0.13). `npm run check:claims` reads this file and checks that each named path, test id and function exists in this repository, and that each transaction hash appears in a record of the repository. With `--online` it also asks the testnet RPC whether each transaction exists. A test is evidence that a defence is pinned, not a proof that the system is safe; the open limits are in [docs/security.md](docs/security.md) and in the README section "Risks and limitations".
+
+## Product claims
+
+| Claim | Proof (test or script) | Testnet transactions (`x207-v013.testnet`) | Status |
+| --- | --- | --- | --- |
+| A circle with 210 obligations clears on a real network in four transactions: `close_epoch`, `submit_clearing`, `commit_epoch`, `finalize_epoch` | `contracts/tests/ct099_commit_log_size.rs` fn `a_proposal_of_300_edges_can_be_committed`; `docs/testnet-0.0.13.json` | `329TWFnAzGwvKjR2fdRdqTKqVzLLRki7t5wWzR7KL4ox`, `7jL5ZiJDxUGDS1btrhKoa9SoRZBpeadrv3jkbz3xM7J5`, `8xcQqNZXhPNHgAukL4B42n8CMTXmEqx9BRmawH1XL1pb`, `DTXTVJaK55Pfubgh7215o3LtUAJPwb9TQu4NHSaJTtqi` | run on testnet |
+| The hash of the cleared edges and of the positions is the same in the contract, the SDK and the indexer (golden vector) | `sdk/packages/core/test/clearing-hash.test.ts` TC-SD-080-01; `contracts/tests/ct099_hash_vectors.rs` | `8xcQqNZXhPNHgAukL4B42n8CMTXmEqx9BRmawH1XL1pb` | tested |
+| One full cycle of the demo runs on testnet: six agents join and stake, twenty paid calls become twelve registered vouchers, the epoch is committed and finalized, creditors claim | `demo/network.demo.ts` (`npm run demo:testnet`); `docs/testnet-demo-v013.json` | `C2KJpYeax1Arq1ShoZ1fWojhL3XBqkfiBEH6sRiyPQ1b`, `HZFi6LVMZoNo8wdjk8F7p7VrjTG4YK1yKJvtjVFpNCxB`, `8vC46g2wWPfj5wawha86r3qMAP91HMxEsuxstaX15T33`, `6JdjM4TncwoCYwXXahWGptohQb7yW1fAdYeAfAkD6wtA` | run on testnet; in that run the solver did not submit a clearing (cleared 0) |
+| A one-time code (gift card, beta invitation) is handed over once and a used code is refused through the issuer | `tests/codes.sandbox.test.ts` TC-UM-094-01 | none (near-sandbox) | tested in near-sandbox |
+| A license whose file hash differs from the listing is disputed and nothing is paid | `tests/licenses.sandbox.test.ts` TC-UM-088-01 | none (near-sandbox) | tested in near-sandbox |
+| The MCP server lists only read tools by default and signs nothing | `sdk/packages/mcp/test/tools.test.ts` TC-SD-081-01 | none | tested |
+| The released wasm is the build of the tag (reproducible build) | `contracts/scripts/verify-release.sh`; `docs/testnet-0.0.13.json` | `EhnsJArcdru4WaLwTRF52SbfR9B5EtQ5orQHLBRm3tHL` | verified for v0.0.13 |
+| Every commit of the product repositories lies in the build window 2026-11-01..2026-11-14 | `scripts/check-window.mjs`; `scripts/check-window.test.mjs` | none | checked by script |
+| The product UI, routes and messages are English | `frontend/src/test/english.test.ts`; `agents/test/english.test.ts`; `sdk/packages/core/test/english.test.ts` | none | tested |
+
+## Security claims
+
+The rows are the threat model of the README (section 8), one per threat.
+
+| Threat | Who attacks | Defence | Proof | Status |
+| --- | --- | --- | --- | --- |
+| Credit above the stake (ADR-18, C-6) | Circle member | The limit is clamped to the stake, and bonds are subtracted from it | `contracts/tests/ct038_wash_trading.rs` fn `growth_is_clamped_to_stake`; `contracts/x207-circle/src/commit.rs` fn `a_fee_keeps_the_limit_below_the_stake_minus_the_locked_bond` | fixed |
+| Wash trading with cash (K-62) | Two accounts of one actor | Cycle clearing does not raise limits; the limit stays under the stake | `contracts/tests/ct038_wash_trading.rs` fn `cycle_clearing_does_not_raise_limits` | by design |
+| Escrow filled by the wrong caller (F1) | Anybody who calls `nft_on_transfer` | The grant names the NFT contract and token; `ERR_ESCROW_NFT_MISMATCH` | `contracts/x207-circle/src/escrow.rs` fn `an_account_that_is_not_the_nft_of_the_grant_cannot_fill_the_escrow` and fn `the_right_nft_contract_with_another_token_cannot_fill_the_escrow` | fixed |
+| Unbounded storage (F2) | One member | 64 intents, 16 bundles per epoch, 64 legs per bundle, `prune_epoch` | `contracts/x207-circle/src/bundle.rs` fn `one_member_cannot_fill_the_storage_of_the_contract_with_intents` and fn `a_bundle_with_more_than_64_legs_is_refused_with_err_bad_bundle`; `contracts/tests/ct065_bundle.rs` fn `a_participant_is_in_at_most_16_bundles_per_epoch` | fixed |
+| Default eats the bond, verdict dodged (C-7) | Member who defaults while a deal is open | A default takes at most the stake minus the bond; a ruling moves only what the stake still holds | `contracts/x207-circle/src/deal.rs` fn `a_ruling_after_a_default_moves_only_what_the_stake_still_holds` | fixed |
+| Voucher served twice by parallel requests (R1) | Buyer | In-flight guard on the voucher id in the SDK middleware | `tests/security-review-facilitator.test.ts` TC-SR2-04; `tests/security-review-sdk.test.ts` TC-SR3-01 | fixed |
+| Forged request blocks the real voucher (G1) | Anybody who can call the seller | The id is taken only after `/verify` says valid | `tests/security-review-sdk.test.ts` TC-SR3-02 | fixed |
+| Payer suspended inside the cache window (C1) | Suspended payer | Cache TTL 10 s; the loss is bounded by the cached headroom | `tests/security-review-facilitator.test.ts` TC-SR2-06 and TC-SR2-07 | fixed |
+| Relayer gas drain (`exact`) | Anybody who can call `/settle` | Gas cap 30 Tgas, pause after 3 failed settlements, rate limit per client | `sdk/apps/facilitator/test/exact-limits.test.ts` TC-SR3-21, TC-SR3-22, TC-SR3-25 | fixed |
+| Path traversal out of the proxy scope (B1) | Lessee of a class C grant | Encoded slash and backslash cannot leave the scope prefix | `backend/broker/test/security-review.test.ts` TC-SR2-B01 | fixed |
+| Secret echoed or sent on a redirect (B3, B4) | Lessee, malicious provider | Auth headers are stripped from the echo; redirects are not followed with the secret | `backend/broker/test/security-review.test.ts` TC-SR2-B04 and TC-SR2-B05 | fixed |
+| Quota passed by parallel requests (B5) | Lessee | Slots are taken before the call and given back on failure | `backend/broker/test/security-review.test.ts` TC-SR2-B06 and TC-SR2-B07 | fixed |
+| One voucher pays twice (B7) | Lessee | One lease day per voucher; the second request is 409 `voucher_in_flight` | `backend/broker/test/security-review.test.ts` TC-SR2-B09 and TC-SR2-B10 | fixed |
+| False proof of cheating by a 65-byte body (B2-F1) | Dishonest buyer | One hash scheme with a leaf prefix and a node prefix; size is signed | `sdk/packages/core/test/license.test.ts` TC-SD-070-20 and TC-SD-070-21 | fixed |
+| Seller seals another key than the committed one (B2-F11) | Dishonest seller | `key_commitment` in the release; a wrong key is a proof of cheating | `sdk/packages/core/test/license.test.ts` TC-SD-070-23; `backend/test/marketplace/purchases.test.ts` TC-BE-056-14 | fixed |
+| Takedown after the code key is out (B7-C1) | Buyer or any member | A takedown never cancels a released code purchase | `backend/test/marketplace/codes.test.ts` TC-BE-078-C1 | fixed |
+| Code key released without the ciphertext (B7-C2) | Dishonest seller | The backend downloads and checks the ciphertext before the key goes | `backend/test/marketplace/codes.test.ts` TC-BE-078-C2 | fixed |
+| One-time code sold twice (B7-C5, C6 to C9) | Seller | A refuted sale is exclusive; two checks at once cannot both pass | `backend/test/marketplace/codes.test.ts` TC-BE-078-C5 and TC-BE-078-C7-C8 | fixed |
+| The server decides what the voucher key signs (FE-1) | Read API or a server between it and the page | The page checks recipient, circle, canonical form and legs before it signs | `frontend/src/components/Negotiation.test.tsx` TC-FE-SEC-01 to TC-FE-SEC-08 | fixed |
+| No script and connection policy (FE-2, B3-F4) | Injected content | CSP with `script-src` self and listed `connect-src` in the production build | `frontend/src/test/csp.test.ts` TC-FE-SEC-20; `frontend/src/test/security.test.tsx` TC-FE-SEC-15 | limit (not tried with a real wallet) |
+| Indexer follows a state that does not match the chain | Lying RPC or a late indexer | The indexer halts and writes nothing on a mismatch; it does not fix the data | `backend/test/indexer/clearing-summary.test.ts` TC-BE-077-03 and TC-BE-077-06 | by design |
