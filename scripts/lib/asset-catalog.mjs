@@ -79,7 +79,7 @@ export const CATALOG = [
   // F. off-chain digital assets of ordinary people (rows 61 to 90). Delivery is by confirmation of the receiver and a dispute window (BE-047, CT-093), not atomic.
   { no: 61, assetType: "ai-credit:api", cls: "C", name: "Credit of an AI model API", delivery: ["proxy"], proofs: ["tee_attestation"], status: "roadmap; condition: many providers forbid sharing a key, a managed proxy must be allowed" },
   { no: 62, assetType: "cloud:credit", cls: "B", name: "Cloud promotional credit", delivery: ["project_member"], proofs: ["zktls"], status: "roadmap; condition: promotional credit is often not transferable" },
-  { no: 63, assetType: "messaging:subaccount", cls: "B", name: "Messaging sub-account (SMS or email quota)", delivery: ["subaccount"], proofs: ["zktls"], status: "roadmap; condition: provider with sub-accounts" },
+  { no: 63, assetType: "messaging:subaccount", cls: "B", name: "Messaging sub-account (SMS or email quota)", delivery: ["subaccount"], proofs: ["zktls"], status: "built with a mock messaging provider (BE-085, adapter messaging-subaccount); condition: provider with sub-accounts" },
   { no: 64, assetType: "maps:geocoding-quota", cls: "C", name: "Map and geocoding API quota", delivery: ["proxy"], proofs: ["tee_attestation"], status: "roadmap; condition" },
   { no: 65, assetType: "hosting:reseller-account", cls: "B", name: "Hosting or VPS account under a reseller plan", delivery: ["derived_account"], proofs: ["zktls"], status: "roadmap; lawful under a reseller plan" },
   { no: 66, assetType: "domain:name", cls: "C", name: "Domain name", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; lawful, registrar transfer is common" },
