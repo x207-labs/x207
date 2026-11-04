@@ -22,9 +22,9 @@ const CARGO_EXACT = /^=\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
 // Versions from the module map (x207 - Peta Modul, ADR-11). Tools such as cargo-near are not dependencies.
 export const PETA_MODUL = {
   npm: {
-    "@x402/core": "2.28.0",
-    "@x402/near": "2.28.0",
-    "@x402/fetch": "2.28.0",
+    "@x402/core": "2.29.0",
+    "@x402/near": "2.29.0",
+    "@x402/fetch": "2.29.0",
     "near-api-js": "7.4.0",
     "@defuse-protocol/one-click-sdk-typescript": "0.1.26",
     "@defuse-protocol/intents-sdk": "0.93.0",

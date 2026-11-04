@@ -10,7 +10,7 @@ import { checkPins } from "./check-pins.mjs";
 const PKG = {
   name: "demo",
   private: true,
-  dependencies: { "@x402/fetch": "2.28.0", hono: "4.13.16" },
+  dependencies: { "@x402/fetch": "2.29.0", hono: "4.13.16" },
   devDependencies: { vitest: "5.0.5" },
 };
 const CARGO = `[package]
@@ -62,12 +62,12 @@ test("TC-UM-007-01 exact pins and committed lockfiles pass", () => {
 });
 
 test("TC-UM-007-02 caret on @x402/fetch fails and names package and file", () => {
-  const pkg = { ...PKG, dependencies: { ...PKG.dependencies, "@x402/fetch": "^2.28.0" } };
+  const pkg = { ...PKG, dependencies: { ...PKG.dependencies, "@x402/fetch": "^2.29.0" } };
   withFixture({ pkg }, (root) => {
     const errors = run(root);
     assert.equal(errors.length, 1);
     assert.match(errors[0], /package\.json/);
-    assert.match(errors[0], /@x402\/fetch@\^2\.28\.0/);
+    assert.match(errors[0], /@x402\/fetch@\^2\.29\.0/);
   });
 });
 
