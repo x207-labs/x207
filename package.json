@@ -21,6 +21,7 @@
     "test:integration": "X207_SANDBOX=1 vitest run",
     "demo:quick": "node scripts/demo-quick.mjs --release-wasm",
     "demo:sandbox": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts sandbox",
+    "demo:mcp": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts mcp",
     "demo:business": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts business",
     "demo:realworld": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts realworld",
     "demo:marketplace": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts marketplace",
