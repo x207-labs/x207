@@ -81,7 +81,7 @@ export const CATALOG = [
   { no: 62, assetType: "cloud:credit", cls: "B", name: "Cloud promotional credit", delivery: ["project_member"], proofs: ["zktls"], status: "roadmap; condition: promotional credit is often not transferable" },
   { no: 63, assetType: "messaging:subaccount", cls: "B", name: "Messaging sub-account (SMS or email quota)", delivery: ["subaccount"], proofs: ["zktls"], status: "built with a mock messaging provider (BE-085, adapter messaging-subaccount); condition: provider with sub-accounts" },
   { no: 64, assetType: "maps:geocoding-quota", cls: "C", name: "Map and geocoding API quota", delivery: ["proxy"], proofs: ["tee_attestation"], status: "roadmap; condition" },
-  { no: 65, assetType: "hosting:reseller-account", cls: "B", name: "Hosting or VPS account under a reseller plan", delivery: ["derived_account"], proofs: ["zktls"], status: "roadmap; lawful under a reseller plan" },
+  { no: 65, assetType: "hosting:reseller-account", cls: "B", name: "Hosting or VPS account under a reseller plan", delivery: ["derived_account"], proofs: ["zktls"], status: "built with a mock reseller provider (BE-086, adapter hosting-subaccount); lawful under a reseller plan" },
   { no: 66, assetType: "domain:name", cls: "C", name: "Domain name", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; lawful, registrar transfer is common" },
   { no: 67, assetType: "site:web-property", cls: "C", name: "Website, app or online shop", delivery: ["admin_credentials"], proofs: ["tee_attestation"], status: "roadmap; lawful, selling a site is common" },
   { no: 68, assetType: "design:template", cls: "D", name: "Template and design asset", delivery: ["licensed_download"], proofs: [], status: "roadmap; condition: licence of the creator" },
