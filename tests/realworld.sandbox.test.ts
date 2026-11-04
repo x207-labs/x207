@@ -1,6 +1,6 @@
-// AG-021: skenario realworld di near-sandbox. Tiga bisnis (supplier, maker, retailer) saling punya invoice 100, 60, dan 80 credit,
-// dicatat sebagai voucher dengan hash invoice di `resource`, lalu kliring F3 nyata (indexer, read API, solver, keeper) dan posisi
-// residual F4. Total sebelum dan sesudah netting dari skenario dibandingkan dengan nilai dari kontrak.
+// AG-021: realworld scenario on near-sandbox. Three businesses (supplier, maker, retailer) owe each other invoices of 100, 60 and 80 credit,
+// recorded as vouchers with the invoice hash in `resource`, then real F3 clearing (indexer, read API, solver, keeper) and the F4 residual
+// positions. The totals before and after netting from the scenario are compared with the values from the contract.
 import { execFile } from "node:child_process";
 import type { AddressInfo } from "node:net";
 import { createServer, type Server } from "node:http";
@@ -50,7 +50,7 @@ describe.skipIf(!sandboxAvailable)("AG-021 three businesses, invoices, F3 cleari
     const first = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", {});
     const epoch = first.epoch;
 
-    // Invoice -> voucher kumulatif dengan resource = x207:invoice:<hash>; didaftarkan oleh debitur sendiri
+    // Invoice -> cumulative voucher with resource = x207:invoice:<hash>; registered by the debtor itself
     const invoices = sampleInvoices(business);
     const netting = netInvoices(invoices);
     const members = [supplier, maker, retailer];
@@ -87,7 +87,7 @@ describe.skipIf(!sandboxAvailable)("AG-021 three businesses, invoices, F3 cleari
     expect((await pass()).filter((a) => a.epoch === epoch).map((a) => a.method)).toEqual(["close_epoch"]);
     const cutoff = events.find((e) => e.event === "epoch_cutoff")!;
 
-    // Indexer nyata membaca blok dari sandbox; read API melayani D9.
+    // The real indexer reads blocks from the sandbox; the read API serves D9.
     const db = openDatabase(":memory:");
     const client = new FailoverRpcClient({ endpoints: [rpcUrl] });
     const indexer = new Indexer({
@@ -113,14 +113,14 @@ describe.skipIf(!sandboxAvailable)("AG-021 three businesses, invoices, F3 cleari
     const apiUrl = `http://127.0.0.1:${(api.address() as AddressInfo).port}`;
     const base = `${apiUrl}/x207/circles/agents-main`;
 
-    // 01: tiga edge; totalObligation dari kontrak sama dengan total invoice sebelum netting
+    // 01: three edges; totalObligation from the contract equals the invoice total before netting
     const snapshot = (await (await fetch(`${base}/epochs/${epoch}/obligations?stage=cutoff`)).json()) as { edgeCount: number; totalObligation: string; edges: unknown[] };
     expect(snapshot.edges).toHaveLength(3);
     expect(snapshot.edgeCount).toBe(Number(cutoff.edge_count));
     expect(snapshot.totalObligation).toBe(cutoff.total_obligation);
     expect(BigInt(snapshot.totalObligation)).toBe(netting.before);
 
-    // 02: solver nyata membaca snapshot dan mengirim submit_clearing
+    // 02: the real solver reads the snapshot and sends submit_clearing
     const solver = await fx.sandbox.createAccount("solver", "20");
     const { stdout } = await run("node", ["solver/dist/cli.js", "--epoch", String(epoch)], {
       env: {
@@ -140,10 +140,10 @@ describe.skipIf(!sandboxAvailable)("AG-021 three businesses, invoices, F3 cleari
     const positions = await fx.sandbox.view<Array<{ account_id: string; role: string; amount: string; net: string }>>(fx.circle.accountId, "list_positions", { epoch, from_index: 0, limit: 100 });
     const total = (role: string) => positions.filter((p) => p.role === role).reduce((n, p) => n + BigInt(p.amount), 0n);
     expect(total("debtor")).toBe(total("creditor"));
-    // F4: yang harus dibayar lewat jalur residual sama dengan posisi bersih positif dari invoice
+    // F4: what must be paid through the residual path equals the positive net position from the invoices
     expect(total("debtor")).toBe(netting.settlement);
 
-    // 04: laporan 207 setelah indexer menyusul
+    // 04: 207 report after the indexer catches up
     await catchUp(() => ['payment_window', 'finalized'].includes(phaseOf() ?? ''));
     const report = await fetch(`${base}/epochs/${epoch}`);
     expect(report.status).toBe(207);
@@ -155,7 +155,7 @@ describe.skipIf(!sandboxAvailable)("AG-021 three businesses, invoices, F3 cleari
     expect(row(supplier)).toMatchObject({ status: 202, net: "+40000000" });
     console.log(["REALWORLD", ...formatNetting(netting), `contract: total obligation ${snapshot.totalObligation}, cleared ${body.cleared}, due ${total("debtor")}`].join("\n"));
 
-    // 05: net laporan sama dengan view net_position
+    // 05: report net equals the net_position view
     for (const m of members) {
       expect(BigInt((await fx.sandbox.view<{ net: string }>(fx.circle.accountId, "net_position", { epoch, account_id: m.account.accountId })).net)).toBe(netting.net[m.account.accountId]!);
       const position = await fx.sandbox.view<{ net: string }>(fx.circle.accountId, "net_position", { epoch, account_id: m.account.accountId });

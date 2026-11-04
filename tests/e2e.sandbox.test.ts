@@ -1,5 +1,5 @@
-// UM-025: e2e penuh di near-sandbox tanpa backend dan solver: join + stake, voucher F2, close/submit/commit,
-// settle + claim, dan skenario default. Proposal kliring dihitung tangan dari graf cincin tiga simpul.
+// UM-025: full e2e on near-sandbox without backend and solver: join + stake, F2 voucher, close/submit/commit,
+// settle + claim, and the default scenario. The clearing proposal is computed by hand from the three-node ring graph.
 import { afterAll, describe, expect, it } from "vitest";
 import {
   buildClaimCall, buildSettleTransferCall, createCircleViewFn, onboardMember, signVoucher,
@@ -53,7 +53,7 @@ const epochOf = (fx: CircleFixture, epoch: number) => fx.sandbox.view<ContractAb
 const positions = (fx: CircleFixture, epoch: number) =>
   fx.sandbox.view<Position[]>(fx.circle.accountId, "list_positions", { epoch, from_index: 0, limit: 100 });
 
-/** Cincin translator -> summarizer (10) -> scraper (8) -> translator (6); kliring 6 per sisi. */
+/** Ring translator -> summarizer (10) -> scraper (8) -> translator (6); clearing 6 per side. */
 async function ringThroughCommit(fx: CircleFixture, m: Awaited<ReturnType<typeof setup>>) {
   const first = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", {});
   const epoch = first.epoch;
@@ -99,12 +99,12 @@ describe.skipIf(!sandboxAvailable)("UM-025 e2e penuh di near-sandbox", () => {
     expect(sum("debtor")).toBe(4_000_000n);
     expect(sum("debtor")).toBe(sum("creditor"));
 
-    // 03: claim sebelum finalize_epoch ditolak, status tetap claimable
+    // 03: claim before finalize_epoch is rejected, status stays claimable
     const early = await send(fx, m.summarizer.account, buildClaimCall({ circleContract: fx.circle.accountId, epoch, destination: "near" }));
     expect(early.failures.join(" ")).toMatch(/ERR_NOT_FINALIZED/);
     expect((await positions(fx, epoch)).filter((p) => p.role === "creditor").every((p) => p.status === "claimable")).toBe(true);
 
-    // 04: debtor membayar, finalize, kreditor klaim
+    // 04: debtor pays, finalize, creditor claims
     const pay = await send(fx, m.translator.account, buildSettleTransferCall({ circleContract: fx.circle.accountId, amount: "4000000", epoch, usdtTokenId: fx.usdt.accountId }));
     expect(pay.failures).toEqual([]);
     await at(fx, paying.payment_deadline);

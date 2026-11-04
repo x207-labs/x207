@@ -1,20 +1,20 @@
-// UM-032: demo end-to-end di jaringan nyata (testnet atau mainnet). Sudah dijalankan satu epoch penuh di testnet (2026-11-03, docs/testnet-demo.json); belum di mainnet.
-// Variabel tambahan: DEMO_GAS_KEY_LANES, DEMO_CALL_PAUSE_MS, DEMO_SCHEDULER_MS, RPC_URLS, DEMO_RESUME_EPOCH, X207_DEMO_RECORD.
-//   DEMO_NETWORK=testnet npm run demo:testnet        (hanya mencetak rencana)
+// UM-032: end-to-end demo on a real network (testnet or mainnet). A full epoch has run on testnet (2026-11-03, docs/testnet-demo.json); not on mainnet yet.
+// Extra variables: DEMO_GAS_KEY_LANES, DEMO_CALL_PAUSE_MS, DEMO_SCHEDULER_MS, RPC_URLS, DEMO_RESUME_EPOCH, X207_DEMO_RECORD.
+//   DEMO_NETWORK=testnet npm run demo:testnet        (only prints the plan)
 //   DEMO_NETWORK=testnet X207_CONFIRM_REAL_TX=yes npm run demo:testnet
 //   DEMO_NETWORK=mainnet X207_CONFIRM_REAL_TX=yes X207_CONFIRM_MAINNET=yes npm run demo:mainnet
-// Langkah opsional (UM-032, UM-036), dilewati dengan pesan bila prasyaratnya belum ada:
-//   DEMO_BARTER=yes      F5: cincin tiga agent, commit_bundle, leg dibayar dengan voucher ber-bundleId. Butuh kontrak antarmuka 0.0.4:
-//                        isi CIRCLE_CONTRACT dengan alamat 0.0.4 (view get_bundle harus ada, bila tidak langkah dilewati).
-//   DEMO_DAO_ACCOUNT=<akun Sputnik DAO> DEMO_DAO_COUNCIL=<a,b> DEMO_DAO_PARAMS_FILE=<json>   F7: proposal set_params lewat DAO.
-//                        Hanya jalan bila get_owner kontrak sama dengan DAO; kunci anggota dewan di KEYS_DIR/<network>/<akun>.json.
-// Tanpa X207_CONFIRM_REAL_TX=yes skrip hanya mencetak rencana dan tidak mengirim apa pun. Transaksi mainnet dikonfirmasi manusia.
+// Optional steps (UM-032, UM-036), skipped with a message when their prerequisites are missing:
+//   DEMO_BARTER=yes      F5: three-agent ring, commit_bundle, legs paid with vouchers that carry a bundleId. Needs a contract with interface 0.0.4:
+//                        set CIRCLE_CONTRACT to a 0.0.4 address (the get_bundle view must exist, otherwise the step is skipped).
+//   DEMO_DAO_ACCOUNT=<Sputnik DAO account> DEMO_DAO_COUNCIL=<a,b> DEMO_DAO_PARAMS_FILE=<json>   F7: set_params proposal through the DAO.
+//                        Runs only when the contract's get_owner equals the DAO; council member keys are in KEYS_DIR/<network>/<account>.json.
+// Without X207_CONFIRM_REAL_TX=yes the script only prints the plan and sends nothing. Mainnet transactions are confirmed by a human.
 //
-// Variabel (nama saja; nilai di .env, tidak pernah dicetak): DEMO_NETWORK, RPC_URL, CIRCLE_CONTRACT, USDT_TOKEN_ID, KEYS_DIR,
+// Variables (names only; values live in .env and are never printed): DEMO_NETWORK, RPC_URL, CIRCLE_CONTRACT, USDT_TOKEN_ID, KEYS_DIR,
 // TERMS_HASH, STAKE_AMOUNT, DEMO_PAYMENTS, SPEND_POLICY_FILE,
-// KEEPER_ACCOUNT_ID, SOLVER_ACCOUNT_ID, RELAYER_ACCOUNT_ID (kunci dari <NAMA>_SECRET_KEY atau berkas kunci di KEYS_DIR),
-// AGENT_ACCOUNT_TEMPLATE (default `{name}.<CIRCLE_CONTRACT>`, mis. `x207r-{name}.testnet`), DEMO_MINT_USDT=yes (mint USDT tiruan, hanya testnet),
-// DEMO_DEFAULT=<agent> (debtor itu tidak melunasi). Kunci pemilik di KEYS_DIR/<network>/<akun>.json (format scripts/create-accounts.mjs).
+// KEEPER_ACCOUNT_ID, SOLVER_ACCOUNT_ID, RELAYER_ACCOUNT_ID (key from <NAME>_SECRET_KEY or a key file in KEYS_DIR),
+// AGENT_ACCOUNT_TEMPLATE (default `{name}.<CIRCLE_CONTRACT>`, e.g. `x207r-{name}.testnet`), DEMO_MINT_USDT=yes (mint mock USDT, testnet only),
+// DEMO_DEFAULT=<agent> (that debtor does not repay). Owner key in KEYS_DIR/<network>/<account>.json (format of scripts/create-accounts.mjs).
 import { execFile } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync, writeSync } from "node:fs";
 import { createServer, type Server } from "node:http";
@@ -186,8 +186,8 @@ describe("demo real network", () => {
       onRegistered: ({ payer }) => facilitatorService.invalidatePayer?.(contract, payer),
     });
 
-    // RPC dan Neardata publik testnet membatasi laju (429; 30 blok per menit), jadi backfill indexer tidak mungkin dalam satu sesi.
-    // Solver membaca snapshot kewajiban dari shim ini yang disusun dari view `list_obligations` kontrak, bentuknya sama dengan read API.
+    // The public testnet RPC and Neardata are rate limited (429; 30 blocks per minute), so an indexer backfill is not possible in one session.
+    // The solver reads the obligation snapshot from this shim, built from the contract's `list_obligations` view, in the same shape as the read API.
     const api = createServer(async (req, res) => {
       const match = /\/epochs\/(\d+)\/obligations/.exec(req.url ?? "");
       if (!match) {
@@ -229,7 +229,7 @@ describe("demo real network", () => {
     };
 
     const resume = process.env.DEMO_RESUME_EPOCH ? Number(process.env.DEMO_RESUME_EPOCH) : undefined;
-    // Pilih epoch yang masih punya waktu: tutup epoch yang sudah lewat cutoff, tunggu bila sisa waktu terlalu pendek.
+    // Pick an epoch that still has time: close an epoch that is past its cutoff, wait if the remaining time is too short.
     const MIN_REMAINING_MS = 240_000;
     let current: ContractAbi.EpochView = (await view("get_epoch", resume ? { epoch: resume } : {})) as ContractAbi.EpochView;
     while (!resume) {
@@ -316,7 +316,7 @@ describe("demo real network", () => {
       log(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
       const position = (await view("net_position", { epoch, account_id: accounts[defaulter] })) as { status: string; amount: string } | null;
       log(`   position ${defaulter} after finalize: ${JSON.stringify(position)}`);
-      // UM-037: cabang gagal bayar sampai payment window habis: stake dipotong, status 409 di laporan 207, limit 0
+      // UM-037: default branch until the payment window ends: stake is slashed, status 409 in the 207 report, limit 0
       const cut = stakeBefore === undefined ? 0n : BigInt(stakeBefore) - BigInt(member.stake);
       log(`   default branch: stake slashed ${cut} of ${stakeBefore}, 207 report status ${position?.status === "defaulted" ? 409 : "not 409 (position " + position?.status + ")"}, limit ${member.limit}`);
     }

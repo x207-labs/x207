@@ -1,7 +1,7 @@
-// UM-067 blok marketplace (F9, ADR-38): listing menunggu dua jam lalu dinegosiasikan, barter cepat dengan pencari (jalur bayar dan jalur
-// barter), dan cincin tiga intent dari solver, semuanya dibayar lewat leg bundle lalu dikliring F3. Satu perintah dari akar payung:
-//   npm run demo:marketplace       (near-sandbox, kontrak, indexer, solver, dan keeper nyata; sekitar 2,5 menit)
-// Dicetak "do X - see Y" untuk Appendix A README. Angka sandbox memakai nilai kecil agar leg bisa dibayar dengan panggilan 0,02 credit.
+// UM-067 marketplace block (F9, ADR-38): a listing waits two hours and is then negotiated, a quick barter with a seeker (pay path and barter
+// path), and a three-intent ring from the solver, all paid through bundle legs and then cleared by F3. One command from the umbrella root:
+//   npm run demo:marketplace       (near-sandbox, real contract, indexer, solver and keeper; about 2.5 minutes)
+// Prints "do X - see Y" lines for Appendix A of the README. Sandbox amounts are small so a leg can be paid with 0.02-credit calls.
 import { execFile } from "node:child_process";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -71,24 +71,24 @@ describe("demo marketplace F9", () => {
     };
     const count = (sql: string) => Number((db.prepare(sql).get() as { n: number }).n);
     await catchUp(() => count("select count(*) as n from members where status = 'active'") >= 6);
-    // Epoch open dibaca dari view get_epoch kontrak (chainView); tabel epochs D9 belum punya baris di epoch pertama.
+    // The open epoch is read from the contract's get_epoch view (chainView); the D9 epochs table has no row in the first epoch yet.
     const epoch = (await fx.sandbox.view<ContractAbi.EpochView>(contract, "get_epoch", {})).epoch;
     expect(count("select count(*) as n from epochs")).toBe(0);
 
     const book = new BookClient({ baseUrl: apiUrl, circleId: "agents-main" });
     const id = identity;
     const advance = (seconds: number) => void (book_.now += seconds);
-    const unitMicro = CALL_PRICE; // 10 unit x 0,02 = listing bernilai 0,2 credit
+    const unitMicro = CALL_PRICE; // 10 units x 0.02 = a listing worth 0.2 credit
     const bundles: Array<{ name: string; terms: BundleTerms; signatures: Array<{ account_id: string; signature: string }> }> = [];
 
-    // 1. listing menunggu lalu negosiasi (translator menjual, summarizer datang dua jam kemudian)
+    // 1. listing waits, then negotiation (translator sells, summarizer arrives two hours later)
     const waiting = await runWaitingScenario({ book, seller: id.translator, late: id.summarizer, contractId: contract, clock: book_, advance, unitMicro });
     expect(waiting.waitedSeconds).toBe(7200);
     expect(waiting.rounds.map((r) => r.kind)).toEqual(["bid", "countered", "countered", "accepted"]);
     step("translator lists translate-calls for summarize-calls (value 0.2) and waits; nobody is there", `listing stays open for ${waiting.waitedSeconds / 3600} hours; a second listing with a 30 minute life expires out of the open results`);
     step("summarizer arrives and negotiates by its own policy", `rounds ${waiting.rounds.map((r) => (r.value ? `${r.kind} ${credit(r.value)}` : r.kind)).join(" -> ")}; bundle ${waiting.bundle?.status}`);
 
-    // 2. barter cepat dengan pencari (scraper menjual, translator membayar, summarizer barter, cleaner pencari)
+    // 2. quick barter with a seeker (scraper sells, translator pays, summarizer barters, cleaner seeks)
     const quick = await runQuickBarter({
       book, contractId: contract, now: () => book_.now, params: { value: 0.5, discountBps: 2000, searcherShareBps: 400 },
       identities: { seller: id.scraper, payer: id.translator, barterer: id.summarizer, seeker: id.cleaner, bystander: id.gpu },
@@ -100,14 +100,14 @@ describe("demo marketplace F9", () => {
     step("pay path: the counterparty pays the discounted price plus the seeker share", `${credit(quick.pay!.counterpartyPays)} = ${quick.pay!.legs.map((l) => `${credit(l.amount)} to ${short(l.to)}`).join(" + ")}`);
     step("barter path: the counterparty hands over goods and receives cashback", `cashback ${credit(quick.barter!.cashback)}, seller bears ${credit(quick.barter!.sellerBears)}, seeker earns ${credit(quick.seekerRevenue)} over both paths`);
 
-    // bundle dari buku: ambil semua usulan ready
+    // bundles from the book: take all proposals that are ready
     const proposals = await book.proposals(id.translator.accountId, "ready");
     const bookProposals = [...proposals, ...(await book.proposals(id.scraper.accountId, "ready")), ...(await book.proposals(id.cleaner.accountId, "ready"))];
     const unique = new Map(bookProposals.map((p) => [p.termsHash, p]));
     expect(unique.size).toBe(3);
     for (const p of unique.values()) bundles.push({ name: `book-${p.termsHash.slice(0, 6)}`, terms: p.terms, signatures: p.signatures.map((s) => ({ account_id: s.account, signature: s.signature })) });
 
-    // 3. cincin tiga intent (image -> gpu -> translator -> image) ditemukan solver; pasangannya tidak sama dengan leg bundle lain
+    // 3. three-intent ring (image -> gpu -> translator -> image) found by the solver; its pairs differ from the legs of the other bundles
     const ringNames = ["image", "gpu", "translator"] as const;
     const agents = new Map(ringNames.map((n) => [n, new BarterAgent({ identity: id[n], book, contractId: contract, now: () => book_.now })]));
     const services = { image: "image", gpu: "compute", translator: "translate" } as const;
@@ -125,7 +125,7 @@ describe("demo marketplace F9", () => {
     step("image, gpu and translator post intents; the solver finds the ring and all three sign the terms_hash", `ring ${cycle!.members.map((m) => short(m.account)).join(" -> ")}, terms_hash ${ringHash.slice(0, 12)}…`);
     bundles.push({ name: "ring", terms: ringTerms, signatures: collected!.signatures.map((s) => ({ account_id: s.account, signature: s.signature })) });
 
-    // 4. commit_bundle untuk keempat bundle dari akun solver
+    // 4. commit_bundle for the four bundles from the solver account
     const committed = new Map<string, number>();
     for (const bundle of bundles) {
       const result = await fx.sandbox.accountFrom(solver.accountId, solver.secretKey).call(
@@ -142,10 +142,10 @@ describe("demo marketplace F9", () => {
       for (let i = 0; i < 60 && !(await stack.rpc.view(contract, "get_bundle", { bundle_id: bundleId })); i++) await new Promise((r) => setTimeout(r, 1_000));
     }
 
-    // 5. leg dibayar dengan voucher yang membawa bundle_id; leg yang bukan kelipatan 0,02 dibayar sebesar kelipatan terbesar
+    // 5. legs are paid with vouchers that carry bundle_id; a leg that is not a multiple of 0.02 is paid as the largest multiple
     const ownerOf = new Map<string, number>();
     for (const bundle of bundles) for (const leg of bundle.terms.legs) ownerOf.set(`${leg.payer}>${leg.payee}`, committed.get(bundle.name)!);
-    expect(ownerOf.size).toBe(bundles.reduce((n, b) => n + b.terms.legs.length, 0)); // tiap pasangan hanya leg satu bundle
+    expect(ownerOf.size).toBe(bundles.reduce((n, b) => n + b.terms.legs.length, 0)); // each pair belongs to the leg of only one bundle
     const nameOf = new Map(Object.entries(id).map(([name, v]) => [v.accountId, name as keyof typeof id]));
     const buyers = new Map<string, typeof fetch>();
     const buyerOf = (account: string) => {
@@ -179,7 +179,7 @@ describe("demo marketplace F9", () => {
       net.set(payee, (net.get(payee) ?? 0n) + cumulative);
     }
 
-    // 6. kliring F3
+    // 6. F3 clearing
     const pass = () =>
       keeperPass({
         view: (m: string, a: object) => fx.sandbox.view(contract, m, a),
@@ -206,15 +206,15 @@ describe("demo marketplace F9", () => {
     expect((await pass()).filter((a) => a.epoch === epoch).map((a) => a.method)).toEqual(["commit_epoch"]);
     await catchUp(() => ["payment_window", "finalized"].includes(phaseOf() ?? ""));
 
-    // 7. laporan 207: posisi bersih = selisih kewajiban terdaftar; cincin habis penuh; pencari menerima jatahnya
+    // 7. 207 report: net position = difference of registered obligations; the ring is fully cleared; the seeker receives its share
     const body = (await (await fetch(`${base}/epochs/${epoch}`)).json()) as { cleared: string; members: Array<{ account: string; status: number; net: string }> };
     const row = (account: string) => body.members.find((m) => m.account === account)!;
     for (const [account, expected] of net) {
       expect(BigInt(row(account).net), account).toBe(expected);
     }
-    // image dan gpu hanya ikut cincin: habis penuh, residual nol, status 200
+    // image and gpu only take part in the ring: fully cleared, zero residual, status 200
     for (const n of ["image", "gpu"] as const) expect(row(id[n].accountId), n).toMatchObject({ status: 200, net: "0" });
-    // cleaner hanya pencari: menerima persis jatahnya dari kedua jalur
+    // cleaner is only a seeker: receives exactly its share from both paths
     expect(BigInt(row(id.cleaner.accountId).net)).toBe(BigInt(quick.seekerRevenue));
     expect(BigInt(body.cleared)).toBeGreaterThan(0n);
     expect([...net.values()].reduce((a, b) => a + b, 0n)).toBe(0n);

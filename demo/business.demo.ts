@@ -1,7 +1,7 @@
-// UM-072 blok bisnis (K-59, track `business`): agent pengadaan membeli jasa dengan kredit tanpa persetujuan per transaksi, hanya
-// dalam daftar jasa, batas per panggilan, dan anggaran epoch dari pemilik. Satu perintah dari akar payung:
-//   npm run demo:business          (near-sandbox, kontrak nyata; pembelian di luar batas ditolak sebelum voucher apa pun)
-// Setiap langkah dicetak "do X - see Y" dengan bukti untuk Appendix A README.
+// UM-072 business block (K-59, track `business`): a procurement agent buys services with credit without per-transaction approval, only
+// within the service list, the per-call limit, and the epoch budget set by the owner. One command from the umbrella root:
+//   npm run demo:business          (near-sandbox, real contract; purchases outside the limits are rejected before any voucher)
+// Every step prints "do X - see Y" with evidence for Appendix A of the README.
 import { writeSync } from "node:fs";
 import { afterAll, describe, it } from "vitest";
 import { ProcurementAgent } from "../agents/scenario/business.ts";

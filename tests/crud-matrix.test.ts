@@ -1,10 +1,10 @@
-// UM-020 dan UM-065: docs/crud-matrix.md cocok dengan semua panah proses <-> store di DFD Level 1 (vault, 33 panah) dan DFD Level 2 F8 (proses P9, 8 panah)
+// UM-020 and UM-065: docs/crud-matrix.md matches all process <-> store arrows in DFD Level 1 (33 arrows) and DFD Level 2 F8 (process P9, 8 arrows)
 // dan uses the ADR-26 status names.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-// Panah proses-store DFD Level 1: [dari, ke]. Salinan dari `07 DFD/x207 - DFD Level 1.md`; ubah bersama diagramnya.
+// DFD Level 1 process-store arrows: [from, to]. Copy of the DFD Level 1 design diagram; change it together with the diagram.
 const LEVEL1: Array<[string, string]> = [
   ["P1", "D1"], ["P1", "D6"], ["D1", "P2"], ["P2", "D2"], ["P2", "D3"], ["D2", "P3"], ["P3", "D2"], ["P3", "D4"], ["P3", "D5"],
   ["D5", "P4"], ["P4", "D5"], ["P4", "D6"], ["P4", "D1"], ["P5", "D8"], ["P5", "D1"], ["P5", "D2"], ["D5", "P6"], ["D6", "P6"],
@@ -12,8 +12,8 @@ const LEVEL1: Array<[string, string]> = [
   ["D1", "P8"], ["D2", "P8"], ["D4", "P8"], ["D5", "P8"], ["P8", "D9"], ["D9", "P3"],
 ];
 
-// DFD Level 2 F8 (`07 DFD/x207 - DFD Level 2 F8 Adaptor Aset Akses.md`): P9 dengan D2, D3, D5, D10, D11, ditambah P7 -> D10 yang dinyatakan catatan itu
-// dengan kata-kata ("D10 hanya ditulis P7"). Arus P9 -> D2 dan D3 adalah hasil registrasi voucher (P2), bukan tulisan broker.
+// DFD Level 2 F8 (access-asset adapter diagram): P9 with D2, D3, D5, D10, D11, plus P7 -> D10 which the diagram note states
+// in words ("D10 is only written by P7"). The P9 -> D2 and P9 -> D3 flows are the result of voucher registration (P2), not broker writes.
 const F8: Array<[string, string]> = [
   ["P9", "D11"], ["D11", "P9"], ["D10", "P9"], ["D3", "P9"], ["P9", "D3"], ["P9", "D2"], ["D5", "P9"], ["P7", "D10"],
 ];

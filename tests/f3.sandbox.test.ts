@@ -1,5 +1,5 @@
-// UM-024: F3 tiga agent translator -> summarizer -> scraper -> translator di near-sandbox dengan indexer, read API,
-// solver (dist/cli.js), dan keeper nyata. Obligasi 10, 7, 5 credit; kliring 5 per sisi (15 total).
+// UM-024: F3 with three agents translator -> summarizer -> scraper -> translator on near-sandbox with a real indexer, read API,
+// solver (dist/cli.js) and keeper. Obligations of 10, 7, 5 credit; clearing 5 per side (15 total).
 import { execFile } from "node:child_process";
 import type { AddressInfo } from "node:net";
 import { createServer, type Server } from "node:http";
@@ -82,7 +82,7 @@ describe.skipIf(!sandboxAvailable)("UM-024 F3 three agents with a real indexer a
     expect((await pass()).filter((a) => a.epoch === epoch).map((a) => a.method)).toEqual(["close_epoch"]);
     const cutoff = events.find((e) => e.event === "epoch_cutoff")!;
 
-    // Indexer nyata membaca blok dari sandbox; read API melayani D9.
+    // The real indexer reads blocks from the sandbox; the read API serves D9.
     const db = openDatabase(":memory:");
     const client = new FailoverRpcClient({ endpoints: [rpcUrl] });
     const indexer = new Indexer({
@@ -108,13 +108,13 @@ describe.skipIf(!sandboxAvailable)("UM-024 F3 three agents with a real indexer a
     const apiUrl = `http://127.0.0.1:${(api.address() as AddressInfo).port}`;
     const base = `${apiUrl}/x207/circles/agents-main`;
 
-    // 01: tiga edge, edgeCount dan totalObligation sama dengan event epoch_cutoff
+    // 01: three edges, edgeCount and totalObligation equal the epoch_cutoff event
     const snapshot = (await (await fetch(`${base}/epochs/${epoch}/obligations?stage=cutoff`)).json()) as { edgeCount: number; totalObligation: string; edges: unknown[] };
     expect(snapshot.edges).toHaveLength(3);
     expect(snapshot.edgeCount).toBe(Number(cutoff.edge_count));
     expect(snapshot.totalObligation).toBe(cutoff.total_obligation);
 
-    // 02: solver nyata membaca snapshot dan mengirim submit_clearing
+    // 02: the real solver reads the snapshot and sends submit_clearing
     const solver = await fx.sandbox.createAccount("solver", "20");
     const { stdout } = await run("node", ["solver/dist/cli.js", "--epoch", String(epoch)], {
       env: {
@@ -135,7 +135,7 @@ describe.skipIf(!sandboxAvailable)("UM-024 F3 three agents with a real indexer a
     const total = (role: string) => positions.filter((p) => p.role === role).reduce((n, p) => n + BigInt(p.amount), 0n);
     expect(total("debtor")).toBe(total("creditor"));
 
-    // 04: laporan 207 setelah indexer menyusul
+    // 04: 207 report after the indexer catches up
     await catchUp(() => ['payment_window', 'finalized'].includes(phaseOf() ?? ''));
     const report = await fetch(`${base}/epochs/${epoch}`);
     expect(report.status).toBe(207);
@@ -146,7 +146,7 @@ describe.skipIf(!sandboxAvailable)("UM-024 F3 three agents with a real indexer a
     expect(row(s)).toMatchObject({ status: 202, net: "+3000000" });
     expect(row(c)).toMatchObject({ status: 202, net: "+2000000" });
 
-    // 05: net laporan sama dengan view net_position
+    // 05: report net equals the net_position view
     for (const m of [t, s, c]) {
       const position = await fx.sandbox.view<{ net: string }>(fx.circle.accountId, "net_position", { epoch, account_id: m.account.accountId });
       expect(BigInt(position.net)).toBe(BigInt(row(m).net));

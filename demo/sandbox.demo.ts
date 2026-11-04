@@ -1,9 +1,9 @@
-// UM-032: demo end-to-end satu epoch di near-sandbox. Satu perintah dari akar payung:
-//   npm run demo:sandbox            (variabel opsional: DEMO_PAYMENTS=120, DEMO_DENSITY=low|medium|high|star,
-//                                    DEMO_DEFAULT=<nama agent> agar debtor itu tidak melunasi: skenario gagal bayar AG-011)
-// Tahap: F1 join + stake enam agent, 402 dengan entri x207 dan exact (UM-033), F2 pembayaran voucher, F3 close/submit/commit
-// dengan laporan 207, F4 pelunasan residual/finalize/claim, lalu metrik dari data epoch (UM-034). Log ditulis ke .demo/.
-// Mode mainnet tidak ada di skrip ini (UM-026, UM-040 menunggu pemilik); target mainnet tidak dijalankan.
+// UM-032: end-to-end demo of one epoch on near-sandbox. One command from the umbrella root:
+//   npm run demo:sandbox            (optional variables: DEMO_PAYMENTS=120, DEMO_DENSITY=low|medium|high|star,
+//                                    DEMO_DEFAULT=<agent name> so that debtor does not repay: the AG-011 default scenario)
+// Stages: F1 join + stake of six agents, 402 with x207 and exact entries (UM-033), F2 voucher payments, F3 close/submit/commit
+// with the 207 report, F4 residual settlement/finalize/claim, then metrics from the epoch data (UM-034). The log is written to .demo/.
+// There is no mainnet mode in this script (UM-026, UM-040 wait for the owner); the mainnet target is not run.
 import { execFile } from "node:child_process";
 import { mkdirSync, writeFileSync, writeSync } from "node:fs";
 import type { AddressInfo } from "node:net";
@@ -136,7 +136,7 @@ describe("demo near-sandbox", () => {
       out(`   on-chain registration: ${ticked.registered} pairs`);
     });
 
-    // E5: pemilik (dao) menjadwalkan params untuk epoch berikutnya.
+    // E5: the owner (dao) schedules params for the next epoch.
     await send("dao.set_params", { accountId: dao.accountId, secretKey: dao.secretKey }, { receiverId: fx.circle.accountId, methodName: "set_params", args: { params: { ...SHORT_PARAMS, limit_cap: "900000000" } }, deposit: 0n });
     observed.add("E5");
 
@@ -190,7 +190,7 @@ describe("demo near-sandbox", () => {
         const member = await fx.sandbox.view<ContractAbi.MemberView>(fx.circle.accountId, "member", { account_id: identity[defaulter as (typeof AGENT_NAMES)[number]].accountId });
         out(`   ${defaulter}: status=${member.status} limit=${member.limit} stake=${member.stake}`);
         out(`   event member_defaulted: ${events.some((e) => e.event === "member_defaulted") ? "seen" : "NOT seen"}`);
-        // AG-011: voucher debtor yang suspended dikirim langsung ke /verify (klien sendiri sudah menolak karena headroom 0).
+        // AG-011: the voucher of a suspended debtor is sent straight to /verify (the client itself already refuses because headroom is 0).
         const key = identity[defaulter as (typeof AGENT_NAMES)[number]];
         const nextEpoch = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", {});
         const { signature, ...voucher } = signVoucher(
@@ -209,7 +209,7 @@ describe("demo near-sandbox", () => {
       }
     });
 
-    // Metrik dari data epoch nyata (UM-034): tidak ada angka tetap di skrip.
+    // Metrics from real epoch data (UM-034): no fixed numbers in the script.
     const metrics = await (await fetch(`${base}/epochs/${epoch}/metrics`)).json();
     out("\n== Epoch metrics");
     out(`   paid payments (vouchers): ${metrics.voucherCount}`);

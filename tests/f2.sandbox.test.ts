@@ -1,5 +1,5 @@
-// UM-023: F2 end-to-end di near-sandbox dengan kontrak, facilitator, dan enam agent nyata (kode agents/ dan sdk/).
-// 402 -> PAYMENT-SIGNATURE voucher -> registrasi ambang -> PAYMENT-RESPONSE, ratusan panggilan, dan penolakan.
+// UM-023: F2 end-to-end on near-sandbox with the contract, facilitator and six real agents (code from agents/ and sdk/).
+// 402 -> PAYMENT-SIGNATURE voucher -> threshold registration -> PAYMENT-RESPONSE, hundreds of calls, and rejections.
 import { afterAll, describe, expect, it } from "vitest";
 import { parseEventLog, signVoucher, type ContractAbi } from "@x207/core";
 import { NearRegistrationChain, RegistrationScheduler, type RegistrationChain } from "@x207/facilitator";
@@ -22,16 +22,16 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
     const summarizer = identity.summarizer;
     const epoch = await fx.sandbox.view<ContractAbi.EpochView>(fx.circle.accountId, "get_epoch", {});
 
-    // 01: tanpa header pembayaran -> 402 dengan entri batch-settlement dan extra.epoch berjalan
+    // 01: no payment header -> 402 with a batch-settlement entry and the running extra.epoch
     const challenge = await fetch(`${urls.summarizer}/api/summarize?input=halo`);
     expect(challenge.status).toBe(402);
     const accepts = decode(challenge.headers.get("PAYMENT-REQUIRED")).accepts as Array<{ scheme: string; network: string; extra: { epoch: number } }>;
     expect(accepts[0]).toMatchObject({ scheme: "batch-settlement", network: "x207:agents-main", extra: { epoch: epoch.epoch } });
 
-    // Penjadwal dengan ambang bawaan (1 credit) berjalan selama panggilan; event registrasi dihitung dari log transaksi.
+    // Scheduler with the default threshold (1 credit) runs during the calls; registration events are counted from the transaction log.
     const registrations: string[][] = [];
     const schedulerLog: unknown[] = [];
-    // Jam penjadwal bisa dimajukan (`skewMs`) untuk masuk ke jendela flush sebelum cutoff; dipakai sekali, setelah semua panggilan selesai.
+    // The scheduler clock can be advanced (`skewMs`) to enter the flush window before the cutoff; used once, after all calls have finished.
     let skewMs = 0;
     const scheduler = new RegistrationScheduler({
       circleContract: fx.circle.accountId, store: pending, log: (entry) => schedulerLog.push(entry), now: () => Date.now() + skewMs,
@@ -51,18 +51,18 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
       extensions: { x207: { registration: expect.stringMatching(/^(pending|registered)$/) } },
     });
 
-    // 03: 300 panggilan berurutan, lalu flush
+    // 03: 300 sequential calls, then flush
     for (let i = 2; i <= 300; i++) {
       const response = await paid(`${urls.summarizer}/api/summarize?input=halo`);
       expect(response.status, `call ${i}`).toBe(200);
     }
     scheduler.stop();
-    // Sisa di bawah ambang (1 credit) memang tidak didaftarkan oleh putaran biasa: ia menunggu jendela flush sebelum `cutoff_at`
-    // (Spec Binding x402 6.3). Berapa banyak yang sudah terdaftar saat panggilan berakhir bergantung pada kecepatan RPC, jadi tanpa
-    // langkah ini hasil akhir ikut tergantung pada waktu. Majukan jam penjadwal ke 60 detik sebelum cutoff, lalu tunggu semua baris lunas.
+    // A remainder below the threshold (1 credit) is deliberately not registered by the regular round: it waits for the flush window before `cutoff_at`
+    // (Binding x402 spec 6.3). How much is already registered when the calls end depends on RPC speed, so without
+    // this step the final result would depend on timing. Advance the scheduler clock to 60 seconds before the cutoff, then wait until all rows are settled.
     const cutoffMs = Number(BigInt(epoch.cutoff_at) / 1_000_000n);
     skewMs = Math.max(0, cutoffMs - 60_000 - Date.now());
-    // Putaran berkala yang masih berjalan membuat tick() berikutnya dilewati; ulangi sampai tidak ada baris terbuka.
+    // A periodic round that is still running makes the next tick() skip; repeat until no open rows remain.
     for (let i = 0; i < 60 && pending.listOpen(fx.circle.accountId).length > 0; i++) {
       await scheduler.tick();
       await new Promise((r) => setTimeout(r, 500));
@@ -73,7 +73,7 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
     const obligation = await fx.sandbox.view<ContractAbi.ObligationView>(fx.circle.accountId, "obligation", pair);
     expect(obligation).toMatchObject({ cumulative: "6000000", last_seq: 300 });
 
-    // 04: jumlah registrasi untuk pasangan itu jauh di bawah jumlah panggilan
+    // 04: the number of registrations for that pair is far below the number of calls
     const events = registrations.flatMap((logs) => logs.flatMap((l) => parseEventLog(l) ?? []));
     const forPair = events.filter(
       (e) => e.event === "voucher_registered" && (e as { payer: string; payee: string }).payer === translator.accountId && (e as { payee: string }).payee === summarizer.accountId,
@@ -81,7 +81,7 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
     expect(forPair.length).toBeLessThanOrEqual(7);
     expect(forPair.length).toBeLessThan(300 * 0.05);
 
-    // 05: kenaikan melebihi headroom -> insufficient_credit; obligation on-chain tetap
+    // 05: an increase beyond the headroom -> insufficient_credit; the on-chain obligation stays
     const voucherBody = (seq: number, cumulative: string, amount: string) => {
       const { signature, ...voucher } = signVoucher(
         { circle: fx.circle.accountId, payer: translator.accountId, payee: summarizer.accountId, epoch: epoch.epoch, seq, cumulativeAmount: cumulative, unit: "credit", resource: `${urls.summarizer}/api/summarize` },
@@ -95,11 +95,11 @@ describe.skipIf(!sandboxAvailable)("UM-023 F2 di near-sandbox", () => {
     expect(await verify(voucherBody(301, "56000000", "50000000"))).toMatchObject({ isValid: false, invalidReason: "insufficient_credit" });
     expect(await fx.sandbox.view<ContractAbi.ObligationView>(fx.circle.accountId, "obligation", pair)).toMatchObject({ cumulative: "6000000" });
 
-    // 06: seq yang sudah dipakai -> seq_not_increasing
+    // 06: a seq that was already used -> seq_not_increasing
     expect(await verify(voucherBody(300, "6000000", "20000"))).toMatchObject({ isValid: false, invalidReason: "seq_not_increasing" });
     expect(await fx.sandbox.view<ContractAbi.ObligationView>(fx.circle.accountId, "obligation", pair)).toMatchObject({ cumulative: "6000000", last_seq: 300 });
 
-    // 07: RPC registrasi mati dua kali -> retrying, voucher baru ditolak, lalu pulih
+    // 07: registration RPC down twice -> retrying, a new voucher is rejected, then recovery
     let down = 2;
     const flaky: RegistrationChain = {
       register: async (voucher, signature, mode) => {

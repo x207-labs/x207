@@ -1,4 +1,4 @@
-// UM-075: the barter catalog, 90 kinds (vault: "x207 - Katalog Aset Barter") as data for the registry D10 of the contract (`set_asset_class`).
+// UM-075: the barter catalog, 90 kinds as data for the registry D10 of the contract (`set_asset_class`).
 // `no` is the number of the row in the catalog (`X1` to `X9` for the refused kinds, which have no number there). Rows 61 to 90 are the off-chain digital assets; a row marked "condition" is lawful only when the provider or the law allows it, and its delivery method names the official channel. Class E (debts and invoices, rows 56 to 60) is not an asset of the registry and is left out.
 // The nine refused kinds of the catalog are registered as class `X`, so that `offer_grant` for them fails with `ERR_ASSET_CLASS_FORBIDDEN`.
 //

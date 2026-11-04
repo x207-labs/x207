@@ -1,9 +1,9 @@
-// UM-064 blok F8 kelas B (opsional): sewa akses akun NEAR lewat function-call key, di near-sandbox dengan kontrak, indexer, facilitator dan broker nyata.
-// Satu perintah dari akar payung:
+// UM-064 F8 class B block (optional): rent access to a NEAR account through a function-call key, on near-sandbox with a real contract, indexer, facilitator and broker.
+// One command from the umbrella root:
 //   npm run demo:classb
-// Pemberi `scraper` menawarkan sewa, penyewa `translator` menerima dengan kunci function-call miliknya dan membayar sewa sehari dengan voucher x402
-// biasa (payTo = pemberi); broker memasang key. Panggilan sah jalan, method lain dan deposit ditolak protokol NEAR. Penyewa lalu `defaulted` dan
-// broker menghapus key. Tanpa TEE (hanya kelas B) dan kelas C belum ada. Setiap langkah dicetak "do X - see Y".
+// Lender `scraper` offers a rental, tenant `translator` accepts with its own function-call key and pays a one-day rent with an ordinary x402 voucher
+// (payTo = lender); the broker installs the key. The permitted call goes through, other methods and deposits are rejected by the NEAR protocol. The tenant then `defaulted`s and
+// the broker removes the key. No TEE (class B only) and class C does not exist yet. Every step prints "do X - see Y".
 import { writeSync } from "node:fs";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -19,7 +19,7 @@ import { createAgentBuyer } from "../agents/shared/x207.ts";
 import { startStack, type Stack } from "../agents/test/stack.ts";
 import { keeperPass } from "../scripts/lib/keeper.mjs";
 
-const PRICE = "50000"; // 0.05 credit sehari, di bawah batas belanja agent (0,1 per panggilan)
+const PRICE = "50000"; // 0.05 credit per day, below the agent's spending limit (0.1 per call)
 
 describe("demo F8 class B: rent a function-call key and revoke it on default", () => {
   let stack: Stack | undefined;
@@ -125,7 +125,7 @@ describe("demo F8 class B: rent a function-call key and revoke it on default", (
     step("translator calls get_params with the key", `ok (${probe.allowed.ok})`);
     step("translator calls get_epoch (not on the list) and get_params with 1 yoctoNEAR deposit", `refused by the NEAR protocol: ${probe.otherMethod.ok ? "" : probe.otherMethod.error.split("\n")[0]} | ${probe.withFunds.ok ? "" : probe.withFunds.error.split("\n")[0]}`);
 
-    // penyewa berutang 3 credit ke image dan tidak membayar: defaulted saat epoch difinalisasi
+    // the tenant owes 3 credit to image and does not pay: defaulted when the epoch is finalized
     const epoch = (await view<ContractAbi.EpochView>("get_epoch")).epoch;
     const { signature, ...voucher } = signVoucher(
       { circle: contract, payer: id.translator.accountId, payee: id.image.accountId, epoch, seq: 1, cumulativeAmount: "3000000", unit: "credit", resource: "https://seller.example/api" },

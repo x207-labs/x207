@@ -1,13 +1,13 @@
-// UM-047: analisis statis sumber kontrak `x207-circle` (tanpa modul test): store D1..D8 mana yang ditulis tiap method ABI, termasuk lewat fungsi
-// bantu yang dipanggilnya. Ini aproksimasi atas (nama fungsi tidak dibedakan per file), jadi hasilnya dipakai untuk mencocokkan matriks CRUD,
-// bukan sebagai bukti keamanan.
+// UM-047: static analysis of the `x207-circle` contract source (without the test module): which D1..D8 stores each ABI method writes, including through the
+// helper functions it calls. This is an approximation (function names are not told apart per file), so the result is used to match the CRUD matrix,
+// not as security evidence.
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const SRC = fileURLToPath(new URL("../../contracts/x207-circle/src/", import.meta.url));
 const ABI = fileURLToPath(new URL("../../sdk/packages/core/abi/x207-circle.abi.json", import.meta.url));
 
-/** Field `X207Circle` dan penyimpanan kunci-nilai di `bundle.rs` -> store DFD. `epochs` memuat D4 (ringkasan), D6 (pool epoch) dan D7 (snapshot params). */
+/** Fields of `X207Circle` and the key-value storage in `bundle.rs` -> DFD store. `epochs` holds D4 (summary), D6 (epoch pool) and D7 (params snapshot). */
 const WRITES: Array<{ stores: string[]; field: string }> = [
   { stores: ["D1"], field: "(?:members|member_index|member_count)" },
   { stores: ["D2"], field: "(?:outstanding_debt|totals)" },
@@ -19,8 +19,8 @@ const WRITES: Array<{ stores: string[]; field: string }> = [
   { stores: ["D7"], field: "pending_params" },
 ];
 /**
- * Penyimpanan kunci-nilai di luar `X207Circle` (bundle.rs, grant.rs): dibuka lewat fungsi dan ditulis lewat variabel `let mut x = opener();` yang
- * kemudian dipakai `.insert`. Membaca saja (`opener().get(..)`) tidak dihitung.
+ * Key-value storage outside `X207Circle` (bundle.rs, grant.rs): opened through a function and written through a variable `let mut x = opener();` that
+ * is then used with `.insert`. Reads only (`opener().get(..)`) do not count.
  */
 const KEYED: Array<{ stores: string[]; opener: string }> = [
   { stores: ["D8"], opener: "(?:intents|bundles)" },
@@ -89,11 +89,11 @@ function functionBodies(text: string): Map<string, string> {
 }
 
 export type ContractWrites = {
-  /** Method ABI bertipe `call`. */
+  /** ABI methods of type `call`. */
   methods: string[];
-  /** Semua method ABI (call dan view). */
+  /** All ABI methods (call and view). */
   abi: Set<string>;
-  /** Store yang ditulis tiap method `call`, termasuk lewat fungsi bantu. */
+  /** Stores written by each `call` method, including through helper functions. */
   writes: Map<string, Set<string>>;
 };
 
@@ -115,7 +115,7 @@ export function analyseContract(): ContractWrites {
       }
     }
     direct.set(name, stores);
-    // hanya `nama(` atau `self.nama(`; `x.nama(` adalah method tipe lain dan tidak diikuti
+    // only `name(` or `self.name(`; `x.name(` is a method of another type and is not followed
     calls.set(name, new Set([...body.matchAll(/(?:^|[^.\w])(?:self\.)?([a-z_0-9]+)\s*\(/g)].map((m) => m[1]!).filter((n) => bodies.has(n) && n !== name)));
   }
   const closure = (root: string): Set<string> => {

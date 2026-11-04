@@ -5,7 +5,7 @@ const demo = readFileSync(new URL("../demo/sandbox.demo.ts", import.meta.url), "
 
 describe("UM-034 demo metrics from epoch data", () => {
   it("TC-UM-034-03 script contains no fixed output numbers", () => {
-    // Kalimat ringkasan dan semua angka metrik berasal dari respons /metrics dan DB indexer.
+    // The summary sentence and all metric numbers come from the /metrics response and the indexer DB.
     expect(demo).toMatch(/\$\{metrics\.voucherCount\} payments became \$\{metrics\.residualTransfers\}/);
     expect(demo).not.toMatch(/payments became \d/);
     expect(demo).not.toMatch(/out\(`[^`]*:\s*\d+\s*`\)/);

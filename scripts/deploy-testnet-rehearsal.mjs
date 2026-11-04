@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// UM-032: deploy kontrak gladi testnet dengan params pendek (epoch 5 menit) ke akun faucet, bukan akun deployer bersama.
+// UM-032: deploy the testnet rehearsal contract with short params (5-minute epoch) to a faucet account, not the shared deployer account.
 //   node scripts/deploy-testnet-rehearsal.mjs --keys-dir .keys --circle x207r-circle.testnet --usdt x207r-usdt.testnet --owner x207r-deploy.testnet [--epoch-length 600]
-// Hanya testnet. Kunci dibaca dari <keys-dir>/testnet/<akun>.json dan tidak dicetak. Mengulang tidak men-deploy ulang akun yang sudah memuat kode.
+// Testnet only. Keys are read from <keys-dir>/testnet/<account>.json and never printed. Repeating does not redeploy an account that already holds code.
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";

@@ -1,7 +1,7 @@
-// UM-055 dan AG-013 (F5, ADR-38): tiga agent translator -> summarizer -> scraper -> translator memasang intent offer/need, solver menemukan cincin,
-// ketiganya menandatangani terms_hash, bundle di-commit, setiap leg dibayar dengan voucher F2 yang membawa bundle_id (SD-048) sampai leg penuh,
-// lalu kliring F3 menghapus ketiga leg dan laporan 207 menunjukkan residual nol (status 200) untuk ketiganya. Kontrak, facilitator, indexer,
-// read API dan buku marketplace, solver, dan keeper nyata di near-sandbox.
+// UM-055 and AG-013 (F5, ADR-38): three agents translator -> summarizer -> scraper -> translator post offer/need intents, the solver finds the ring,
+// all three sign terms_hash, the bundle is committed, every leg is paid with F2 vouchers that carry bundle_id (SD-048) until the leg is full,
+// then F3 clearing removes all three legs and the 207 report shows zero residual (status 200) for all three. Real contract, facilitator, indexer,
+// read API and marketplace book, solver and keeper on near-sandbox.
 import { execFile } from "node:child_process";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -61,7 +61,7 @@ describe.skipIf(!sandboxAvailable)("UM-055 barter bundle: three intents, commit,
     };
     const count = (sql: string) => Number((db.prepare(sql).get() as { n: number }).n);
     await catchUp(() => count("select count(*) as n from members where status = 'active'") >= 6);
-    // Catatan: tabel epochs baru terisi saat close_epoch, jadi buku tidak tahu epoch open dan agent tidak memeriksa epoch (openEpoch null).
+    // Note: the epochs table is only filled at close_epoch, so the book does not know the open epoch and the agents do not check the epoch (openEpoch null).
 
     // 1. intent: tiga agent memasang offer/need ke buku
     const book = new BookClient({ baseUrl: apiUrl, circleId: "agents-main" });
@@ -73,7 +73,7 @@ describe.skipIf(!sandboxAvailable)("UM-055 barter bundle: three intents, commit,
     const open = await loadOpenIntents({ readApiUrl: apiUrl, circle: "agents-main" });
     expect(open).toHaveLength(3);
 
-    // 2. solver: cincin dan tanda tangan semua peserta atas terms_hash
+    // 2. solver: ring and the signatures of all participants on terms_hash
     const epoch = (await fx.sandbox.view<ContractAbi.EpochView>(contract, "get_epoch", {})).epoch;
     const [cycle] = findIntentCycles(open);
     expect(cycle!.members.map((m) => m.account)).toHaveLength(3);
@@ -85,7 +85,7 @@ describe.skipIf(!sandboxAvailable)("UM-055 barter bundle: three intents, commit,
     expect(collected).not.toBeNull();
     expect(termsHash(collected!.terms)).toBe(hash);
 
-    // 3. commit_bundle dari akun solver; bundle_id dari event
+    // 3. commit_bundle from the solver account; bundle_id from the event
     const committed = await fx.sandbox.accountFrom(solver.accountId, solver.secretKey).call(
       {
         receiverId: contract, methodName: "commit_bundle", deposit: 0n, gas: 200_000_000_000_000n,
@@ -100,7 +100,7 @@ describe.skipIf(!sandboxAvailable)("UM-055 barter bundle: three intents, commit,
     // facilitator membaca blok final: tunggu bundle terlihat sebelum membayar leg
     for (let i = 0; i < 60 && !(await stack.rpc.view(contract, "get_bundle", { bundle_id: bundleId })); i++) await new Promise((r) => setTimeout(r, 1_000));
 
-    // 4. leg: setiap pembeli membayar penyedia berikutnya dengan voucher membawa bundle_id sampai leg penuh
+    // 4. legs: each buyer pays the next provider with vouchers carrying bundle_id until the leg is full
     const pairs = new Set(terms.legs.map((l) => `${l.payer}>${l.payee}`));
     const bundleFor = (buyer: string) => (payee: string, e: number) => (e === epoch && pairs.has(`${buyer}>${payee}`) ? bundleId : undefined);
     const buyers = Object.fromEntries(RING_MEMBERS.map((n) => [n, createAgentBuyer(identity[n], { rpcUrls: [rpcUrl], bundleFor: bundleFor(identity[n].accountId) })]));
@@ -115,7 +115,7 @@ describe.skipIf(!sandboxAvailable)("UM-055 barter bundle: three intents, commit,
       expect(edge.cumulative, `${leg.payer} -> ${leg.payee}`).toBe(String(LEG_AMOUNT));
     }
 
-    // 5. kliring F3: close_epoch, solver, commit_epoch
+    // 5. F3 clearing: close_epoch, solver, commit_epoch
     const pass = () =>
       keeperPass({
         view: (m: string, a: object) => fx.sandbox.view(contract, m, a),
@@ -150,7 +150,7 @@ describe.skipIf(!sandboxAvailable)("UM-055 barter bundle: three intents, commit,
     expect((await pass()).filter((a) => a.epoch === epoch).map((a) => a.method)).toEqual(["commit_epoch"]);
     await catchUp(() => ["payment_window", "finalized"].includes(phaseOf() ?? ""));
 
-    // 6. laporan 207: residual nol, status 200 untuk A, B, C; leg terhapus penuh
+    // 6. 207 report: zero residual, status 200 for A, B, C; legs fully removed
     const report = await fetch(`${base}/epochs/${epoch}`);
     const body = (await report.json()) as { cleared: string; members: Array<{ account: string; status: number; net: string; settlement: string | null }> };
     expect(BigInt(body.cleared)).toBe(BigInt(3 * LEG_AMOUNT));

@@ -1,6 +1,6 @@
-// UM-047: docs/crud-matrix.md cocok dengan implementasi. Tiap sel C atau U dengan method kontrak harus ditulis oleh method itu (analisis statis
-// sumber kontrak, tests/support/contract-writes.ts), tiap nama method dan event di sel harus ada di ABI 0.0.4 atau skema event, dan sel D9 harus
-// punya handler indexer. Selisih yang diputuskan ada di DECIDED di bawah, dengan alasannya.
+// UM-047: docs/crud-matrix.md matches the implementation. Every C or U cell with a contract method must be written by that method (static analysis of the
+// contract source, tests/support/contract-writes.ts), every method and event name in a cell must exist in the 0.0.4 ABI or the event schema, and every D9 cell must
+// have an indexer handler. Decided differences are in DECIDED below, with their reasons.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -11,7 +11,7 @@ const doc = readFileSync(root("docs/crud-matrix.md"), "utf8");
 const events = readFileSync(root("sdk/packages/core/src/events.ts"), "utf8");
 const contract = analyseContract();
 
-// Baris tabel "What each cell means": `| P1 / D1 | operasi | method atau event | status |`.
+// Rows of the "What each cell means" table: `| P1 / D1 | operation | method or event | status |`.
 type Cell = { process: string; stores: string[]; methods: string[] };
 const cells: Cell[] = doc
   .split("\n")
@@ -27,7 +27,7 @@ const letters = (process: string, store: string): string[] => {
   return row.split("|").slice(2, -1)[Number(store.slice(1)) - 1]!.trim().split(/\s+/).filter(Boolean);
 };
 
-// Selisih antara matriks dan sumber kontrak yang sudah diputuskan: sel -> alasan.
+// Decided differences between the matrix and the contract source: cell -> reason.
 const DECIDED: Record<string, string> = {
   "P5/D1": "The bundle headroom reservation is kept in a separate key-value store (`reserves()` in bundle.rs), not in the Member row; `headroom` subtracts it. The cell stays U because the limit the member reads changes, but the write is not to D1.",
   "P3/D9": "D9 is written by the indexer in the backend, not the contract; an R cell means the solver reads a snapshot from the read API.",
@@ -41,8 +41,8 @@ describe("UM-047 the CRUD matrix matches the implementation", () => {
     expect(cells.length).toBeGreaterThanOrEqual(20);
     const unknown: string[] = [];
     for (const cell of cells) for (const name of cell.methods) if (!knownName(name) && !["near", "intents"].includes(name)) unknown.push(`${cell.process}/${cell.stores[0]}: ${name}`);
-    // nama yang bukan method atau event kontrak: handler indexer, view status, istilah tabel
-    const outside = unknown.filter((u) => !/ (epoch_cutoff|settle)$/.test(u)); // `settle` adalah nilai `action` di `msg` ft_on_transfer
+    // names that are not contract methods or events: indexer handlers, status views, table terms
+    const outside = unknown.filter((u) => !/ (epoch_cutoff|settle)$/.test(u)); // `settle` is a value of `action` in the `msg` of ft_on_transfer
     expect(outside, "names in the matrix that are not in the ABI or events").toEqual([]);
   });
 
@@ -53,11 +53,11 @@ describe("UM-047 the CRUD matrix matches the implementation", () => {
         const l = letters(cell.process, store);
         if (!l.some((x) => x === "C" || x === "U") || store === "D9") continue;
         const callMethods = cell.methods.filter(isCall);
-        if (callMethods.length === 0) continue; // sel yang hanya menyebut view atau event
+        if (callMethods.length === 0) continue; // cell that only mentions a view or an event
         const key = `${cell.process}/${store}`;
         const wrote = callMethods.some((m) => {
           const stores = contract.writes.get(m)!;
-          // `epochs` memuat D4, D6 dan D7: D7 hanya dihitung bila method itu close_epoch atau set_params
+          // `epochs` holds D4, D6 and D7: D7 only counts when that method is close_epoch or set_params
           if (store === "D7") return m === "set_params" || m === "close_epoch";
           return stores.has(store);
         });
@@ -78,7 +78,7 @@ describe("UM-047 the CRUD matrix matches the implementation", () => {
     const named = new Map<string, Set<string>>();
     for (const cell of cells) for (const m of cell.methods) for (const s of cell.stores) (named.get(m) ?? named.set(m, new Set()).get(m)!).add(s);
     const undocumented: string[] = [];
-    // method yang mengelola kontrak sendiri (upgrade, migrasi) atau hanya menutup callback tidak punya sel sendiri
+    // methods that manage the contract itself (upgrade, migration) or only close a callback have no cell of their own
     const skip = new Set(["apply_upgrade", "propose_upgrade", "migrate", "new", "claim_solver_fee", "on_claim_resolved", "on_withdraw_resolved", "on_solver_fee_resolved", "admit_member"]);
     for (const [method, stores] of contract.writes) {
       if (skip.has(method)) continue;
@@ -95,7 +95,7 @@ describe("UM-047 the CRUD matrix matches the implementation", () => {
     for (const method of ["offer_grant", "accept_grant", "revoke_grant"]) expect([...contract.writes.get(method)!], method).toContain("D11");
     expect(methodsOf("P7", "D10")).toContain("set_asset_class");
     expect([...contract.writes.get("set_asset_class")!]).toEqual(["D10"]);
-    // P9 hanya membaca D10 dan D5; D2 dan D3 ditulis lewat registrasi voucher, bukan oleh method F8
+    // P9 only reads D10 and D5; D2 and D3 are written through voucher registration, not by F8 methods
     expect(letters("P9", "D10")).toEqual(["R"]);
     expect(letters("P9", "D5")).toEqual(["R"]);
     expect(letters("P9", "D11")).toEqual(["C", "R", "U"]);

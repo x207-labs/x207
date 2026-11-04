@@ -1,5 +1,5 @@
-// UM-032: langkah F5 dari demo/network.demo.ts (demo/barter-step.ts) dijalankan terhadap near-sandbox dengan kontrak, facilitator dan penjadwal registrasi
-// nyata. Membuktikan urutan yang dipakai demo jaringan: cincin dibayar lebih dulu, lalu pembayaran F2 biasa pada pasangan yang sama tetap diterima.
+// UM-032: the F5 step of demo/network.demo.ts (demo/barter-step.ts) run against near-sandbox with a real contract, facilitator and registration scheduler.
+// Proves the order used by the network demo: the ring is paid first, then an ordinary F2 payment on the same pair is still accepted.
 import { afterAll, describe, expect, it } from "vitest";
 import type { ContractAbi, ContractCall } from "@x207/core";
 import { createAgentBuyer } from "../agents/shared/x207.ts";
@@ -60,7 +60,7 @@ describe.skipIf(!sandboxAvailable)("UM-032 network demo step F5 on near-sandbox"
     const stored = await fx.sandbox.view<ContractAbi.BundleView>(contract, "get_bundle", { bundle_id: result.bundleId });
     expect(stored.legs.map((l) => l.registered)).toEqual(result.terms.legs.map(() => String(LEG_AMOUNT)));
 
-    // urutan demo jaringan: F2 biasa sesudah cincin, pada pasangan yang sama dan tanpa bundleId
+    // network demo order: ordinary F2 after the ring, on the same pair and without bundleId
     const [leg] = result.terms.legs;
     const buyer = (Object.keys(accounts) as Array<keyof typeof accounts>).find((n) => accounts[n] === leg!.payer)!;
     const seller = (Object.keys(accounts) as Array<keyof typeof accounts>).find((n) => accounts[n] === leg!.payee)!;

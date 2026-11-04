@@ -1,6 +1,6 @@
-// UM-032: langkah F5 (cincin barter) dari demo jaringan, dipisah supaya test sandbox menjalankan kode yang sama (tests/network-barter.sandbox.test.ts).
-// Tiga agent menandatangani `terms_hash`, akun solver memanggil `commit_bundle`, lalu tiap leg dibayar dengan voucher ber-`bundleId`.
-// Langkah ini harus berjalan sebelum pembayaran F2 pada pasangan yang sama: verifikasi menolak leg bila kumulatif melewati `max_amount`.
+// UM-032: the F5 step (barter ring) of the network demo, split out so the sandbox test runs the same code (tests/network-barter.sandbox.test.ts).
+// Three agents sign `terms_hash`, the solver account calls `commit_bundle`, then every leg is paid with vouchers that carry a `bundleId`.
+// This step must run before the F2 payments on the same pair: verification rejects a leg when the cumulative amount passes `max_amount`.
 import { signBundle, termsHash, type BundleTerms, type CircleViewFn, type ContractCall } from "@x207/core";
 import { LEG_AMOUNT, RING_MEMBERS, payLegs } from "../agents/scenario/ring.ts";
 import type { AgentIdentity } from "../agents/shared/identity.ts";
@@ -9,7 +9,7 @@ import { createAgentBuyer } from "../agents/shared/x207.ts";
 
 export type BarterStepOptions = {
   view: CircleViewFn;
-  /** Mengirim satu panggilan kontrak dari akun solver dan mengembalikan nilai suksesnya (`bundle_id`). */
+  /** Sends one contract call from the solver account and returns its success value (`bundle_id`). */
   send: (call: ContractCall) => Promise<unknown>;
   rpcUrl: string;
   contract: string;
@@ -29,7 +29,7 @@ export async function runBarterRing(o: BarterStepOptions): Promise<BarterStepRes
   const { view, contract, epoch, accounts, identity, urls, log } = o;
   const sleep = o.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   log(`== F5 barter bundle (epoch ${epoch}, ring ${RING_MEMBERS.join(" -> ")})`);
-  // get_bundle ada sejak antarmuka 0.0.4; kontrak lama menolak panggilan view itu, jadi langkah dilewati.
+  // get_bundle exists since interface 0.0.4; an old contract rejects that view call, so the step is skipped.
   const supported = await view("get_bundle", { bundle_id: 1 }).then(() => true, () => false);
   if (!supported) {
     log(`   skipped: ${contract} has no get_bundle yet (interface before 0.0.4). Set CIRCLE_CONTRACT to a 0.0.4 address.`);
@@ -48,7 +48,7 @@ export async function runBarterRing(o: BarterStepOptions): Promise<BarterStepRes
     await o.send({ receiverId: contract, methodName: "commit_bundle", args: { bundle: { epoch, legs }, signatures }, deposit: 0n, gas: 200_000_000_000_000n }),
   );
   log(`   bundle ${bundleId} committed`);
-  // facilitator membaca blok final: tunggu bundle terlihat sebelum membayar leg
+  // The facilitator reads the final block: wait until the bundle is visible before paying the leg
   for (let i = 0; i < 60 && !(await view("get_bundle", { bundle_id: bundleId })); i++) await sleep(1_000);
   const pairs = new Set(legs.map((l) => `${l.payer}>${l.payee}`));
   const buyers = Object.fromEntries(

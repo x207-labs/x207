@@ -2,7 +2,7 @@
 
 Status: built and run in `near-sandbox`. Not run on testnet or mainnet: the owner of a circle there is a Sputnik DAO, which has no key, so each entry needs a DAO proposal (see "Owner" below).
 
-The barter catalog of the vault ("x207 - Katalog Aset Barter", 90 kinds) is data in [scripts/lib/asset-catalog.mjs](../scripts/lib/asset-catalog.mjs). `scripts/register-asset-classes.mjs` writes it into the registry D10 of the circle contract with `set_asset_class` and then reads the registry back.
+The barter catalog of the design notes (90 kinds) is data in [scripts/lib/asset-catalog.mjs](../scripts/lib/asset-catalog.mjs). `scripts/register-asset-classes.mjs` writes it into the registry D10 of the circle contract with `set_asset_class` and then reads the registry back.
 
 ## What is registered
 | Part | Rows | Class | Entries |

@@ -1,5 +1,5 @@
-// AG-009 TC-04 dan AG-010: skenario padat enam agent per tingkat kepadatan, satu epoch per tingkat, lalu solver nyata,
-// keeper, dan metrik backend. Tingkat "medium" memakai 300 pembayaran (skenario dasar AG-009).
+// AG-009 TC-04 and AG-010: dense scenario of six agents per density level, one epoch per level, then the real solver,
+// keeper, and backend metrics. The "medium" level uses 300 payments (the AG-009 base scenario).
 import { execFile } from "node:child_process";
 import type { AddressInfo } from "node:net";
 import type { Server } from "node:http";
@@ -105,13 +105,13 @@ describe.skipIf(!sandboxAvailable)("AG-010 density variation and AG-009 TC-04", 
       const metrics = await (await fetch(`${base}/epochs/${epoch}/metrics`)).json();
       const local = summarize(snapshot.edges, cleared);
       results.set(level, { local, metrics });
-      // TC-AG-010-02: ringkasan skrip sama dengan metrik backend
+      // TC-AG-010-02: the script summary equals the backend metrics
       expect(metrics.clearedRatio, level).toBe(local.clearedRatio === 0 ? 0 : local.clearedRatio);
       expect(metrics.graph.density, level).toBe(local.density);
       console.log(`DENSITY ${level} cleared_ratio=${local.clearedRatio} density=${local.density} transfer_savings=${metrics.transferSavings}`);
     }
 
-    // TC-AG-009-04: tingkat medium (300 pembayaran) menghasilkan cleared > 0
+    // TC-AG-009-04: medium level (300 payments) gives cleared > 0
     expect(BigInt(results.get("medium")!.metrics.cleared)).toBeGreaterThan(0n);
     // TC-AG-010-03
     const ratio = (l: Density) => results.get(l)!.local.clearedRatio ?? 0;

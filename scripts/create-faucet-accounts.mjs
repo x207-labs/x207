@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// UM-009/UM-032: buat akun testnet lewat faucet (near-cli-rs `sponsor-by-faucet-service`), bukan dari akun deployer.
-// Kunci disimpan di <keys-dir>/testnet/<akun>.json (mode 0600, format scripts/create-accounts.mjs); tidak pernah dicetak.
+// UM-009/UM-032: create testnet accounts through the faucet (near-cli-rs `sponsor-by-faucet-service`), not from the deployer account.
+// Keys are stored in <keys-dir>/testnet/<account>.json (mode 0600, format of scripts/create-accounts.mjs); never printed.
 //   node scripts/create-faucet-accounts.mjs --keys-dir .keys acc1.testnet acc2.testnet ...
-// Mengulang aman: akun yang sudah ada dilewati. Hanya testnet.
+// Safe to repeat: accounts that already exist are skipped. Testnet only.
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
@@ -27,7 +27,7 @@ for (const accountId of accounts) {
     console.log(`exists ${accountId}`);
     continue;
   }
-  // Faucet punya batas per klien; sub-akun `<nama>.<induk>.testnet` dibuat oleh induknya (2 NEAR) bila kuncinya ada di keys-dir.
+  // The faucet has a per-client limit; a sub-account `<name>.<parent>.testnet` is created by its parent (2 NEAR) when its key is in keys-dir.
   const labels = accountId.replace(/\.testnet$/, "").split(".");
   if (labels.length > 1) {
     const parentId = `${labels.slice(1).join(".")}.testnet`;

@@ -1,10 +1,10 @@
-// UM-048: bukti spike kunci diulang dengan kode produk, bukan kode spike (`spikes/run_spikes.py`). Hanya baca, tanpa kunci, tanpa transaksi,
-// tanpa dana: view di RPC mainnet publik dan quote 1Click dry. Opt-in karena memakai jaringan nyata:
+// UM-048: the key spike evidence repeated with product code, not spike code (`spikes/run_spikes.py`). Read only, no keys, no transactions,
+// no funds: views on the public mainnet RPC and a 1Click dry quote. Opt-in because it uses the real network:
 //   X207_LIVE_PROBES=1 npx vitest run tests/spike-probes.live.test.ts
-// Hasil terakhir yang dilihat (2026-11-02) ada di docs/traceability.md: S2.7 dan S11.5 lulus, S4.3 gagal karena 1Click menjawab "Quoting for this pair is not available". Probe lain di spike yang butuh transaksi atau dana mainnet tidak termasuk (UM-027).
+// The last result seen (2026-11-02) is in docs/traceability.md: S2.7 and S11.5 pass, S4.3 fails because 1Click answers "Quoting for this pair is not available". Other spike probes that need a transaction or mainnet funds are not included (UM-027).
 import { describe, expect, it } from "vitest";
 import { INTENTS_CONTRACT, OneClickClient, parseAppFees, rpcViewFunction, simulateIntents } from "../backend/src/settlement/index.ts";
-// @ts-expect-error skrip .mjs tanpa tipe: konstanta pabrik Sputnik DAO yang dipakai skrip proposal produk
+// @ts-expect-error untyped .mjs script: the Sputnik DAO factory constant used by the product's proposal script
 import { DEFAULT_FACTORY } from "../contracts/dao/lib.mjs";
 
 const live = process.env.X207_LIVE_PROBES === "1";
