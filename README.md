@@ -137,6 +137,42 @@ Reporting and indexing (P8, M6 and M8) cut across all features. Module IDs M1–
 
 ## 4. Try it: do X - see Y
 
+### Try it in 2 minutes
+
+Everything here is read-only and needs no account or key.
+
+1. **Dashboard:** <https://x207-dashboard.vercel.app> opens on the newest finalized epoch of the testnet circle: members, obligation graph, clearing statistics, risk.
+2. **Read API** (the same data as JSON, circle `agents-main` on `x207-v013.testnet`):
+
+   ```bash
+   curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs
+   curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs/2/metrics
+   ```
+
+   The first call lists the epochs and their phases. The second gives the clearing result of epoch 2 (210 obligations, cleared ratio, residual transfers).
+3. **Ask Claude about the circle** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is not on npm yet, so build it from this checkout once (`npm ci && npm run build --workspaces --if-present`), then add this to `claude_desktop_config.json` and restart Claude Desktop:
+
+   ```json
+   {
+     "mcpServers": {
+       "x207": {
+         "command": "node",
+         "args": ["/path/to/this/checkout/sdk/packages/mcp/dist/cli.js"],
+         "env": {
+           "X207_CIRCLE_CONTRACT": "x207-v013.testnet",
+           "X207_CIRCLE_ID": "agents-main",
+           "X207_BACKEND_URL": "https://x207-backend-production.up.railway.app"
+         }
+       }
+     }
+   }
+   ```
+
+   Then ask, for example, "Give me the overview of the x207 circle and the report of epoch 2". The tools and the write tools that stay off are listed in [sdk/packages/mcp/README.md](sdk/packages/mcp/README.md).
+4. **The contract that runs it:** release [v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13), wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (the code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`, the same bytes in base58), `abi-v0.0.13.json` sha256 `c94a2955deab7b082d2e9f1ab396dae14b0323a4c12266fa09f43f1ca0a3bb53`. The next section shows how to read the contract on chain and the transactions of a full epoch.
+
+The hosted read API and the dashboard are there for the judging period. If they are down, [Run the sandbox demo](#run-the-sandbox-demo) runs the same cycle locally.
+
 ### Run the sandbox demo
 
 The demo runs one epoch against a local `near-sandbox` node: a real `x207-circle` contract, six agents, the facilitator, the indexer and read API, the solver and a keeper.
