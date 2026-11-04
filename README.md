@@ -718,6 +718,24 @@ The term is the teacher's: x207 sells the license and proves who paid, and the e
 
 Promotional cloud credit is usually not transferable, and a provider can end a project that lends it out. The catalog entry therefore reads "lawful only when the provider allows it", and the rent is a membership under the grantor's own account, with the admin token staying on the machine of the broker.
 
+### Own work and own anonymised data block (pipeline P7, #82 and #89)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/own-content.sandbox.test.ts   # real contract and indexer; about two minutes
+```
+
+The file license of the block above (UM-088) serves two more catalog items without a new route: #82 an article, photo, video or design that the seller made (`content:own-work`, license `own-work`) and #89 data of the seller that has been anonymised (`data:own-anonymized`). x207 never holds the file: the seller encrypts it, the voucher of the buyer is held by the backend, the key is sealed to the buyer, and the buyer checks the hash of the file before it confirms.
+
+| Do | See |
+| --- | --- |
+| `seller` lists an article (15 credit) with the license `own-work`; `buyer` pays, `seller` releases the key, `buyer` opens the file and confirms | `confirmed`; the voucher is registered and the pair holds 15 credit |
+| `seller` lists an exclusive license of a photo (20 credit); `buyer` pays; `second` tries to buy the same exclusive license | The second purchase is refused; the first is confirmed and registered (35 credit) |
+| `seller` lists a dataset whose preview has an e-mail address | The book refuses the listing: `preview_contains_pii` (the scan finds e-mail, identity number, phone, card number, IBAN; it answers the kinds, never the matches) |
+| The same dataset with a preview of aggregate figures | Listed, sold and registered (60 credit in all) |
+| `seller` lists a dataset but the file it delivers is another one | The SDK of `second` proves it, the purchase is `disputed`, no voucher leaves, the pair holds 0 |
+
+What this block does not show: the anonymisation itself (x207 cannot tell whether a file is anonymous; the scan covers the preview only, and it finds common shapes, not every personal datum), the rights of the seller over the work (a takedown claim has its own test), and the content of the file when the buyer opens it.
+
 ### Access rent block (pipeline P2)
 
 ```bash
