@@ -73,7 +73,7 @@ The sandbox circle is dense on purpose (ADR-16). These are properties of the mec
 - Contract `x207-circle` (stake, vouchers, clearing, residual settlement, default, DAO `set_params`, barter bundles) with tests in near-sandbox.
 - Binding `x207:<circleId>` for x402, a reference facilitator, a solver, a keeper and an indexer with the 207 report.
 - Six demo agents, a dashboard, a marketplace of listings and negotiation, a seeker that earns a share, business and invoice demos.
-- Tests: contract and sandbox suites run locally; GitHub CI has not run yet (`docs/traceability.md`).
+- Tests: contract and sandbox suites run locally; the repositories run them in GitHub CI (see the Actions tab of each repository).
 
 ---
 

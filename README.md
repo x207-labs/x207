@@ -57,10 +57,14 @@ x207 is built as a binding of the x402 `batch-settlement` scheme on the network 
 | --- | --- | --- | --- | --- |
 | x207 | Yes. Cycles across all members are removed in one transaction, and the contract checks the proposal in O(n). | Yes. The limit comes from stake and cash settlement history. In the hackathon version `limit ≤ stake`. | Yes. Any solver can submit, and the proposal with the largest cleared total is kept. | Residuals leave to other chains through NEAR Intents and 1Click. |
 | 4Mica | Bilateral. Its docs mention aggregating many participants without detail. | No. Credit is backed by collateral. | Not documented. | Base mainnet and test networks when we checked. |
-| x402 `batch-settlement` | No. One buyer to one seller. | No. The capital-backed model uses escrow or channels. | No. There is no clearing step. | Chains that have a binding. NEAR had no facilitator when we checked. |
+| x402 `batch-settlement` | No. One buyer to one seller. | No. The capital-backed model uses escrow or channels. | No. There is no clearing step. | Chains that have a binding. On NEAR, `fastnear/x402-facilitator` is live for `exact` (one payment per call); we found no `batch-settlement` binding for NEAR. |
 | AgentPay Barter | No. A swap between two parties. | No. Both sides deposit first. | No. | Base only. |
 | Central clearing (Sardex, human brokers) | Yes, run by the operator. | Yes. | No. The operator clears. | Not applicable. It is a closed ledger of one operator. |
-| Competitors locked to one network | None found in our research that clears many parties. | Varies: collateral, prepaid credit, or lender underwriting. | No. | One network each. |
+| ACH (`NSEVEjk0/ach`, NEAR testnet) | Yes. Agents register debts in a contract, which computes the net positions of all open obligations and settles them in one atomic call. | A credit limit and a collateral ratio set by the owner; disputes are resolved by the owner. | No separate solver: the contract does the netting itself. | NEAR. |
+| Loca (`redaicodes/loca`, NEAR) | No clearing. It is a credit line for agents: lenders fund offers against orders that a customer already paid into escrow. | Yes, lender-underwritten, with an on-chain score and an operator bond. | No. | NEAR, with 1Click for payment from other chains. |
+| Other competitors locked to one network | None found in our research that clears many parties beyond ACH. | Varies: collateral, prepaid credit, or lender underwriting. | No. | One network each. |
+
+The rows for ACH and Loca come from their public READMEs, read on 2026-11-04. We did not run their code. The difference to x207 is what each row says: x207 proves each debt with a signed voucher, lets any solver propose the clearing, checks the proposal in the contract, and grows a credit limit from cash settlement history inside the bound `limit ≤ stake`.
 | Proprietary schemes (for example `4mica-credit`) | Not specified publicly. | Not specified publicly. | Not specified publicly. | Per vendor network. |
 
 x207 is the binding of the official `batch-settlement` scheme on a new network, `x207:<circleId>`. It does not define a new scheme.
@@ -94,6 +98,10 @@ The mechanism has been measured outside agents. Fleischman, Dini and Littera (JR
 These are results of other researchers on human firms, not results of x207. The simulation forced 100% participation.
 
 ### FAQ
+
+**Why not just net positions?** Net positions tell each member its balance, but they are not a settlement. A balance sheet has no proof of each debt (here every debt is a cumulative voucher signed by the payer), no bound on how much a member can owe (here `limit ≤ stake`), and no rule for who pays whom or for a member that does not pay (here the residual settlement, the payment window and the stake cut at default). Clearing removes cycles and leaves every net position unchanged; the contract checks that on the proposal, and `edges_hash` binds the proposal to the obligations it cleared.
+
+**How does x207 relate to the fastnear x402 facilitator?** fastnear settles each call on NEAR. x207 settles the whole circle. They fit together: a seller advertises the x207 entry next to an `exact` entry in the same 402 answer, and a buyer outside the circle pays with `exact` through any facilitator that supports NEAR, fastnear's included.
 
 **Why not 4Mica?** 4Mica nets between two parties, and its credit is backed by collateral. x207 clears across many parties, and its limit grows from cash settlement history. 4Mica could add multi-party aggregation later. Its scheme `4mica-credit` has no public spec, while x207 follows the official `batch-settlement` scheme.
 
@@ -295,7 +303,7 @@ Check an epoch with the full 15 x 14 = 210 edge graph on [nearblocks](https://te
 | `commit_epoch` | `8xcQqNZXhPNHgAukL4B42n8CMTXmEqx9BRmawH1XL1pb` |
 | `finalize_epoch` | `DTXTVJaK55Pfubgh7215o3LtUAJPwb9TQu4NHSaJTtqi` |
 
-The deploy steps and the wasm hash are in [docs/testnet-0.0.13.json](docs/testnet-0.0.13.json); the contract code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`.
+The gas and the cost of every call, each with the transaction hash it was measured on, are in [contracts/docs/gas-and-cost.md](contracts/docs/gas-and-cost.md). The deploy steps and the wasm hash are in [docs/testnet-0.0.13.json](docs/testnet-0.0.13.json); the contract code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`.
 
 Print the plan of the end-to-end demo against this circle (sends nothing):
 
@@ -421,6 +429,25 @@ A license key (item 28, issuer `licenses.example`) and a game or activation key 
 | A key bound to an account or a region (`identity_bound`) is listed | `code_bound_to_identity` at the listing: nothing is in the book (such a key stays class X) |
 
 Keys, salts and file keys are in no table of the read model and in no console line; the test searches for them. Not shown: a real issuer (a mock ran), and a publisher that forbids resale (the seller must check the terms of the publisher).
+
+#### Promo codes and digital store gift cards (items 76 and 77, UM-101)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/codes-promo.sandbox.test.ts           # same pattern, about one minute
+```
+
+A store gift card (item 77, issuer `store.example`) has a face value and a balance at its issuer; a promo or voucher code (item 76, issuer `promo.example`) has an end date at its issuer. Both are sold once as a `secret_release`, and the issuer is asked before the key leaves the seller.
+
+| Do | See |
+| --- | --- |
+| `buyer` buys a gift card with a balance of 5 credit for 4 credit | `paid_held`, no voucher in the answer, the pair holds 0 |
+| The seller releases the key | The backend asked the issuer once and the balance covered the face value; the balance is not touched by the handover |
+| The buyer spends the card at the store and confirms | The balance is now 0; only now the voucher is in the answer, the seller registers it, the pair holds 4 credit |
+| A card whose balance went to 0 after it was listed is sold to `second` | `code_used`: refused before the handover, `cancelled`, no key, no payment, the pair holds 0 |
+| `buyer` buys a promo code that is still good (3 credit) | The voucher continues from the registered one; after the buyer redeems it the pair holds 7 credit |
+| A promo code whose end date passes between the purchase and the handover | `code_unknown`: the issuer does not know it any more; refused, `cancelled`, no key, no payment |
+
+Codes, salts and file keys are in no table of the read model and in no console line; the test searches for them. Not shown: a real store or promo issuer (a mock ran), and a promo code that is bound to the account of its first holder (such a code is not sold: `code_bound_to_identity`, see the block above).
 
 ### Platform transfer block (ADR-49)
 
@@ -631,7 +658,7 @@ The contract does not change: the units live in the SDK, the listing and the vou
 | Clearing of a large proposal (more than 210 edges) | The failure is measured (CT-098): `commit_epoch` does not fit the log of one receipt. The fix of interface 0.0.13 (CT-099) is partly built: golden vector, SDK parser and hashes, indexer. Not built: the contract change | Not run | A circle whose clearing needs more than about 210 edges can stall until 0.0.13 is deployed (the benchmark: 50 members with 732 obligations give a solution of 651 edges); and a large dense circle clears only a fraction per epoch (300 edges per transaction) |
 | NEAR AI inference for agents | Mock mode (ADR-33) | Not run | Waits for the account top-up |
 
-The whole set of sandbox tests (`npm run test:integration`, among them `e2e`, `barter`, `marketplace`, `broker-class-b`, `broker-class-c` and `escrow-d9`) can also run on GitHub: the workflow `.github/workflows/e2e-sandbox.yml` runs on a manual dispatch and on every push to `main`. It builds the contract, the mock token and the near-sandbox binary on the runner and runs the files one at a time. That workflow has not run yet; this README cites no CI result.
+The whole set of sandbox tests (`npm run test:integration`, among them `e2e`, `barter`, `marketplace`, `broker-class-b`, `broker-class-c` and `escrow-d9`) can also run on GitHub: the workflow `.github/workflows/e2e-sandbox.yml` runs on a manual dispatch and on every push to `main`. It builds the contract, the mock token and the near-sandbox binary on the runner and runs the files one at a time. Its results are in the Actions tab of the umbrella repository; this README cites no run number.
 
 ### Epoch timeline of the demo
 
@@ -726,7 +753,7 @@ The NEAR pages on [agentic payments](https://www.near.org/agentic-payments) and 
 
 ## 7. Mechanism and invariants
 
-Every claim below links to the test in the `contracts` repo that checks it. The tests were written and run locally. The repositories are in a private GitHub organization with CI configured, but this README does not cite a CI result, so none of the links is backed by one.
+Every claim below links to the test in the `contracts` repo that checks it. The tests were written and run locally, and the repositories run them in GitHub CI; this README cites no run number, so check the Actions tab of each repository.
 
 | Claim | What the contract does | Test |
 | --- | --- | --- |
@@ -762,7 +789,7 @@ Every claim below links to the test in the `contracts` repo that checks it. The 
 
 Seller delay risk is limited to the vouchers not yet registered on-chain (ADR-23). Secrets live only in `.env`, which is not committed.
 
-Tests behind each risk. "Not applicable" means the row is a limitation or a decision, so no test applies. The tests were run locally; this README cites no CI result.
+Tests behind each risk. "Not applicable" means the row is a limitation or a decision, so no test applies. The tests were run locally and in GitHub CI; this README cites no run number.
 
 | Risk | Test or explanation |
 | --- | --- |
