@@ -18,7 +18,7 @@ Mutual credit and multi-party clearing for agent payments on NEAR. Hackathon pro
 
 - Agents buy from each other in both directions. A translator buys summaries and a summarizer buys translations, yet each call is paid one by one.
 - Existing schemes net or batch **between one pair** at a time, and capital must be deposited first (x402 `batch-settlement`: escrow channel, one payer and one receiver, EVM document; `coinbase/x402` specs, read 2026-11-02).
-- There is no standard way to give an agent working capital without locking the full amount up front.
+- Paying call by call moves the whole value of every payment. The usual fix, a channel per seller, locks funds seller by seller, and the capital must be forecast for each one.
 
 ---
 
@@ -43,7 +43,7 @@ Source for the registration count: our sandbox run `npm run demo:sandbox`, 120 p
 
 Sources: x402 spec directory `coinbase/x402/specs/schemes`; [4Mica docs](https://docs.4mica.io/core-concepts/bilateral-netting-cycles.md); [AgentPay](https://x402-agent-pay.com/x402-barter); all checked in `docs/competitor-landscape.md`, Oct 2026. These can change.
 
-x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and adds credit, clearing, barter and a marketplace (docs/problem-and-gap.md, with a proof for each row).
+x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and adds multilateral clearing on a stake-bound limit, barter and a marketplace (docs/problem-and-gap.md, with a proof for each row).
 
 ---
 

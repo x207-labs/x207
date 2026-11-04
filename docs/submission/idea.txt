@@ -1,6 +1,6 @@
-Problem: agents that pay per call (x402) settle every call on its own, so a thousand small payments cost a thousand transfers, and an agent without cash cannot buy at all.
+Problem: agents that pay per call (x402) settle every call on its own, so a thousand small payments cost a thousand transfers, and the usual fix, a payment channel per seller, locks funds seller by seller.
 
-What we built: x207, a mutual credit settlement layer for x402 agent payments on NEAR. Agents in a credit circle stake USDT to get a credit limit and pay each call with a signed voucher, served at once. At the end of each epoch an open solver finds the debt cycles, one on-chain transaction cancels them, and only what is left is paid in USDT. A default is covered from the stake of the defaulter.
+What we built: x207, a multilateral clearing layer for x402 agent payments on NEAR. Agents in a circle lock one USDT stake that bounds what they can owe (limit at most the stake) and pay each call with a signed voucher, served at once. At the end of each epoch an open solver finds the debt cycles, one on-chain transaction cancels them, and only what is left is paid in USDT. A default is covered from the stake of the defaulter.
 
 Proof on NEAR testnet (circle x207-v013.testnet, contract 0.0.13, reproducible build): in a realistic epoch, 24 vouchers worth 41.35 credit among 15 participants were cleared by 21.8 credit; the 19.55 left netted to 7.75 USDT due from six debtors; five paid 7.2 USDT and the 0.55 of the one that defaulted was taken from its stake. A complete graph of 210 obligations was cleared in four transactions.
 
