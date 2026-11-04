@@ -9,7 +9,7 @@ The barter catalog of the design notes (90 kinds) is data in [scripts/lib/asset-
 Generated from the `status` of every entry by `scripts/catalog-coverage.mjs`; nothing in this section is written by hand.
 
 <!-- coverage:start -->
-94 entries: 85 kinds that can be offered and 9 refused kinds (class X). Of the 85 kinds that can be offered, **39 are built** against the real components, **15 run end to end with a mock of ours** as the provider or issuer, 5 are planned as a named backlog item and 26 are on the roadmap only. That is 54 of 85 (64 percent) with a pipeline that runs, and 39 of 85 (46 percent) without any mock.
+94 entries: 85 kinds that can be offered and 9 refused kinds (class X). Of the 85 kinds that can be offered, **42 are built** against the real components, **17 run end to end with a mock of ours** as the provider or issuer, 5 are planned as a named backlog item and 21 are on the roadmap only. That is 59 of 85 (69 percent) with a pipeline that runs, and 42 of 85 (49 percent) without any mock.
 
 By class:
 
@@ -17,10 +17,10 @@ By class:
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | A | 5 | 0 | 5 | 4 | 0 | 14 |
 | B | 6 | 7 | 0 | 7 | 0 | 20 |
-| C | 3 | 8 | 0 | 5 | 0 | 16 |
-| D | 25 | 0 | 0 | 10 | 0 | 35 |
+| C | 3 | 10 | 0 | 3 | 0 | 16 |
+| D | 28 | 0 | 0 | 7 | 0 | 35 |
 | X | 0 | 0 | 0 | 0 | 9 | 9 |
-| **All** | 39 | 15 | 5 | 26 | 9 | 94 |
+| **All** | 42 | 17 | 5 | 21 | 9 | 94 |
 
 By pipeline (taken from the delivery method of the entry):
 
@@ -28,12 +28,12 @@ By pipeline (taken from the delivery method of the entry):
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | P1 on-chain escrow | 5 | 0 | 5 | 4 | 0 | 14 |
 | P2 access rent through the broker | 4 | 7 | 0 | 7 | 0 | 18 |
-| P3 one-time secrets and codes | 1 | 8 | 0 | 5 | 0 | 14 |
+| P3 one-time secrets and codes | 1 | 10 | 0 | 3 | 0 | 14 |
 | P4 platform transfer | 4 | 0 | 0 | 0 | 0 | 4 |
-| P5 metered resources and services | 25 | 0 | 0 | 6 | 0 | 31 |
+| P5 metered resources and services | 28 | 0 | 0 | 3 | 0 | 31 |
 | P7 licenses and files | 0 | 0 | 0 | 4 | 0 | 4 |
 | refused (no pipeline) | 0 | 0 | 0 | 0 | 9 | 9 |
-| **All** | 39 | 15 | 5 | 26 | 9 | 94 |
+| **All** | 42 | 17 | 5 | 21 | 9 | 94 |
 
 `built` means the pipeline runs against the real contract, backend, broker or a real testnet; it does not mean that a real third-party provider was used. `mock` means the provider or issuer behind the pipeline is a mock written by us (a mock OAuth server, a mock issuer of codes, a mock reseller), so the x207 side is tested and the provider side is not. Regenerate with `node scripts/catalog-coverage.mjs --write`; the test `scripts/catalog-coverage.test.mjs` fails when the numbers in this file are out of date.
 <!-- coverage:end -->

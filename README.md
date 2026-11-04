@@ -495,6 +495,25 @@ A store gift card (item 77, issuer `store.example`) has a face value and a balan
 
 Codes, salts and file keys are in no table of the read model and in no console line; the test searches for them. Not shown: a real store or promo issuer (a mock ran), and a promo code that is bound to the account of its first holder (such a code is not sold: `code_bound_to_identity`, see the block above).
 
+#### AI credit and map quota through the proxy (items 61 and 64, UM-109)
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/proxy-credit-quota.sandbox.test.ts     # about two minutes
+```
+
+These two are not codes but a key that the grantor keeps: the class C proxy of the broker calls the provider with it, the lessee never sees it, and the meter is the `call` (one unit of the quota of the grant, one voucher). The test runs two mock providers that keep their own books.
+
+| Do | See |
+| --- | --- |
+| `gpu` pays 0.015 credit for a call to the AI provider (item 61), with an `authorization` header of its own | The provider sees the key of the grantor and no voucher; the header of the lessee is not forwarded; one voucher is settled |
+| A path or a method outside the scope of the grant | `403 grant_scope_denied` before payment; the provider is not asked |
+| The provider answers `402` because its own credit is gone | The answer is passed on, the call is not paid and the quota is not used |
+| The third paid call, then a fourth | The fourth is `429 grant_quota_exceeded`: refused before the provider and before payment; three calls were bought, three used |
+| The same for the map quota (item 64): a GET with a query string, the key in `x-api-key`, 0.005 credit a call | The key is in its own header at the provider; three calls pass, the fourth is refused; six vouchers in all, one per call |
+| A provider that echoes the request headers | The key is replaced by `[redacted]` in the body and the headers of the answer |
+
+The keys are in no answer, no header, no log line of the broker and nothing the facilitator settled; the test searches for them. Not shown: a real AI or map provider (many forbid sharing a key, which is why both catalog rows carry a condition), and a broker inside a TEE (the key is in the environment of the broker process).
+
 ### Platform transfer block (ADR-49)
 
 ```bash
