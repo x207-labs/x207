@@ -1,5 +1,5 @@
 # End-to-end tests of the whole product in near-sandbox (UM-025): real contract, facilitator, indexer, solver, keeper, marketplace book and broker.
-# `npm run test:integration` runs every file of `tests/*.test.ts`, among them join and stake to claim with a default covered by stake (`e2e`),
+# Four parallel jobs (matrix `shard`) run every file of `tests/*.test.ts` between them, split by scripts/e2e-shards.mjs so that each takes about the same time; each job writes its files and seconds to its summary. Among them are join and stake to claim with a default covered by stake (`e2e`),
 # the barter ring (`barter`), the marketplace (`marketplace`) and the class B rental with revoke on default (`broker-class-b`).
 #
 # Needs one secret that already exists for the product CI: X207_CHECKOUT_TOKEN, read access to this repository and to the six product repositories
@@ -15,13 +15,22 @@ permissions:
   contents: read
 
 concurrency:
+  # A new push waits for the run in progress instead of cancelling it (a run took about two hours, so a push now and then meant that no run ever finished).
+  # GitHub keeps one waiting run per group: when several pushes arrive during one run, the newest of them runs next.
   group: e2e-sandbox-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   e2e:
+    name: e2e (shard ${{ matrix.shard }} of 4)
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        # scripts/e2e-shards.mjs splits tests/*.test.ts by the seconds in scripts/lib/e2e-durations.json; `node scripts/e2e-shards.mjs --plan --of 4` shows the split.
+        # Change the 4 here and in the two places below together.
+        shard: [1, 2, 3, 4]
     env:
       # same settings as ci-rust.yml: test binaries with debug info filled the runner disk
       CARGO_PROFILE_DEV_DEBUG: "0"
@@ -97,15 +106,27 @@ jobs:
           cargo test --locked --lib --no-run
           found || { cargo test --locked --no-run; found; } || { echo "::error::near-sandbox binary not found"; exit 1; }
 
-      - name: The run covers the barter ring and the class B rental
+      - name: The shards cover every test file once, among them the barter ring and the class B rental
+        # The shards come from one deterministic split, so the four jobs together hold every file exactly once; the unit test of the split checks e2e, barter, marketplace and broker-class-b.
         run: |
-          npx vitest list --filesOnly | tee /tmp/tests.txt
-          for t in e2e barter marketplace broker-class-b; do
-            grep -q "tests/$t.sandbox.test.ts" /tmp/tests.txt || { echo "::error::tests/$t.sandbox.test.ts is not in the run"; exit 1; }
-          done
-      - name: End-to-end tests in near-sandbox
+          node --test scripts/e2e-shards.test.mjs scripts/e2e-summary.test.mjs
+          npx vitest list --filesOnly | sed "s|^$PWD/||" | sort > /tmp/listed.txt
+          for n in 1 2 3 4; do node scripts/e2e-shards.mjs --shard "$n" --of 4; done | sort > /tmp/sharded.txt
+          diff /tmp/listed.txt /tmp/sharded.txt || { echo "::error::the shards do not hold exactly the files that vitest lists"; exit 1; }
+      - name: End-to-end tests in near-sandbox (shard ${{ matrix.shard }} of 4)
         # One file at a time: the sandbox tests move block time and compete for the CPU otherwise.
-        run: npm run test:integration -- --no-file-parallelism
+        run: |
+          mapfile -t FILES < <(node scripts/e2e-shards.mjs --shard "${{ matrix.shard }}" --of 4)
+          echo "shard ${{ matrix.shard }}: ${#FILES[@]} files"
+          X207_SANDBOX=1 npx vitest run --no-file-parallelism --reporter=default --reporter=json --outputFile.json=/tmp/e2e-report.json "${FILES[@]}"
+      - name: Summary of the shard (test files and their seconds)
+        if: always()
+        run: |
+          if [ -f /tmp/e2e-report.json ]; then
+            node scripts/e2e-summary.mjs /tmp/e2e-report.json "E2E sandbox, shard ${{ matrix.shard }} of 4" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No vitest report: the run stopped before the tests wrote one." >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Disk after the run
         if: always()
         run: df -h /
