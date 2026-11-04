@@ -8,7 +8,7 @@
 // What it needs besides Node: the packages installed and built (`npm ci`, `npm run build --workspaces --if-present`). What it fetches and checks:
 //   1. x207-circle-<tag>.wasm from https://github.com/x207-labs/contracts/releases (public); its sha256 must equal KNOWN_SHA256[tag] (the same table that deploy-mainnet.mjs uses);
 //   2. the near-sandbox binary 2.13.4 from build.nearprotocol.com (the URL that the near-sandbox npm package uses), unless X207_SANDBOX_BIN names one; `--version` must say 2.13.4;
-//   3. contracts/prebuilt/mock_ft.wasm (the mock USDT, committed); its sha256 must equal MOCK_FT_SHA256.
+//   3. contracts/prebuilt/mock_ft.wasm (the mock USDT, committed); its sha256 must equal KNOWN_SHA256.mock_ft, the same table as the wasm of the release.
 // Then `npm run demo:sandbox` runs with X207_CIRCLE_WASM, X207_MOCK_FT_WASM and X207_SANDBOX_BIN set. Nothing is installed globally and nothing is sent to a network except the two downloads.
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 import { KNOWN_SHA256 } from "./deploy-mainnet.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-export const MOCK_FT_SHA256 = "effd353047fda87f3ce0b97c78a3c3f62cebb5b1d890e9374b9d5b0ff985489d";
+export const MOCK_FT_SHA256 = KNOWN_SHA256.mock_ft; // the same table as the wasm of the release (scripts/deploy-mainnet.mjs)
 export const SANDBOX_VERSION = "2.13.4";
 export const DEFAULT_TAG = "v0.0.13";
 

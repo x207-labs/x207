@@ -22,7 +22,8 @@ test("TC-UM-107-03 the default is v0.0.13 with the sha256 of the reproducible bu
   assert.equal(releaseUrl("v0.0.13"), "https://github.com/x207-labs/contracts/releases/download/v0.0.13/x207-circle-v0.0.13.wasm");
 });
 
-test("TC-UM-107-04 the committed mock token is the file whose hash the script pins", () => {
+test("TC-UM-107-04 the committed mock token is the file whose hash the pin table holds (the table of the release wasm)", () => {
+  assert.equal(KNOWN_SHA256.mock_ft, MOCK_FT_SHA256);
   assert.equal(sha256(readFileSync(new URL("../contracts/prebuilt/mock_ft.wasm", import.meta.url))), MOCK_FT_SHA256);
 });
 

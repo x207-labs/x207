@@ -40,6 +40,8 @@ export const DEFAULT_PARAMS = {
 /** Releases whose sha256 was checked by a person (reproducible build, twice, byte-identical). A tag listed here must match, whatever SHA256SUMS says. */
 export const KNOWN_SHA256 = {
   "v0.0.13": "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054",
+  // not a release: the mock USDT that the quick demo deploys (UM-107, contracts/prebuilt/mock_ft.wasm; a test fixture, never for a real network)
+  "mock_ft": "effd353047fda87f3ce0b97c78a3c3f62cebb5b1d890e9374b9d5b0ff985489d",
 };
 export const MIN_CIRCLE_NEAR = 8n * 10n ** 24n;
 const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
