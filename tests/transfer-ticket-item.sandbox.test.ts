@@ -2,8 +2,8 @@
 // (the Steam trade offer API is the fake platform of the game item); the voucher of the buyer is registered on the contract only after the platform shows the transfer is done:
 //   - a ticket: the seller cannot say it arrived, only the buyer confirms; the voucher is registered then and the pair holds the price;
 //   - a ticket that the platform cancels: the buyer cancels the held transfer, nothing is paid and nothing is registered;
-//   - a game item: the trade offer is sent (pending), accepted but held by Steam for a while (pending, with the time left), then past its hold (confirmed): paid and registered;
-//   - a game item whose trade offer Steam cancels: the transfer is cancelled, the voucher never moves.
+//   - a game item: the trade offer is sent (pending), accepted but held by Steam for a while (pending, with the time left), then past its hold (confirmed): paid and registered, even if the buyer who already has the item says "cancelled" (a request that the platform proof overrules);
+//   - a game item whose trade offer Steam cancels: no proof ever, the buyer's cancel takes effect when the window ends (`cancelled_by_buyer`), the voucher never moves.
 import { afterAll, describe, expect, it } from "vitest";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -166,6 +166,9 @@ describe.skipIf(!sandboxAvailable)("UM-096 ticket (#73) and game item (#75) thro
     expect(pairOf(buyer, seller)).toBe(credit(60)); // nothing more is registered while it is pending
     clock.now += 601_000;
     steam.set("77001", { ...offer, trade_offer_state: 3, time_escrow_end: nowS() - 1 });
+    // the buyer, who already has the item, says "cancelled": that is a request, not an end; the platform decides
+    const lie = await book.transferNotice(heldItem.transferId, buyerA, "cancelled");
+    expect([lie.status, lie.cancelRequested, lie.voucher]).toEqual(["paid_held", true, undefined]);
     const doneItem = await waitForProof(book, heldItem.transferId, { tries: 2, wait });
     expect(doneItem.outcome).toBe("confirmed");
     expect(JSON.stringify(doneItem)).not.toContain(STEAM_KEY); // the key of Steam is in the URL to Steam only
@@ -181,8 +184,11 @@ describe.skipIf(!sandboxAvailable)("UM-096 ticket (#73) and game item (#75) thro
     const held3 = await buyTransfer(book, secondA, item2, E, secondPair, "777");
     steam.set("77002", { trade_offer_state: 6, accountid_other: 777, time_escrow_end: 0, items_to_give: [{ appid: 730, assetid: "1000000002" }] }); // 6 = canceled
     expect(await book.proof(held3.transferId, { tradeoffer_id: "77002" })).toMatchObject({ outcome: "pending", missing: { tradeOfferState: 6 } }); // never accepted: no proof
-    const cancelled3 = await book.transferNotice(held3.transferId, secondA, "cancelled");
-    expect([cancelled3.status, cancelled3.voucher]).toEqual(["cancelled", undefined]);
+    const request3 = await book.transferNotice(held3.transferId, secondA, "cancelled");
+    expect([request3.status, request3.cancelRequested]).toEqual(["paid_held", true]); // nothing proves the transfer, so the request takes effect when the window ends
+    clock.now += (TRANSFER_WINDOW_SECONDS.game_item + 60) * 1000;
+    const cancelled3 = await book.getTransfer(held3.transferId);
+    expect([cancelled3.status, cancelled3.cancelReason, cancelled3.voucher]).toEqual(["cancelled", "cancelled_by_buyer", undefined]);
     releasePair(secondPair, before2);
     expect(pairOf(second, seller)).toBe("0");
     console.log(["UM-096", `epoch ${E}`, `ticket+item pair ${pairOf(buyer, seller)}`, `cancelled pair ${pairOf(second, seller)}`].join(" | "));

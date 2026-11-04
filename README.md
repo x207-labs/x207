@@ -366,7 +366,8 @@ A domain, a game item or a ticket is not moved by x207: the seller moves it with
 | `seller` sells a ticket (60 credit): the platform cannot prove it, `buyer` confirms | Only the buyer's signed notice confirms (the seller's is refused); then the voucher is released and registered |
 | `second` buys a ticket, and the platform cancels the transfer | `buyer` cancels the held transfer: `cancelled`, nothing is paid or registered |
 | A game item (12 credit): the Steam trade offer is sent, then accepted but held by Steam, then past its hold | `pending` (state 2), `pending` with `retryAfterSeconds`, then `confirmed`: only now registered |
-| A game item whose trade offer Steam cancels | No proof ever; the transfer is cancelled, the pair holds 0 |
+| A game item whose trade offer Steam cancels, and the buyer says `cancelled` | A request, not an end: no proof ever, so it takes effect when the window ends (`cancelled_by_buyer`), the pair holds 0 |
+| The buyer already has the game item and says `cancelled` | Still `paid_held` with `cancelRequested`; the seller's proof then gives `confirmed`, and the voucher is registered (the buyer does not keep the item for free) |
 
 The transfer code never appears in an answer or request of the API, in the log, or in any table of D9 (the test searches all three). A seller who does not transfer is not paid, and a buyer who has no domain is not charged: the voucher moves only on a proof. What this block does not show: the registrar and Steam themselves (both are fakes in every test) (a real registry is not called in any test).
 
