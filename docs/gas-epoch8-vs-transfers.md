@@ -30,6 +30,25 @@ Read it this way: the four steps of the clearing alone (47.1 Tgas) are close to 
 
 So the claim that is supported: clearing moved 81% less value (7.75 of 41.35) in at most 13 token transfers instead of 24. The claim that is not supported: that it is cheaper in gas. It is not.
 
+## When x207 starts to burn less gas, and what a cross-chain exit costs (UM-138)
+Epoch 8 has one voucher per pair, which is the worst case for x207: each pair pays for a registration (4.87 Tgas) that replaces one 2.29 Tgas transfer. The cumulative voucher pays off when a pair trades many times in one epoch. [spikes/s2-gas-per-call-model.mjs](../spikes/s2-gas-per-call-model.mjs) takes the measured Tgas of this page (a transfer 2.29, a registration 4.87 on average, the four clearing steps 47.09) and counts only registrations plus the four steps:
+
+| Calls in the epoch | Pairs | Calls per pair | Plain transfers | x207, registrations and four steps |
+| ---: | ---: | ---: | ---: | ---: |
+| 24 | 24 | 1 | 54.9 Tgas | more than the plain transfers (break-even at 2.99 calls per pair) |
+| 120 | 12 | 10 | 274.5 Tgas | 105.5 Tgas |
+
+The break-even is about 3 to 4 calls per pair (2.99 for 24 pairs, 3.84 for 12, 4.19 for 10). It is a lower bound: the residual payments and the claims (38.52 and 24.05 Tgas in epoch 8) are not counted, and the number is a model of measured units, not one run. So the claim "120 paid calls became 12 registrations" is true as a count of transactions, and it saves gas only above that threshold.
+
+The exit to another chain has a fixed cost too. [spikes/s4-crosschain-minimums.mjs](../spikes/s4-crosschain-minimums.mjs) asks the 1Click API for dry quotes (no funds) of USDT held in Intents, run on 2026-11-04 at 15:35 UTC:
+
+| Destination | 0.01 USDT | 0.1 USDT | 1 USDT | 5 USDT |
+| --- | --- | --- | --- | --- |
+| USDC on Base | 0.007583 arrives (24.2% lost) | 0.097469 (2.5%) | 0.996529 (0.3%) | 4.990736 (0.2%) |
+| USDT on Tron | refused, minimum about 1.89 | refused | refused | 4.126108 (17.5% lost) |
+
+A cross-chain payment of a few cents can lose a quarter of its value or be refused, and x207 sends only the residual, not each call. In epoch 8 that was 7.75 USDT for six debtors. Fees and minimums change from day to day, and paying several debtors in one `execute_intents` has run only in `near-sandbox`, not on testnet ([what-has-run.md](what-has-run.md)).
+
 ## Method
 1. **A, from the chain.** The 36 transactions of epoch 8 are the steps of the realistic run recorded in `docs/testnet-0.0.13-realistic.json` (hashes and names only). Each was read with the RPC method `tx` (`wait_until: FINAL`) and its gas burnt and tokens burnt were summed over the transaction outcome and every receipt outcome. The result, with every hash, is [gas-epoch8.json](gas-epoch8.json). None of them failed. The `mint` calls that gave the debtors mock USDT are left out: they exist only because the token is a testnet mock.
 2. **B, measured, not assumed.** `node scripts/gas-ft-transfer-testnet.mjs` sends `ft_transfer` of 1.0 unit (1,000,000 with 6 decimals) with 1 yoctoNEAR attached from one member account to three others on `usdt.x207-deployer.testnet`, and sums the same way. The three transactions burnt exactly the same, 2.287 Tgas and 0.000206 NEAR (3 outcomes each); the record is [gas-ft-transfer-testnet.json](gas-ft-transfer-testnet.json). 24 times that is the baseline.
