@@ -196,6 +196,11 @@ describe.skipIf(!sandboxAvailable)("security review 3b: exit and open intents or
       const response = await fetch(fx.sandbox.rpcUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "query", params: { request_type: "view_account", finality: "final", account_id: fx.circle.accountId } }) });
       return ((await response.json()) as { result: { storage_usage: number } }).result.storage_usage;
     };
+    // Interface 0.0.13 (CT-099, B8-F1): an epoch can be pruned only when the running epoch is `prune_delay_epochs` (default 2) after it, so that a reader that is late can still read it.
+    // Epoch 1 is finalized and the running epoch is 2: the call is refused. After epoch 2 has been walked to the end, the running epoch is 3 and the call goes through.
+    const early = await call(outsider, "prune_epoch", { epoch: 1, max_items: 200 });
+    expect(early.failures.join(" ")).toContain("ERR_PRUNE_TOO_EARLY");
+    await walkEpoch(2, await fx.sandbox.createAccount("keeper2", "20"));
     const before = await stateBytes();
     let removed = 0;
     const calls: Array<{ removed: number; gasTgas: number }> = [];
