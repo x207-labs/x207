@@ -2,6 +2,8 @@
 
 For the owner of an agent. About 15 minutes, on NEAR testnet, with a test token that has no value. You make two agent accounts, join the circle `x207-v013.testnet`, sell one x402 service that has an x207 entry, pay it from the second agent, and see the position on the dashboard. Every step is "do X, see Y", and every command below was run against the circle on 2026-11-04 with accounts made for this guide; the times are the ones measured.
 
+> **The circle is shared testnet.** Other people's accounts, the team's own demo runs and every reader of this guide use the same circle and the same epochs. Your accounts and your obligation appear next to theirs on the dashboard and stay there; nobody cleans them up. Any member may close an epoch that has passed its cutoff (step 3), which changes the epoch for everybody, so do it only when the epoch is stalled. The stake is a test token with no value.
+
 You need Node 22.22.2 or newer and a recursive clone of this repository, built once:
 
 ```bash
@@ -49,7 +51,7 @@ The tool runs over stdio, only with `X207_MCP_WRITE=1`, and only with the two sw
 }
 ```
 
-`X207_MAX_SPEND_SESSION` counts the stake too, so it must be at least the stake (here 50 USDT = `50000000`). **Tested with the MCP Inspector.** The calls in this guide were run with the MCP Inspector CLI (below) against the real testnet circle; the block above enters the same server and the same environment in Claude Desktop, and it was not run in Claude Desktop itself. Restart Claude Desktop and ask: "Join the x207 circle with terms hash `aaaa…a` (64 times `a`) and a stake of 50000000." The same call from a script, with the MCP Inspector, is:
+The two spending guards of the server: `X207_MAX_SPEND_SESSION` is the most the agent may commit in one run of the server, in credit units of 6 decimals, and it counts the stake too, so it must be at least the stake (here 50 USDT = `50000000`); `X207_MAX_PRICE_PER_CALL` is the most one payment, offer or milestone may be (here `100000` = 0.1 credit, which covers the 0.02 credit of the service in step 3; the default is also `100000`). **Tested with the MCP Inspector.** The calls in this guide were run with the MCP Inspector CLI (below) against the real testnet circle; the block above enters the same server and the same environment in Claude Desktop, and it was not run in Claude Desktop itself. Restart Claude Desktop and ask: "Join the x207 circle with terms hash `aaaa…a` (64 times `a`) and a stake of 50000000." The same call from a script, with the MCP Inspector, is:
 
 ```bash
 npx @modelcontextprotocol/inspector --cli \
@@ -64,7 +66,7 @@ npx @modelcontextprotocol/inspector --cli \
 
 | Do | See |
 | --- | --- |
-| Call `x207_join` for the seller, then for the buyer | In about 11 seconds each: `"status": "active"`, `"stake": "50000000"`, `"limit": "40000000"` (the limit is 80% of the stake, `limit ≤ stake`), and the voucher public key. The tool sent `join` with the 0.35 NEAR storage deposit and then the stake transfer |
+| Call `x207_join` for the seller, then for the buyer | In about 11 seconds each: `"status": "active"`, `"stake": "50000000"`, `"limit": "40000000"` (80% of the stake for a new member, and never above the stake; it grows with settlement history), and the voucher public key. The tool sent `join` with the 0.35 NEAR storage deposit and then the stake transfer |
 | `curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/members/my-seller.testnet` | The member, after the read API has caught up (a minute or two): `status` `active`, `limit` `40000000`. Before that it answers `member_not_found`; the contract already has the member |
 
 To join from code instead of a tool, use `onboardMember` of `@x207/core` as in [docs/quickstart.md](quickstart.md); it does the same two transactions.
@@ -90,7 +92,7 @@ FACILITATOR_URL=http://localhost:4021 CIRCLE_ID=agents-main PAY_TO=my-seller.tes
 | `curl -s localhost:4021/supported` | `batch-settlement` on `x207:agents-main`, `circleContract` `x207-v013.testnet`, the current `epoch`, and your relayer in `signers` |
 | `curl -si localhost:3000/api/summarize` | `HTTP/1.1 402 Payment Required`; the body `accepts` has `scheme` `batch-settlement`, `network` `x207:agents-main`, `amount` `20000` (0.02 credit) and `payTo` your seller account. This is the x207 entry |
 
-**If the answer later says `epoch_closing`:** this circle has no keeper, so an epoch that has passed its cutoff stays open until somebody closes it, and no voucher is accepted for it. Any member may close it: `node scripts/guide-testnet.mjs close-epoch my-buyer.testnet --keys-dir .keys` prints `closed epoch 9; epoch 10 is open (4348 ms)`, and a few seconds later the seller advertises the new epoch (before that a payment is refused with `epoch_mismatch`). When the epoch is still open the command says `nothing to close`.
+**If the answer later says `epoch_closing`:** this circle has no keeper, so an epoch that has passed its cutoff stays open until somebody closes it, and no voucher is accepted for it. Any member may close it: `node scripts/guide-testnet.mjs close-epoch my-buyer.testnet --keys-dir .keys` prints, for example, `closed epoch 9; epoch 10 is open (4348 ms)` (example output: your epoch numbers and times will differ), and a few seconds later the seller advertises the new epoch (before that a payment is refused with `epoch_mismatch`). When the epoch is still open the command says `nothing to close`.
 
 ## 4. Pay the service from the second agent
 
@@ -105,8 +107,8 @@ npx @modelcontextprotocol/inspector --cli \
 
 | Do | See |
 | --- | --- |
-| Call `x207_pay_request` for the buyer | In about 8 seconds: `"status": 200`, `"paid": true`, the body `{"summary":"summary text"}`, and a `paymentResponse` whose decoded `extensions.x207` says `"epoch": 10, "seq": 1, "cumulativeAmount": "20000", "registration": "registered"` |
-| Look at the log of the facilitator | `{"event":"registered","payer":"my-buyer.testnet","payee":"my-seller.testnet","epoch":10,"seq":1}` |
+| Call `x207_pay_request` for the buyer | In about 8 seconds: `"status": 200`, `"paid": true`, the body `{"summary":"summary text"}`, and a `paymentResponse` whose decoded `extensions.x207` says, for example, `"epoch": 10, "seq": 1, "cumulativeAmount": "20000", "registration": "registered"` (example output: your epoch number will differ) |
+| Look at the log of the facilitator | `{"event":"registered","payer":"my-buyer.testnet","payee":"my-seller.testnet","epoch":10,"seq":1}` (example output: your epoch number will differ) |
 | Ask the contract: `curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"call_function","finality":"final","account_id":"x207-v013.testnet","method_name":"list_obligations","args_base64":"'$(printf '{"epoch":10,"from_index":0,"limit":5}' \| base64)'"}}'` and decode `result.result` | `{"debtor":"my-buyer…","creditor":"my-seller…","cumulative":"20000","last_seq":1,…}`: the debt is in the contract. No USDT moved; it moves only as a residual after the clearing of the epoch |
 
 ## 5. See the position on the dashboard
@@ -116,7 +118,7 @@ npx @modelcontextprotocol/inspector --cli \
 | Open <https://x207-dashboard.vercel.app/charts?epoch=10> (use your epoch) | After the read API has caught up (about a minute and a half after the payment in the run of this guide): `1 obligations worth 0.02 credit`, with your buyer as debtor and your seller as creditor. Before that the page says that the epoch is not in the read model yet |
 | Open [Risk](https://x207-dashboard.vercel.app/risk?epoch=10) | Your two accounts as members with stake 50 and limit 40 credit |
 
-What the guide does not do: the epoch is cleared by a solver and finalized by a keeper, and the debtor pays its residual then. Nobody runs those for this circle, so your obligation stays in the open epoch; the [sandbox demo](sandbox-demo.md) and the [testnet page](testnet.md) show a full epoch with clearing, residuals and claims. The hosted read API and the dashboard are there for the judging period.
+What the guide does not do: the epoch is cleared by a solver and finalized by a keeper, and the debtor pays its residual then. Nobody runs those for this circle, so your obligation stays in the open epoch; the [sandbox demo](sandbox-demo.md) and the [testnet page](testnet.md) show a full epoch with clearing, residuals and claims. The hosted read API and the dashboard are there for the judging period; if the read API is down, the contract steps still work (`curl` the RPC as in step 4) and only the dashboard and the `/members` check wait for it, and for a circle of your own on your machine use `npm run demo:quick` and `npm run demo:mcp` ([README](../README.md#run-it-locally-5-minutes)).
 
 ## Stop
 
