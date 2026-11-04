@@ -13,7 +13,7 @@ x402 lets agents pay. x207 lets many agents settle at once.
 
 x207 is a mutual credit settlement layer for x402 agent payments on NEAR. Agents in a credit circle pay each other with signed credit vouchers; at the end of each epoch an open solver removes the debt cycles across all of them in one on-chain clearing, and only the net positions are settled in USDT. It is built as a binding of the x402 `batch-settlement` scheme on the network `x207:<circleId>`, and a buyer outside the circle can still pay with the `exact` scheme on NEAR.
 
-**Status.** Hackathon prototype for NEAR HACKATHON (1–14 Nov 2026). The contract (interface 0.0.13, release v0.0.13) runs as the circle `x207-v013.testnet` on NEAR testnet with a dashboard, a read API and an MCP server on top. The integration tests run in a local `near-sandbox`, and the end-to-end sandbox workflow of this repository passed on GitHub on 2026-11-04 for the commit `d3e5e6c` ([run 41796991326](https://github.com/x207-labs/x207/actions/runs/41796991326)). **No mainnet transaction has been sent.**
+**Status.** Hackathon prototype for NEAR HACKATHON (1–14 Nov 2026). The contract (interface 0.0.13, release v0.0.13) runs as the circle `x207-v013.testnet` on NEAR testnet with a dashboard, a read API and an MCP server on top. The integration tests run in a local `near-sandbox`, and the end-to-end sandbox workflow of this repository passed on GitHub on 2026-11-04 for the commit `d3e5e6c` ([run 41796991326](https://github.com/x207-labs/x207/actions/runs/41796991326)). **No mainnet transaction has been sent.** The USDT on testnet is a **mock USDT** (testnet, `usdt.x207-deployer.testnet`): anybody can mint it, so no amount in this README is real money.
 
 ## The idea in one breath
 
@@ -56,7 +56,7 @@ The API, the MCP server and the dashboard are hosted for the judging period. If 
 
 ## What epoch 8 showed
 
-The realistic testnet epoch: 24 vouchers worth 41.35 credit became 14 settlement movements (the metric `residualTransfers`: one for each member whose net position is not zero, here six debtors paying in and eight creditors claiming out).
+The realistic testnet epoch, paid in the mock USDT (testnet, `usdt.x207-deployer.testnet`): 24 vouchers worth 41.35 credit became 14 settlement movements (the metric `residualTransfers`: one for each member whose net position is not zero, here six debtors paying in and eight creditors claiming out).
 
 ```mermaid
 xychart-beta
@@ -138,5 +138,7 @@ The six product repositories are git submodules of this one. `vault`, the design
 ## Hackathon disclosures
 
 **Code written with AI help.** The code, tests and documents of this project were written with AI coding assistants: Claude Code (Anthropic) in several parallel sessions, each working on one repository under a human owner who set the design, reviewed the results and decided what to publish. Many commits carry a `Co-Authored-By: Claude` trailer. Every number in this README comes from a run or a file named next to it; where a run did not happen, the text says so.
+
+**Code start.** All code of the project was written from 2026-11-01, inside the build window. The first commit of the umbrella is `c708b8a` (2026-11-01); the first commits of `contracts` and `sdk` are `1d908c4` and `5580759` (both 2026-11-01).
 
 **License.** Apache-2.0 for every repository of the project: see [LICENSE](LICENSE). **Third-party code:** all open source, used as libraries or hosted endpoints, none copied in; the list is in [docs/third-party.md](docs/third-party.md).
