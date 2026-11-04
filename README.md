@@ -394,6 +394,19 @@ An order is the agreement of a buyer and a seller on work. On the chain there is
 | `research` hires `keeper` at 1 credit per `close_epoch` | The member `keeper` closes the epoch itself; the list `onchain-proofs` has that call and its signer |
 | The buyer pays the proof | One voucher of 1 credit; the same proof presented again is `already_paid` |
 
+Two more items run on the same flow (UM-108, catalog items 83 and 84):
+
+```bash
+X207_SANDBOX=1 npx vitest run tests/freelance.sandbox.test.ts tests/consultation-slot.sandbox.test.ts --no-file-parallelism   # about one minute each
+```
+
+| Do | See |
+| --- | --- |
+| **Freelance service (#83).** `client` hires `freelancer` in two milestones (30 and 20 credit). The freelancer hands over file 1 with its hash | The client hashes the file it received and compares: a copy changed on the way has another hash. Nothing moves before the client confirms |
+| The client confirms milestone 1, signs, the freelancer registers | The pair holds 30 credit. Milestone 2 goes the same way and its voucher continues from the first: the pair holds 50 credit |
+| **Consultation slot (#84).** A slot is an order with one milestone, due when the slot ends. The mentor hands over the record of the session, the learner confirms | The pair holds 8 credit |
+| The mentor does not show at another slot: nothing is delivered | The learner cannot confirm; after the due date the learner cancels the open milestone; no voucher is signed. A slot that is not due yet cannot be cancelled |
+
 A dispute leaves the state as it was: a cumulative voucher cannot skip a milestone, so the next voucher never carries a disputed one. What this block does not show: the judgement of a dispute, the check of the target of a load test, and orders of a kind other than `audit` and `keeper` (each has its own test in `agents/test/services.test.ts`).
 
 ### Content license block (pipeline P7)
