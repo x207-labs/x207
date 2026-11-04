@@ -181,7 +181,10 @@ describe.skipIf(!sandboxAvailable)("F8 class B in near-sandbox: lease, renewal, 
     await drain(() => count("select count(*) as n from events_raw where event = 'member_defaulted'") >= 1);
     await broker.tick();
     const deletedAt = Date.now();
-    console.log(`UM-063 finalize_epoch -> DeleteKey: ${deletedAt - finalizedAt} ms (broker log: ${log.filter((l) => l.includes("DeleteKey")).join(" | ")})`);
+    const revokeDelayMs = deletedAt - finalizedAt;
+    // process.stdout.write, not console.log: the line must reach the CI log whatever the reporter does with console output
+    process.stdout.write(`UM-063 finalize_epoch -> DeleteKey: ${revokeDelayMs} ms (broker log: ${log.filter((l) => l.includes("DeleteKey")).join(" | ")})\n`);
+    expect(revokeDelayMs).toBeLessThan(60_000);
     expect(await viewKey(lease.accountId, key2.getPublicKey().toString())).toBeNull();
     expect((await view<AccessGrant>("get_grant", { grant_id: grant2 })).status).toBe("revoked");
     await expect(lesseeCall(key2, "get_params")).rejects.toThrow();
