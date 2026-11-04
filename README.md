@@ -158,7 +158,7 @@ Everything here is read-only and needs no account or key.
    ```
 
    The first call lists the epochs and their phases. The second gives the clearing result of epoch 2 (210 obligations, cleared ratio, residual transfers).
-3. **Ask Claude about the circle** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is not on npm yet, so build it from this checkout once (`npm ci && npm run build --workspaces --if-present`), then add this to `claude_desktop_config.json` and restart Claude Desktop:
+3. **Ask Claude about the circle** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is not on npm yet, so build it from a recursive clone of this repository once (`git clone --recurse-submodules https://github.com/x207-labs/x207.git`, then `npm ci && npm run build --workspaces --if-present`), then add this to `claude_desktop_config.json` and restart Claude Desktop:
 
    ```json
    {
@@ -176,7 +176,7 @@ Everything here is read-only and needs no account or key.
    }
    ```
 
-   Then ask, for example, "Give me the overview of the x207 circle and the report of epoch 2". The tools and the write tools that stay off are listed in [sdk/packages/mcp/README.md](sdk/packages/mcp/README.md).
+   Then ask, for example, "Give me the overview of the x207 circle and the report of epoch 2". The tools and the write tools that stay off are listed in [sdk/packages/mcp/README.md](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md).
 4. **The contract that runs it:** release [v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13), wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (the code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`, the same bytes in base58), `abi-v0.0.13.json` sha256 `c94a2955deab7b082d2e9f1ab396dae14b0323a4c12266fa09f43f1ca0a3bb53`. "Try it on testnet" below shows how to read the contract on chain and lists the transactions of a full epoch.
 
 The hosted read API and the dashboard are there for the judging period. If they are down, [Run the sandbox demo](#run-the-sandbox-demo) runs the same cycle locally.
@@ -188,6 +188,7 @@ The demo runs one epoch against a local `near-sandbox` node: a real `x207-circle
 Needs: Node 22.22.2 or newer, Rust 1.99.1 with the `wasm32-unknown-unknown` target (pinned by `contracts/rust-toolchain.toml`) and `cargo-near` 0.22.0. One-time setup from the root of this repository, tried on 2026-11-02 from a clean checkout:
 
 ```bash
+git clone --recurse-submodules https://github.com/x207-labs/x207.git && cd x207   # the six product repositories are submodules
 cd contracts
 cargo near build non-reproducible-wasm                                            # the contract, about 30 seconds
 cargo near build non-reproducible-wasm --manifest-path probes/mock_ft/Cargo.toml  # the mock USDT token used by every sandbox run
@@ -303,7 +304,7 @@ Check an epoch with the full 15 x 14 = 210 edge graph on [nearblocks](https://te
 | `commit_epoch` | `8xcQqNZXhPNHgAukL4B42n8CMTXmEqx9BRmawH1XL1pb` |
 | `finalize_epoch` | `DTXTVJaK55Pfubgh7215o3LtUAJPwb9TQu4NHSaJTtqi` |
 
-The gas and the cost of every call, each with the transaction hash it was measured on, are in [contracts/docs/gas-and-cost.md](contracts/docs/gas-and-cost.md). The deploy steps and the wasm hash are in [docs/testnet-0.0.13.json](docs/testnet-0.0.13.json); the contract code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`.
+The gas and the cost of every call, each with the transaction hash it was measured on, are in [contracts/docs/gas-and-cost.md](https://github.com/x207-labs/contracts/blob/main/docs/gas-and-cost.md). The deploy steps and the wasm hash are in [docs/testnet-0.0.13.json](docs/testnet-0.0.13.json); the contract code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`.
 
 Print the plan of the end-to-end demo against this circle (sends nothing):
 
@@ -748,7 +749,7 @@ One full cycle takes 1 hour 40 minutes from the opening of the epoch to finaliza
 
 External interfaces E1–E8 and their fourteen data flows are in [docs/external-interfaces.md](docs/external-interfaces.md).
 
-The product repos are nested in this repo and are not yet submodules (UM-005). While work is local, this repo ignores them.
+The product repos are git submodules of this repo, each pinned at one commit. Clone with `git clone --recurse-submodules https://github.com/x207-labs/x207.git`; if you cloned without the flag, run `git submodule update --init` in the clone.
 
 ## 6. How x207 uses NEAR
 
@@ -775,13 +776,13 @@ Every claim below links to the test in the `contracts` repo that checks it. The 
 
 | Claim | What the contract does | Test |
 | --- | --- | --- |
-| **Clearing is O(n) in the number of obligations.** | The contract never searches for cycles. A solver submits a cleared amount per edge, and one pass over the edges checks that each `cleared` is at most its obligation and that every member's cleared inflow equals its cleared outflow (`ERR_CLEARED_EXCEEDS_OBLIGATION`, `ERR_UNBALANCED_MEMBER`). Net positions do not change, so the residual to settle is the same before and after clearing. | [`ct030_clearing_property.rs`](contracts/tests/ct030_clearing_property.rs) (random cycle graphs), [`ct029_clearing_flow.rs`](contracts/tests/ct029_clearing_flow.rs) (competing solvers) |
-| **Default model.** | A debtor that has not paid when `finalize_epoch` runs defaults: the shortfall is taken from that debtor's own stake first, then from the reserve. Creditors of the epoch are claimable in full. A defaulted member is `suspended`. | [`ct037_default_flow.rs`](contracts/tests/ct037_default_flow.rs) |
-| **Limits come from cash settlement.** | A member's credit limit grows only from residual paid in cash (`settled_history`), through `limit_growth`, and never above the stake. | [`ct034_limits.rs`](contracts/tests/ct034_limits.rs) |
-| **Cycle clearing is not history (ADR-08).** | A cycle that clears completely leaves no settlement record, `settled_history` stays 0, and the limit does not move. Clearing cannot be used to raise limits. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`cycle_clearing_does_not_raise_limits`) |
-| **A barter bundle commits only with every participant's signature (F5, ADR-38).** | `commit_bundle` recomputes `terms_hash` from the legs, requires exactly one valid ed25519 signature per participant over it (`ERR_BUNDLE_SIGNATURES`), rejects a bundle with one leg or a leg that pays itself (`ERR_BAD_BUNDLE`), and rejects a payer whose legs exceed its free headroom (`ERR_BUNDLE_HEADROOM`). Nothing is written until the last check passes. | [`ct065_bundle.rs`](contracts/tests/ct065_bundle.rs) (`commit_refusals_change_nothing`), [`ct063_bundle_vector.rs`](contracts/tests/ct063_bundle_vector.rs) |
-| **Bundle legs are ordinary debt (F5).** | A voucher that carries `bundleId` is registered with `register_in_bundle` against the reserved amount of its leg; after that the leg is an obligation like any other and is cleared by F3. A ring leaves a net of zero. | [`ct065_bundle.rs`](contracts/tests/ct065_bundle.rs) (`bundle_legs_register_clear_and_leave_the_difference_as_residual`), [`tests/barter.sandbox.test.ts`](tests/barter.sandbox.test.ts) |
-| **Anti-sybil: stake is required.** | A member with no stake can be neither payer nor payee, and the growth term is clamped to the stake, so extra accounts without capital add no credit. | [`ct038_wash_trading.rs`](contracts/tests/ct038_wash_trading.rs) (`member_without_stake_cannot_register`) |
+| **Clearing is O(n) in the number of obligations.** | The contract never searches for cycles. A solver submits a cleared amount per edge, and one pass over the edges checks that each `cleared` is at most its obligation and that every member's cleared inflow equals its cleared outflow (`ERR_CLEARED_EXCEEDS_OBLIGATION`, `ERR_UNBALANCED_MEMBER`). Net positions do not change, so the residual to settle is the same before and after clearing. | [`ct030_clearing_property.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct030_clearing_property.rs) (random cycle graphs), [`ct029_clearing_flow.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct029_clearing_flow.rs) (competing solvers) |
+| **Default model.** | A debtor that has not paid when `finalize_epoch` runs defaults: the shortfall is taken from that debtor's own stake first, then from the reserve. Creditors of the epoch are claimable in full. A defaulted member is `suspended`. | [`ct037_default_flow.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct037_default_flow.rs) |
+| **Limits come from cash settlement.** | A member's credit limit grows only from residual paid in cash (`settled_history`), through `limit_growth`, and never above the stake. | [`ct034_limits.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct034_limits.rs) |
+| **Cycle clearing is not history (ADR-08).** | A cycle that clears completely leaves no settlement record, `settled_history` stays 0, and the limit does not move. Clearing cannot be used to raise limits. | [`ct038_wash_trading.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct038_wash_trading.rs) (`cycle_clearing_does_not_raise_limits`) |
+| **A barter bundle commits only with every participant's signature (F5, ADR-38).** | `commit_bundle` recomputes `terms_hash` from the legs, requires exactly one valid ed25519 signature per participant over it (`ERR_BUNDLE_SIGNATURES`), rejects a bundle with one leg or a leg that pays itself (`ERR_BAD_BUNDLE`), and rejects a payer whose legs exceed its free headroom (`ERR_BUNDLE_HEADROOM`). Nothing is written until the last check passes. | [`ct065_bundle.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct065_bundle.rs) (`commit_refusals_change_nothing`), [`ct063_bundle_vector.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct063_bundle_vector.rs) |
+| **Bundle legs are ordinary debt (F5).** | A voucher that carries `bundleId` is registered with `register_in_bundle` against the reserved amount of its leg; after that the leg is an obligation like any other and is cleared by F3. A ring leaves a net of zero. | [`ct065_bundle.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct065_bundle.rs) (`bundle_legs_register_clear_and_leave_the_difference_as_residual`), [`tests/barter.sandbox.test.ts`](tests/barter.sandbox.test.ts) |
+| **Anti-sybil: stake is required.** | A member with no stake can be neither payer nor payee, and the growth term is clamped to the stake, so extra accounts without capital add no credit. | [`ct038_wash_trading.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct038_wash_trading.rs) (`member_without_stake_cannot_register`) |
 
 ## 8. Security and limits
 
@@ -864,9 +865,9 @@ This table lists tests, not a proof that the system is safe. The full list of fi
 
 **Barter and marketplace (F5, F9).** Barter is a way to use the same credit and clearing for goods and services, not a source of volume. The demo figures in section 4 are small on purpose (a few cents per leg) and come from a sandbox. The seeker and the discount are an incentive design: the seeker share and the cashback are legs of the same bundle, so they are cleared and paid like any other debt, and the agent that lists carries the discount. Whether agents will list and negotiate at scale is not shown. The value of a deal is what the parties sign; the protocol does not judge quality (see the risk table).
 
-**Reviews.** The facilitator and the cache of its chain reads were reviewed as an attacker (`tests/security-review-facilitator.test.ts`, [backend/docs/security-review-2.md](backend/docs/security-review-2.md)): a voucher used by parallel requests is now served once (`voucher_in_flight`), and the staleness of the cache and its cost are written down ([sdk/docs/rpc-load.md](sdk/docs/rpc-load.md)). The contract was reviewed for the features F5 to F8 (`contracts/docs/security-review.md`). The frontend was reviewed for what data of other users can do in the browser and for what the voucher key can be made to sign ([frontend/docs/security-review.md](frontend/docs/security-review.md)). These are our own reviews, not an audit. The list of findings, their status and the command that repeats each check is one page: [docs/security.md](docs/security.md). The interface of the contract, version by version (0.0.1 to 0.0.9), with the releases that are reproducible and those that are not, is in [CHANGELOG.md](CHANGELOG.md). The 0.0.9 contract was read again by a second reader who did not write it ([docs/security-review-3.md](docs/security-review-3.md)): the five questions about the Intents deposit, the withdrawal and `prune_epoch` have an answer, and five findings (a contract-paid storage cost per intent, first-come intent hashes, no event on `remove_intent`, intents and grants left open by `exit`) were reported to the contract owner with failing tests.
+**Reviews.** The facilitator and the cache of its chain reads were reviewed as an attacker (`tests/security-review-facilitator.test.ts`, [backend/docs/security-review-2.md](https://github.com/x207-labs/backend/blob/main/docs/security-review-2.md)): a voucher used by parallel requests is now served once (`voucher_in_flight`), and the staleness of the cache and its cost are written down ([sdk/docs/rpc-load.md](https://github.com/x207-labs/sdk/blob/main/docs/rpc-load.md)). The contract was reviewed for the features F5 to F8 (`contracts/docs/security-review.md`). The frontend was reviewed for what data of other users can do in the browser and for what the voucher key can be made to sign ([frontend/docs/security-review.md](https://github.com/x207-labs/frontend/blob/main/docs/security-review.md)). These are our own reviews, not an audit. The list of findings, their status and the command that repeats each check is one page: [docs/security.md](docs/security.md). The interface of the contract, version by version (0.0.1 to 0.0.9), with the releases that are reproducible and those that are not, is in [CHANGELOG.md](CHANGELOG.md). The 0.0.9 contract was read again by a second reader who did not write it ([docs/security-review-3.md](docs/security-review-3.md)): the five questions about the Intents deposit, the withdrawal and `prune_epoch` have an answer, and five findings (a contract-paid storage cost per intent, first-come intent hashes, no event on `remove_intent`, intents and grants left open by `exit`) were reported to the contract owner with failing tests.
 
-**Reproducible release.** The wasm of a release is built twice in a pinned container (image by digest, `cargo near build non-reproducible-wasm --locked`, `Cargo.lock` committed) and nothing is published if the two sha256 differ. The first reproducible release is **`v0.0.9`**: the wasm in its `SHA256SUMS` is `fa8309059a84…` (the file has the full value; `shasum -a 256 -c SHA256SUMS` passes), built twice with the same result on the runner of the release workflow and twice in our own container run (CT-087), so the `code_hash` of an account on chain can be traced to a tag; [contracts/docs/verify-release.md](contracts/docs/verify-release.md) shows how to check it. Limits: the repository is private, so a third-party verifier such as SourceScan may compute another number until it is public; v0.0.8 and older were built before the pinned container and are not reproducible; the rehearsals and the mainnet run use the wasm of a release and record its `code_hash` ([docs/mainnet-runbook.md](docs/mainnet-runbook.md)). The next release, **`v0.0.11`** (tag on `be4da8f`, interface 0.0.10 and 0.0.11), is reproducible too: wasm sha256 `a9d0c839149a6e84ce4f87c1898b2cf871d2eda117f1988e13d0c59ae13a2f39`, `code_hash` `CRtYqTc47ADcDkHp7UJaRPLXu5XHS7KYftrTNUnZ8bNx` ([release](https://github.com/x207-labs/contracts/releases/tag/v0.0.11)).
+**Reproducible release.** The wasm of a release is built twice in a pinned container (image by digest, `cargo near build non-reproducible-wasm --locked`, `Cargo.lock` committed) and nothing is published if the two sha256 differ. The first reproducible release is **`v0.0.9`**: the wasm in its `SHA256SUMS` is `fa8309059a84…` (the file has the full value; `shasum -a 256 -c SHA256SUMS` passes), built twice with the same result on the runner of the release workflow and twice in our own container run (CT-087), so the `code_hash` of an account on chain can be traced to a tag; [contracts/docs/verify-release.md](https://github.com/x207-labs/contracts/blob/main/docs/verify-release.md) shows how to check it. Limits: the repository is private, so a third-party verifier such as SourceScan may compute another number until it is public; v0.0.8 and older were built before the pinned container and are not reproducible; the rehearsals and the mainnet run use the wasm of a release and record its `code_hash` ([docs/mainnet-runbook.md](docs/mainnet-runbook.md)). The next release, **`v0.0.11`** (tag on `be4da8f`, interface 0.0.10 and 0.0.11), is reproducible too: wasm sha256 `a9d0c839149a6e84ce4f87c1898b2cf871d2eda117f1988e13d0c59ae13a2f39`, `code_hash` `CRtYqTc47ADcDkHp7UJaRPLXu5XHS7KYftrTNUnZ8bNx` ([release](https://github.com/x207-labs/contracts/releases/tag/v0.0.11)).
 
 **Voucher key and `exact` key.** The `exact` scheme on NEAR signs a `SignedDelegateAction` for one `ft_transfer`, and its client needs a full-access key; function-call keys are rejected. An x207 agent signs only vouchers (ed25519, verified in the contract). The voucher key cannot transfer funds, so a leaked voucher key cannot drain the account. It can create vouchers up to the credit limit of the member. The facilitator relays vouchers and cannot forge one (ADR-06).
 
@@ -959,6 +960,24 @@ To be written by the team.
 ## 12. License
 
 Apache-2.0. See [LICENSE](LICENSE).
+
+## Hackathon disclosures
+
+**Code written with AI help.** The code, tests and documents of this project were written with the help of AI coding assistants: Claude Code (Anthropic) in several parallel sessions, each working on one repository under a human owner who set the design, reviewed the results and decided what to publish. Many commits carry a `Co-Authored-By: Claude` trailer. The design notes in a private repository were also written with it. Every number in this README comes from a run or a file named next to it; where a run did not happen, the text says so.
+
+**Third-party libraries and services.** All of them are open source and are used as libraries or as hosted endpoints; none of their code is copied into this repository.
+
+| Area | What is used |
+| --- | --- |
+| Contract | `near-sdk` 5.29.1, `near-workspaces` 0.23.0 (tests), `cargo-near` 0.22.0 (build) |
+| x402 | `@x402/core`, `@x402/fetch`, `@x402/near` (2.29.0) |
+| NEAR | `near-api-js`, `@near-js/crypto`, `@near-js/signers`, `@near-js/transactions`, `@hot-labs/near-connect` (wallet), the Sputnik DAO contract, NEAR Intents (`@defuse-protocol/intents-sdk`, `@defuse-protocol/one-click-sdk-typescript`) |
+| Cryptography | `@noble/curves`, `@noble/hashes`, `@noble/ciphers` |
+| Agents and tools | `@modelcontextprotocol/sdk` (MCP server), `zod`, `ajv` |
+| Backend | `hono`, `@hono/node-server`, `better-sqlite3` |
+| Frontend | `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `vite` |
+| Test and build | `vitest`, `typescript`, `@playwright/test`, `@testing-library/*`, `jsdom`, `axe-core`, `oxlint` |
+| Hosted services | the public NEAR testnet RPC (fastnear), GitHub, Vercel (dashboard), Railway (read API) |
 
 ## Appendix A: judging criteria and tracks
 

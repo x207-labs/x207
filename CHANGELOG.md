@@ -142,7 +142,7 @@ Residual payment through NEAR Intents (BE-034, spec section 18) and the decision
 
 ## 0.0.8 (2026-11-03, `a34be26`; `prune_epoch` in `44c9df8`; release `v0.0.8`, not reproducible)
 
-Hardening after the first security review (ADR-40, [contracts/docs/security-review.md](contracts/docs/security-review.md)).
+Hardening after the first security review (ADR-40, [contracts/docs/security-review.md](https://github.com/x207-labs/contracts/blob/main/docs/security-review.md)).
 
 **Added**
 - Method `remove_intent(intent_hash)`: owner only (`ERR_NOT_INTENT_OWNER`, `ERR_UNKNOWN_INTENT`).
