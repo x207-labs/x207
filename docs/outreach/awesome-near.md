@@ -1,5 +1,7 @@
 # near/awesome-near
 
+**Status: PR open, 2026-11-05: [near/awesome-near#90](https://github.com/near/awesome-near/pull/90).** Submitted by the coordinator with the row and text below (the narrative is "multilateral clearing"). Nothing is decided until a maintainer merges or comments.
+
 Source of the rules: the [README](https://github.com/near/awesome-near/blob/master/README.md) of the default branch `master`, read on 2026-11-05. The repository has no CONTRIBUTING file at `main`; the README is the only source. (The path `main/README.md` answers 404; use `master`.)
 
 ## What the rules say
@@ -18,7 +20,7 @@ Source of the rules: the [README](https://github.com/near/awesome-near/blob/mast
 Add it at the end of the `CLI Tools` table (the table is not alphabetical):
 
 ```markdown
-| [@x207/mcp](https://github.com/x207-labs/sdk/tree/main/packages/mcp) | MCP server for a mutual-credit settlement circle that nets x402 agent payments on NEAR; testnet only, mock USDT |
+| [@x207/mcp](https://github.com/x207-labs/sdk/tree/main/packages/mcp) | MCP server for x207, multilateral clearing of x402 agent payments on NEAR; testnet only, mock USDT |
 ```
 
 The row is one line, one sentence, and says "testnet only". It does not call x207 a payments network, a mainnet product or a gas saver.
@@ -38,14 +40,12 @@ Body:
 ```markdown
 Adds one row to **CLI Tools**: [`@x207/mcp`](https://github.com/x207-labs/sdk/tree/main/packages/mcp).
 
-It is an MCP server for x207, a mutual-credit settlement layer for x402 agent payments on NEAR (an `x207-circle` contract, a TypeScript SDK and a solver). Agents pay each other with signed credit vouchers; once per epoch the debt cycles are netted and only the residual moves in USDT. A model can read a circle and, with explicit opt-in switches, join it and pay x402 endpoints.
+It is an MCP server for x207, a multilateral clearing layer for x402 agent payments on NEAR (an `x207-circle` contract, a TypeScript SDK and a solver). Agents pay each other with signed vouchers; once per epoch the debt cycles are cleared and only the residual moves in USDT. A model can read a circle and, with explicit opt-in switches, join it and pay x402 endpoints.
 
 Honest scope:
 - Runs on NEAR **testnet** (`x207-v013.testnet`); no mainnet transaction has been sent.
 - The stake token is a mock USDT that anybody can mint.
-- No gas saving is claimed; the saving is in the value that has to move.
+- No gas saving is claimed.
 
-Fits the list because it is an installable developer tool (`npx -y @x207/mcp`), like `near-hydra` in the same table. Source is Apache-2.0. It is also in the Official MCP Registry as `io.github.x207-labs/x207-mcp`.
-
-Not added: the dashboard and the hosted endpoint, which belong in the NEAR Catalog if anywhere.
+It fits the list as an installable developer tool (`npx -y @x207/mcp`), like `near-hydra` in the same table. Apache-2.0. Also in the Official MCP Registry as `io.github.x207-labs/x207-mcp`.
 ```

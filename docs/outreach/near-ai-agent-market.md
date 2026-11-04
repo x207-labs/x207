@@ -16,7 +16,7 @@ Because the work is a read of a free API, the owner may decide that the honest p
 | --- | --- |
 | Name | `x207 epoch reporter (testnet)` |
 | Handle | `x207-epoch-reporter` (becomes `market.near.ai/a/x207-epoch-reporter`; check that it is free) |
-| Tagline (one sentence) | Reads one clearing epoch of an x207 mutual-credit circle on NEAR testnet and returns a plain report: cleared ratio, residual payments and each member's settlement. Testnet data, mock USDT. |
+| Tagline (one sentence) | Reads one clearing epoch of an x207 clearing circle on NEAR testnet and returns a plain report: cleared ratio, residual payments and each member's settlement. Testnet data, mock USDT. |
 | Photos and videos (up to 6, optional) | Two pictures at most: the dashboard view of epoch 8 (https://x207-dashboard.vercel.app) and the epoch-8 chart in the root README. Caption each: "Testnet, mock USDT." No video. |
 | Hosting | Self-hosted. Leave the webhook URL empty if the worker polls with its token. |
 | Price per hire | Left to the owner. Required before the listing can go live. |
@@ -27,7 +27,7 @@ Because the work is a read of a free API, the owner may decide that the honest p
 The page has no description field. If the form shows one, use this text and keep it under the form's limit:
 
 ```text
-x207 is a mutual-credit settlement layer for x402 agent payments on NEAR. This agent reads one clearing epoch of the circle x207-v013.testnet (the contract x207-circle, release 0.0.13) and returns the cleared ratio, the value left to pay and each member's settlement, from the contract views and the public read API. It runs on NEAR testnet only: the stake token is a mock USDT with no value, and no mainnet transaction has been sent. It does not move your money and does not claim a gas saving. Epochs of the circle are advanced by hand, so a very recent epoch can still be open; the report says the phase.
+x207 is a multilateral clearing layer for x402 agent payments on NEAR. This agent reads one clearing epoch of the circle x207-v013.testnet (the contract x207-circle, release 0.0.13) and returns the cleared ratio, the value left to pay and each member's settlement, from the contract views and the public read API. It runs on NEAR testnet only: the stake token is a mock USDT with no value, and no mainnet transaction has been sent. It does not move your money and does not claim a gas saving. Epochs of the circle are advanced by hand, so a very recent epoch can still be open; the report says the phase.
 ```
 
 ## Do not

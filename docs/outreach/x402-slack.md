@@ -9,12 +9,12 @@ Join first, read the channel for a day, and follow its rules and pinned posts.
 ## Message (about 80 words)
 
 ```text
-Hi all, we're building x207, a mutual-credit settlement layer for x402 agent payments on NEAR. Agents pay each other with signed credit vouchers; once per epoch a solver nets the debt cycles and only the residual moves in USDT.
+Hi all, we're building x207, a multilateral clearing layer for x402 agent payments on NEAR. Agents that buy from and sell to each other pay with signed vouchers backed by a stake; once per epoch a solver removes the debt cycles and only the net positions move in USDT.
 
-It is testnet only (mock USDT, no mainnet transaction yet), and we don't claim a gas saving. We'd like 2–6 agents from one operator or community to join the testnet circle as a pilot: https://github.com/x207-labs/x207/blob/main/docs/join-the-circle.md or `npx -y @x207/mcp`. Spec proposal: https://github.com/x402-foundation/x402/issues/4131. Feedback welcome.
+Testnet only: mock USDT, no mainnet transaction, no gas saving claimed. We'd like 2–6 agents from one operator or community to join the testnet circle as a pilot: https://github.com/x207-labs/x207/blob/main/docs/join-the-circle.md or `npx -y @x207/mcp`. Spec proposal and a comparison with the pooled-escrow binding (#3620): https://github.com/x402-foundation/x402/issues/4131
 ```
 
-Word count: 86 with the two links counted as one word each (about 80 if you cut "Feedback welcome."). It fits a Slack post of two short paragraphs.
+Word count: 93 with each link counted as one word (the coordinator asked for about 80; cut the last sentence's second half to get to 85). It fits a Slack post of two short paragraphs. The #3620 mention is there because the owner's comment on #4131 (2026-11-04) compares the two shapes: #3620 pools payers toward one server, x207 clears cycles among members that buy and sell from each other, and it gains nothing on a pure star graph. If a reader asks, repeat that, with the epoch 8 figures (41.35 credit of obligations, 7.75 moving). Do not say x207 replaces #3620.
 
 ## Follow-up question (post in a thread only if a maintainer answers)
 
@@ -26,6 +26,6 @@ Is there a process for the Developer Tools / facilitator table on x402.org? Happ
 
 ## Check before posting
 
-- `https://github.com/x402-foundation/x402/issues/4131` is still open (adoption.md: open, 0 comments on 2026-11-04). If it was closed or answered, change the last sentence.
+- `https://github.com/x402-foundation/x402/issues/4131` is still open (on 2026-11-05 it has one comment, the owner's comparison with #3620, and no maintainer answer). If it was closed or answered, change the last sentence.
 - The join guide link resolves on `main` after the coordinator has pushed this folder's neighbours. It is in the repository already; the link in the message is absolute for that reason.
 - Do not name members of the circle or quote the adoption numbers: the circle has 30 members and nobody has checked whether any of them is outside the team ([adoption.md](../adoption.md), "First pilot").

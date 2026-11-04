@@ -1,5 +1,7 @@
 # punkpeye/awesome-mcp-servers
 
+**Status: PR open, 2026-11-05: [punkpeye/awesome-mcp-servers#18606](https://github.com/punkpeye/awesome-mcp-servers/pull/18606).** Submitted by the coordinator with the text below (small edits from the first draft: the narrative is "multilateral clearing"). Nothing is decided until a maintainer merges or comments.
+
 Source of the rules: [CONTRIBUTING.md](https://github.com/punkpeye/awesome-mcp-servers/blob/main/CONTRIBUTING.md) and the legend of the [README](https://github.com/punkpeye/awesome-mcp-servers/blob/main/README.md), read on 2026-11-05.
 
 ## What the rules say
@@ -13,12 +15,12 @@ Source of the rules: [CONTRIBUTING.md](https://github.com/punkpeye/awesome-mcp-s
 
 ## Category
 
-`💰 Finance & Fintech` (heading `### 💰 <a name="finance--fintech"></a>Finance & Fintech`). It already holds x402 servers (for example a server that decodes HTTP 402 challenges). Nothing in the README has a NEAR or mutual-credit category.
+`💰 Finance & Fintech` (heading `### 💰 <a name="finance--fintech"></a>Finance & Fintech`). It already holds x402 servers (for example a server that decodes HTTP 402 challenges). Nothing in the README has a NEAR or clearing category.
 
 ## The line
 
 ```markdown
-- [x207-labs/sdk](https://github.com/x207-labs/sdk) 📇 🏠 - MCP server (`@x207/mcp`) for a mutual-credit settlement circle on NEAR testnet: read members, limits, epochs and clearing reports, and, with opt-in write tools, pay x402 endpoints with signed credit vouchers. Testnet only, mock USDT, no mainnet transaction.
+- [x207-labs/sdk](https://github.com/x207-labs/sdk) 📇 🏠 - MCP server (`@x207/mcp`) for x207, multilateral clearing of x402 agent payments on NEAR testnet: read circle members, limits, epochs and clearing reports, and, with opt-in write tools, pay x402 endpoints with signed vouchers that are netted once per epoch. Testnet only, mock USDT.
 ```
 
 Notes on the choices:
@@ -34,7 +36,7 @@ Branch: `add-x207-mcp-server`. Commit message: `Add x207 MCP server`.
 Title:
 
 ```text
-Add x207 MCP server (NEAR testnet mutual credit for x402 payments)
+Add x207 MCP server (clearing of x402 agent payments, NEAR testnet)
 ```
 
 Body:
@@ -42,21 +44,21 @@ Body:
 ```markdown
 Adds one line to **Finance & Fintech**: [x207-labs/sdk](https://github.com/x207-labs/sdk), the MCP server `@x207/mcp`.
 
-What it is: a server for x207, a mutual-credit settlement layer for x402 agent payments on NEAR. Agents pay each other with signed credit vouchers; once per epoch a solver nets the debt cycles and only the residual moves in USDT. The server reads a circle (members, limits, epochs, clearing reports) and, only when the user turns the write tools on, joins a circle and pays x402 endpoints.
+What it is: a server for x207, a multilateral clearing layer for x402 agent payments on NEAR. Agents in a circle pay each other with signed vouchers backed by a stake; once per epoch a solver removes the debt cycles across all members and only the net positions move in USDT. The server reads a circle (members, limits, epochs, clearing reports) and, only when the user turns the write tools on, joins a circle and pays x402 endpoints.
 
 Scope, stated plainly:
-- It runs on NEAR **testnet** (`x207-v013.testnet`). No mainnet transaction has been sent.
+- Runs on NEAR **testnet** (`x207-v013.testnet`). No mainnet transaction has been sent.
 - The stake token is a mock USDT that anybody can mint; it has no value.
-- It does not claim a gas saving.
+- No gas saving is claimed; what clearing reduces is the value that has to move.
 - Write tools are off by default and need explicit environment switches and spending caps.
 
-Why it fits the list: public repository, Apache-2.0 licence, installable and run locally with `npx -y @x207/mcp` over stdio, 14 tools. It is in the Official MCP Registry as `io.github.x207-labs/x207-mcp`.
+Why it fits the list: public repository, Apache-2.0, installed and run locally with `npx -y @x207/mcp` over stdio, 14 tools. Listed in the Official MCP Registry as `io.github.x207-labs/x207-mcp`.
 
-Checklist
 - [x] One line, one server, in the right category
 - [x] Name linked to the repository
-- [x] Description checked against the repository
-- [ ] Glama badge: not listed on Glama yet; will add when it is
+- [ ] Glama badge: not listed on Glama yet
 ```
+
+Narrative: the coordinator chose "multilateral clearing" over "mutual-credit" before submitting, and the text above is the submitted one. Use the same words in every later text.
 
 Before sending, the owner checks one fact in the body: the count of tools (14 names appear in [`sdk/packages/mcp/README.md`](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md) and [mcp.md](../mcp.md): `x207_accept_offer`, `x207_circle_overview`, `x207_claim`, `x207_confirm_milestone`, `x207_epoch_report`, `x207_join`, `x207_list_offer`, `x207_make_offer`, `x207_member_inspect`, `x207_order_status`, `x207_pay_request`, `x207_search_listings`, `x207_settle`, `x207_simulate_clearing`).
