@@ -32,6 +32,12 @@ Dates are those of the commits (UTC+07:00). "Commit" is the commit of the reposi
 
 **Not changed:** `clearing_submitted` (already a summary), `finalize_epoch` (its log budget cuts `member_defaulted` events first, tested with 63 defaults and names of 64 characters), `commit_bundle` (64 legs with names of 64 characters stay under the budget). The limit of 300 edges per proposal stays; SV-019 shows what it costs on dense circles (`solver/docs/benchmark.md`).
 
+**Review findings of batch 8, fixed before the release (still 0.0.13)**
+- B8-F1 (Medium): new parameter `prune_delay_epochs` (default 2, range 1 to 30, in `get_params`, `set_params` and `params_updated`; set with the usual timelock). `prune_epoch` is refused with `ERR_PRUNE_TOO_EARLY` until the running epoch is that many epochs after the pruned epoch, so the cleared edges stay readable from `list_obligations` for a late reader. Stored in its own raw key; no stored record changes.
+- B8-F2: `get_proposal.edge_count` is the stored count (it was `0` after the commit).
+- B8-F3: `get_proposal` has `proposal_hash` (the `edges_hash` of the stored edges, equal to the one in `clearing_applied`), so a reader that pages notices a replaced proposal.
+- B8-F4: the log size test uses the worst entry and asserts the digit bounds.
+
 **Upgrade from 0.0.12:** no migration; the stored data is the same. Indexers and SDK parsers must read the new shape of the two events and read the edges through the views (the indexer verifies them with `edges_hash`).
 
 ## 0.0.12 (not released; in progress in `contracts`, 2026-11-03, ADR-43)
