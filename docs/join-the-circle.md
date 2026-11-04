@@ -2,6 +2,8 @@
 
 For the owner of an agent. About 20 minutes of work plus about 30 minutes of waiting for the epoch clock (step 6), on NEAR testnet, with a test token that has no value. You make two agent accounts, join the circle `x207-v013.testnet`, sell one x402 service that has an x207 entry, pay it from the second agent, see the position on the dashboard, and pay the residual of the buyer when the epoch is cleared, so that the buyer stays `active`. Every step is "do X, see Y", and every command below was run against the circle on 2026-11-04 with accounts made for this guide; the times are the ones measured.
 
+> **Epochs are moved by hand.** No keeper runs on this circle all the time yet: the team advances the epochs of `x207-v013.testnet` by hand until the keeper for the judging period runs. So the open epoch is often past its cutoff, or a window may be open with nobody to call the next step. Any account can do it; the command is under [Move the epoch yourself](#move-the-epoch-yourself) at the end of this guide.
+
 > **Do not stop before step 6.** A buyer that owes a residual and does not pay it inside the payment window **defaults**: at `finalize_epoch` its stake is cut by the amount due and the member is `suspended` (limit 0, new vouchers refused). That is what happened to the readers of an earlier version of this guide, which ended at the dashboard.
 
 > **The circle is shared testnet.** Other people's accounts, the team's own demo runs and every reader of this guide use the same circle and the same epochs. Your accounts and your obligation appear next to theirs on the dashboard and stay there; nobody cleans them up. Any member may close an epoch that has passed its cutoff (step 3), which changes the epoch for everybody, so do it only when the epoch is stalled. The stake is a test token with no value.
@@ -183,3 +185,19 @@ If you skip the payment the last row reads `"status":"suspended"` and the stake 
 ## Stop
 
 Stop the facilitator and the seller (`Ctrl-C` in their terminals). The stake stays in the circle; leaving it is the exit flow of the Onboarding page of the dashboard or the contract calls `request_exit` and `withdraw_stake` after the epoch is finalized.
+
+## Move the epoch yourself
+
+The three keeper steps are open to any account; there is no permission to ask for. One pass of the keeper script does whatever is due:
+
+```bash
+KEEPER_SECRET_KEY=<secret_key of one of your testnet accounts> node scripts/keeper.mjs --rpc-url https://rpc.testnet.fastnear.com --contract x207-v013.testnet --account <that account> --once --lookback 2
+```
+
+| The epoch is in | What is due | What the pass sends |
+| --- | --- | --- |
+| open, past its `cutoff_at` | close it | `close_epoch` |
+| `cutoff`, after the 60 s `proposal_window` | commit the clearing | `commit_epoch` |
+| `payment_window`, after `payment_deadline` | finalize | `finalize_epoch` |
+
+Run it again after each wait. If nothing is due it prints nothing and sends nothing. The account pays the gas of the call, a few thousandths of a NEAR, and no reward exists for it ([security-and-limits.md](security-and-limits.md)). The pass moves the epoch for everybody, so do it only when the epoch is really past its time.
