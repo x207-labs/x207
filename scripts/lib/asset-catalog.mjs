@@ -102,7 +102,7 @@ export const CATALOG = [
   { no: 83, assetType: "service:freelance", cls: "D", name: "Freelance service", delivery: ["x402_endpoint"], proofs: [], status: "roadmap; lawful" },
   { no: 84, assetType: "service:consultation-slot", cls: "D", name: "Consultation or mentoring time", delivery: ["calendar_slot"], proofs: [], status: "roadmap; lawful" },
   { no: 85, assetType: "community:own-paid-group", cls: "B", name: "Own paid group or community", delivery: ["invite_or_role"], proofs: ["zktls"], status: "roadmap; lawful for the owner of the community" },
-  { no: 86, assetType: "newsletter:own-archive", cls: "B", name: "Own newsletter or paid content", delivery: ["reader_account"], proofs: ["zktls"], status: "roadmap; lawful for the publisher" },
+  { no: 86, assetType: "newsletter:own-archive", cls: "B", name: "Own newsletter or paid content", delivery: ["reader_account"], proofs: ["zktls"], status: "built with a mock publisher API (BE-088, adapter newsletter-reader); lawful for the publisher" },
   { no: 87, assetType: "beta:invite-code", cls: "C", name: "Beta invitation code", delivery: ["secret_release"], proofs: ["tee_attestation"], status: "roadmap; condition: product" },
   { no: 88, assetType: "service:product-testing", cls: "D", name: "Product testing and report", delivery: ["x402_endpoint"], proofs: [], status: "roadmap; lawful; a disguised paid review is not" },
   { no: 89, assetType: "data:own-anonymized", cls: "D", name: "Own anonymised data", delivery: ["consented_download"], proofs: [], status: "roadmap; lawful for one's own, anonymised data only" },
