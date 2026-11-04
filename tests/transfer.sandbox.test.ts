@@ -150,7 +150,10 @@ describe.skipIf(!sandboxAvailable)("UM-095 transfer of a domain through its regi
     registrar.codes.set("agent-shop.com", transferCode);
     // the registrar has not finished: pending, with what is missing, and no voucher
     const early = await book.proof(bought.transferId);
-    expect(early).toMatchObject({ outcome: "pending", missing: { want: buyerTxt(bought) } });
+    expect(early).toMatchObject({ outcome: "pending" });
+    // since UM-096 the answer names the TXT record but does not show its value (it is bound to the voucher of the buyer, so a third party cannot read it off the proof endpoint)
+    expect((early as unknown as { missing: { want: string } }).missing.want).toMatch(/x207-own TXT record/);
+    expect(JSON.stringify(early)).not.toContain(buyerTxt(bought));
     expect((await book.getTransfer(bought.transferId)).voucher).toBeUndefined();
     // the buyer redeems the code at the registrar: a wrong code is refused, the right one works once and a second use is refused
     expect(() => registrar.transfer("agent-shop.com", "0".repeat(24), buyerTxt(bought), shop.sellerTxt!)).toThrow("transfer code refused");
