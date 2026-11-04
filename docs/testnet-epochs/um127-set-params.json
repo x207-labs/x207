@@ -1,0 +1,43 @@
+{
+  "task": "UM-127 (KN-31): one set_params proposal through the DAO x207v8.sputnikv2.testnet for x207-v013.testnet",
+  "date": "2026-11-04, 15:03 to 15:12 UTC",
+  "change": {
+    "prune_delay_epochs": {
+      "from": 2,
+      "to": 3
+    },
+    "effective_epoch": 20
+  },
+  "steps": [
+    {
+      "step": "add_proposal (id 4, set_params, params whole from get_params with prune_delay_epochs 3)",
+      "account": "x207-dao-v8.testnet",
+      "method": "add_proposal",
+      "hash": "3QvNvyymG6S8FUpVKQYPPHepfEqGek2hz3HAvYpSbexT"
+    },
+    {
+      "step": "VoteApprove",
+      "account": "x207-dao-v8.testnet",
+      "method": "act_proposal",
+      "hash": "8nfaLNxwNcw7Mp34z1gKEE6oeFvVSVfLtMnQq5VeiF5x"
+    },
+    {
+      "step": "VoteApprove (second vote: proposal Approved and set_params executed)",
+      "account": "b.x207-dao-v8.testnet",
+      "method": "act_proposal",
+      "hash": "4ZKJGf3H73zHfkHi21wzac4cyqaFBQVVEr3s2WHTmsie"
+    },
+    {
+      "step": "close_epoch 19 (epoch 20 opens with the new params)",
+      "account": "x207-v013-aux.testnet",
+      "method": "close_epoch",
+      "hash": "8AauxMtqryzECYJDpdxURWyuYLpDJAoPd1zD4NTN4PxA"
+    }
+  ],
+  "checks": {
+    "get_pending_params": "effective_epoch 20, prune_delay_epochs 3 right after the vote",
+    "get_params": "prune_delay_epochs 3 once epoch 20 was open",
+    "indexer /x207/circles/agents-main/proposals": "id 4, Approved, set_params, votes council [2,0,0]",
+    "dashboard /governance": "Pending change 'prune_delay_epochs 3 epochs, effective from epoch 20', Closed proposals row 4 Approved 2 / 0 / 0, change history row 'prune_delay_epochs 2 epochs -> 3 epochs, epoch 20' (block 276210716)"
+  }
+}
