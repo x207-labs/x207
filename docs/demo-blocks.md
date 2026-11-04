@@ -235,7 +235,7 @@ A domain, a game item or a ticket is not moved by x207: the seller moves it with
 | `seller` sets the TXT `x207-sell=<listing_hash>` on the domain and lists it; `buyer` pays with a voucher of 40 credit | The transfer is `paid_held`; the answer has no voucher |
 | `seller` sets the transfer code (auth code, #29) at the registrar and hands it to `buyer` once, outside x207; `buyer` redeems it at the registrar (a wrong code and a second use are refused) | The registrar moves the domain (#66); the code is never sent to the backend |
 | The proof is asked before the registrar has finished, then while the registry still says `pending transfer` | `pending`, with the TXT that is missing; still no voucher, the pair holds 0 |
-| The registry shows the domain `active` and the buyer's TXT `x207-own=<transfer id>` is there | `confirmed`; only now the voucher is in the answer, and the seller registers it: the pair holds 40 credit |
+| The registry shows the domain `active` and the buyer's TXT `x207-own=<transfer id>-<token>` (given in the answer of the purchase) is there | `confirmed`; only now the voucher is in the answer, and the seller registers it: the pair holds 40 credit |
 | `second` pays for a domain whose transfer never finishes, and the 7 day window passes | `cancelled` with `transfer_window_passed`; no voucher ever leaves, the pair holds 0 |
 | `seller` sells a ticket (60 credit): the platform cannot prove it, `buyer` confirms | Only the buyer's signed notice confirms (the seller's is refused); then the voucher is released and registered |
 | `second` buys a ticket, and the platform cancels the transfer | `buyer` cancels the held transfer: `cancelled`, nothing is paid or registered |
