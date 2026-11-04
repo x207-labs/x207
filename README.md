@@ -185,7 +185,18 @@ The hosted read API and the dashboard are there for the judging period. If they 
 
 The demo runs one epoch against a local `near-sandbox` node: a real `x207-circle` contract, six agents, the facilitator, the indexer and read API, the solver and a keeper.
 
-Needs: Node 22.22.2 or newer, Rust 1.99.1 with the `wasm32-unknown-unknown` target (pinned by `contracts/rust-toolchain.toml`) and `cargo-near` 0.22.0. One-time setup from the root of this repository, tried on 2026-11-02 from a clean checkout:
+**Quick path, no Rust.** Needs only Node 22.22.2 or newer and `git`. The script downloads the wasm of the circle from the release `v0.0.13`, checks its sha256 against `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (pinned in `scripts/deploy-mainnet.mjs`), fetches the near-sandbox 2.13.4 binary, and runs the demo with that wasm. **If the hash is not the pinned one, the script stops and the demo does not run.**
+
+```bash
+git clone --recurse-submodules https://github.com/x207-labs/x207.git && cd x207   # the six product repositories are submodules
+npm ci
+npm run build --workspaces --if-present                                           # the demos import the built TypeScript packages
+npm run demo:quick                                                                # = node scripts/demo-quick.mjs --release-wasm; about 5 minutes, most of it the sandbox clock
+```
+
+`node scripts/demo-quick.mjs --check-only` downloads and verifies everything and runs nothing. The mock USDT token is a committed test fixture (`contracts/prebuilt/mock_ft.wasm`, sha256 in its README), so the Rust toolchain is not needed. The path below builds everything from source instead.
+
+**From source.** Needs: Node 22.22.2 or newer, Rust 1.99.1 with the `wasm32-unknown-unknown` target (pinned by `contracts/rust-toolchain.toml`) and `cargo-near` 0.22.0. One-time setup from the root of this repository, tried on 2026-11-02 from a clean checkout:
 
 ```bash
 git clone --recurse-submodules https://github.com/x207-labs/x207.git && cd x207   # the six product repositories are submodules
