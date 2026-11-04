@@ -41,7 +41,7 @@ export const DEFAULT_PARAMS = {
 export const KNOWN_SHA256 = {
   "v0.0.13": "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054",
   // not a release: the mock USDT that the quick demo deploys (UM-107, contracts/prebuilt/mock_ft.wasm; a test fixture, never for a real network)
-  "mock_ft": "effd353047fda87f3ce0b97c78a3c3f62cebb5b1d890e9374b9d5b0ff985489d",
+  "mock_ft": "65d8a18be9152a4f9a62799f963c91f0542b73a68982c68c2625837252b2c897",
 };
 export const MIN_CIRCLE_NEAR = 8n * 10n ** 24n;
 const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
