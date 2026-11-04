@@ -31,6 +31,35 @@ The rows for ACH and Loca come from their public READMEs, read on 2026-11-04. We
 
 x207 is the binding of the official `batch-settlement` scheme on a new network, `x207:<circleId>`. It does not define a new scheme.
 
+### Capital per seller (S1)
+
+Claim we tested: "a channel per seller locks funds seller by seller, and x207 locks less". Result: **x207 does not lock less capital than a channel that was sized exactly right. Its advantage is smaller, and it depends on whether the sellers are known in advance.** Script: [`spikes/s1-capital-per-seller.mjs`](../spikes/s1-capital-per-seller.mjs) (pure computation, no network, no key).
+
+On the graph of epoch 8 (15 members, 24 pairs, 41.35 of obligations, no payer buys from more than 2 sellers):
+
+| Model | Deposits or stakes | Capital locked |
+| --- | --- | --- |
+| x402 `batch-settlement` channel per seller, best case (every deposit sized exactly to what the payer owes that seller) | 24 deposits | 41.35 |
+| x207 MVP (one stake per payer, `limit ≤ stake`, limit 80% of stake) | one stake per payer | 51.69 (125%) |
+| `exact`, one transfer per payment | 24 transfers | 0 locked |
+
+So against an exact forecast, x207 locks 25% more, with 15 stakes (one per payer) against 24 deposits. The forecast is the point: the EVM channel spec fixes the receiver in the channel, so a payer needs one channel per receiver ([spec](https://github.com/x402-foundation/x402/blob/main/specs/schemes/batch-settlement/scheme_batch_settlement_evm.md)), and an agent that does not know its sellers cannot size the deposits. The same script with `--sellers k --budget 100 --price 0.02` (a payer that will spend 100 in calls of 0.02, split over k unknown sellers):
+
+| k sellers | Channels, exact forecast | Channels, no forecast (each can carry the whole budget) | Channels, small top-ups (deposit hint of 10 times the price) | x207 |
+| --- | --- | --- | --- | --- |
+| 1 | 100 locked, 1 deposit | 100 | 500 deposits, 0.2 locked at a time | 125 locked, 1 stake |
+| 5 | 100 locked, 5 deposits | 500 | 500 deposits, 1 locked at a time | 125 locked, 1 stake |
+| 20 | 100 locked, 20 deposits | 2,000 | 500 deposits, 4 locked at a time | 125 locked, 1 stake |
+
+How to read it:
+
+- With **no forecast**, channels lock k times the budget and x207 locks 125, whatever k is. This is the case where x207 wins on capital, and it grows with k.
+- With **small top-ups**, a channel locks little at any time, so x207 locks more. What channels pay instead is deposit transactions: about budget / (10 times price) of them, 500 here, and the PayAI documentation puts a deposit at about 140 thousand gas on Base. x207 needs one stake.
+- With an **exact forecast**, channels win: 100 against 125.
+- The default of the x402 docs is a deposit multiplier of 5 and a `minDeposit` hint of 10 times the price ([docs.x402.org](https://docs.x402.org/)); we did not measure how real clients set it.
+
+What stays true is narrower than the earlier wording: x207 replaces k deposits by one stake and lets the seller set grow without a new deposit, at a price of 25% more locked capital than a perfect forecast. It does not remove the need for capital, and it is not "credit without cash" ([problem 4](#2-the-problem)).
+
 ### x207 as an evolution of x402, not a replacement
 
 x207 keeps the x402 flow (HTTP 402, a payment requirement, a signed payload, a facilitator) and registers a binding for the official `batch-settlement` scheme on a new network. Each row below names a limit of x402 as published, what x207 adds on top, and where the repository proves it. A row with no proof is not claimed.

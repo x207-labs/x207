@@ -18,7 +18,7 @@ Multilateral clearing for agent payments on NEAR, with a stake-bound limit. Hack
 
 - Agents buy from each other in both directions. A translator buys summaries and a summarizer buys translations, yet each call is paid one by one.
 - Existing schemes net or batch **between one pair** at a time, and capital must be deposited first (x402 `batch-settlement`: escrow channel, one payer and one receiver, EVM document; `coinbase/x402` specs, read 2026-11-02).
-- Paying call by call moves the whole value of every payment. The usual fix, a channel per seller, locks funds seller by seller, and the capital must be forecast for each one.
+- Paying call by call moves the whole value of every payment. The usual fix, a channel per seller, needs a deposit per seller, sized before the sellers are known: either the whole budget is locked at each one or a new deposit is sent each time a channel runs dry. x207 locks one stake, at 125% of the budget, so it does not lock less than a well forecast channel.
 
 ---
 

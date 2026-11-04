@@ -31,4 +31,23 @@ const out = {
   B_x207_mvp: { stakes: payers, capitalLocked: round(x207Stake), ratioToObligation: round(x207Stake / total), note: "one stake covers all sellers; the capital is 125% of what each payer owes, and clearing then cancels 21.8 of the 41.35" },
   C_exact: { onchainTransfers: GRAPH.length, capitalLocked: 0, note: "24 vouchers would be 24 transfers, and no netting" },
 };
-console.log(JSON.stringify(out, null, 2));
+if (!process.argv.includes("--sellers")) console.log(JSON.stringify(out, null, 2));
+
+// UM-141: a payer whose k sellers are not known in advance. It will spend `budget` credit in the epoch, in calls of `price` each, and the split
+// between the k sellers is not known when the funds are locked.
+//   node spikes/s1-capital-per-seller.mjs --sellers 10 --budget 100 --price 0.02
+// - channels with a forecast: the best case above, the deposits add up to the budget (needs the exact split);
+// - channels, no forecast: every channel must be able to carry the whole budget, so k x budget is locked;
+// - channels with small top-ups at the default of docs.x402.org (a deposit hint of 10 x the price of a call): little is locked at any time (k x 10 x price), but a deposit transaction is needed each time a channel runs dry, about budget / (10 x price) of them in all;
+// - x207: one stake of budget / 0.8 for any k.
+const flag = (name, dflt) => { const i = process.argv.indexOf(`--${name}`); return i === -1 ? dflt : Number(process.argv[i + 1]); };
+if (process.argv.includes("--sellers")) {
+  const k = flag("sellers", 10), budget = flag("budget", 100), price = flag("price", 0.02);
+  console.log(JSON.stringify({
+    scenario: { sellers: k, budget, price },
+    channels_with_forecast: { deposits: k, capitalLocked: round(budget) },
+    channels_no_forecast: { deposits: k, capitalLocked: round(k * budget) },
+    channels_small_topups: { deposits: Math.max(k, Math.ceil(budget / (10 * price))), capitalLockedAtATime: round(k * 10 * price), note: "each deposit is an onchain transaction (about 140 thousand gas on Base according to the PayAI documentation)" },
+    x207: { stakes: 1, capitalLocked: round(budget / 0.8) },
+  }, null, 2));
+}
