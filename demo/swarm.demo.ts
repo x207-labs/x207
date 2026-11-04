@@ -17,6 +17,7 @@ import { keeperPass } from "../scripts/lib/keeper.mjs";
 import { SHORT_PARAMS, TERMS_HASH, deployCircle, type CircleFixture } from "../sdk/test-support/circle.ts";
 import { type SandboxAccount } from "../sdk/test-support/sandbox.ts";
 import { AGENT_NAMES, AGENTS, type AgentName } from "../agents/shared/registry.ts";
+import { trafficFor } from "./swarm-traffic.ts";
 
 const run = promisify(execFile);
 const CREDIT = 1_000_000n;
@@ -25,17 +26,7 @@ const EPOCH_SECONDS = Number(process.env.SWARM_EPOCH_SECONDS ?? 300);
 type Member = { name: AgentName; account: SandboxAccount; secretKey: `ed25519:${string}` };
 type Row = { epoch: number; vouchers: number; obligation: bigint; cleared: bigint; due: bigint; ratio: string; phase: string };
 
-/** Who buys what in epoch `e`: every agent buys from the next one and from the one after next, and the odd ones also buy from the one three places on, so debts form cycles of different sizes. */
-export function trafficFor(e: number): Array<{ buyer: AgentName; seller: AgentName; credit: number }> {
-  const n = AGENT_NAMES.length;
-  const rows: Array<{ buyer: AgentName; seller: AgentName; credit: number }> = [];
-  for (let i = 0; i < n; i++) {
-    rows.push({ buyer: AGENT_NAMES[i]!, seller: AGENT_NAMES[(i + 1) % n]!, credit: 10 + ((3 * i + e) % 7) });
-    rows.push({ buyer: AGENT_NAMES[i]!, seller: AGENT_NAMES[(i + 2) % n]!, credit: 3 + ((i + 2 * e) % 4) });
-    if (i % 2 === 1) rows.push({ buyer: AGENT_NAMES[i]!, seller: AGENT_NAMES[(i + 3) % n]!, credit: 4 + (e % 3) });
-  }
-  return rows;
-}
+export { trafficFor };
 
 describe("demo swarm: six agents trade, the circle clears epoch after epoch", () => {
   let fx: CircleFixture;

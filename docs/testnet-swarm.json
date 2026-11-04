@@ -1,0 +1,550 @@
+{
+  "note": "UM-124: one epoch of six named agents on NEAR testnet; hashes and names only",
+  "circle": "x207-swarm.x207r-deploy.testnet",
+  "circleId": "swarm-demo",
+  "release": "v0.0.13",
+  "wasmSha256": "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054",
+  "token": "usdt.x207-deployer.testnet",
+  "keeper": "x207r-circle.testnet",
+  "agents": {
+    "translator": "x207r-translator.testnet",
+    "summarizer": "x207r-summarizer.testnet",
+    "scraper": "x207r-scraper.testnet",
+    "image": "x207r-image.testnet",
+    "cleaner": "x207r-cleaner.testnet",
+    "gpu": "x207r-gpu.testnet"
+  },
+  "params": {
+    "epoch_length": 300,
+    "payment_window": 900,
+    "proposal_window": 60,
+    "base_limit_ratio": 8000,
+    "limit_growth": 1000,
+    "limit_cap": "1000000000",
+    "limit_decay": 0,
+    "fees": {
+      "clearing_fee_bps": 0,
+      "solver_fee_bps": 0
+    },
+    "admission": "open"
+  },
+  "epoch": 1,
+  "result": {
+    "vouchers": 15,
+    "registerSeconds": 13,
+    "obligation": "114000000",
+    "cleared": "99000000",
+    "clearedRatio": 0.8684,
+    "clearingEdges": 13,
+    "debtors": 3,
+    "creditors": 3,
+    "finalPhase": "finalized",
+    "hashes": {
+      "closeEpoch": "BEGw3HVUiyJAAcMEtxCEbdA9qBd7MQi1eESceQUE7ASz",
+      "submitClearing": "3eZn2k2HhwmxH2ysrMs3yfRw3HxdG2fEooDMQZrXPSe5",
+      "commitEpoch": "6DC3L8Xqv9a4XN46Uh6z4yxMZewc2GiBx5PUK3Y5p3Wn",
+      "finalizeEpoch": "F2JvPwwNjyiMM8wttCatmTX53vw7MWwmyCnMDfT5pqtq"
+    }
+  },
+  "perAgent": [
+    {
+      "agent": "translator",
+      "account": "x207r-translator.testnet",
+      "bought": {
+        "vouchers": 2,
+        "credit": 13,
+        "from": [
+          "summarizer",
+          "scraper"
+        ]
+      },
+      "sold": {
+        "vouchers": 3,
+        "credit": 18,
+        "to": [
+          "image",
+          "cleaner",
+          "gpu"
+        ]
+      },
+      "netTradeCredit": 5,
+      "position": {
+        "role": "creditor",
+        "amount": "5000000",
+        "status": "claimable"
+      },
+      "residualPaid": null,
+      "claim": {
+        "claimable": "5000000",
+        "hash": "6qKjFe8u9mzYYz9jk3jzq5z2EMuUjFTBZBj9Lg7YGk3Q",
+        "status": "claimed"
+      }
+    },
+    {
+      "agent": "summarizer",
+      "account": "x207r-summarizer.testnet",
+      "bought": {
+        "vouchers": 3,
+        "credit": 21,
+        "from": [
+          "scraper",
+          "image",
+          "cleaner"
+        ]
+      },
+      "sold": {
+        "vouchers": 2,
+        "credit": 14,
+        "to": [
+          "translator",
+          "gpu"
+        ]
+      },
+      "netTradeCredit": -7,
+      "position": {
+        "role": "debtor",
+        "amount": "7000000",
+        "status": "due"
+      },
+      "residualPaid": {
+        "amount": "7000000",
+        "hash": "MJJDFBNEMNH4YtpmuRZJvtNuDWf1ZSYTqxmndb3zzsq"
+      },
+      "claim": null
+    },
+    {
+      "agent": "scraper",
+      "account": "x207r-scraper.testnet",
+      "bought": {
+        "vouchers": 2,
+        "credit": 21,
+        "from": [
+          "image",
+          "cleaner"
+        ]
+      },
+      "sold": {
+        "vouchers": 3,
+        "credit": 20,
+        "to": [
+          "translator",
+          "summarizer",
+          "gpu"
+        ]
+      },
+      "netTradeCredit": -1,
+      "position": {
+        "role": "debtor",
+        "amount": "1000000",
+        "status": "due"
+      },
+      "residualPaid": {
+        "amount": "1000000",
+        "hash": "93Sydz6v8d4XzsvL6vGR3CXoG38bgsJDvkeZKNGQd1po"
+      },
+      "claim": null
+    },
+    {
+      "agent": "image",
+      "account": "x207r-image.testnet",
+      "bought": {
+        "vouchers": 3,
+        "credit": 22,
+        "from": [
+          "cleaner",
+          "gpu",
+          "translator"
+        ]
+      },
+      "sold": {
+        "vouchers": 2,
+        "credit": 20,
+        "to": [
+          "summarizer",
+          "scraper"
+        ]
+      },
+      "netTradeCredit": -2,
+      "position": {
+        "role": "debtor",
+        "amount": "2000000",
+        "status": "due"
+      },
+      "residualPaid": {
+        "amount": "2000000",
+        "hash": "CDg3oqnYNkkrYSetFe4XW8RecxTfoGuNZUqtNBTif79y"
+      },
+      "claim": null
+    },
+    {
+      "agent": "cleaner",
+      "account": "x207r-cleaner.testnet",
+      "bought": {
+        "vouchers": 2,
+        "credit": 18,
+        "from": [
+          "gpu",
+          "translator"
+        ]
+      },
+      "sold": {
+        "vouchers": 3,
+        "credit": 21,
+        "to": [
+          "summarizer",
+          "scraper",
+          "image"
+        ]
+      },
+      "netTradeCredit": 3,
+      "position": {
+        "role": "creditor",
+        "amount": "3000000",
+        "status": "claimable"
+      },
+      "residualPaid": null,
+      "claim": {
+        "claimable": "3000000",
+        "hash": "JC6j5xWT5K1ERzwu1csmuzNiiM6o1aMywjqeTgoRJN47",
+        "status": "claimed"
+      }
+    },
+    {
+      "agent": "gpu",
+      "account": "x207r-gpu.testnet",
+      "bought": {
+        "vouchers": 3,
+        "credit": 19,
+        "from": [
+          "translator",
+          "summarizer",
+          "scraper"
+        ]
+      },
+      "sold": {
+        "vouchers": 2,
+        "credit": 21,
+        "to": [
+          "image",
+          "cleaner"
+        ]
+      },
+      "netTradeCredit": 2,
+      "position": {
+        "role": "creditor",
+        "amount": "2000000",
+        "status": "claimable"
+      },
+      "residualPaid": null,
+      "claim": {
+        "claimable": "2000000",
+        "hash": "3UQxwVP3P5aKNQrFUtJtVmzxvLfWnqqchp3hJJRj3mt8",
+        "status": "claimed"
+      }
+    }
+  ],
+  "byAccount": {
+    "x207r-translator.testnet": "translator",
+    "x207r-summarizer.testnet": "summarizer",
+    "x207r-scraper.testnet": "scraper",
+    "x207r-image.testnet": "image",
+    "x207r-cleaner.testnet": "cleaner",
+    "x207r-gpu.testnet": "gpu"
+  },
+  "steps": [
+    {
+      "step": "create circle account (9 NEAR from owner)",
+      "account": "x207r-deploy.testnet",
+      "method": "create_account",
+      "hash": "see account history"
+    },
+    {
+      "step": "deploy v0.0.13 wasm",
+      "account": "x207-swarm.x207r-deploy.testnet",
+      "method": "deploy_contract",
+      "hash": "CdmyfmyqKMMeRjs19eKJLMk2ethb1AgX2K4RtKB5w2kQ"
+    },
+    {
+      "step": "new",
+      "account": "x207-swarm.x207r-deploy.testnet",
+      "method": "new",
+      "hash": "4dLAx4AiqJEL7JdYHwRULqo5ZxsLGHsJ8i7UTWQcH865"
+    },
+    {
+      "step": "mint stake cleaner",
+      "account": "x207r-cleaner.testnet",
+      "method": "mint",
+      "hash": "4mjVtfEPy16QyGsiiZ3QkWS86zbnUP1Lf5osZ2k9BJ5d"
+    },
+    {
+      "step": "mint stake summarizer",
+      "account": "x207r-summarizer.testnet",
+      "method": "mint",
+      "hash": "BZzrHHuG9kVZTU1tae4EMtDCAXgJvjdGppqC65mMjCV4"
+    },
+    {
+      "step": "mint stake scraper",
+      "account": "x207r-scraper.testnet",
+      "method": "mint",
+      "hash": "5TbWcnS3biWBc4WhCXLxxC6bobPR8JirBxdA1KR2d6YX"
+    },
+    {
+      "step": "mint stake gpu",
+      "account": "x207r-gpu.testnet",
+      "method": "mint",
+      "hash": "GasUsU8mRzJnf6A9DirmaNbVierMUXtHe5ehX2zyCi71"
+    },
+    {
+      "step": "mint stake translator",
+      "account": "x207r-translator.testnet",
+      "method": "mint",
+      "hash": "7qATpAKw5YBp2Vu72HsJqUsZztVJHEwXAGQdxeeM9c3v"
+    },
+    {
+      "step": "mint stake image",
+      "account": "x207r-image.testnet",
+      "method": "mint",
+      "hash": "5D2Q3PDJGicP5GvUpienZjg2X5oSyK8JMmTLx1XF4mcf"
+    },
+    {
+      "step": "join gpu",
+      "account": "x207r-gpu.testnet",
+      "method": "join",
+      "hash": "9mbjMFQqSQmnhTsVEaRd6yiKoyG1GK2WpZGAwyjB8t38"
+    },
+    {
+      "step": "join scraper",
+      "account": "x207r-scraper.testnet",
+      "method": "join",
+      "hash": "8T7L92c6kqLvRmU4JYL3z1HEzPHShVsoBUHcHtLHSeTN"
+    },
+    {
+      "step": "join summarizer",
+      "account": "x207r-summarizer.testnet",
+      "method": "join",
+      "hash": "5NYZy4ZqwJ5Hnk14ksCsVkfuFwqYzY5Ha5Kk7gSB9PuX"
+    },
+    {
+      "step": "join cleaner",
+      "account": "x207r-cleaner.testnet",
+      "method": "join",
+      "hash": "7oAq3WaWAMQb629pWhdVCQAJb6Y72qfQStjhYVJTy3CB"
+    },
+    {
+      "step": "join image",
+      "account": "x207r-image.testnet",
+      "method": "join",
+      "hash": "DGTpBZHJBCpN53vKqSPFzp6QteadQ8HYpk2TLnYmUffs"
+    },
+    {
+      "step": "join translator",
+      "account": "x207r-translator.testnet",
+      "method": "join",
+      "hash": "GdNyKanKWVF1onyQWtVukWnRn12nLknbUiE7BDxzMyKr"
+    },
+    {
+      "step": "stake summarizer",
+      "account": "x207r-summarizer.testnet",
+      "method": "ft_transfer_call",
+      "hash": "4MWbuvvTeLnxMpyr9co9Ktcoc7BkL6pJVmunh6gQtcfE"
+    },
+    {
+      "step": "stake gpu",
+      "account": "x207r-gpu.testnet",
+      "method": "ft_transfer_call",
+      "hash": "9QZPK1cS9VXVrVUNX9ATwSqvUu9e2jVy1mpZAe4jeoDj"
+    },
+    {
+      "step": "stake cleaner",
+      "account": "x207r-cleaner.testnet",
+      "method": "ft_transfer_call",
+      "hash": "8YLJFMghNxka74CWHW4NFdDd4WVe6JtxqJCUko6gso93"
+    },
+    {
+      "step": "stake scraper",
+      "account": "x207r-scraper.testnet",
+      "method": "ft_transfer_call",
+      "hash": "ECJ2iaDTo1cWaS5XHNM743mXhzAUXkwRPYnSxJq4ebpD"
+    },
+    {
+      "step": "stake translator",
+      "account": "x207r-translator.testnet",
+      "method": "ft_transfer_call",
+      "hash": "FpgPAAb5WzdUqK7WWSDeKyjfv849pmGzR2qY2KVq4GE8"
+    },
+    {
+      "step": "stake image",
+      "account": "x207r-image.testnet",
+      "method": "ft_transfer_call",
+      "hash": "BDbxR53Zf9eoam1yAiH3jjcXGyojDUSEQiveyZaqiHQX"
+    },
+    {
+      "step": "voucher gpu->translator 11",
+      "account": "x207r-gpu.testnet",
+      "method": "register_cumulative",
+      "hash": "429ZrSJsCh3tk12CyNSMBvDt4YkbyhYNTmoNttixSg7Z"
+    },
+    {
+      "step": "voucher translator->summarizer 10",
+      "account": "x207r-translator.testnet",
+      "method": "register_cumulative",
+      "hash": "9je84euzHGDbUbXBzFMHkd3TVVAQLQFsYG7PzGxAkE5"
+    },
+    {
+      "step": "voucher summarizer->scraper 13",
+      "account": "x207r-summarizer.testnet",
+      "method": "register_cumulative",
+      "hash": "DUM7qzNuYvJZQNZoSKaCSJzkR2DuQCoQrAzkpqp5XSRg"
+    },
+    {
+      "step": "voucher image->cleaner 12",
+      "account": "x207r-image.testnet",
+      "method": "register_cumulative",
+      "hash": "5sGf5cJFiozc8XkazpBJBms3B7D6qMeDAjbxECqW8Epv"
+    },
+    {
+      "step": "voucher cleaner->gpu 15",
+      "account": "x207r-cleaner.testnet",
+      "method": "register_cumulative",
+      "hash": "BAD92QfjJYQ7BGSjDnBscNzjbsVq9bernKsJxKjDdbwB"
+    },
+    {
+      "step": "voucher scraper->image 16",
+      "account": "x207r-scraper.testnet",
+      "method": "register_cumulative",
+      "hash": "4KfnBGLS7XcW1mDFnjNsLKJbeS9svqyDciNdka4TLDVP"
+    },
+    {
+      "step": "voucher gpu->summarizer 4",
+      "account": "x207r-gpu.testnet",
+      "method": "register_cumulative",
+      "hash": "DQ4ieN4Qx5ruvY36RyTAP5sgEeTie9gtogek8zF43w3L"
+    },
+    {
+      "step": "voucher summarizer->image 4",
+      "account": "x207r-summarizer.testnet",
+      "method": "register_cumulative",
+      "hash": "AdqYhH2kSRH1LVx8vAKAh9Q9mA2NUJKaqtekneQzuZVb"
+    },
+    {
+      "step": "voucher translator->scraper 3",
+      "account": "x207r-translator.testnet",
+      "method": "register_cumulative",
+      "hash": "6Quub3doncc7upbU44mqiwzX6WfTTTGbNUN8AGuC94e6"
+    },
+    {
+      "step": "voucher scraper->cleaner 5",
+      "account": "x207r-scraper.testnet",
+      "method": "register_cumulative",
+      "hash": "DEbCh7hNw94ydDzrCGgQZGRcxb7F4CRV76sMKi3NH3wH"
+    },
+    {
+      "step": "voucher image->gpu 6",
+      "account": "x207r-image.testnet",
+      "method": "register_cumulative",
+      "hash": "5CfVvKBWVWDKQGSr7Sc4SLXRuopGxQfsEAt81D9cEPMw"
+    },
+    {
+      "step": "voucher cleaner->translator 3",
+      "account": "x207r-cleaner.testnet",
+      "method": "register_cumulative",
+      "hash": "6nhvRgvWptdbLZGyrgmQhKUdfGFeHcYTfVA68X7TrCcA"
+    },
+    {
+      "step": "voucher summarizer->cleaner 4",
+      "account": "x207r-summarizer.testnet",
+      "method": "register_cumulative",
+      "hash": "BgRxLtV6YWjQxCYrH7gK1L9goJgtUroCrp3jkdMBeVxk"
+    },
+    {
+      "step": "voucher gpu->scraper 4",
+      "account": "x207r-gpu.testnet",
+      "method": "register_cumulative",
+      "hash": "F7Juieoze6GG7eTFbUP6z3XeDjFm6uHgiYtv7rN9XNCE"
+    },
+    {
+      "step": "voucher image->translator 4",
+      "account": "x207r-image.testnet",
+      "method": "register_cumulative",
+      "hash": "Bn5WXpkwswmREiXP9L9aPsGtKUtaGPr6gwYxeHPLMyuX"
+    },
+    {
+      "step": "close_epoch",
+      "account": "x207r-circle.testnet",
+      "method": "close_epoch",
+      "hash": "BEGw3HVUiyJAAcMEtxCEbdA9qBd7MQi1eESceQUE7ASz"
+    },
+    {
+      "step": "submit_clearing",
+      "account": "x207r-circle.testnet",
+      "method": "submit_clearing",
+      "hash": "3eZn2k2HhwmxH2ysrMs3yfRw3HxdG2fEooDMQZrXPSe5"
+    },
+    {
+      "step": "commit_epoch",
+      "account": "x207r-circle.testnet",
+      "method": "commit_epoch",
+      "hash": "6DC3L8Xqv9a4XN46Uh6z4yxMZewc2GiBx5PUK3Y5p3Wn"
+    },
+    {
+      "step": "mint residual x207r-summarizer.testnet",
+      "account": "x207r-summarizer.testnet",
+      "method": "mint",
+      "hash": "GRMZLcSqq5gBiKXWBQN7crT3haHxkEMUaPq87w9j6Y2z"
+    },
+    {
+      "step": "mint residual x207r-image.testnet",
+      "account": "x207r-image.testnet",
+      "method": "mint",
+      "hash": "6WmTnWEedUhGgfsV1evrYqqiJzxLp66P6vt2viH8axWC"
+    },
+    {
+      "step": "mint residual x207r-scraper.testnet",
+      "account": "x207r-scraper.testnet",
+      "method": "mint",
+      "hash": "CVgzZwt4WgWgzBuntiz4rRRMHLsVoLRuLjtUR9zf8YP5"
+    },
+    {
+      "step": "settle x207r-scraper.testnet 1000000",
+      "account": "x207r-scraper.testnet",
+      "method": "ft_transfer_call",
+      "hash": "93Sydz6v8d4XzsvL6vGR3CXoG38bgsJDvkeZKNGQd1po"
+    },
+    {
+      "step": "settle x207r-image.testnet 2000000",
+      "account": "x207r-image.testnet",
+      "method": "ft_transfer_call",
+      "hash": "CDg3oqnYNkkrYSetFe4XW8RecxTfoGuNZUqtNBTif79y"
+    },
+    {
+      "step": "settle x207r-summarizer.testnet 7000000",
+      "account": "x207r-summarizer.testnet",
+      "method": "ft_transfer_call",
+      "hash": "MJJDFBNEMNH4YtpmuRZJvtNuDWf1ZSYTqxmndb3zzsq"
+    },
+    {
+      "step": "finalize_epoch",
+      "account": "x207r-circle.testnet",
+      "method": "finalize_epoch",
+      "hash": "F2JvPwwNjyiMM8wttCatmTX53vw7MWwmyCnMDfT5pqtq"
+    },
+    {
+      "step": "claim x207r-gpu.testnet",
+      "account": "x207r-gpu.testnet",
+      "method": "claim",
+      "hash": "3UQxwVP3P5aKNQrFUtJtVmzxvLfWnqqchp3hJJRj3mt8"
+    },
+    {
+      "step": "claim x207r-translator.testnet",
+      "account": "x207r-translator.testnet",
+      "method": "claim",
+      "hash": "6qKjFe8u9mzYYz9jk3jzq5z2EMuUjFTBZBj9Lg7YGk3Q"
+    },
+    {
+      "step": "claim x207r-cleaner.testnet",
+      "account": "x207r-cleaner.testnet",
+      "method": "claim",
+      "hash": "JC6j5xWT5K1ERzwu1csmuzNiiM6o1aMywjqeTgoRJN47"
+    }
+  ]
+}
