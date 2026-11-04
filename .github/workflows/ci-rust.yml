@@ -21,6 +21,10 @@ on:
         description: Folder that holds Cargo.toml and rust-toolchain.toml.
         type: string
         default: "."
+      intents-wasm:
+        description: Fetch the wasm of intents.near from mainnet (RPC view_code, read only, sha256 checked, scripts/fetch-intents-wasm.sh) and make the test ct103_real_intents fail when it is missing (CT-103).
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -68,8 +72,13 @@ jobs:
           fi
       - name: Build contract
         run: cargo near build non-reproducible-wasm
+      - name: Fetch the wasm of intents.near
+        if: ${{ inputs.intents-wasm }}
+        run: scripts/fetch-intents-wasm.sh
       - name: Test
         # One test at a time: the sandbox tests move block time and fail with ERR_PAST_CUTOFF when they compete for the CPU.
+        env:
+          X207_REQUIRE_INTENTS_WASM: ${{ inputs.intents-wasm && '1' || '' }}
         run: cargo test --locked -- --test-threads=1
       - name: Disk after the build
         if: always()
