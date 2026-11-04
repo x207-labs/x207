@@ -965,6 +965,8 @@ Apache-2.0. See [LICENSE](LICENSE).
 
 **Code written with AI help.** The code, tests and documents of this project were written with the help of AI coding assistants: Claude Code (Anthropic) in several parallel sessions, each working on one repository under a human owner who set the design, reviewed the results and decided what to publish. Many commits carry a `Co-Authored-By: Claude` trailer. The design notes in a private repository were also written with it. Every number in this README comes from a run or a file named next to it; where a run did not happen, the text says so.
 
+**License.** Every repository of the project is licensed under Apache-2.0: [x207](LICENSE), [contracts](https://github.com/x207-labs/contracts/blob/main/LICENSE), [sdk](https://github.com/x207-labs/sdk/blob/main/LICENSE), [backend](https://github.com/x207-labs/backend/blob/main/LICENSE), [frontend](https://github.com/x207-labs/frontend/blob/main/LICENSE), [solver](https://github.com/x207-labs/solver/blob/main/LICENSE) and [agents](https://github.com/x207-labs/agents/blob/main/LICENSE).
+
 **Third-party libraries and services.** All of them are open source and are used as libraries or as hosted endpoints; none of their code is copied into this repository.
 
 | Area | What is used |
