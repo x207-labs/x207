@@ -445,7 +445,7 @@ A store gift card (item 77, issuer `store.example`) has a face value and a balan
 | The buyer spends the card at the store and confirms | The balance is now 0; only now the voucher is in the answer, the seller registers it, the pair holds 4 credit |
 | A card whose balance went to 0 after it was listed is sold to `second` | `code_used`: refused before the handover, `cancelled`, no key, no payment, the pair holds 0 |
 | `buyer` buys a promo code that is still good (3 credit) | The voucher continues from the registered one; after the buyer redeems it the pair holds 7 credit |
-| A promo code whose end date passes between the purchase and the handover | `code_unknown`: the issuer does not know it any more; refused, `cancelled`, no key, no payment |
+| A promo code whose end date passes between the purchase and the handover | `code_unknown`: the issuer does not know it any more; the key is not released, the purchase stays at `cipher_posted`, no voucher leaves, the pair holds 0 |
 
 Codes, salts and file keys are in no table of the read model and in no console line; the test searches for them. Not shown: a real store or promo issuer (a mock ran), and a promo code that is bound to the account of its first holder (such a code is not sold: `code_bound_to_identity`, see the block above).
 
@@ -543,7 +543,7 @@ A role of a community is rented by the day. The broker of the grantor holds the 
 | `translator` pays a second day before the first ends | The paid end moves by one day; the role stays |
 | The paid end passes and nobody pays | The broker's tick removes the role; the access is no longer `active` |
 | #85 own group: `gpu` rents the member role of its group, `image` pays a day | The member holds the role |
-| `image` leaves the circle (`request_exit`) and tries to pay the next day | The voucher is refused; the role stays until the paid end, then the broker takes it away |
+| `image` leaves the circle (`request_exit`) and tries to pay the next day | No voucher can be signed; the role stays until the paid end, then the broker takes it away |
 
 What this block does not show: a real Discord server (the REST calls are mocked), the OAuth proof of the id of the member, and a rate limit of Discord (the retry of the broker has its own test).
 
