@@ -407,6 +407,15 @@ X207_SANDBOX=1 npx vitest run tests/freelance.sandbox.test.ts tests/consultation
 | **Consultation slot (#84).** A slot is an order with one milestone, due when the slot ends. The mentor hands over the record of the session, the learner confirms | The pair holds 8 credit |
 | The mentor does not show at another slot: nothing is delivered | The learner cannot confirm; after the due date the learner cancels the open milestone; no voucher is signed. A slot that is not due yet cannot be cancelled |
 
+**Product testing (#88, UM-111).** `X207_SANDBOX=1 npx vitest run tests/product-test.sandbox.test.ts` (about one minute). A maker orders a test report from `tester` (12 credit, one milestone). The terms are signed with the order (their hash is its `spec_hash`) and say that a paid report states in its first line that it is paid and by whom.
+
+| Do | See |
+| --- | --- |
+| `tester` hands over a report whose first line is `Disclosure: paid test, commissioned by <maker>`; the maker checks the line, confirms, signs | The milestone is `paid`, the pair holds 12 credit |
+| `shill` hands over a report that reads like an independent review and does not say it is paid; the maker checks it against the terms and disputes it (`not_as_described`) | No voucher is signed, the pair stays at 0, a confirmation afterwards is refused |
+
+x207 does not police the web. What it does is refuse to pay for a report that breaks the terms both parties signed. The check of the first line is the maker's own, in the test (`meetsTerms`).
+
 Two choices behind these rows. A slot uses the order kind `freelance`, because `ORDER_KINDS` has no kind for consultation and the milestone flow is the same. A no-show is not a dispute: the backend allows a dispute only from `delivered`, so the learner cancels the open milestone after its due date, which pays nothing.
 
 A dispute leaves the state as it was: a cumulative voucher cannot skip a milestone, so the next voucher never carries a disputed one. What this block does not show: the judgement of a dispute, the check of the target of a load test, and orders of a kind other than `audit` and `keeper` (each has its own test in `agents/test/services.test.ts`).
