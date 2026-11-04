@@ -12,6 +12,7 @@ import { describe, expect, it } from "vitest";
 import { signVoucher } from "@x207/core";
 import { Account, JsonRpcProvider, KeyPairSigner } from "../backend/node_modules/near-api-js/lib/index.js";
 import { keeperPass } from "../scripts/lib/keeper.mjs";
+import { GRAPH as PLANNED_GRAPH } from "../scripts/lib/realistic-epoch.mjs";
 import { solveClearing } from "../solver/src/mincostflow/index.ts";
 import type { ObligationGraph } from "../solver/src/graph/index.ts";
 import { Recorder, patient, sleep } from "./support/testnet-kit.ts";
@@ -21,19 +22,12 @@ const RPCS = [process.env.X207_TESTNET_RPC ?? "https://rpc.testnet.fastnear.com"
 const CIRCLE = "x207-v013.testnet";
 const AUX = "x207-v013-aux.testnet";
 const USDT = "usdt.x207-deployer.testnet";
-const secretsDir = resolve("../../.secrets/testnet-deployer");
+const secretsDir = process.env.X207_SECRETS_DIR ?? resolve("../../.secrets/testnet-deployer");
 const CREDIT = 1_000_000n;
 const credits = (x: number): bigint => BigInt(Math.round(x * 1_000_000));
 
-/** Who owes whom, in credit: `[debtor, creditor, amount]` by member number. Cycles: 0-1-2, 3-4, 5-6-7-8. The rest are chains that end at a member who owes nothing to the chain. */
-const GRAPH: Array<[number, number, number]> = [
-  [0, 1, 4.0], [1, 2, 2.5], [2, 0, 3.0], // a triangle: 2.5 can be cancelled
-  [3, 4, 1.2], [4, 3, 0.75], // two members who owe each other: 0.75 can be cancelled
-  [5, 6, 5.0], [6, 7, 3.5], [7, 8, 4.25], [8, 5, 1.8], // a ring of four: 1.8 can be cancelled
-  [9, 10, 2.4], [10, 11, 1.1], [9, 11, 0.6], [12, 9, 0.9], [13, 12, 1.7], [14, 13, 0.45], // a chain 14 -> 13 -> 12 -> 9 -> 10 -> 11: nothing to cancel
-  [14, 0, 0.35], [2, 10, 1.3], [7, 14, 0.8], [11, 3, 0.55], [4, 12, 0.65], [6, 13, 2.05], // links between the groups
-  [8, 9, 1.15], [1, 5, 0.95], [10, 4, 0.4],
-];
+/** Who owes whom, in credit: `[debtor, creditor, amount]` by member number; the graph lives in scripts/lib/realistic-epoch.mjs, shared with `npm run testnet:epoch`. */
+const GRAPH = PLANNED_GRAPH as Array<[number, number, number]>;
 
 describe.skipIf(!ENABLED)("UM-106: a realistic epoch on x207-v013.testnet", () => {
   it("runs a partial clearing with residuals paid, one default and claims, on real time", async () => {
