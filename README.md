@@ -396,16 +396,17 @@ The transfer code never appears in an answer or request of the API, in the log, 
 X207_SANDBOX=1 npx vitest run tests/delivery-group-e.sandbox.test.ts   # real contract and indexer; about one minute
 ```
 
-Airtime and data allowance (#78) and transferable loyalty points (#79) have no API that x402 or x207 can call. The seller hands the thing over once, with the transfer feature of the carrier or the program, outside x207, and signs a `delivered` notice (with the hash of the receipt, never the receipt). The receiver signs `confirmed` or `disputed` (BE-047), and the payment is registered on the contract only when the handover is confirmed. A deal at or above the bond threshold (100 credit) says `needsBond`.
+Airtime and data allowance (#78) and transferable loyalty points (#79) have no API that x402 or x207 can call. The seller hands the thing over once, with the transfer feature of the carrier or the program, outside x207, and signs a `delivered` notice (with the hash of the receipt, never the receipt). The receiver signs `confirmed` or `disputed` (BE-047), and the payment is registered on the contract only when the handover is confirmed. A deal at or above the bond threshold (100 credit) is a **deal with a bond** (CT-094): `accept` refuses a plain payment (`409 bond_required`) and takes a bundle of the two parties whose signed terms name an arbiter and `confirm_by`; the bundle is committed before the handover, so the bond of each side is locked while the thing is handed over. A sale has one payment, and the contract needs a swap of two legs, so the bundle carries a nominal return leg of one unit (0.000001 credit) from the seller.
 
 | Do | See |
 | --- | --- |
 | `seller` lists 30 credit of airtime, `buyer` offers and `seller` accepts | The match is `awaiting`, not payable, `needsBond: false` |
 | `seller` signs `delivered`; `buyer` signs `confirmed` (the seller cannot confirm its own handover) | `payable: true`; then `buyer` signs the voucher and `seller` registers it: the pair holds 30 credit |
-| `seller` lists 130 credit of loyalty points and `second` buys them | The match says `needsBond: true` (at or above 100 credit) |
-| `seller` signs `delivered`; `second` signs `disputed` (`not_received`) | `disputed`, never payable, a later `confirmed` is refused, the pair holds 0 |
+| `seller` lists 110 credit of loyalty points and `second` buys them; `accept` without an arbiter | `409 bond_required` |
+| `seller` accepts with an arbiter; both sign the terms; anybody commits the bundle | The bundle is `ready` before the handover; `commit_bundle` locks the bond of both sides (`bond_locked`) |
+| `seller` signs `delivered`; `second` signs `disputed` (`not_received`) and calls `dispute_deal`; the arbiter calls `rule_deal` `accused_guilty` | The bond of the seller goes to the stake of the buyer, both locks are lifted, the handover is never payable, the pair holds 0 |
 
-What this block does not show: the bond itself (the flag is not a lock; CT-094 is a bundle with an arbiter), a real carrier or program (the transfer is simulated by the notices), and the automatic confirmation after 72 hours of silence (it has its own backend test).
+What this block does not show: a ruling for the seller (`no_fault` and `complaint_false` have their own tests on the contract), a real carrier or program (the transfer is simulated by the notices), the automatic confirmation after 72 hours of silence (own backend test), and the transfer ledger of the platforms (domain, game item, ticket): it keeps refusing a value at or above the threshold with `transfer_arbiter_required`, because its voucher flow cannot carry a bond.
 
 ### Access rent block (pipeline P2)
 

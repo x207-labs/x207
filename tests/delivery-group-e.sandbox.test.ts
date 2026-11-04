@@ -1,13 +1,14 @@
 // UM-097: delivery of a thing that has no API (P2 group E, ADR-47 point 7: airtime and data allowance #78, loyalty points #79) in near-sandbox. The seller hands it over once, with the transfer feature of
 // the operator or the program, outside x207; the receiver confirms with a signed notice (BE-047) and only then is the payment registered on the contract:
-//   - airtime of 30 credit: listed, offered, accepted; `delivered` by the seller, `confirmed` by the buyer; the buyer's voucher is then registered and the pair holds 30;
-//   - loyalty points of 130 credit: the deal is at or above the bond threshold (100 credit), so the match says `needsBond`; the seller says `delivered`, the buyer says `disputed` (`not_received`):
-//     the payment never becomes payable, a later `confirmed` is refused, nothing is registered and the pair holds 0.
+//   - airtime of 30 credit (below the bond threshold): listed, offered, accepted; `delivered` by the seller, `confirmed` by the buyer; the buyer's voucher is then registered and the pair holds 30;
+//   - loyalty points of 110 credit (at or above the threshold of 100 credit): accept refuses a plain payment (`bond_required`) and takes a deal with a bond (CT-094): a bundle of the two parties with an
+//     arbiter in its signed terms, committed BEFORE the handover so that the bond of each side is locked. The seller says `delivered`, the buyer says `disputed` (`not_received`) on the backend and
+//     `dispute_deal` on the contract, the arbiter rules `accused_guilty`: the bond of the seller moves to the stake of the buyer, the locks are lifted, the payment is never payable and the pair holds 0.
 import { afterAll, describe, expect, it } from "vitest";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { createHash } from "node:crypto";
-import { createCircleViewFn, listingHash, onboardMember, signListing, signOffer, signVoucher, type ContractAbi, type ContractCall, type Listing, type Offer, type UnsignedVoucher } from "@x207/core";
+import { bundleInput, createCircleViewFn, listingHash, onboardMember, parseEventLog, signBundle, signListing, signOffer, signVoucher, termsHash, type BundleTerms, type ContractAbi, type ContractCall, type Listing, type Offer, type UnsignedVoucher } from "@x207/core";
 import { FailoverRpcClient, Indexer, RpcBlockSource, createApiServer, openDatabase, rpcChainReader } from "../backend/src/index.ts";
 import { viewClearedEdges } from "../backend/src/indexer/view-edges.ts";
 import { marketplaceRoutes } from "../backend/src/marketplace/index.ts";
@@ -140,19 +141,63 @@ describe.skipIf(!sandboxAvailable)("UM-097 group E without an API (airtime #78, 
     expect(r.failures).toEqual([]);
     await catchUp(() => pairOf(buyer, seller) === credit(30));
 
-    // --- 2. loyalty points (#79), 130 credit: at or above 100 credit the match asks for a bond; the buyer disputes and nothing is paid
-    const points = await dealOn("loyalty:transferable-points", 130, "um097-points", second);
-    expect(points.accepted.result.delivery).toMatchObject({ required: true, payable: false, needsBond: true });
-    expect((await get(`/listings/${points.hash}/delivery`)).needsBond).toBe(true);
-    await notice(points, seller, "delivered", createHash("sha256").update("program receipt").digest("hex"));
-    const disputed = await notice(points, second, "disputed", undefined, "not_received");
-    expect(disputed.status).toBe(201);
+    // --- 2. loyalty points (#79), 110 credit: at or above 100 credit the handover is a deal with a bond (CT-094). Accept refuses a plain payment, takes a bundle with an arbiter in its signed
+    // terms, and the bundle is committed BEFORE the handover, so the bond of the seller is locked while the points are handed over. The buyer disputes: the arbiter finds the seller at fault, the
+    // bond of the seller goes to the stake of the buyer, and the buyer never pays.
+    const arbiter = await fx.sandbox.createAccount("arbiter", "10");
+    const listing: Listing = {
+      circle: contractId, account: seller.account.accountId, offer: { asset_type: "loyalty:transferable-points", asset_class: "B", quantity: 1, value: credit(110) },
+      want: { asset_type: "usdc", asset_class: "A", quantity: 1, value: credit(110) }, terms: "points moved once through the transfer feature of the program",
+      detail: "loyalty points um097", expires_at: nowS() + 86_400, discount_bps: 0, accept_payment: true, discoverable: true, nonce: "um097-points",
+    };
+    const lh = listingHash(listing);
+    expect((await post("/listings", { listing, signature: signListing(listing, seller.secretKey) })).status).toBe(201);
+    const offer: Offer = { circle: contractId, listing_hash: lh, proposer: second.account.accountId, round: 1, mode: "pay", value: credit(110), quantity: 1, deliver_by: nowS() + 3 * 86_400 };
+    const posted = await post(`/listings/${lh}/offers`, { offer, signature: signOffer(offer, second.secretKey) });
+    const offerHash = posted.json.offerHash as string;
+    // a plain payment of this value is refused
+    const plain = await post(`/listings/${lh}/offers/${offerHash}/accept`, { account: seller.account.accountId });
+    expect([plain.status, plain.json.error.code]).toEqual([409, "bond_required"]);
+    // the terms with the arbiter come from the preview; both parties sign them
+    const chainNowNs = BigInt(await fx.sandbox.blockTimestampMs()) * 1_000_000n;
+    const confirmBy = (chainNowNs + 3n * 86_400n * 1_000_000_000n).toString();
+    const shown = await post(`/listings/${lh}/offers/${offerHash}/preview`, { account: seller.account.accountId, arbiter: arbiter.accountId, confirmBy });
+    expect([shown.status, shown.json.needsBond, shown.json.kind]).toEqual([200, true, "bundle"]);
+    const terms = shown.json.bundle.terms as BundleTerms;
+    expect(terms).toMatchObject({ arbiter: arbiter.accountId, confirm_by: confirmBy });
+    const accepted = await post(`/listings/${lh}/offers/${offerHash}/accept`, { account: seller.account.accountId, arbiter: arbiter.accountId, confirmBy, signature: signBundle(terms, seller.account.accountId, seller.secretKey).signature });
+    expect(accepted.status).toBe(201);
+    expect(accepted.json.result.delivery).toMatchObject({ required: true, payable: false, needsBond: true });
+    const th = termsHash(terms);
+    expect((await post(`/bundle-proposals/${th}/signatures`, { account: second.account.accountId, signature: signBundle(terms, second.account.accountId, second.secretKey).signature })).status).toBe(201);
+    expect((await get(`/bundle-proposals/${th}`))).toMatchObject({ status: "ready", missing: [] }); // ready before the handover
+    // anybody commits the bundle: the bond of both sides is locked
+    const stakeOf = async (m: Member) => BigInt((await view_<ContractAbi.MemberView>("member", { account_id: m.account.accountId })).stake);
+    const [sellerStake0, buyerStake0] = [await stakeOf(seller), await stakeOf(second)];
+    const commit = await arbiter.call({ receiverId: contract, methodName: "commit_bundle", deposit: 0n, gas: 200_000_000_000_000n, args: { bundle: bundleInput(terms), signatures: [seller, second].map((m) => ({ account_id: m.account.accountId, signature: signBundle(terms, m.account.accountId, m.secretKey).signature })) } }, "FINAL");
+    expect(commit.failures).toEqual([]);
+    const bundleId = Number((commit.logs.flatMap((l: string) => (parseEventLog(l) ?? []) as Array<Record<string, any> & { event: string }>).find((e) => e.event === "bundle_committed") as any).bundle_id);
+    const deal = await view_<ContractAbi.DealView>("get_deal", { bundle_id: bundleId });
+    expect(deal).toMatchObject({ arbiter: arbiter.accountId, state: "open" });
+    const bond = BigInt(deal.bond_each);
+    expect(bond).toBeGreaterThan(0n);
+    expect([await view_<string>("bond_locked", { account_id: seller.account.accountId }), await view_<string>("bond_locked", { account_id: second.account.accountId })]).toEqual([bond.toString(), bond.toString()]);
+    // the handover: the seller says delivered, the buyer got nothing and disputes, on the backend and on the contract
+    await notice({ hash: lh, offerHash }, seller, "delivered", createHash("sha256").update("program receipt").digest("hex"));
+    const disputed = await notice({ hash: lh, offerHash }, second, "disputed", undefined, "not_received");
     expect(disputed.json).toMatchObject({ payable: false });
     expect(disputed.json.deliveries[0]).toMatchObject({ state: "disputed", disputeReason: "not_received" });
-    expect((await notice(points, second, "confirmed")).status).toBeGreaterThanOrEqual(400); // a disputed handover stays disputed
-    expect((await get(`/listings/${points.hash}/delivery`)).payable).toBe(false);
+    expect((await second.account.call({ receiverId: contract, methodName: "dispute_deal", args: { bundle_id: bundleId, evidence_hash: createHash("sha256").update("screenshot of the empty balance").digest("hex") }, deposit: 0n, gas: 100_000_000_000_000n }, "FINAL")).failures).toEqual([]);
+    expect(await view_<ContractAbi.DealView>("get_deal", { bundle_id: bundleId })).toMatchObject({ state: "disputed", complainant: second.account.accountId, accused: seller.account.accountId });
+    // the arbiter rules for the receiver: the bond of the seller goes to the stake of the buyer, both locks are lifted
+    const ruled = await arbiter.call({ receiverId: contract, methodName: "rule_deal", args: { bundle_id: bundleId, verdict: "accused_guilty" }, deposit: 0n, gas: 100_000_000_000_000n }, "FINAL");
+    expect(ruled.failures).toEqual([]);
+    expect([await stakeOf(seller), await stakeOf(second)]).toEqual([sellerStake0 - bond, buyerStake0 + bond]);
+    expect([await view_<string>("bond_locked", { account_id: seller.account.accountId }), await view_<string>("bond_locked", { account_id: second.account.accountId })]).toEqual(["0", "0"]);
+    expect((await get(`/listings/${lh}/delivery`)).payable).toBe(false); // never payable
+    expect((await notice({ hash: lh, offerHash }, second, "confirmed")).status).toBeGreaterThanOrEqual(400); // a disputed handover stays disputed
     await new Promise((r2) => setTimeout(r2, 3_000));
-    expect(pairOf(second, seller)).toBe("0"); // nothing was signed or registered for the disputed deal
-    console.log(["UM-097", `epoch ${E}`, `airtime pair ${pairOf(buyer, seller)}`, `points pair ${pairOf(second, seller)}`, `points needsBond ${points.accepted.result.delivery.needsBond}`].join(" | "));
+    expect(pairOf(second, seller)).toBe("0"); // the buyer never signed a voucher for the disputed deal
+    console.log(["UM-097", `epoch ${E}`, `airtime pair ${pairOf(buyer, seller)}`, `points pair ${pairOf(second, seller)}`, `bond slashed ${bond.toString()}`].join(" | "));
   }, 1_800_000);
 });
