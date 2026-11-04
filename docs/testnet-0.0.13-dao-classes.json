@@ -1,0 +1,52 @@
+{
+  "dao": "x207v8.sputnikv2.testnet",
+  "circle": "x207-v013.testnet",
+  "council": [
+    "x207-dao-v8.testnet",
+    "b.x207-dao-v8.testnet"
+  ],
+  "proposals": [
+    {
+      "assetType": "nft:nep171",
+      "class": "A",
+      "deliveryMethods": [
+        "escrow_nft"
+      ],
+      "id": 2,
+      "addProposal": "CXJMDGLSPsKnhE2JNka9b76VSSmi2CWEzykHtWPM4696",
+      "voteA": "F4XyhGMWsZNtKCcbHCfbiJPqzQ27JmmrewKyVWfwLquU",
+      "voteBExecutes": "6ZyCYPo6kxZqzLoRTNhvZEEYhpXb6xs7Y7uDpxazZqtj",
+      "proposalStatus": "Approved",
+      "registered": {
+        "asset_type": "nft:nep171",
+        "class": "A",
+        "delivery_methods": [
+          "escrow_nft"
+        ],
+        "accepted_proofs": [],
+        "terms_hash": "31064babfd22cb7f57be836bd5e252c2301909396ff79232d699dd82bd3f8a15"
+      }
+    },
+    {
+      "assetType": "token:nep141",
+      "class": "A",
+      "deliveryMethods": [
+        "escrow_ft"
+      ],
+      "id": 3,
+      "addProposal": "3DvxrC2kzrfvLrokqUbNUM4taACVCg6KVs2PeAHgMNPQ",
+      "voteA": "CuJ3cQTotMKNv231ULxPEcFxbnEU11ZQPnxvMATu7Yr6",
+      "voteBExecutes": "Z2hmSttFQBHZnirwutFQG2vmu2Wp6priXpJEDWczmji",
+      "proposalStatus": "Approved",
+      "registered": {
+        "asset_type": "token:nep141",
+        "class": "A",
+        "delivery_methods": [
+          "escrow_ft"
+        ],
+        "accepted_proofs": [],
+        "terms_hash": "70d866db142f01f71ccdd62d497f46135f6569c8d7ff4d50babee0f6a2d6bfe1"
+      }
+    }
+  ]
+}
