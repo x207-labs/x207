@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { KNOWN_SHA256 } from "./deploy-mainnet.mjs";
-import { DEFAULT_TAG, DemoStop, MOCK_FT_SHA256, parseArgs, releaseUrl, sandboxUrl, sha256, verifyRelease } from "./demo-quick.mjs";
+import { DEFAULT_TAG, DEMOS, DemoStop, MOCK_FT_SHA256, parseArgs, releaseUrl, sandboxUrl, sha256, verifyRelease } from "./demo-quick.mjs";
 
 test("TC-UM-107-01 a wasm with the pinned sha256 passes; any other bytes stop the demo and the message names both numbers", () => {
   const bytes = Buffer.from("not the wasm");
@@ -41,4 +41,15 @@ test("TC-UM-107-06 the arguments are strict", () => {
   assert.equal(parseArgs(["--tag", "v0.0.12"]).tag, "v0.0.12");
   assert.throws(() => parseArgs(["--tag"]), /needs a value/);
   assert.throws(() => parseArgs(["--bogus"]), /unknown argument/);
+});
+
+test("TC-UM-107-07 --demo picks the demo that runs with the downloaded files (sandbox by default, mcp for SD-082); another name is refused", () => {
+  assert.equal(parseArgs([]).demo, "sandbox");
+  assert.equal(parseArgs(["--release-wasm", "--demo", "mcp"]).demo, "mcp");
+  assert.equal(DEMOS.mcp, "demo:mcp:run");
+  assert.throws(() => parseArgs(["--demo", "mainnet"]), /--demo is one of sandbox, mcp/);
+  assert.throws(() => parseArgs(["--demo"]), /--demo is one of/);
+  const scripts = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).scripts;
+  assert.equal(scripts["demo:mcp"], "node scripts/demo-quick.mjs --release-wasm --demo mcp"); // the first run in a clean clone downloads the wasm and the sandbox, like demo:quick
+  assert.match(scripts["demo:mcp:run"], /vitest run --config demo\/vitest\.config\.mts mcp$/);
 });

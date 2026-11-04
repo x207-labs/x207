@@ -20,14 +20,15 @@
     "submission:draft": "node scripts/submission-payload.mjs --draft",
     "test:integration": "X207_SANDBOX=1 vitest run",
     "demo:quick": "node scripts/demo-quick.mjs --release-wasm",
-    "demo:sandbox": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts sandbox",
-    "demo:mcp": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts mcp",
-    "demo:business": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts business",
-    "demo:realworld": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts realworld",
-    "demo:marketplace": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts marketplace",
-    "demo:classb": "X207_SANDBOX=1 vitest run --config demo/vitest.config.ts classb",
-    "demo:testnet": "DEMO_NETWORK=testnet vitest run --config demo/vitest.config.ts network",
-    "demo:mainnet": "DEMO_NETWORK=mainnet vitest run --config demo/vitest.config.ts network"
+    "demo:sandbox": "X207_SANDBOX=1 vitest run --config demo/vitest.config.mts sandbox",
+    "demo:mcp": "node scripts/demo-quick.mjs --release-wasm --demo mcp",
+    "demo:mcp:run": "X207_SANDBOX=1 vitest run --config demo/vitest.config.mts mcp",
+    "demo:business": "X207_SANDBOX=1 vitest run --config demo/vitest.config.mts business",
+    "demo:realworld": "X207_SANDBOX=1 vitest run --config demo/vitest.config.mts realworld",
+    "demo:marketplace": "X207_SANDBOX=1 vitest run --config demo/vitest.config.mts marketplace",
+    "demo:classb": "X207_SANDBOX=1 vitest run --config demo/vitest.config.mts classb",
+    "demo:testnet": "DEMO_NETWORK=testnet vitest run --config demo/vitest.config.mts network",
+    "demo:mainnet": "DEMO_NETWORK=mainnet vitest run --config demo/vitest.config.mts network"
   },
   "devDependencies": {
     "jsdom": "30.1.3"

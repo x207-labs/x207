@@ -4,7 +4,7 @@ _Moved from the README section 4. The content is unchanged; paths are relative t
 
 ### Use x207 from an AI agent (MCP)
 
-`@x207/mcp` (in `sdk/packages/mcp`) is an [MCP](https://modelcontextprotocol.io) server: a model such as Claude can read a circle and, when you turn the write tools on, join it, pay for x402 endpoints with credit vouchers, list offers and read the clearing. One command runs a whole scenario on `near-sandbox`, with a script as the MCP client over stdio (same build steps as the sandbox demo, no key of yours):
+`@x207/mcp` (in `sdk/packages/mcp`) is an [MCP](https://modelcontextprotocol.io) server: a model such as Claude can read a circle and, when you turn the write tools on, join it, pay for x402 endpoints with credit vouchers, list offers and read the clearing. One command runs a whole scenario on `near-sandbox`, with a script as the MCP client over stdio (it downloads the release wasm and the sandbox like `demo:quick`, checks the sha256, builds the packages once if they are not built, and needs no Rust and no key of yours):
 
 ```bash
 npm run demo:mcp        # about 2 minutes; prints every tool call and what it answered

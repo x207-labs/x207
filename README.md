@@ -76,7 +76,7 @@ Steps 1 to 4 and 6 are read-only and need no account or key; step 5 uses two tes
    npm run demo:mcp      # an AI agent through the MCP tools on a local circle; about 2 minutes, prints every tool call and what it answered
    ```
 
-   `demo:quick` downloads the wasm of the release v0.0.13, checks its sha256 and runs it; the other ways to run the demos are in [docs/sandbox-demo.md](docs/sandbox-demo.md).
+   `demo:quick` and `demo:mcp` download the wasm of the release v0.0.13 and the near-sandbox binary the first time, check the sha256 and run with them; the other ways to run the demos are in [docs/sandbox-demo.md](docs/sandbox-demo.md).
 
 The hosted read API and the dashboard are there for the judging period. If they are down, [Run the sandbox demo](docs/sandbox-demo.md#run-the-sandbox-demo) runs the same cycle locally.
 

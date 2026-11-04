@@ -3,13 +3,14 @@
 // runs the sandbox demo with that wasm. A wasm with another hash stops the script before anything runs.
 //
 //   npm run demo:quick                    = node scripts/demo-quick.mjs --release-wasm      (v0.0.13)
+//   npm run demo:mcp                      = node scripts/demo-quick.mjs --release-wasm --demo mcp   (the MCP scenario, the same download and the same checks)
 //   node scripts/demo-quick.mjs --release-wasm --tag v0.0.13 --cache <dir> --check-only     download and verify, run nothing
 //
-// What it needs besides Node: the packages installed and built (`npm ci`, `npm run build --workspaces --if-present`). What it fetches and checks:
+// What it needs besides Node: the packages installed (`npm ci`); if they are not built yet the script builds them once (`npm run build --workspaces --if-present`). What it fetches and checks:
 //   1. x207-circle-<tag>.wasm from https://github.com/x207-labs/contracts/releases (public); its sha256 must equal KNOWN_SHA256[tag] (the same table that deploy-mainnet.mjs uses);
 //   2. the near-sandbox binary 2.13.4 from build.nearprotocol.com (the URL that the near-sandbox npm package uses), unless X207_SANDBOX_BIN names one; `--version` must say 2.13.4;
 //   3. contracts/prebuilt/mock_ft.wasm (the mock USDT, committed); its sha256 must equal KNOWN_SHA256.mock_ft, the same table as the wasm of the release.
-// Then `npm run demo:sandbox` runs with X207_CIRCLE_WASM, X207_MOCK_FT_WASM and X207_SANDBOX_BIN set. Nothing is installed globally and nothing is sent to a network except the two downloads.
+// Then `npm run demo:sandbox` (or, with `--demo mcp`, `npm run demo:mcp:run`) runs with X207_CIRCLE_WASM, X207_MOCK_FT_WASM and X207_SANDBOX_BIN set. Nothing is installed globally and nothing is sent to a network except the two downloads.
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { chmodSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
@@ -22,6 +23,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export const MOCK_FT_SHA256 = KNOWN_SHA256.mock_ft; // the same table as the wasm of the release (scripts/deploy-mainnet.mjs)
 export const SANDBOX_VERSION = "2.13.4";
 export const DEFAULT_TAG = "v0.0.13";
+
+/** The demos that this script can run with the downloaded wasm and sandbox: the npm script that runs each one directly (it needs X207_CIRCLE_WASM, X207_MOCK_FT_WASM and X207_SANDBOX_BIN, which this script sets). */
+export const DEMOS = { sandbox: "demo:sandbox", mcp: "demo:mcp:run" };
 
 export class DemoStop extends Error {}
 
@@ -47,12 +51,16 @@ export function verifyRelease(tag, bytes, table = KNOWN_SHA256) {
 }
 
 export function parseArgs(argv) {
-  const out = { tag: DEFAULT_TAG, cache: join(root, "node_modules/.cache/x207-quick"), checkOnly: false, local: false };
+  const out = { tag: DEFAULT_TAG, cache: join(root, "node_modules/.cache/x207-quick"), checkOnly: false, local: false, demo: "sandbox" };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === "--release-wasm") out.local = false;
     else if (a === "--check-only") out.checkOnly = true;
-    else if (a === "--tag" || a === "--cache") {
+    else if (a === "--demo") {
+      const v = argv[(i += 1)];
+      if (!DEMOS[v]) throw new DemoStop(`--demo is one of ${Object.keys(DEMOS).join(", ")}`);
+      out.demo = v;
+    } else if (a === "--tag" || a === "--cache") {
       const v = argv[(i += 1)];
       if (!v || v.startsWith("--")) throw new DemoStop(`${a} needs a value`);
       out[a.slice(2)] = a === "--cache" ? resolve(v) : v;
@@ -132,9 +140,14 @@ async function main() {
     console.log("check only: everything was downloaded and verified, the demo was not run");
     return;
   }
-  if (!existsSync(join(root, "sdk/packages/core/dist/index.js"))) throw new DemoStop("the packages are not built: run `npm ci` and `npm run build --workspaces --if-present` first");
-  console.log("running the sandbox demo with the release wasm\n");
-  const run = spawnSync("npm", ["run", "demo:sandbox"], { cwd: root, stdio: "inherit", env: { ...process.env, X207_CIRCLE_WASM: wasm, X207_MOCK_FT_WASM: mock, X207_SANDBOX_BIN: sandbox } });
+  if (!existsSync(join(root, "sdk/packages/core/dist/index.js")) || !existsSync(join(root, "solver/dist/cli.js"))) {
+    // a clean clone after `npm ci`: build the packages once (the demos import the built TypeScript)
+    console.log("the packages are not built yet: running `npm run build --workspaces --if-present` once\n");
+    const built = spawnSync("npm", ["run", "build", "--workspaces", "--if-present"], { cwd: root, stdio: "inherit" });
+    if (built.status !== 0) throw new DemoStop("the build of the packages failed; fix it and run the demo again");
+  }
+  console.log(`running the ${opts.demo} demo with the release wasm\n`);
+  const run = spawnSync("npm", ["run", DEMOS[opts.demo]], { cwd: root, stdio: "inherit", env: { ...process.env, X207_CIRCLE_WASM: wasm, X207_MOCK_FT_WASM: mock, X207_SANDBOX_BIN: sandbox } });
   process.exit(run.status ?? 1);
 }
 
