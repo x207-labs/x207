@@ -407,6 +407,8 @@ X207_SANDBOX=1 npx vitest run tests/freelance.sandbox.test.ts tests/consultation
 | **Consultation slot (#84).** A slot is an order with one milestone, due when the slot ends. The mentor hands over the record of the session, the learner confirms | The pair holds 8 credit |
 | The mentor does not show at another slot: nothing is delivered | The learner cannot confirm; after the due date the learner cancels the open milestone; no voucher is signed. A slot that is not due yet cannot be cancelled |
 
+Two choices behind these rows. A slot uses the order kind `freelance`, because `ORDER_KINDS` has no kind for consultation and the milestone flow is the same. A no-show is not a dispute: the backend allows a dispute only from `delivered`, so the learner cancels the open milestone after its due date, which pays nothing.
+
 A dispute leaves the state as it was: a cumulative voucher cannot skip a milestone, so the next voucher never carries a disputed one. What this block does not show: the judgement of a dispute, the check of the target of a load test, and orders of a kind other than `audit` and `keeper` (each has its own test in `agents/test/services.test.ts`).
 
 ### Content license block (pipeline P7)
