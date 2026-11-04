@@ -553,6 +553,8 @@ The backend checks the kind of license, not the text: the statement of rights is
 
 A confirmed sale stays (ADR-20): a takedown after the key was released and confirmed does not take the money back.
 
+**Own preset and plugin (#70, UM-115).** `X207_SANDBOX=1 npx vitest run tests/own-plugin.sandbox.test.ts` (about one minute). The author sells a colour preset under `own-work` (6 credit) and a plugin under `commercial-redistribute` (14 credit) to the same buyer. Each is bought after the terms check of the blocks above, opened, confirmed and paid; the second voucher continues from the first and the pair holds 20 credit. Whether the buyer may sell a file on is read from the accepted list of the backend (`own-work`: no, `commercial-redistribute`: yes), not from the text of the seller.
+
 ### Platform transfer block (ADR-49)
 
 ```bash
