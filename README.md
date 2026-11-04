@@ -612,6 +612,17 @@ A role of a community is rented by the day. The broker of the grantor holds the 
 
 What this block does not show: a real Discord server (the REST calls are mocked), the OAuth proof of the id of the member, and a rate limit of Discord (the retry of the broker has its own test).
 
+**Own online course (#71, UM-111).** `X207_SANDBOX=1 npx vitest run tests/course.sandbox.test.ts` (about one minute), described here because it is the license flow below with an endpoint added. `teacher` sells the course package (the syllabus and the lesson list) as a license of 40 credit; `student` buys it, opens it, checks the hash and confirms, and the teacher registers the voucher. The lessons are then read from the teacher's endpoint, open for a term of 30 days that starts when the teacher sees the purchase confirmed:
+
+| Do | See |
+| --- | --- |
+| `student` signs a lesson request with its voucher key on day 1 and on day 29 | `200`, the lesson |
+| `outsider`, a member who did not buy, signs with its own key for the student's purchase | `403`: the signature is checked against the voucher key of the buyer in the contract |
+| `student` asks on day 31 | `410`, course access expired |
+| A request before the purchase is confirmed, or for a purchase that does not exist | `404` |
+
+The term is the teacher's: x207 sells the license and proves who paid, and the endpoint of the seller enforces the days. The seller's clock is set in the test so that it does not wait 30 days.
+
 ### Access rent block (pipeline P2)
 
 ```bash
