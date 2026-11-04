@@ -1,7 +1,7 @@
 // UM-048: the key spike evidence repeated with product code, not spike code (`spikes/run_spikes.py`). Read only, no keys, no transactions,
 // no funds: views on the public mainnet RPC and a 1Click dry quote. Opt-in because it uses the real network:
 //   X207_LIVE_PROBES=1 npx vitest run tests/spike-probes.live.test.ts
-// The last result seen (2026-11-02) is in docs/traceability.md: S2.7 and S11.5 pass, S4.3 fails because 1Click answers "Quoting for this pair is not available". Other spike probes that need a transaction or mainnet funds are not included (UM-027).
+// The last result seen (2026-11-02) is in docs/traceability.md: S2.7 and S11.5 pass, S4.3 failed then because 1Click answered "Quoting for this pair is not available"; on 2026-11-04 it passes (see docs/traceability.md). Other spike probes that need a transaction or mainnet funds are not included (UM-027).
 import { describe, expect, it } from "vitest";
 import { INTENTS_CONTRACT, OneClickClient, parseAppFees, rpcViewFunction, simulateIntents } from "../backend/src/settlement/index.ts";
 // @ts-expect-error untyped .mjs script: the Sputnik DAO factory constant used by the product's proposal script
@@ -31,7 +31,11 @@ describe.skipIf(!live)("UM-048 probe spike terhadap kode produk", () => {
     if ("failure" in q) throw new Error(`dry quote rejected: ${q.failure}`);
     expect(q.quote.amountIn).toBe("5000000");
     expect(q.quote.depositAddress).toBeUndefined();
-    expect(q.quoteRequest?.appFees).toEqual(appFees);
+    process.stderr.write(`S4.3 appFees sent: ${JSON.stringify(q.quoteRequest?.appFees)}; amountIn ${q.quote.amountIn} amountOut ${q.quote.amountOut}\n`);
+    // seen 2026-11-04: 1Click echoes the fee of the request split in two equal parts, ours (5 bps) and one for a recipient of 1Click (5 bps); the sum is what was asked (10 bps)
+    const sent = q.quoteRequest?.appFees ?? [];
+    expect(sent.some((f) => f.recipient === "x207-probe.near")).toBe(true);
+    expect(sent.reduce((sum, f) => sum + f.fee, 0)).toBe(10);
   }, 60_000);
 
   it("S11.5 factory Sputnik DAO product (DEFAULT_FACTORY) is readable on mainnet through the product rpcViewFunction", async () => {
