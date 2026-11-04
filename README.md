@@ -664,6 +664,17 @@ What this block does not show: a real Discord server (the REST calls are mocked)
 
 The term is the teacher's: x207 sells the license and proves who paid, and the endpoint of the seller enforces the days. The seller's clock is set in the test so that it does not wait 30 days.
 
+**Cloud credit (#62, UM-115).** `X207_SANDBOX=1 npx vitest run tests/cloud-credit.sandbox.test.ts` (several minutes). What is rented is a place in a cloud project with a daily budget, not the credit: the grantor's project holds the promotional credit, the provider keeps the daily budget, and a person is invited for each paid day (the adapter `org-member-budget`, with a mock members API as the provider).
+
+| Do | See |
+| --- | --- |
+| The lessee pays one day with an ordinary voucher | The project invites the e-mail of the grant as an `editor` with a daily budget of 20 USD; nothing of the credit moves |
+| The person accepts and spends 12, then 10, then 8 USD | The provider refuses the 10 (12 + 10 is over the budget) and takes the 8 (12 + 8 is the whole budget); the read of the access shows the real spend of the day, 20 credit units |
+| A second day is paid before the first ends | The same member, the paid end moves by one day, no second invitation |
+| Nobody pays the next day | At the paid end the broker removes the member and the provider refuses the next spend |
+
+Promotional cloud credit is usually not transferable, and a provider can end a project that lends it out. The catalog entry therefore reads "lawful only when the provider allows it", and the rent is a membership under the grantor's own account, with the admin token staying on the machine of the broker.
+
 ### Access rent block (pipeline P2)
 
 ```bash
