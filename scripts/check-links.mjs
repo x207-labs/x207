@@ -2,6 +2,7 @@
 // UM-105: check the links of the Markdown files of this repository. Reads git and (for github.com/x207-labs links) the network; changes nothing.
 //   - A relative link must point to a file or folder that is in the git tree of this repository. A path inside a submodule (contracts, sdk, backend, frontend, solver, agents)
 //     does not count: on GitHub it is a dead link, so it must be an absolute URL.
+//   - An anchor (`file.md#heading`) must be a heading of that file.
 //   - A link to https://github.com/x207-labs/... must answer with a status below 400 (a 404 fails). With --external every other http(s) link is checked too.
 //
 // Usage: node scripts/check-links.mjs [--root <umbrella dir>] [--offline] [--external]
@@ -17,20 +18,36 @@ export const SUBMODULES = ["contracts", "sdk", "backend", "frontend", "solver", 
 export function linksOf(markdown) {
   const text = markdown.replace(/```[\s\S]*?```/g, "").replace(/`[^`\n]*`/g, "");
   const out = new Set();
-  for (const m of text.matchAll(/\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g)) out.add(m[1].split("#")[0]);
-  for (const m of text.matchAll(/<(https?:\/\/[^>\s]+)>/g)) out.add(m[1].split("#")[0]);
+  for (const m of text.matchAll(/\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g)) out.add(m[1]);
+  for (const m of text.matchAll(/<(https?:\/\/[^>\s]+)>/g)) out.add(m[1]);
   out.delete("");
   return [...out];
 }
 
-/** Problems of one file: relative links that are not in the tree, links into a submodule. `inTree` is injectable for tests. */
-export function relativeProblems(file, links, inTree) {
+/** The anchors that GitHub makes of the headings of a Markdown text. */
+export function anchorsOf(markdown) {
+  const text = markdown.replace(/```[\s\S]*?```/g, "");
+  const set = new Set();
+  for (const m of text.matchAll(/^#{1,6}\s+(.+?)\s*#*\s*$/gm)) {
+    set.add(m[1].toLowerCase().replace(/[`*_]/g, "").replace(/[^\p{L}\p{N}\- ]/gu, "").trim().replace(/ /g, "-"));
+  }
+  return set;
+}
+
+/** Problems of one file: relative links that are not in the tree, links into a submodule, anchors that no heading has. `inTree` and `anchors` (path -> Set, or null) are injectable for tests. */
+export function relativeProblems(file, links, inTree, anchors = () => null) {
   const problems = [];
   for (const link of links) {
-    if (/^(https?:|mailto:|tel:)/.test(link) || link.startsWith("#")) continue;
-    const target = normalize(join(dirname(file), decodeURIComponent(link))).replace(/\/$/, "");
+    if (/^(https?:|mailto:|tel:)/.test(link)) continue;
+    const [path, fragment = ""] = link.split("#");
+    if (path === "" && fragment === "") continue;
+    const target = path === "" ? file : normalize(join(dirname(file), decodeURIComponent(path))).replace(/\/$/, "");
     if (SUBMODULES.includes(target.split(sep)[0]) && target.split(sep).length > 1) problems.push(`${file}: ${link} points into a submodule; use an absolute https://github.com/x207-labs/ URL`);
     else if (!inTree(target)) problems.push(`${file}: ${link} is not in the repository`);
+    else if (fragment !== "" && target.endsWith(".md")) {
+      const set = anchors(target);
+      if (set && !set.has(decodeURIComponent(fragment).toLowerCase())) problems.push(`${file}: ${link} has no heading with that anchor in ${target}`);
+    }
   }
   return problems;
 }
@@ -48,7 +65,7 @@ export async function urlProblems(file, links, { external = false, fetchFn = fet
   for (const link of links) {
     if (!/^https?:/.test(link)) continue;
     if (!external && !link.startsWith("https://github.com/x207-labs/")) continue;
-    const code = await status(link, fetchFn);
+    const code = await status(link.split("#")[0], fetchFn);
     if (code === 0 || code >= 400) problems.push(`${file}: ${link} answers ${code === 0 ? "no response" : code}`);
   }
   return problems;
@@ -63,12 +80,17 @@ async function main(argv) {
   const dirs = new Set([...tree].flatMap((f) => f.split("/").slice(0, -1).map((_, i, a) => a.slice(0, i + 1).join("/"))));
   const gitlinks = new Set(git("ls-files", "-s").split("\n").filter((l) => l.startsWith("160000")).map((l) => l.split("\t")[1]));
   const inTree = (p) => tree.has(p) || dirs.has(p) || gitlinks.has(p);
+  const cache = new Map();
+  const anchors = (p) => {
+    if (!cache.has(p)) cache.set(p, tree.has(p) ? anchorsOf(readFileSync(join(root, p), "utf8")) : null);
+    return cache.get(p);
+  };
   const problems = [];
   let count = 0;
   for (const file of files) {
     const links = linksOf(readFileSync(join(root, file), "utf8"));
     count += links.length;
-    problems.push(...relativeProblems(file, links, inTree));
+    problems.push(...relativeProblems(file, links, inTree, anchors));
     if (!argv.includes("--offline")) problems.push(...(await urlProblems(file, links, { external: argv.includes("--external") })));
   }
   process.stdout.write(`${files.length} Markdown files, ${count} links\n`);

@@ -28,7 +28,7 @@ Mutual credit and multi-party clearing for agent payments on NEAR. Hackathon pro
 - At the end of each epoch a **solver** removes debt cycles across all members in one on-chain clearing. Only net positions are settled in USDT.
 - The credit limit comes from stake. A default is covered from the stake of the defaulter.
 
-Source for the registration count: our sandbox run `npm run demo:sandbox`, 120 paid calls, `medium` density (README section 4).
+Source for the registration count: our sandbox run `npm run demo:sandbox`, 120 paid calls, `medium` density (docs/sandbox-demo.md).
 
 ---
 
@@ -43,7 +43,7 @@ Source for the registration count: our sandbox run `npm run demo:sandbox`, 120 p
 
 Sources: x402 spec directory `coinbase/x402/specs/schemes`; [4Mica docs](https://docs.4mica.io/core-concepts/bilateral-netting-cycles.md); [AgentPay](https://x402-agent-pay.com/x402-barter); all checked in `docs/competitor-landscape.md`, Oct 2026. These can change.
 
-x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and adds credit, clearing, barter and a marketplace (README section 2, with a proof for each row).
+x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and adds credit, clearing, barter and a marketplace (docs/problem-and-gap.md, with a proof for each row).
 
 ---
 

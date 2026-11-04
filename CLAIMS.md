@@ -1,6 +1,6 @@
 # CLAIMS: what x207 claims and what proves it
 
-Every row names a claim, the test or script that proves it, and, where the claim ran on a real network, the testnet transactions of the circle `x207-v013.testnet` (interface 0.0.13, release v0.0.13). `npm run check:claims` reads this file and checks that each named path, test id and function exists in this repository, and that each transaction hash appears in a record of the repository. With `--online` it also asks the testnet RPC whether each transaction exists. A test is evidence that a defence is pinned, not a proof that the system is safe; the open limits are in [docs/security.md](docs/security.md) and in the README section "Risks and limitations".
+Every row names a claim, the test or script that proves it, and, where the claim ran on a real network, the testnet transactions of the circle `x207-v013.testnet` (interface 0.0.13, release v0.0.13). `npm run check:claims` reads this file and checks that each named path, test id and function exists in this repository, and that each transaction hash appears in a record of the repository. With `--online` it also asks the testnet RPC whether each transaction exists. A test is evidence that a defence is pinned, not a proof that the system is safe; the open limits are in [docs/security.md](docs/security.md) and in [Risks and limitations](docs/security-and-limits.md#risks-and-limitations).
 
 ## Product claims
 
@@ -19,7 +19,7 @@ Every row names a claim, the test or script that proves it, and, where the claim
 
 ## Security claims
 
-The rows are the threat model of the README (section 8), one per threat.
+The rows are the threat model of [docs/security-and-limits.md](docs/security-and-limits.md#threat-model), one per threat.
 
 | Threat | Who attacks | Defence | Proof | Status |
 | --- | --- | --- | --- | --- |
