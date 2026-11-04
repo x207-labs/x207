@@ -240,6 +240,8 @@ Net positions add up to zero. The answer of the read API for this epoch, as `npm
 
 A circle with 15 members runs on NEAR testnet. Everything below needs no account and no key. Node 22.22.2 or newer and `curl` are enough.
 
+Open the live dashboard: <https://x207-dashboard.vercel.app>. It reads the read API of this circle (`agents-main` on `x207-v013.testnet`) and shows its members, epochs, obligation graph and risk; signing in needs a testnet wallet. The read API is hosted for the judging period only.
+
 Read the live contract:
 
 ```bash
