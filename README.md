@@ -169,7 +169,7 @@ Everything here is read-only and needs no account or key.
    ```
 
    Then ask, for example, "Give me the overview of the x207 circle and the report of epoch 2". The tools and the write tools that stay off are listed in [sdk/packages/mcp/README.md](sdk/packages/mcp/README.md).
-4. **The contract that runs it:** release [v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13), wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (the code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`, the same bytes in base58), `abi-v0.0.13.json` sha256 `c94a2955deab7b082d2e9f1ab396dae14b0323a4c12266fa09f43f1ca0a3bb53`. The next section shows how to read the contract on chain and the transactions of a full epoch.
+4. **The contract that runs it:** release [v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13), wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (the code hash on chain is `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh`, the same bytes in base58), `abi-v0.0.13.json` sha256 `c94a2955deab7b082d2e9f1ab396dae14b0323a4c12266fa09f43f1ca0a3bb53`. "Try it on testnet" below shows how to read the contract on chain and lists the transactions of a full epoch.
 
 The hosted read API and the dashboard are there for the judging period. If they are down, [Run the sandbox demo](#run-the-sandbox-demo) runs the same cycle locally.
 
