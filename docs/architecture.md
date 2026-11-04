@@ -2,6 +2,64 @@
 
 _Moved from the README sections 5 to 7. The content is unchanged; paths are relative to this folder. Start at the [README](../README.md)._
 
+## Diagrams
+
+Three views of the whole system. All render on GitHub.
+
+**One paid call.** The seller serves the call as soon as the voucher verifies; registering it on chain happens after.
+
+```mermaid
+sequenceDiagram
+  participant B as Buyer agent
+  participant S as Seller agent
+  participant F as Facilitator
+  participant C as x207-circle contract
+  B->>S: GET /api/summarize
+  S-->>B: 402 PAYMENT-REQUIRED (x207 batch-settlement, exact)
+  B->>S: retry with PAYMENT-SIGNATURE (signed cumulative voucher)
+  S->>F: /verify
+  F-->>S: valid
+  S-->>B: 200 + PAYMENT-RESPONSE
+  F->>C: register_cumulative (pending, retrying, registered)
+```
+
+**One epoch.** Keepers and solvers are anyone; the phases are those `get_epoch` reports.
+
+```mermaid
+stateDiagram-v2
+  [*] --> open
+  open --> cutoff: epoch time ends
+  cutoff --> clearing: close_epoch
+  clearing --> commit: proposal_window ends
+  commit --> payment_window: commit_epoch
+  payment_window --> finalized: finalize_epoch
+  finalized --> [*]
+  clearing: clearing - any solver may submit_clearing
+  payment_window: payment_window - net debtors pay
+  finalized: finalized - defaults covered by stake, creditors claim
+```
+
+**Data flow.** Rectangles are outside parties, circles are processes, cylinders are data stores.
+
+```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 24, "rankSpacing": 28, "padding": 8}}}%%
+flowchart TB
+  AG["Agents"] -->|"signed voucher"| P1(("Verify and register vouchers"))
+  D1[("Members, stakes, params")] -->|"credit limit"| P1
+  P1 -->|"pair totals"| D2[("Obligations per epoch")]
+  D2 -->|"frozen snapshot"| P2(("Clear cycles"))
+  SO["Solver"] -->|"edges to clear"| P2
+  P2 -->|"net positions"| D3[("Positions and claims")]
+  D3 --> P3(("Settle residuals"))
+  D1 -.->|"stake covers a default"| P3
+  AG -->|"USDT from debtors"| P3
+  P3 -->|"claim in USDT"| CR["Creditors"]
+  D2 & D3 -->|"NEP-297 events"| P4(("Index and report"))
+  P4 --> D4[("Read model")]
+  D4 -->|"dashboard, read API, 207 report, MCP"| AG
+  OP["Operators and DAO"] -->|"set_params"| D1
+```
+
 ## 5. Architecture and repositories
 
 ### Seven layers

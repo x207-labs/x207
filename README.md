@@ -20,79 +20,15 @@ x207 is a mutual credit settlement layer for x402 agent payments on NEAR. Agents
 An agent that pays per call settles every call on its own, so a thousand small payments cost a thousand transfers, and an agent without cash cannot buy at all. x207 keeps the x402 flow and adds credit and clearing: an agent stakes USDT to get a credit limit, pays each call with a signed voucher that is served at once, and at the end of the epoch debts that go around in a circle (A owes B, B owes C, C owes A) cancel each other in one transaction. Only what is left is paid. The gap in what exists today is in [docs/problem-and-gap.md](docs/problem-and-gap.md).
 
 ```mermaid
-flowchart LR
-  A[Buyer agent] -- "402 + signed voucher, served at once" --> B[Seller agent]
-  B -- "register_cumulative" --> C[(x207-circle contract)]
-  S[Open solver] -- "submit_clearing: cycles only" --> C
-  C -- "commit_epoch, finalize_epoch" --> N[Net positions]
-  N -- "debtors pay, creditors claim USDT" --> A
+flowchart TB
+  A["Buyer agent"] -->|"voucher, served at once"| B["Seller agent"]
+  B -->|"register_cumulative"| C[("x207-circle contract")]
+  S["Open solver"] -->|"submit_clearing: cycles only"| C
+  C -->|"commit_epoch, finalize_epoch"| N["Net positions"]
+  N -->|"debtors pay, creditors claim USDT"| A
 ```
 
-**One paid call.** The seller serves the call as soon as the voucher verifies; registering it on chain happens after.
-
-```mermaid
-sequenceDiagram
-  participant B as Buyer agent
-  participant S as Seller agent
-  participant F as Facilitator
-  participant C as x207-circle contract
-  B->>S: GET /api/summarize
-  S-->>B: 402 PAYMENT-REQUIRED (x207 batch-settlement, exact)
-  B->>S: retry with PAYMENT-SIGNATURE (signed cumulative voucher)
-  S->>F: /verify
-  F-->>S: valid
-  S-->>B: 200 + PAYMENT-RESPONSE
-  F->>C: register_cumulative (pending, retrying, registered)
-```
-
-**One epoch.** Keepers and solvers are anyone; the phases are those `get_epoch` reports.
-
-```mermaid
-stateDiagram-v2
-  [*] --> open
-  open --> cutoff: epoch time ends
-  cutoff --> clearing: close_epoch
-  clearing --> commit: proposal_window ends
-  commit --> payment_window: commit_epoch
-  payment_window --> finalized: finalize_epoch
-  finalized --> [*]
-  clearing: clearing - any solver may submit_clearing
-  payment_window: payment_window - net debtors pay
-  finalized: finalized - defaults covered by stake, creditors claim
-```
-
-**Data flow.** Rectangles are outside parties, circles are processes, cylinders are data stores.
-
-```mermaid
-flowchart LR
-  AG[Agents]
-  SO[Solver]
-  OP[Operators and DAO]
-  P1((Verify and register vouchers))
-  P2((Clear cycles))
-  P3((Settle residuals))
-  P4((Index and report))
-  D1[(Members, stakes and params)]
-  D2[(Obligations per epoch)]
-  D3[(Positions and claims)]
-  D4[(Read model)]
-  AG -- "signed voucher" --> P1
-  P1 -- "pair totals" --> D2
-  D1 -- "credit limit" --> P1
-  D2 -- "frozen snapshot" --> P2
-  SO -- "edges to clear" --> P2
-  P2 -- "net positions" --> D3
-  AG -- "USDT from debtors" --> P3
-  D3 --> P3
-  D1 -- "stake covers a default" --> P3
-  P3 -- "claim in USDT" --> AG
-  OP -- "set_params" --> D1
-  D1 & D2 & D3 -- "NEP-297 events" --> P4
-  P4 --> D4
-  D4 -- "dashboard, read API, 207 report, MCP" --> AG
-```
-
-Eight steps from stake to claim: [docs/overview.md](docs/overview.md). The contract checks every clearing a solver proposes, so nobody has to trust the solver: [solver](https://github.com/x207-labs/solver).
+One paid call as a sequence, the epoch as a state machine, and the data flow: [diagrams in docs/architecture.md](docs/architecture.md#diagrams). Eight steps from stake to claim: [docs/overview.md](docs/overview.md). The contract checks every clearing a solver proposes, so nobody has to trust the solver: [solver](https://github.com/x207-labs/solver).
 
 ## Try it in 2 minutes
 
@@ -124,7 +60,7 @@ The realistic testnet epoch: 24 vouchers worth 41.35 credit became 14 settlement
 ```mermaid
 xychart-beta
   title "Epoch 8, in credit"
-  x-axis ["Obligations", "After clearing", "Moved as USDT"]
+  x-axis ["Obligations 41.35", "After clearing 19.55", "As USDT 7.75"]
   y-axis "credit" 0 --> 45
   bar [41.35, 19.55, 7.75]
 ```
@@ -136,8 +72,6 @@ xychart-beta
 | Left after clearing | the 19.55 credit that was left net to 7.75 USDT due from six debtors |
 | Paid | five debtors paid (7.2 USDT); the sixth (0.55 USDT, `m06`) defaulted and was covered from its stake |
 | Moved as USDT | only 7.75 of the 41.35 credit moved as USDT (18.7%) |
-
-Epoch 2 is the load test of the same circle: a complete graph of 210 obligations among 15 participants, cleared in four transactions (`close_epoch`, `submit_clearing`, `commit_epoch`, `finalize_epoch`; the 210 `register_cumulative` calls that recorded the vouchers are not counted).
 
 ## Run it locally (5 minutes)
 
@@ -172,24 +106,18 @@ Checks, a few seconds each: `npm run check:numbers` (every epoch 8 figure in thi
 
 | Topic | File |
 | --- | --- |
-| What x207 is, step by step, for each audience | [docs/overview.md](docs/overview.md) |
-| The problem, what exists, the gap, FAQ | [docs/problem-and-gap.md](docs/problem-and-gap.md) |
-| How it works, features F1 to F9 | [docs/how-it-works.md](docs/how-it-works.md) |
-| Join the circle on testnet with two fresh accounts | [docs/join-the-circle.md](docs/join-the-circle.md) |
-| Quickstart for an x402 agent owner | [docs/quickstart.md](docs/quickstart.md) |
+| What x207 is, the problem and the gap, how it works (F1 to F9) | [docs/overview.md](docs/overview.md), [docs/problem-and-gap.md](docs/problem-and-gap.md), [docs/how-it-works.md](docs/how-it-works.md) |
+| Join the circle on testnet with two fresh accounts; quickstart for an x402 agent owner | [docs/join-the-circle.md](docs/join-the-circle.md), [docs/quickstart.md](docs/quickstart.md) |
 | The MCP server for AI agents | [docs/mcp.md](docs/mcp.md) |
 | The testnet circle, and how to check an epoch | [docs/testnet.md](docs/testnet.md) |
 | Every pipeline as "do X, see Y" with the test that runs it | [docs/demo-blocks.md](docs/demo-blocks.md) |
 | Architecture and invariants | [docs/architecture.md](docs/architecture.md) |
 | Security, limits, threat model | [docs/security-and-limits.md](docs/security-and-limits.md), [docs/security.md](docs/security.md) |
-| Metrics and roadmap | [docs/metrics-and-roadmap.md](docs/metrics-and-roadmap.md) |
-| Judging criteria and tracks, glossary | [docs/appendices.md](docs/appendices.md) |
-| Sell over x402 on the circle (seller quickstart) | [sdk/docs/seller-quickstart.md](https://github.com/x207-labs/sdk/blob/main/docs/seller-quickstart.md) |
-| Gas and storage measurements of the contract | [contracts/docs/gas-measurements.md](https://github.com/x207-labs/contracts/blob/main/docs/gas-measurements.md) |
-| The contract against the real Intents wasm | [contracts/docs/real-intents-test.md](https://github.com/x207-labs/contracts/blob/main/docs/real-intents-test.md) |
+| Metrics and roadmap; judging criteria, tracks and glossary | [docs/metrics-and-roadmap.md](docs/metrics-and-roadmap.md), [docs/appendices.md](docs/appendices.md) |
+| Sell over x402 on the circle | [sdk/docs/seller-quickstart.md](https://github.com/x207-labs/sdk/blob/main/docs/seller-quickstart.md) |
+| Contract gas and storage; the contract against the real Intents wasm | [gas-measurements](https://github.com/x207-labs/contracts/blob/main/docs/gas-measurements.md), [real-intents-test](https://github.com/x207-labs/contracts/blob/main/docs/real-intents-test.md) |
 | Read API reference: limits, OpenAPI, health, metrics | [backend/docs/reference.md](https://github.com/x207-labs/backend/blob/main/docs/reference.md) |
-| Why a solver needs no trust, and its gas | [solver/docs/gas-and-trust.md](https://github.com/x207-labs/solver/blob/main/docs/gas-and-trust.md) |
-| Barter matching and random checks of jobs | [solver/docs/barter-and-spot-checks.md](https://github.com/x207-labs/solver/blob/main/docs/barter-and-spot-checks.md) |
+| Why a solver needs no trust and its gas; barter matching and random checks | [gas-and-trust](https://github.com/x207-labs/solver/blob/main/docs/gas-and-trust.md), [barter-and-spot-checks](https://github.com/x207-labs/solver/blob/main/docs/barter-and-spot-checks.md) |
 | Third-party libraries and services | [docs/third-party.md](docs/third-party.md) |
 
 ## Repositories
