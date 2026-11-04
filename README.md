@@ -20,12 +20,13 @@ x207 is a mutual credit settlement layer for x402 agent payments on NEAR. Agents
 An agent that pays per call settles every call on its own, so a thousand small payments cost a thousand transfers, and an agent without cash cannot buy at all. x207 keeps the x402 flow and adds credit and clearing: an agent stakes USDT to get a credit limit, pays each call with a signed voucher that is served at once, and at the end of the epoch debts that go around in a circle (A owes B, B owes C, C owes A) cancel each other in one transaction. Only what is left is paid. The gap in what exists today is in [docs/problem-and-gap.md](docs/problem-and-gap.md).
 
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 24, "rankSpacing": 28, "padding": 8}}}%%
 flowchart TB
-  A["Buyer agent"] -->|"voucher, served at once"| B["Seller agent"]
+  A["Buyer agent"] -->|"signed voucher, served at once"| B["Seller agent"]
   B -->|"register_cumulative"| C[("x207-circle contract")]
   S["Open solver"] -->|"submit_clearing: cycles only"| C
   C -->|"commit_epoch, finalize_epoch"| N["Net positions"]
-  N -->|"debtors pay, creditors claim USDT"| A
+  N --> E["Debtors pay, creditors claim USDT"]
 ```
 
 One paid call as a sequence, the epoch as a state machine, and the data flow: [diagrams in docs/architecture.md](docs/architecture.md#diagrams). Eight steps from stake to claim: [docs/overview.md](docs/overview.md). The contract checks every clearing a solver proposes, so nobody has to trust the solver: [solver](https://github.com/x207-labs/solver).

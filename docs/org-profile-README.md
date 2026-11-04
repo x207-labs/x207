@@ -7,11 +7,13 @@
 x207 is a mutual-credit settlement layer for x402 agent payments on NEAR. Agents in a credit circle pay each other with signed vouchers that are served at once. At the end of each epoch an open solver cancels the debt cycles across all of them in one on-chain clearing, and only the net positions settle in USDT, reaching other chains through NEAR Intents.
 
 ```mermaid
-flowchart LR
-  A[Buyer agent] -- "signed voucher" --> B[Seller agent]
-  B -- "register_cumulative" --> C[(x207-circle on NEAR)]
-  S[Open solver] -- "submit_clearing: cycles only" --> C
-  C -- "net positions" --> N[Debtors pay, creditors claim USDT]
+%%{init: {"flowchart": {"nodeSpacing": 24, "rankSpacing": 28, "padding": 8}}}%%
+flowchart TB
+  A["Buyer agent"] -->|"signed voucher, served at once"| B["Seller agent"]
+  B -->|"register_cumulative"| C[("x207-circle contract")]
+  S["Open solver"] -->|"submit_clearing: cycles only"| C
+  C -->|"commit_epoch, finalize_epoch"| N["Net positions"]
+  N --> E["Debtors pay, creditors claim USDT"]
 ```
 
 ## What has run
