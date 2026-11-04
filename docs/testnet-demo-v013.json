@@ -1,0 +1,258 @@
+{
+  "network": "testnet",
+  "accounts": [],
+  "steps": [
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "AeCU51n6GYUyjSgyP3Z276ugcYmRp3tiRgYpUUrqAd3Z",
+      "at": "2026-11-04T06:41:14.860Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "EWKT8EJDGB7QDgXXhAgBmo94LyGQi2aMouncp6pZ2eti",
+      "at": "2026-11-04T06:41:19.062Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "94uhXaw1dGQrjRsWy9GYn7jivDoUA8iMTLKySGn1pG1h",
+      "at": "2026-11-04T06:41:23.400Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "9ksQfjaQe1g4Fpa1W62PE2dNCAhbN95GLj2NreLbW3LH",
+      "at": "2026-11-04T06:41:27.552Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "4eotrK53MxLkhLy8pypAPZsR1NyCi2JdtXPZm8p41drq",
+      "at": "2026-11-04T06:41:33.168Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "787S4uUMM9qH2AbD7zWxo7a5sdjKv2tdM8ZkXfWVGocx",
+      "at": "2026-11-04T06:41:37.450Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.join",
+      "hash": "FFzFbFJHLZzELUJVFgpUnoZZWfJvDPhtyKrg59vArpP2",
+      "at": "2026-11-04T06:41:42.400Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.ft_transfer_call",
+      "hash": "8j2qHkozS6LMMYeYQPdTHeKWDcjMCTEY3B9KEdQfYLT4",
+      "at": "2026-11-04T06:41:47.733Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.join",
+      "hash": "Epua5dUDgYWbNeWbBfCdhR1H8yAUx6ZqFGbmoUthUG2L",
+      "at": "2026-11-04T06:41:52.107Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.ft_transfer_call",
+      "hash": "H624JugGwFzMs39eG6S3eLsjGxURNtyXygv8cerzkLVx",
+      "at": "2026-11-04T06:41:58.352Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.join",
+      "hash": "7ujuvHTvNk5cbJD6tk7ybumr99QwSQMdtVenU97oTSD",
+      "at": "2026-11-04T06:42:03.183Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.ft_transfer_call",
+      "hash": "A1BXSUDY2bkLHUrbCiKnYHgd9MJxUaMmqkd4X3MaJ9aB",
+      "at": "2026-11-04T06:42:08.566Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.join",
+      "hash": "JApCjPMiw1hvbDcPZ4rfJrBXrtWhfHmJQZ5uJ3PZ8fck",
+      "at": "2026-11-04T06:42:13.607Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.ft_transfer_call",
+      "hash": "HNvdL3mXvnxo7fXoT7RcDMrt6qRDLcPMkUHXoJiYcNvC",
+      "at": "2026-11-04T06:42:18.798Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.join",
+      "hash": "5vsjNKLkW7by16GScdk8vxAzPdwWLaAg2jNASWSdg9bA",
+      "at": "2026-11-04T06:42:23.978Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.ft_transfer_call",
+      "hash": "EV2cKhwGK1gfZULtPHBRhxtHoSNRW2p8ZKpPzouCDCFA",
+      "at": "2026-11-04T06:42:29.082Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.join",
+      "hash": "989dGGeTNjTwmWgkqeZv5mvoqwtWg4eQzSaFYLCtP6cH",
+      "at": "2026-11-04T06:42:33.355Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.ft_transfer_call",
+      "hash": "FeqxpQkBUU6tem5njpQ1EjfLv5ftjEbNVSbXnmEYPeCP",
+      "at": "2026-11-04T06:42:38.905Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "CG8JE2pDE16j8HoZrkMfBZChSpKeHgHzQ5hmrNrwTBm2",
+      "at": "2026-11-04T06:42:44.493Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "C2KJpYeax1Arq1ShoZ1fWojhL3XBqkfiBEH6sRiyPQ1b",
+      "at": "2026-11-04T06:50:48.271Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "F2Vvrs9wfLQ6aSAqbvqBx9Xyn7hSrS6oT1qF6EbmRjXq",
+      "at": "2026-11-04T06:50:52.906Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "3tv3TcxKunfGq8uedbyXzce98H3WycJ33sWfzFVPro6L",
+      "at": "2026-11-04T06:50:57.273Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "9YbLTdFYXhuaWv4oV2rD42mk2M4fEiFYJPQKcymP6SEn",
+      "at": "2026-11-04T06:51:02.091Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "9bC6yBhoKd59ByAKKupiMuT87cAGkknvzurgGEycvFsG",
+      "at": "2026-11-04T06:51:06.718Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "3vym4dudisb8XiwPKm75CqvSZK4LMyjLNQTryFnKV2MN",
+      "at": "2026-11-04T06:51:11.138Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "3wasZtR6TaqKYUX6kuLDeFaGKhmM5pt6nn1zqZ4g9dbJ",
+      "at": "2026-11-04T06:51:15.177Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "5eotXJa6HVqwZzmz4m11BzCrME79FCvpZQha68weJBtH",
+      "at": "2026-11-04T06:51:21.168Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "GRj6CrhJnEQYukKEj6nmNn6ZqwWupBrhNR7pMrH5tJ3x",
+      "at": "2026-11-04T06:51:25.660Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "CqhBWaS1tLvxAZiWdvStz2RUgM9TwcmC9uLUk4e8Z9Jd",
+      "at": "2026-11-04T06:51:30.066Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "5hQ1t26LYJpbroKyduRcLhHs15WZGM5z8hv7cZ2BrgNt",
+      "at": "2026-11-04T06:51:34.446Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "7ao55sCoWUcDLRc8HuJtMqtt3vYFybSFrQkcAUDCxQPW",
+      "at": "2026-11-04T06:51:39.006Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "HNBdcpsB8Ujq8TYs7BCsbRQCfmziSLtRAg4yGren3Kwf",
+      "at": "2026-11-04T06:51:44.511Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "8qaNq3GTTjkuafpNyvA9YK9r3kNm1ectbVTfLPV2Amht",
+      "at": "2026-11-04T06:52:54.833Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "HZFi6LVMZoNo8wdjk8F7p7VrjTG4YK1yKJvtjVFpNCxB",
+      "at": "2026-11-04T06:54:10.255Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.settle.ft_transfer_call",
+      "hash": "3XftoBrTRpvc5KihRegv1t686a2CSzWwtsd8GeBX2mBm",
+      "at": "2026-11-04T06:54:17.293Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.settle.ft_transfer_call",
+      "hash": "97cuT55nGv5g37mX3YsGYiaCeumpoEJ7tEQmEUBxoYcT",
+      "at": "2026-11-04T06:54:22.727Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "DkVT9Pw6ym3kjB9Abc7VgkiJxYMy3kzc69QTnoND1TcV",
+      "at": "2026-11-04T07:02:52.103Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "DBzrYmrW9B2kSzperDSyD7Rv2JQuCAZ9H5xfFyfYbHGe",
+      "at": "2026-11-04T07:04:03.474Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "GZz8FEPrUdw2BRMBbMkgKdsdV2x1vDY6jqfgfhRgnona",
+      "at": "2026-11-04T07:06:56.795Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "8vC46g2wWPfj5wawha86r3qMAP91HMxEsuxstaX15T33",
+      "at": "2026-11-04T07:09:17.222Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.claim.claim",
+      "hash": "6JdjM4TncwoCYwXXahWGptohQb7yW1fAdYeAfAkD6wtA",
+      "at": "2026-11-04T07:09:23.106Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.claim.claim",
+      "hash": "7neRXKA2tFzYvSgnfcW2WGArgsSWoBeymvfvwWmgkg23",
+      "at": "2026-11-04T07:09:28.598Z"
+    }
+  ]
+}
