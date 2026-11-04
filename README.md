@@ -73,14 +73,14 @@ Each of `demo:quick` and `demo:mcp` fetches what it needs by itself, the first t
 
 `npm ci` on npm 11.20 or newer may print `install-scripts` warnings about dependencies that have install scripts. `package.json` answers them in `allowScripts`: only `better-sqlite3`, the native SQLite of the backend, may run its script, and the optional native speed-ups (`bufferutil`, `utf-8-validate`, `secp256k1`, `bigint-buffer`, `fsevents`) and two notices (`core-js-pure`, `protobufjs`) are denied, because each has a pure JavaScript fallback. If a warning still shows, it is harmless.
 
-**Ask Claude about the testnet circle from your own build** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is not on npm yet, so build it from a recursive clone of this repository once (`git clone --recurse-submodules https://github.com/x207-labs/x207.git`, then `npm ci && npm run build --workspaces --if-present`), then add this to `claude_desktop_config.json` and restart Claude Desktop:
+**Ask Claude about the testnet circle from your own machine** with the read tools of the MCP server `@x207/mcp` (it signs nothing and holds no key). The package is on npm and needs only Node 22.22.2 or newer: add this to `claude_desktop_config.json` (Claude Desktop) or `.cursor/mcp.json` (Cursor), restart the app, and `npx` fetches the server the first time:
 
 ```json
 {
   "mcpServers": {
     "x207": {
-      "command": "node",
-      "args": ["/path/to/this/checkout/sdk/packages/mcp/dist/cli.js"],
+      "command": "npx",
+      "args": ["-y", "@x207/mcp"],
       "env": {
         "X207_CIRCLE_CONTRACT": "x207-v013.testnet",
         "X207_CIRCLE_ID": "agents-main",
