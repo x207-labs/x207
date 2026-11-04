@@ -16,7 +16,7 @@ x207 is measured by value, not by transaction count. A circle that clears a larg
 
 The read API serves these per epoch at `GET /x207/circles/<circleId>/epochs/<epoch>/metrics`.
 
-Results from demo epochs: section 4 has the cleared ratio and transfer savings of two sandbox runs (for example 120 paid calls became 6 residual payments, cleared ratio 0.6333). No mainnet epoch has run, so there is no mainnet figure.
+Results from demo epochs: the sandbox demo ([sandbox-demo.md](sandbox-demo.md)) has the cleared ratio and transfer savings of two sandbox runs (for example 120 paid calls became 6 residual payments, cleared ratio 0.6333), and epoch 8 of `x207-v013.testnet` is the realistic testnet run (21.8 of 41.35 credit cleared, 7.75 USDT left to move; see [gas-epoch8-vs-transfers.md](gas-epoch8-vs-transfers.md)). No mainnet epoch has run, so there is no mainnet figure.
 
 ### Relief against graph density
 
@@ -50,7 +50,7 @@ The chart marks the Sardex benchmark of 23% of value per monthly batch (Fleischm
 | MVP (1–14 Nov 2026) | Roadmap |
 | --- | --- |
 | F1–F4 in full, F6 core (default and limit), F7 `set_params`; F5 barter bundle and F9 marketplace in the sandbox (ADR-38) | F5 and F9 on mainnet and with real counterparties (a testnet rehearsal ran with five accounts of the team); asset classes A to C with real delivery; a book that more than one operator can run |
-| One circle, six demo agents, small amounts on mainnet | Many circles, clearing across circles |
+| One circle, six demo agents, on `near-sandbox` and on testnet (circle `x207-v013.testnet`, mock USDT); no mainnet transaction yet (see [what-has-run.md](what-has-run.md)) | Many circles, clearing across circles |
 | Cumulative voucher per pair (ADR-17); per-request registration only as a demo mode | Registration of many pairs in one transaction |
 | Own facilitator | Proposal of the scheme spec to the x402 Foundation (`scheme_batch_settlement_x207.md`) |
 | Public ledger | Confidential settlement with Confidential Intents |
