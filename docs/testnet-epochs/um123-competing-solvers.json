@@ -1,0 +1,230 @@
+{
+  "contract": "x207-v013.testnet",
+  "aux": "x207-v013-aux.testnet",
+  "solver2": "solver2.x207rh-keeper.testnet",
+  "note": "UM-123: two solvers, one epoch; hashes and names only",
+  "steps": [
+    {
+      "step": "keeper commit_epoch",
+      "account": "x207-v013-aux.testnet",
+      "method": "commit_epoch",
+      "hash": "4HbN9gRZkiekrhyNHFC74WdFgAoedrirMYhsafpiKXhk"
+    },
+    {
+      "step": "register m02->m00 2",
+      "account": "m02.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "6VkrcPaL67X117b2s7npezwmgBFPfYV2Pik76a3br7D"
+    },
+    {
+      "step": "register m05->m07 1",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "4REq6cJ3WbL1HhsvCGnmeVH2Txe92XzZ9xd2QcSAkQAs"
+    },
+    {
+      "step": "register m01->m02 2",
+      "account": "m01.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "GnmWumvBqDmsZGK87b1xmfnpQ29grFkejzYvUkAK8h99"
+    },
+    {
+      "step": "register m00->m01 2",
+      "account": "m00.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "Etz3CiinurMJPJRXja2itDqmeapHdym7WynZk1Fs6P9V"
+    },
+    {
+      "step": "register m04->m03 1",
+      "account": "m04.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "7PQ4GYPP2rZZN7VR4X3o39F7xFc5hZCEvs5BqZfCYZbB"
+    },
+    {
+      "step": "register m03->m04 1",
+      "account": "m03.x207-v013-aux.testnet",
+      "method": "register_cumulative",
+      "hash": "AenCKwsidzt2Bmsu8iGetUzvpG9r82vq96wVnxra3Jof"
+    },
+    {
+      "step": "close_epoch",
+      "account": "x207-v013-aux.testnet",
+      "method": "close_epoch",
+      "hash": "2hgxba36VApJ2fbZYQmvLjQHunToZMGNEX2tVUB2vk76"
+    },
+    {
+      "step": "P1 solver 1: Y alone (2 credit)",
+      "account": "x207-v013-aux.testnet",
+      "method": "submit_clearing",
+      "hash": "4qYB3CVPAjpWLAFFkW3G2X99ahem3AdNTNtBhahJGtpi"
+    },
+    {
+      "step": "P2 solver 2: X and Y (8 credit)",
+      "account": "solver2.x207rh-keeper.testnet",
+      "method": "submit_clearing",
+      "hash": "4ww6h7y9YXRgbuDtU2a2QGfdt2MY4oBKoAZ3JXENpeEd"
+    },
+    {
+      "step": "P3 solver 1: X alone (6 credit)",
+      "account": "x207-v013-aux.testnet",
+      "method": "submit_clearing",
+      "hash": "(not in the error)"
+    },
+    {
+      "step": "P4 solver 1: X and Y again (8 credit, equal to the stored one)",
+      "account": "x207-v013-aux.testnet",
+      "method": "submit_clearing",
+      "hash": "(not in the error)"
+    },
+    {
+      "step": "commit_epoch",
+      "account": "x207-v013-aux.testnet",
+      "method": "commit_epoch",
+      "hash": "7v1tBgrcScJAr36a4hisLJZKqfs2wcnVVBi9gVGuZ8aG"
+    },
+    {
+      "step": "usdt m05.x207-v013-aux.testnet",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "mint",
+      "hash": "5ektfCPCLYK1Q6vouZjDMTRusugSyv5g1w9tUrvwazTw"
+    },
+    {
+      "step": "settle m05.x207-v013-aux.testnet 1000000",
+      "account": "m05.x207-v013-aux.testnet",
+      "method": "ft_transfer_call",
+      "hash": "3wQY3Ku5VNctfe8ZSa8mExgXAa8mnjQaq98vTSjYu9YA"
+    }
+  ],
+  "result": {
+    "epoch": 18,
+    "proposals": {
+      "p1": {
+        "ok": true,
+        "hash": "4qYB3CVPAjpWLAFFkW3G2X99ahem3AdNTNtBhahJGtpi",
+        "stored": {
+          "epoch": 18,
+          "solver": "x207-v013-aux.testnet",
+          "cleared_total": "2000000",
+          "committed": false,
+          "edge_count": 2,
+          "proposal_hash": "5d0e55a319be67b0f5f100cd9e28350d70eb019e98a6b17fcd6e4ee484d98fa7",
+          "edges": [
+            {
+              "debtor": "m03.x207-v013-aux.testnet",
+              "creditor": "m04.x207-v013-aux.testnet",
+              "cleared": "1000000"
+            }
+          ]
+        }
+      },
+      "p2": {
+        "ok": true,
+        "hash": "4ww6h7y9YXRgbuDtU2a2QGfdt2MY4oBKoAZ3JXENpeEd",
+        "events": [
+          {
+            "event": "clearing_submitted",
+            "data": [
+              {
+                "epoch": 18,
+                "solver": "solver2.x207rh-keeper.testnet",
+                "cleared_total": "8000000",
+                "edge_count": 5,
+                "replaced_solver": "x207-v013-aux.testnet",
+                "replaced_cleared_total": "2000000"
+              }
+            ]
+          }
+        ],
+        "stored": {
+          "epoch": 18,
+          "solver": "solver2.x207rh-keeper.testnet",
+          "cleared_total": "8000000",
+          "committed": false,
+          "edge_count": 5,
+          "proposal_hash": "b9c916106b54c7fe5b977184eaf5551fb82841722f418837414d14f6a29df650",
+          "edges": [
+            {
+              "debtor": "m00.x207-v013-aux.testnet",
+              "creditor": "m01.x207-v013-aux.testnet",
+              "cleared": "2000000"
+            }
+          ]
+        }
+      },
+      "p3": {
+        "ok": false,
+        "hash": "(not in the error)",
+        "error": "Smart contract panicked: ERR_PROPOSAL_NOT_BETTER: stored proposal is at least as good",
+        "stored": {
+          "epoch": 18,
+          "solver": "solver2.x207rh-keeper.testnet",
+          "cleared_total": "8000000",
+          "committed": false,
+          "edge_count": 5,
+          "proposal_hash": "b9c916106b54c7fe5b977184eaf5551fb82841722f418837414d14f6a29df650",
+          "edges": [
+            {
+              "debtor": "m00.x207-v013-aux.testnet",
+              "creditor": "m01.x207-v013-aux.testnet",
+              "cleared": "2000000"
+            }
+          ]
+        }
+      },
+      "p4": {
+        "ok": false,
+        "hash": "(not in the error)",
+        "error": "Smart contract panicked: ERR_PROPOSAL_NOT_BETTER: stored proposal is at least as good",
+        "stored": {
+          "epoch": 18,
+          "solver": "solver2.x207rh-keeper.testnet",
+          "cleared_total": "8000000",
+          "committed": false,
+          "edge_count": 5,
+          "proposal_hash": "b9c916106b54c7fe5b977184eaf5551fb82841722f418837414d14f6a29df650",
+          "edges": [
+            {
+              "debtor": "m00.x207-v013-aux.testnet",
+              "creditor": "m01.x207-v013-aux.testnet",
+              "cleared": "2000000"
+            }
+          ]
+        }
+      }
+    },
+    "commit": {
+      "hash": "7v1tBgrcScJAr36a4hisLJZKqfs2wcnVVBi9gVGuZ8aG",
+      "clearingApplied": [
+        {
+          "epoch": 18,
+          "solver": "solver2.x207rh-keeper.testnet",
+          "cleared_total": "8000000",
+          "edge_count": 5,
+          "edges_hash": "b9c916106b54c7fe5b977184eaf5551fb82841722f418837414d14f6a29df650",
+          "clearing_fee": "8000",
+          "solver_fee": "4000"
+        }
+      ]
+    },
+    "positions": [
+      {
+        "account": "m05.x207-v013-aux.testnet",
+        "role": "debtor",
+        "status": "due",
+        "net": "-1000000",
+        "amount": "1000000"
+      },
+      {
+        "account": "m07.x207-v013-aux.testnet",
+        "role": "creditor",
+        "status": "claimable",
+        "net": "1000000",
+        "amount": "1000000"
+      }
+    ],
+    "settle": {
+      "ok": true,
+      "hash": "3wQY3Ku5VNctfe8ZSa8mExgXAa8mnjQaq98vTSjYu9YA"
+    }
+  }
+}
