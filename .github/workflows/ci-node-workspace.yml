@@ -74,6 +74,9 @@ jobs:
         run: npm run lint --workspace "${{ inputs.package }}" --if-present
       - name: Build
         run: npm run build --workspace "${{ inputs.package }}" --if-present
+      # Type-checks the tests too (`tsc -p tsconfig.test.json --noEmit`), which `build` leaves out.
+      - name: Typecheck
+        run: npm run typecheck --workspace "${{ inputs.package }}" --if-present
       # Not --if-present: a repository without tests must fail here, not pass silently.
       - name: Test
         run: npm test --workspace "${{ inputs.package }}"
