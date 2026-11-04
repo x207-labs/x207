@@ -1,98 +1,111 @@
-# Mainnet runbook (UM-009, UM-026, UM-027, UM-028, UM-029, CT-049, CT-050, UM-040)
+# Mainnet runbook for x207-circle v0.0.13 (UM-009, UM-026, UM-027, UM-028, UM-029, CT-049, CT-050, UM-040)
 
-Status: **a plan for the owner. Nothing in it has been run on mainnet.** No mainnet transaction has been sent from this repository, and none may be sent without the owner: funding, keys and signatures are the owner's (rule of the project). Every number marked *estimate* is a plan figure, not a measurement; *measured* figures come from the testnet runs of 2026-11-02 and 2026-11-03 (`docs/testnet-demo.json`), where storage and gas prices are the same as on mainnet.
+Status: **a plan for the owner. Nothing in it has been run on mainnet.** No mainnet transaction was sent from this repository, no mainnet key exists in it, and none may be sent without the owner: funding, keys and signatures are the owner's. The testnet keys in `.secrets/` are never used on mainnet.
 
-The point of this file is that the owner only has to decide. Sections 1 and 2 are the decisions and the money; section 3 is the steps in order, each with its stop point; section 4 is what no script does; section 5 is the schedule.
+This is the one document to follow. The other three are parts of it: [mainnet-deploy-v0.0.13.md](mainnet-deploy-v0.0.13.md) is the command reference of the contract steps, [mainnet-checklist.md](mainnet-checklist.md) is the tick list for the day, [mainnet-budget.md](mainnet-budget.md) is the spending log. **Every number (NEAR, USDT, gas, the hash) is in this file and nowhere else**; the others point here. A figure marked *measured* comes from a testnet or sandbox run (storage and gas prices are the same on mainnet); *estimate* is a plan figure.
 
-## 0. What the scripts cover, and what they do not
+## 0. The release, and what the scripts cover
 
-| Covered by `npm run demo:mainnet` (`demo/network.demo.ts`; the same script ran a full epoch on testnet) | Not covered by any script, never run on any network |
+| | |
 | --- | --- |
-| F1 join and stake with the real USDT, F2 paid calls, F3 clearing and the 207 report, F4 residual payment and `claim` to a NEAR account, F6 a debtor that does not pay (`DEMO_DEFAULT`), F5 the barter ring (`DEMO_BARTER=yes`), F7 a `set_params` proposal through a Sputnik DAO (`DEMO_DAO_*`) | A creditor's `claim` to the Intents balance and the withdrawal to USDC on Base through 1Click (UM-027 second half, UM-035). The code exists (`backend/src/settlement/`, mode `dry` and `mock`); `live` mode and the signing of the creditor's intent are not rehearsed. NEAR Intents as the route of a residual (BE-034 for several debtors: the plan and, since interface 0.0.9, the contract methods `mt_on_transfer` and `withdraw_intents_balance` exist and run in the sandbox against a mock Intents contract; no live run) |
+| Tag | `v0.0.13` of `x207-labs/contracts`, interface 0.0.13 |
+| wasm sha256 | `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` (pinned in `scripts/deploy-mainnet.mjs`, `KNOWN_SHA256`) |
+| `code_hash` on chain (base58) | `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh` (the same bytes) |
+| Size | 682,707 bytes, 6.83 NEAR of storage locked |
+| Join deposit | 0.35 NEAR per member, **not returned** (`JOIN_STORAGE_DEPOSIT`) |
 
-Set `DEMO_MINT_USDT` to nothing on mainnet: it is for the mock token of testnet only. The mainnet token is `usdt.tether-token.near`.
+| Covered by `npm run demo:mainnet` (`demo/network.demo.ts`; the same script ran a full epoch on testnet) | Never run on any network, or only in the sandbox |
+| --- | --- |
+| join and stake with the real USDT, paid calls, clearing and the 207 report, residual payment and `claim` to a NEAR account, a debtor that does not pay (`DEMO_DEFAULT`), the barter ring (`DEMO_BARTER=yes`), a `set_params` proposal through a Sputnik DAO (`DEMO_DAO_*`) | The route through NEAR Intents and the withdrawal to USDC on Base through 1Click. The residual of three debtors in one `execute_intents` ran against the wasm of the real `intents.near` in `near-sandbox` (`tests/residual-batch.sandbox.test.ts`); no network has run it, and `intents.testnet` has no code |
+
+Set `DEMO_MINT_USDT` to nothing on mainnet: it is for the mock token of testnet. The mainnet token is `usdt.tether-token.near`.
 
 ## 1. Decisions for the owner
 
-| # | Decision | Recommendation | Why |
-| --- | --- | --- | --- |
-| 1 | Contract account name | `x207-circle.near` is what `.env.example` assumes; `.env.mainnet.example` lists every variable that `scripts/mainnet-preflight.mjs` reads (copy it to `.env.mainnet`, which git ignores). *Not verified:* how a `<name>.near` account is created and what it costs (the name was not taken at block 222,830,048, 2026-11-03: `view_account` answered `UNKNOWN_ACCOUNT`; that only says the name is unused now, and the way to create a top-level `.near` account was **not verified**). An alternative that needs no registrar is a sub-account of an account the owner already has, such as `x207-circle.<owner>.near`. | The six agent accounts are sub-accounts of the contract account (`FX-02`) |
-| 2 | With or without the Sputnik DAO | With, if UM-028 and CT-050 must be shown on mainnet; without, the owner account is `owner_id` and `set_params` is called by the owner | The DAO costs 7 NEAR (section 2) |
-| 3 | Contract version | The tag that carries interface 0.0.9 or later, **as the wasm of the GitHub release** and not a local build: a local `cargo near build` is not the release: only the release workflow (and `scripts/repro-build.sh`, same container) gives the bytes of the release, and `v0.0.9` is the first reproducible one (wasm sha256 `fa8309059a84…`, see `SHA256SUMS` of the release). Two local builds of one commit can differ in the sha256, so the code on mainnet could not be tied to a source. Record the sha256 of the release (`SHA256SUMS`) in the spending log | `owner_id` is fixed at `new`; there is no method that changes it |
-| 4 | Parameters at `new` | Pass explicit `params` as tested on testnet: `epoch_length` 600, `payment_window` 900, `proposal_window` 60, `base_limit_ratio` 8000, `limit_growth` 1000, `limit_cap` "1000000000", `limit_decay` 0, no fees, `admission` "open". `dao/deploy-owned.mjs` prints `params: null` (the defaults of ADR-25: one hour epochs, not tested); edit the printed JSON | A rehearsal then takes about 50 minutes instead of two hours |
-| 5 | USDT amounts | Section 2 (estimate) | Small nominal |
-| 6 | 1Click | Request a JWT (the owner does this) for the dry quote and for the withdrawal; `ONECLICK_JWT` in `.env` | The preflight cannot check the quote without it |
-| 7 | Who is on the DAO council | Two or three accounts of the owner with separate keys | Two votes pass a proposal on testnet |
+| # | Decision | Recommendation |
+| --- | --- | --- |
+| 1 | Contract account name | `x207-circle.near` is what `.env.example` assumes; `.env.mainnet.example` lists the variables of the preflight (copy to `.env.mainnet`, ignored by git). *Not verified:* how a top-level `<name>.near` is created and what it costs (the name was unused at block 222,830,048). A sub-account of an account the owner has, such as `x207-circle.<owner>.near`, needs no registrar. The six agents are sub-accounts of the contract account |
+| 2 | Sputnik DAO | **Yes.** `deploy-mainnet.mjs` refuses an owner that is not a DAO, and `owner_id` is fixed at `new` |
+| 3 | Parameters at `new` | `epoch_length` 600, `payment_window` 900, `proposal_window` 60, `base_limit_ratio` 8000, `limit_growth` 1000, `limit_cap` "1000000000", `limit_decay` 0, no fees, `admission` "open" (`DEFAULT_PARAMS` of the script, tested on testnet; `--params-file` for others). A rehearsal then takes about 50 minutes instead of two hours |
+| 4 | USDT | 20 USDT in all (section 2) |
+| 5 | 1Click | The owner requests a JWT (`ONECLICK_JWT` in `.env`) for the dry quote and the withdrawal; only step 9 needs it |
+| 6 | DAO council | Two or three accounts of the owner with separate keys; two votes pass a proposal on testnet |
 
-## 2. Budget (estimates; measured figures marked)
+## 2. Money: one table
 
-NEAR (the owner funds each account):
+NEAR, funded by the owner. "Fund" is the recommended amount (`node scripts/mainnet-costs.mjs --wasm x207-circle-v0.0.13.wasm` prints the first four rows).
 
-| Account | Purpose | NEAR | Basis |
-| --- | --- | --- | --- |
-| Circle contract account | Locked storage of the code (558 KB, 5.59 NEAR) and of the state (21.7 KB after 6 members and 3 epochs, 0.22 NEAR) plus gas of its own calls | 8.0 | *measured* 5.81 NEAR locked on testnet; 8.0 leaves about 2 NEAR for state growth |
-| Signer of the DAO factory (owner) | Factory deposit 7 NEAR; stays in the DAO account (a Sputnik `Transfer` proposal could move it out; not tried) | 7.2 | `contracts/dao/lib.mjs` (`FACTORY_DEPOSIT`); *measured* on testnet: the DAO account holds 7.0 and locks 5.41 NEAR for its storage |
-| Six agents | `join` deposit (`JOIN_STORAGE_DEPOSIT` of `@x207/core`: 0.32 NEAR since ADR-41 / interface 0.0.9, 0.01 NEAR before; **not returned** on exit, only the part above it is) and gas | 0.4 each, 2.4 | 0.32 is the deposit, which stays in the contract. *Measured* on testnet: about 0.014 NEAR spent per agent over the whole demo at the old deposit of 0.01 NEAR (whether that figure includes the deposit was not checked); gas is small either way, so 0.4 leaves about 0.08 NEAR for gas. The preflight test fails if the figure in `@x207/core` outgrows the minimum |
-| Keeper | `close_epoch`, `commit_epoch`, `finalize_epoch` | 0.5 | *measured* gas below 0.05 NEAR per epoch |
-| Solver | `submit_clearing` | 0.5 | same |
-| Facilitator relayer | `register_cumulative` for every pair, about 4 Tgas each; a gas key (NEP-611) is optional and needs its own balance | 1.5 (0.5 without a gas key) | *estimate*: one `exact` transaction cost the relayer 0.0003 NEAR on testnet (measured) and a registration is about 4 Tgas; the testnet gas key was funded with 2 NEAR |
-| DAO council members (2 or 3) | Bond 0.1 NEAR per `add_proposal`, gas | 0.5 each | Sputnik default bond (`PROPOSAL_BOND`) |
-| USDT storage registration | `storage_deposit` on `usdt.tether-token.near` for every holder (six agents and the circle contract) | 0.01 in total | *measured* by the view `storage_balance_bounds`: 0.00125 NEAR each |
-| **Total with the DAO** | | **about 20.7** | 19.5 before ADR-41 (the join deposits of the six agents went from 0.01 to 0.32 NEAR each, and are kept) |
-| **Total without the DAO** | | **about 13.5** | 12.3 before ADR-41; the backlog estimated 10 to 15 NEAR; the DAO is what takes the plan above 15 |
+| Account | What it pays | Minimum | Fund | Basis |
+| --- | --- | ---: | ---: | --- |
+| Circle contract | storage of the code (6.83) and of `new` and the asset catalog (about 0.37), gas of its own calls | 8.0 | 8.2 | *measured* size of v0.0.13; the deploy script refuses an account below 8 NEAR |
+| Owner, to create the DAO | factory deposit 7 NEAR plus gas; the 7 NEAR stays in the DAO account | 7.2 | 7.5 | *measured*, `FACTORY_DEPOSIT` of `contracts/dao/lib.mjs` |
+| Keeper | `close_epoch`, `commit_epoch`, `finalize_epoch`, `prune_epoch` | 0.17 | 0.41 | *estimate* by the reserve rule (below); SV-020: the keeper refuses to sign with less than the reserve of the call |
+| Solver | `submit_clearing` | 0.08 | 0.18 | same; SV-020: the solver stops with a clear message below its reserve |
+| Six agents | `join` deposit 0.35 each, **not returned**, plus gas | 0.4 each | 0.5 each, 3.0 | `JOIN_STORAGE_DEPOSIT` |
+| Facilitator relayer | `register_cumulative` for every pair, about 4 Tgas each | 0.5 | 1.5 with a gas key | *estimate* |
+| DAO council, 3 accounts | proposal bond 0.1 NEAR each, gas | 0.2 each | 0.5 each, 1.5 | Sputnik default bond |
+| USDT storage | `storage_deposit` on `usdt.tether-token.near` for six agents and the circle | 0.01 | 0.01 | *measured* 0.00125 each |
+| **Total** | | | **about 22.3 NEAR** | |
 
-USDT (6 decimals), *estimate*: stake 2 USDT per agent (the credit limit is 0.8 of the stake, enough for the prices of the demo, which is 0.02 per call) and 1 USDT spare per agent for the residual payment, so 18 USDT for the first rehearsal. The second rehearsal reuses the stakes; the debtor that defaults loses part of its stake (200000 units, or 0.2 USDT, in the testnet run) and needs another spare unit. Plan **20 USDT** in total. The withdrawal to Base is at most 1 USDT. The minimum size of a 1Click withdrawal is *unknown*; the dry quote of the preflight tells.
+- **Not returned:** the 6 join deposits (2.1 NEAR) and the gas. **Locked while the circle exists:** the code storage (6.83 NEAR, returned only if the account is deleted) and the 7 NEAR in the DAO account. **Bonds come back:** the full asset catalog is 92 proposals of 0.1 NEAR, 9.2 NEAR out at once unless the council adds them in batches, returned when each proposal is finalized.
+- **The reserve rule (CT-102, `contracts/docs/gas-and-cost.md`):** a transaction reserves about 0.001 NEAR per Tgas of prepaid gas and returns what it does not burn. `commit_epoch` (150 Tgas) reserves 0.151 NEAR, `submit_clearing` (60 Tgas) 0.061, `close_epoch` 0.021, `finalize_epoch` 0.101, `prune_epoch` 0.201. One epoch of 210 edges burns about 0.1075 NEAR in all, so two rehearsals cost the gas of two small epochs, well under 0.5 NEAR.
+- **USDT (6 decimals), *estimate*:** stake 2 USDT per agent (the credit limit is 0.8 of the stake, enough for the 0.02 price of a call) and 1 USDT spare per agent for the residual, 18 USDT for the first rehearsal; the second reuses the stakes, and a defaulter loses part of its stake (0.2 USDT in the testnet run). Plan **20 USDT** in all. The withdrawal to Base is at most 1 USDT; the minimum of a 1Click withdrawal is *unknown* and the dry quote tells.
+- **Time (observed on testnet):** one epoch of the demo takes 40 to 50 minutes; a defaulter adds the 15 minutes of the payment window.
 
-Time: *observed* on testnet, one epoch of the demo (join, 60 paid calls, clearing, residual, claims) takes roughly 40 to 50 minutes, and a debtor that defaults adds the 15 minutes of the payment window.
+## 3. The steps, in order
 
-## 3. Steps in order
+Before each step run `node scripts/mainnet-preflight.mjs` (views only, reads no key). After each step write the hash in the spending log of [mainnet-budget.md](mainnet-budget.md). **Stop** at the first thing that is not as written, and report it; the state of the chain is described so the owner can decide. Steps marked **SIGNS** are run by the owner after reading what they print.
 
-Before every step: `node scripts/mainnet-preflight.mjs` (views only: it signs and sends nothing, and reads no key). It reports what is missing. After every step: write the transaction hash in the spending log of `docs/mainnet-budget.md`. **Stop** means: do not go on to the next step; the state of the chain is described so that the owner can decide.
+| # | Step | Who | Command or action | Stop if |
+| --- | --- | --- | --- | --- |
+| 1 | Accounts and funds | owner | choose the names (decision 1), write the ids in `.env`, make the keys with `near` on the owner's machine (`scripts/create-accounts.mjs` has no mainnet mode), fund the accounts of section 2, buy the 20 USDT, register every USDT holder | the preflight reports MISSING for an account or a balance |
+| 2 | The release | anybody | `gh release download v0.0.13 -R x207-labs/contracts`; `shasum -a 256 x207-circle-v0.0.13.wasm` must be the sha256 of section 0 and the line in `SHA256SUMS`; `contracts/scripts/verify-release.sh` is the reproducible build. Never deploy a wasm built on a laptop | the sha256 differs |
+| 3 | The DAO (**SIGNS**) | owner | `node contracts/dao/create-dao.mjs --name x207 --council a.near,b.near,c.near --signer owner.near --network mainnet` prints one command; gas of `create` should be 300 Tgas (100 ran out on testnet) | `get_policy` of the new DAO does not list the council |
+| 4 | Dry run of the deploy | anybody | `node scripts/deploy-mainnet.mjs --network mainnet --circle <circle>.near --owner <dao>.sputnik-dao.near --release v0.0.13 --out docs/mainnet-dry-run.json` (default: reads only, signs nothing) | exit 1 with `STOP`, or any `problems` |
+| 5 | Deploy and `new` (**SIGNS**) | owner | the same command with `--keys-dir <keys folder with a mainnet/ subfolder> --out docs/mainnet-deploy.json --execute --yes-owner-approved`; it reads `<keys-dir>/mainnet/<circle>.json`, deploys, calls `new` with the DAO as `owner_id`, then checks the `code_hash`, `interface_version` and `get_owner` | any check differs: do not use that contract (`owner_id` cannot be changed; delete the account and start again) |
+| 6 | Verify the code on chain | anybody | `contracts/scripts/verify-release.sh v0.0.13 <circle>.near https://rpc.mainnet.fastnear.com`; and `X207_EXPECTED_WASM_SHA256=<sha256> node scripts/mainnet-preflight.mjs` must print OK on "code_hash against the release". Write the `code_hash` next to the deploy hash in the log | the `code_hash` is not `DTw5…jsjh` |
+| 7 | Register the asset classes | owner, council | `node scripts/print-class-proposals.mjs --network mainnet --dao <dao>.sputnik-dao.near --contract <circle>.near --signer <council member>.near --rpc-url https://rpc.mainnet.fastnear.com > class-proposals.sh` (92 commands, `--only` for a few, `--count` for the number); the owner or a council member runs lines of it (**SIGNS**), the council votes with `contracts/dao/vote-proposal.mjs`; check with `list_asset_classes` | a class is registered with other content |
+| 8 | Onboarding and the first epoch | owner | `DEMO_NETWORK=mainnet X207_CONFIRM_REAL_TX=yes X207_CONFIRM_MAINNET=yes` with the variables of the header of `demo/network.demo.ts` (`CIRCLE_CONTRACT`, `USDT_TOKEN_ID=usdt.tether-token.near`, `KEYS_DIR`, `TERMS_HASH`, `STAKE_AMOUNT=2000000`, the keeper, solver and relayer ids, `SPEND_POLICY_FILE`) and `npm run demo:mainnet`; without the two `CONFIRM` variables it only prints the plan (read it first). Then `DEMO_BARTER=yes DEMO_DEFAULT=<a debtor> DEMO_PAYMENTS=60 DEMO_GAS_KEY_LANES=4 DEMO_CALL_PAUSE_MS=1500 RPC_URLS=<paid or several> X207_DEMO_RECORD=docs/mainnet-demo.json`. *Pass:* six members `active`; the 207 report shows 409 for the defaulter, its stake cut by the amount due, its limit 0, creditors paid in full (UM-029) | a stake is refused (check `storage_deposit` of the token for the circle first); the facilitator answers 503 (the public RPC is the limit, see `sdk/docs/rpc-load.md`; use a paid endpoint; resume with `DEMO_RESUME_EPOCH=<epoch>`) |
+| 9 | The DAO proposal `set_params` (UM-028, CT-050) | council | first the dry run, which reads the chain and prints the proposal, the votes and the reads, and cannot send: `node contracts/dao/mainnet-set-params.mjs --dao <dao>.sputnik-dao.near --contract <circle>.near --signer <member>.near --params-file params.json`. Then the owner runs the printed `add_proposal` (**SIGNS**), the council votes. Or in the demo: `DEMO_DAO_ACCOUNT DEMO_DAO_COUNCIL DEMO_DAO_PARAMS_FILE`, one value changed inside ADR-20 (testnet: `limit_decay` 0 to 100). *Pass:* `Approved` after two votes, `params_updated` carries `effective_epoch`, `get_params` shows it from the next epoch | the dry run prints a PROBLEM |
+| 10 | Intents and Base (UM-027 second half, UM-035; **never rehearsed**) | owner | see section 4 | the dry quote fails, a token pair is not listed, or a step needs a signature this repository cannot produce: say that UM-027 and UM-035 stay open |
+| 11 | The second epoch and the record (UM-040) | owner | repeat step 8 without changing code, a second defaulter or the same one if the stake allows; copy the hashes of both rounds from `docs/mainnet-demo.json` to the README; `node scripts/check-window.mjs` and `npm run check:pins` before the submission | |
 
-### Step 1: accounts and funds (UM-009)
-1. The owner chooses the names (decision 1) and writes them in `.env` from `.env.example` (account ids only). Keys are made by the owner with `near` (near-cli-rs): `scripts/create-accounts.mjs` has modes `sandbox` and `testnet` only, none for mainnet. The demo script reads a key from `KEYS_DIR/mainnet/<account>.json` as `{"account_id": ..., "secret_key": "ed25519:..."}` (mode 0600), or from the variables `<ROLE>_SECRET_KEY` (`KEEPER`, `SOLVER`, `RELAYER`); the keys are never printed by any script of this repository.
-2. The owner funds the accounts of section 2 (the amounts are the `NEAR` column) and obtains the USDT (section 2). Register every USDT holder: `storage_deposit` on `usdt.tether-token.near` for the six agents and the circle account (0.00125 NEAR each).
-3. Run the preflight. **Stop** while it reports MISSING for an account or a balance.
+**The keeper between rehearsals.** The demo script runs the keeper's calls itself. A keeper that keeps running is `node scripts/keeper.mjs --rpc-url <url> --contract <circle> --account <keeper> --prune-lag 2` with `KEEPER_SECRET_KEY` in the environment; `--prune-lag` calls `prune_epoch(epoch, 200)` for each `finalized` epoch two behind, off by default because what it removes cannot be read again (`list_obligations`, `obligation`, `get_bundle` of that epoch answer empty; `claim` and `net_position` still work). It is for a circle that stays open, not for the rehearsals.
 
-*Cost:* the funds of section 2. *If it fails:* nothing is on chain yet except funded accounts; the owner can move the funds back.
+## 4. Step 10: Intents and the withdrawal to Base
 
-### Step 2: the DAO and the contract (CT-045 on mainnet; needed by CT-050 and UM-028)
-1. Take the wasm from the GitHub release of the tag (the repositories are private, so the owner downloads it with a token that can read `x207-labs/contracts`). Compute `shasum -a 256 x207_circle.wasm` and compare it with the `SHA256SUMS` of the same release. Only releases from v0.0.9 on are reproducible: the wasm of v0.0.8 and older tags cannot be tied to its source, so never use one of those for a rehearsal or for mainnet. Do **not** deploy a wasm that was built on a laptop: `scripts/package-release.sh` is for making a release candidate, and its output is not the reproducible build (CT-087 is done: only the release workflow and `scripts/repro-build.sh` give the bytes of the release).
-2. Create the DAO with the owner as signer (7 NEAR): `node dao/create-dao.mjs --name x207 --council a.near,b.near,c.near --signer owner.near --network mainnet`. The script **prints** a `near-cli-rs` command; the owner reads it and runs it. *Correction before running:* the factory deposit is 7 NEAR and the gas of `create` should be 300 Tgas (100 Tgas ran out on testnet).
-3. Deploy the contract with the DAO as owner and explicit params (decision 4): `node dao/deploy-owned.mjs --contract x207-circle.near --dao x207.sputnik-dao.near --circle agents-main --network mainnet`; edit `params` in the printed command; the owner runs it.
-4. Check: `get_owner` answers the DAO; `interface_version` answers the tag; `get_params` answers the parameters of decision 4; **the `code_hash` of the account is the sha256 of the release wasm**. Set `X207_EXPECTED_WASM_SHA256=<the sha256 of the release>` and run the preflight: it prints OK on the line "code_hash against the release" only when the deployed code is that wasm (the line was checked against a real testnet deployment on 2026-11-03). Do the same before every rehearsal, because a redeploy changes the hash. **Write the `code_hash` of the account in the spending log next to the hash of the deploy transaction** (and the sha256 of the release), so a later reader can tie the code on chain to a tag without asking the chain again.
-
-*Cost:* 7 NEAR (DAO) and the locked storage of the contract (section 2). *Stop if:* `get_owner` is not the DAO, the version is not the tag, or the `code_hash` is not the sha256 of the release. *If it fails:* a deployed contract with a wrong owner cannot be changed (`owner_id` is set at `new`); the account has to be deleted and made again, so check the printed command twice before the deploy.
-
-### Step 3: onboarding and the real USDT (UM-026, CT-049)
-Run `DEMO_NETWORK=mainnet X207_CONFIRM_REAL_TX=yes X207_CONFIRM_MAINNET=yes` with the variables of the header of `demo/network.demo.ts` (`CIRCLE_CONTRACT`, `USDT_TOKEN_ID=usdt.tether-token.near`, `KEYS_DIR`, `TERMS_HASH`, `STAKE_AMOUNT=2000000`, `AGENT_ACCOUNT_TEMPLATE` if the names differ, `KEEPER_ACCOUNT_ID`, `SOLVER_ACCOUNT_ID`, `RELAYER_ACCOUNT_ID`, `SPEND_POLICY_FILE`) and `npm run demo:mainnet`. Without the two `CONFIRM` variables the script only prints the plan: print it first and read it. Stage F1 sends `join` and `ft_transfer_call` with `{"action":"stake"}` for each agent.
-*Pass:* six members `active`; the hashes of the stake transfers are the evidence of CT-049 (stake through `ft_transfer_call` to the real token). *Stop if:* a stake is refused (check `storage_deposit` of the token for the circle account first).
-
-### Step 4: one full epoch (UM-040 first rehearsal; includes UM-029)
-Same command with `DEMO_BARTER=yes DEMO_DEFAULT=<a debtor> DEMO_PAYMENTS=60 DEMO_GAS_KEY_LANES=4 DEMO_CALL_PAUSE_MS=1500 RPC_URLS=<paid or several endpoints> X207_DEMO_RECORD=docs/mainnet-demo.json`. The debtor must have a negative net position in the epoch; on testnet that was `translator` (net -0.2 credit); read the positions of the dry plan or the previous epoch. Stages: F1, the barter ring, 60 paid calls, F3 clearing, F4 residual payments and claims, then the default branch.
-*Pass:* the 207 report shows 409 for the defaulter, its stake is cut by the amount due, its limit is 0, the creditors are paid in full (UM-029). The hashes are in `docs/mainnet-demo.json` and are copied to the README (UM-040).
-*Stop if:* the facilitator answers HTTP 503: the public RPC is the limit (see `sdk/docs/rpc-load.md`). Use a paid endpoint or wait; do not pile up runs. A run that stops can be resumed with `DEMO_RESUME_EPOCH=<epoch>`.
-
-**The keeper between rehearsals (interface 0.0.8).** The demo script runs the keeper's calls itself (`close_epoch`, `commit_epoch`, `finalize_epoch`). A keeper that keeps running between the rehearsals and afterwards is `node scripts/keeper.mjs --rpc-url <url> --contract <circle> --account <keeper> --prune-lag 2` with `KEEPER_SECRET_KEY` in the environment. The new option calls `prune_epoch(epoch, 200)` for every `finalized` epoch that is two epochs behind the current one, until the contract answers `0`. `prune_epoch` is permissionless, takes back the storage of the pairs, the participant totals and the bundles of that epoch (the epoch record, the clearing proposal and every position stay, so `claim` and `net_position` still work), and is **off by default** because what it removes cannot be read again: `list_obligations`, `obligation` and `get_bundle` of that epoch answer empty afterwards. Pruning is not needed for the rehearsals; it is for a circle that stays open, so that the storage of the contract does not grow with every epoch. Errors: `ERR_NOT_FINALIZED`, `ERR_UNKNOWN_EPOCH`. A barter bundle has at most 64 legs (`ERR_BAD_BUNDLE` above that); the ring of the demo has 3.
-
-### Step 5: the DAO proposal (UM-028, CT-050)
-In the same run or a second one: `DEMO_DAO_ACCOUNT=x207.sputnik-dao.near DEMO_DAO_COUNCIL=a.near,b.near DEMO_DAO_PARAMS_FILE=<json>`, with the params of decision 4 and one changed value inside the range of ADR-20 (testnet: `limit_decay` 0 to 100). The council members' keys must be in `KEYS_DIR/mainnet/`.
-*Pass:* the proposal is `Approved` after two votes, the event `params_updated` carries `effective_epoch`, and the epoch after `close_epoch` shows the new value in `get_epoch`/`get_params`. The change is not visible before the next epoch. The dashboard page of governance (FE-014) has not been shown with a real value.
-
-### Step 6: Intents and the withdrawal to Base (UM-027 second half, UM-035) **never rehearsed**
 1. With the JWT, run the preflight with `X207_PREFLIGHT_BASE_ADDRESS` set to a Base address of the owner: the dry quote must answer.
-2. **A residual paid through Intents** (interface 0.0.9, only if the owner wants this route): a debtor pays its residual from its Intents balance; `intents.near` calls `mt_on_transfer` on the circle (only `intents_id` may call it, only the token `nep141:usdt.tether-token.near`, `msg` as the `settle` action of `ft_on_transfer`), and the circle books the payment. The USDT is still on `intents.near`, so **before any `claim`** somebody (the keeper, any account) calls `withdraw_intents_balance()` with at least 130 Tgas (the SDK builder `buildWithdrawIntentsBalanceCall` uses 150): it moves the booked USDT from `intents.near` to the circle's NEP-141 balance and emits `intents_withdrawn { amount }`. The view `intents_balance` tells how much is waiting. Errors: `ERR_GAS_TOO_LOW`, `ERR_WITHDRAW_IN_FLIGHT` (a withdrawal is already running: wait), `ERR_NOTHING_TO_WITHDRAW`. These methods have run only in the sandbox against a mock Intents contract (`deployCircle(params, { mockIntents: true })`); on the real `intents.near` they have not run. Skip this item for the plain USDT route of Step 4, which does not use it.
-3. A creditor claims to the Intents balance: `claim(epoch, destination: "intents")` (the contract part is tested in the sandbox with a mock Intents contract only).
-4. The creditor's intent for the withdrawal is signed by the creditor's wallet (the backend only prepares an unsigned intent: `OneClickClient`), submitted to 1Click, and the USDC arrives at the Base address.
-*Pass:* USDC at the Base address and the hashes of both transactions in the log. *Stop if* the dry quote fails, the token pair is not listed (the preflight lists both), or any step needs a signature that this repository cannot produce: then report that UM-027 and UM-035 stay open.
+2. **A residual paid through Intents** (only if the owner wants this route): `intents.near` calls `mt_on_transfer` on the circle (only `intents_id`, only `nep141:usdt.tether-token.near`, `msg` as the `settle` action), and the circle books the payment. **Before any `claim`** somebody calls `withdraw_intents_balance()` with at least 130 Tgas (the SDK builder uses 150); it emits `intents_withdrawn { amount }`, and the view `intents_balance` says how much waits. Errors: `ERR_GAS_TOO_LOW`, `ERR_WITHDRAW_IN_FLIGHT`, `ERR_NOTHING_TO_WITHDRAW`.
+3. **At most 8 debtors per `execute_intents`, each signed transfer with `min_gas` of 10 Tgas** (BE-034, measured in the sandbox with the wasm of `intents.near`: with the default of Intents 7 debtors already fail, with `min_gas` 10 Tgas ten work and 12 fail; the backend uses 8, `DEFAULT_MAX_PER_CALL` and `DEFAULT_MIN_GAS` in `backend/src/settlement/residual/batch.ts`; table in `contracts/docs/gas-and-cost.md` section 3a). A call that exceeds the prepaid gas pays nobody; send the same batch again with fewer debtors. Mainnet gas can differ with the version of Intents: try with two debtors first.
+4. A creditor claims to the Intents balance: `claim(epoch, destination: "intents")` (tested in the sandbox with a mock Intents contract and the real wasm only).
+5. The creditor's intent for the withdrawal is signed by the creditor's wallet (the backend only prepares an unsigned intent: `OneClickClient`), submitted to 1Click, and the USDC arrives at the Base address. *Pass:* USDC at the Base address and both hashes in the log.
 
-### Step 7: the second rehearsal and the record (UM-040)
-Repeat Step 4 without changing code (UM-040 asks for two rounds in a row), using a second defaulter or the same one if the stake allows. Copy the hashes of both rounds to the README (`docs/mainnet-demo.json` holds them). Run `node scripts/check-window.mjs` and `npm run check:pins` before the submission.
+## 5. Who signs
 
-## 4. What only the owner does
+| Action | Signer |
+| --- | --- |
+| Funding, keys, account names, USDT, the 1Click token | the owner |
+| Create the DAO | the owner |
+| Deploy and `new` | the key of the circle account, held by the owner, with `--execute --yes-owner-approved` |
+| `set_params`, `set_asset_class`, `set_asset_contracts`, `propose_freeze`, `propose_upgrade`, `apply_upgrade` | the DAO (council votes) |
+| `close_epoch`, `commit_epoch`, `finalize_epoch`, `apply_freeze`, `settle_deal`, `prune_epoch`, `withdraw_intents_balance` | anybody (the keeper in practice) |
+| Joining, staking, vouchers, deals | each agent with its own key |
 
-Funding the accounts; buying or bridging the USDT; creating the keys and keeping them; registering the contract account name; the 1Click JWT; signing every mainnet transaction (the scripts print or send only with `X207_CONFIRM_REAL_TX=yes` and `X207_CONFIRM_MAINNET=yes`, which the owner sets); the council's votes; the signature of the creditor's withdrawal; filling the spending log; the decision to publish packages, make repositories public and submit (none of which this file does).
+The scripts print or send only with `X207_CONFIRM_REAL_TX=yes` and `X207_CONFIRM_MAINNET=yes` (the demo) or `--execute --yes-owner-approved` (the deploy). `print-class-proposals.mjs`, `contracts/dao/*.mjs` and `mainnet-set-params.mjs` only print. The owner decides, and writes in the log, whether to delete the full-access key of the circle account after step 5: with the DAO as owner, code changes go through `propose_upgrade` and `apply_upgrade` (timelock), which need no key of the account.
 
-## 5. Schedule
+## 6. Rollback
 
-The window closes 2026-11-14T23:59Z. Working back: Step 1 and 2 at least three days before; the first rehearsal (Step 3 to 5) and the second (Step 7) at least 24 hours and 12 hours before the end, as the demo storyboard planned; Step 6 as soon as the JWT exists, because it is the only step that depends on a third party. If Step 6 cannot be done, say in the README that the Intents and Base part has not run on any network.
+- **Before `new` ran:** the account only holds code. The owner deletes the account (beneficiary the owner) and starts again with another name; the locked NEAR returns.
+- **After `new`, nothing in use:** `owner_id` cannot be changed. A circle with a wrong owner, version or `code_hash` is not repaired: delete the account and deploy again. The script stops at its check, so no member has joined.
+- **In use, a code change:** only forward, by the DAO: `propose_upgrade` with the sha256 of the new wasm, the timelock, then `apply_upgrade`. A rollback to an older release is **not** safe once 0.0.12 or later state exists: open deals hold bonds (`bond_locked`) that 0.0.11 does not know (`ct094_upgrade_from_0_0_11` proves the way forward only).
+- **A freeze** is lifted by `unfreeze_member` (the DAO); no money moves by a freeze. **Money:** stakes come back by `request_exit` and `withdraw_stake` when no bond is locked; the join deposit does not.
+
+## 7. Schedule and what only the owner does
+
+The window closes 2026-11-14T23:59Z. Working back: steps 1 to 7 at least three days before; the first epoch (step 8, 9) at least 24 hours before the end and the second (step 11) at least 12 hours before; step 10 as soon as the JWT exists, because it depends on a third party. If it cannot be done, the README says that the Intents and Base part has not run on any network.
+
+Only the owner: funding; buying or bridging the USDT; creating and keeping the keys; registering the account name; the 1Click JWT; signing every mainnet transaction; the council's votes; the signature of the creditor's withdrawal; filling the spending log; the decision to publish packages, make repositories public and submit.
+
+## 8. What was rehearsed
+
+Step 4 ran against testnet with the 0.0.13 wasm (`x207-v013.testnet`, owner DAO `x207v8.sputnikv2.testnet`): every check passed, `alreadyDeployed: true`, nothing signed; a wrong `--expect-sha256` stops with `refused: sha256 of the wasm is … but the pinned number is …`, `--yes-owner-approved` without `--execute` is refused, and a council member as owner is refused (`get_policy` fails). The 92 class proposals counted against that circle: 92 to add, 2 already registered. Step 9's dry run ran against the same circle and DAO (`contracts/dao/mainnet-set-params.mjs --network testnet`). `node --test scripts/deploy-mainnet.test.mjs` (9) and `node --test contracts/dao/` (24) pass. **A mainnet dry run was not run.**

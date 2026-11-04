@@ -1,35 +1,19 @@
-# Mainnet deploy of x207-circle v0.0.13 (CT-049, preparation)
+# Mainnet deploy of x207-circle v0.0.13: command reference (CT-049, preparation)
+
+This is the command reference of the contract steps. The order of all steps, the money and the gas are in [mainnet-runbook.md](mainnet-runbook.md); the numbers are kept there only.
 
 Status: **prepared, not run.** No mainnet transaction was sent from this repository and no mainnet key exists in it. Every command below reads only, except the two marked **SIGNS**, which the owner runs after reading them. The testnet keys are never used on mainnet.
 
-The scripts never sign by default. `deploy-mainnet.mjs` sends only with `--execute`, and on mainnet only with `--execute --yes-owner-approved`. `print-class-proposals.mjs` and `contracts/dao/*.mjs` only print commands. Stop at the first line that is not as written.
+The scripts never sign by default. `deploy-mainnet.mjs` sends only with `--execute`, and on mainnet only with `--execute --yes-owner-approved`. `print-class-proposals.mjs` and `contracts/dao/*.mjs` (including `mainnet-set-params.mjs`) only print commands. Stop at the first line that is not as written.
 
 ## The release
-
-| | |
-| --- | --- |
-| Tag | `v0.0.13` of `x207-labs/contracts` (interface 0.0.13) |
-| sha256 | `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054` |
-| `code_hash` (base58) | `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh` |
-| Size | 682,707 bytes |
-
-The sha256 is pinned in `scripts/deploy-mainnet.mjs` (`KNOWN_SHA256`). The script stops before signing if the downloaded wasm differs from it, and also if it differs from `SHA256SUMS` of the release.
+Tag `v0.0.13` of `x207-labs/contracts`; its sha256, `code_hash` and size are in section 0 of [mainnet-runbook.md](mainnet-runbook.md). The sha256 is pinned in `scripts/deploy-mainnet.mjs` (`KNOWN_SHA256`): the script stops before signing if the downloaded wasm differs from it, and also if it differs from `SHA256SUMS` of the release.
 
 ## Step 0: how much NEAR each account needs (reads nothing from the network)
 ```bash
 node scripts/mainnet-costs.mjs --wasm x207-circle-v0.0.13.wasm
 ```
-
-| Account | Minimum | Recommended | Why |
-| --- | --- | --- | --- |
-| Circle contract | 6.93 | 8.2 | 6.83 NEAR of storage locked by the code, plus state; the deploy script refuses an account below 8 NEAR |
-| Keeper | 0.17 | 0.41 | `commit_epoch` reserves 0.151 NEAR (150 Tgas); the keeper refuses to sign below the reserve |
-| Solver | 0.08 | 0.18 | `submit_clearing` reserves 0.061 NEAR (60 Tgas) |
-| Each agent | 0.4 | 0.5 | join deposit 0.35 NEAR, not returned |
-| Owner, to create the DAO | 7.2 | 7.5 | factory deposit 7 NEAR |
-| Council member, per proposal | 0.1 bond | 0.2 | Sputnik bond, returned when the proposal passes; the full catalog is 92 proposals, so 9.2 NEAR of bonds are out at once unless the council adds them in batches |
-
-Why a reserve and not the burn: a transaction reserves about 0.001 NEAR per Tgas of prepaid gas and returns what it does not burn (`contracts/docs/gas-and-cost.md`, section 3). One epoch of 210 edges burns about 0.1075 NEAR in all. These figures were measured on testnet (gas price 1e8); mainnet gas price may differ, and the keeper and solver read it before they sign.
+Prints the minimum and the recommended balance of the circle, the keeper, the solver and each agent; the whole table (with the DAO, the relayer, the council and the USDT) is in section 2 of the runbook. The keeper and the solver refuse to sign below the gas reserve of their call (SV-020).
 
 ## Step 1: the DAO (**SIGNS**, owner)
 ```bash
@@ -63,9 +47,15 @@ node scripts/print-class-proposals.mjs --network mainnet --dao <dao>.sputnik-dao
 Prints one `near contract call-function ... add_proposal` command for each class of the catalog that the circle does not yet hold with the same content (`--only <asset_type,...>` for a few, `--count` for the number). **SIGNS** only when the owner or a council member runs lines of `class-proposals.sh`; the council then votes (`contracts/dao/vote-proposal.mjs`). Check afterwards with `list_asset_classes`.
 
 ## Step 6: keeper and solver
-Fund the two accounts as in step 0. The keeper (`scripts/keeper.mjs`) and the solver (`SUBMIT_GAS_TGAS` default 60) check their balance against the gas reserve before they sign and print a clear message when it is short.
+Fund the two accounts as in the runbook. The keeper (`scripts/keeper.mjs`) and the solver (`SUBMIT_GAS_TGAS` default 60) check their balance against the gas reserve before they sign and print a clear message when it is short.
+
+## Step 7: the `set_params` proposal (reads and prints only)
+```bash
+node contracts/dao/mainnet-set-params.mjs --dao <dao>.sputnik-dao.near --contract <circle>.near --signer <member>.near --params-file params.json
+```
+Reads the owner, the params and the DAO policy, shows what changes, and prints the `add_proposal`, the vote and the reads. It has no sending mode. The owner runs the printed `add_proposal` (**SIGNS**).
 
 ## Rehearsal done
-Step 2 was run against testnet with the 0.0.13 wasm (`x207-v013.testnet`, owner DAO `x207v8.sputnikv2.testnet`): every check passed, `alreadyDeployed: true`, nothing signed. A wrong `--expect-sha256` stops with `refused: sha256 of the wasm is … but the pinned number is …`, and `--yes-owner-approved` without `--execute` is refused. The 92 class proposals were counted against that circle (`--count`: 92 to add, 2 already registered). Tests: `node --test scripts/deploy-mainnet.test.mjs` (9 pass).
+See section 8 of [mainnet-runbook.md](mainnet-runbook.md).
 
-Rollback and who-signs-what are in [mainnet-checklist.md](mainnet-checklist.md) sections 3 and 4 (written for 0.0.12; the rules there hold for 0.0.13).
+Rollback and who-signs-what are in sections 5 and 6 of the runbook.
