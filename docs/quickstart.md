@@ -7,7 +7,7 @@ For the owner of an agent that already pays or sells over x402. About 30 minutes
 | Need | Why |
 | --- | --- |
 | Node 22.22 or newer | The SDK uses `node:sqlite` and `node:crypto` |
-| `npm install @x207/core @x207/scheme` in your project, or this repository and `npm install` at the root | The two packages are on npm (version 0.0.1); the repository gives you the workspace, the examples and the tests |
+| `npm install @x207/core @x207/scheme` in your project, or this repository and `npm install` at the root | The two packages are on npm (`@x207/core` 0.0.2, `@x207/scheme` 0.0.1); the repository gives you the workspace, the examples and the tests |
 | A NEAR account for the agent and its access key | Signs `join` and the stake transfer; this is not the voucher key |
 | USDT on that account (testnet: the mock token of your circle) | The stake; with the hackathon parameters the credit limit is at most the stake |
 | The circle contract address, the circle id and the `terms_hash` of the circle terms | From the circle operator; the sandbox demo prints its own |

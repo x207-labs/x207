@@ -53,7 +53,7 @@ x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and a
 1. A multi-party x402 `batch-settlement` binding on NEAR, as far as we found: [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131), proposed and not yet accepted.
 2. Cumulative vouchers netted once per epoch across many buyers and sellers.
 3. One stake for sellers that are not known in advance (spike S1: with an exact forecast a channel locks less).
-4. An agent on Base only holds a `0x` key; NEAR is its netting layer. On `x207-v014.testnet` a new-key EVM agent joined (`join_evm` `E5dQ4Wn4TZyFUXheKvS1CS7whUaLHJ8sXp8hZ2zQJN3c`), signed an EIP-712 voucher, was netted in epoch 2 and claimed (`claim_evm` `ERoUbiz3U2MgCkWR8YDuhzria7j8RvwYE8NCvvpziQMm`). The `0x` key then spent its own payout itself through its eth-implicit account (NEP-518, `rlp_execute` `J59PWbv4MHUz2o7DPJcNk1fUZGrnZc8xy7N39VTXwx6m`); join and stake still went through our relayer, which also paid gas; settling from the stake ran once on testnet in contract 0.0.15: an EVM agent that never paid its residual had 20000 taken from its stake by `finalize_epoch` and stayed active (`FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek`); the cross-chain money route is mainnet and not tested.
+4. An agent on Base only holds a `0x` key; NEAR is its netting layer. On `x207-v014.testnet` a new-key EVM agent joined (`join_evm` `E5dQ4Wn4TZyFUXheKvS1CS7whUaLHJ8sXp8hZ2zQJN3c`), signed an EIP-712 voucher, was netted in epoch 2 and claimed (`claim_evm` `ERoUbiz3U2MgCkWR8YDuhzria7j8RvwYE8NCvvpziQMm`). The `0x` key then spent its own payout through its eth-implicit account (NEP-518, `rlp_execute` `J59PWbv4MHUz2o7DPJcNk1fUZGrnZc8xy7N39VTXwx6m`): the `0x` key signed, and any NEAR account can submit it and pay the gas (no x207 relayer method); join and stake still went through our relayer, which also paid gas; settling from the stake ran once on testnet in contract 0.0.15: an EVM agent that never paid its residual had 20000 taken from its stake by `finalize_epoch` and stayed active (`FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek`); the cross-chain money route is mainnet and not tested.
 
 ---
 
@@ -92,7 +92,7 @@ The cash saving is the netting of positions and does not need the solver: in epo
 | Next | Why |
 | --- | --- |
 | Run on testnet and then mainnet with small amounts | Sandbox results are not network results; mainnet needs the owner's approval |
-| Publish `@x207/core` and `@x207/scheme` | Others can integrate without cloning (SD-045, pending) |
+| Keep `@x207/core`, `@x207/scheme` and `@x207/mcp` current on npm | `@x207/core` 0.0.2, `@x207/scheme` 0.0.1 and `@x207/mcp` 0.0.5 are on npm; newer versions of `scheme` and `mcp` follow (not published yet) |
 | Propose the scheme spec to the x402 Foundation | Move from a binding to a shared standard |
 | Many circles and clearing across circles | One circle is a prototype |
 | Delivery adapters for assets other than services (access, TEE broker) | Barter beyond service calls. Class B (function-call keys) runs in sandbox; class A (NFT escrow) and the class C proxy (mock provider, no TEE) run in sandbox only; the TEE and real providers are roadmap |

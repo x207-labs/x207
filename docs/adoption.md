@@ -9,7 +9,7 @@ Measure the effect with `npm run metrics:adoption` (repositories, npm downloads,
 | Step | State |
 | --- | --- |
 | Public repositories | the seven product repositories are public |
-| npm packages | `@x207/mcp` 0.0.4, `@x207/core` 0.0.1, `@x207/scheme` 0.0.1 are on npm |
+| npm packages | `@x207/mcp` 0.0.5, `@x207/core` 0.0.2, `@x207/scheme` 0.0.1 are on npm (read from the npm registry on 2026-11-05) |
 | Proposal to the x402 Foundation | issue [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131), open; draft in [x402-binding-issue.md](x402-binding-issue.md). The spec is in [`sdk/spec`](https://github.com/x207-labs/sdk/blob/main/spec/scheme_batch_settlement_x207.md); a spec-only pull request is planned after a maintainer answers |
 
 ## Targets
