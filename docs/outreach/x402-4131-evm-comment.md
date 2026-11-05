@@ -27,6 +27,6 @@ Hashes (all on NEAR testnet, read back from RPC on 2026-11-05):
 
 ## Check before posting
 
-- The domain sentence: `x207-v014.testnet` runs the salted wasm (on-chain code hash sha256 `743109cb…`, checked by Worker F). The domain is `EIP712Domain(string name,string version,bytes32 salt)`, salt = keccak256("near:" + network + ":" + contract id), no `chainId`, no `verifyingContract`; see [evm-agents.md](../evm-agents.md). If you deploy another version, check the sentence again.
+- The domain sentence: `x207-v014.testnet` runs the salted wasm (on-chain code hash sha256 `7d731dfb…` since the reproducible redeploy of 2026-11-05, before `743109cb…`; checked by Worker F). The domain is `EIP712Domain(string name,string version,bytes32 salt)`, salt = keccak256("near:" + network + ":" + contract id), no `chainId`, no `verifyingContract`; see [evm-agents.md](../evm-agents.md). If you deploy another version, check the sentence again.
 - Do not call it a standard. It is one binding on one chain, with one run.
 - No gas saving, no mainnet, no "autonomous" claim: the relayer was used.
