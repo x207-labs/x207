@@ -92,7 +92,7 @@ The cash saving is the netting of positions and does not need the solver: in epo
 | Next | Why |
 | --- | --- |
 | Run on testnet and then mainnet with small amounts | Sandbox results are not network results; mainnet needs the owner's approval |
-| Keep `@x207/core`, `@x207/scheme` and `@x207/mcp` current on npm | `@x207/core` 0.0.2, `@x207/scheme` 0.0.1 and `@x207/mcp` 0.0.5 are on npm; newer versions of `scheme` and `mcp` follow (not published yet) |
+| Keep `@x207/core`, `@x207/scheme` and `@x207/mcp` current on npm | `@x207/core` 0.0.2, `@x207/scheme` 0.0.2 and `@x207/mcp` 0.0.6 are on npm (read on 2026-11-05) |
 | Propose the scheme spec to the x402 Foundation | Move from a binding to a shared standard |
 | Many circles and clearing across circles | One circle is a prototype |
 | Delivery adapters for assets other than services (access, TEE broker) | Barter beyond service calls. Class B (function-call keys) runs in sandbox; class A (NFT escrow) and the class C proxy (mock provider, no TEE) run in sandbox only; the TEE and real providers are roadmap |
