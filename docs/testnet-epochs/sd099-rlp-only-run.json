@@ -1,0 +1,47 @@
+{
+  "circle": "x207-v015.testnet",
+  "epoch": 24,
+  "agentAddress": "0xcc751f1d6a6ab430f3fe0ce29c25e585c82ee162",
+  "counterparty": "63bed8d66b6bf410807fcc2a53fe9e822614c3e4ab4e91b14853c80a1fbe283f",
+  "payer": "x207-demo-helper.testnet",
+  "owed": "40000",
+  "usdtBeforeClaim": "60000000",
+  "usdtAfterClaim": "60040000",
+  "position": {
+    "epoch": 24,
+    "account_id": "0xcc751f1d6a6ab430f3fe0ce29c25e585c82ee162",
+    "net": "40000",
+    "role": "creditor",
+    "status": "claimed",
+    "amount": "40000",
+    "recovered": "0",
+    "payment_deadline": "1793882929876401974",
+    "updated_at_block": 276343500
+  },
+  "memberAfterStake": {
+    "account_id": "0xcc751f1d6a6ab430f3fe0ce29c25e585c82ee162",
+    "pubkey_voucher": "ed25519:HJbRxSvthPRXwSDKsguwr6fnyeu2F6RZcH7DwhLTuXzt",
+    "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "stake": "40000000",
+    "limit": "32000000",
+    "status": "active",
+    "admitted": true,
+    "joined_at": "1793881125002463007",
+    "settled_history": "0",
+    "last_active_epoch": 23,
+    "exit_requested_epoch": null
+  },
+  "hashes": {
+    "fund 1.5 NEAR to the eth-implicit account (plain transfer from x207-demo-helper.testnet)": "h7q19aZURJ6v26B9Q1h67oqwxSTDhy4iE5h46pFrBS4",
+    "mint 100 mock USDT to the 0x account": "2uNyraeDRLxfRjrbpLoscihsf2BdazBobJMBtpvAw1K2",
+    "rlp_execute join (0.35 NEAR from the 0x account)": "Man7Tv2aLy1qycn8Metf418SixpxiFyuRrKnGnHvn6s",
+    "dao add_proposal admit the 0x agent": "7qU3cqWXdPmKRay4ge63wAdjYfMxuLJzRucYgUVDQuQx",
+    "dao vote a #12": "C5wHMiiFyGVHLBsYEerSqyjqe2egnEvFSYKfGRN6ZWS6",
+    "dao vote b #12": "4ukHA1NUHkkc3iJYaPzFHinijnsqDGGXk2iCD9TjpgkU",
+    "rlp_execute stake (ft_transfer_call of 40 mock USDT, 1 yocto)": "61EkgRxuxUmg4KT9DaSYgieyn98vFjZmn2owYPho4qAX",
+    "register_cumulative solana agent -> 0x agent 40000 (ed25519 voucher, epoch 24)": "Eym2jePW3tyqBFnMyrPi6A8AGyWvhGARmEjRFxCrSUW1",
+    "solana agent settle ft_transfer_call (40000, epoch 24)": "8cDEUvoNkvPXfSxVbuA1JUEV2iB6YuxwqfohctsxtSQD",
+    "rlp_execute claim (epoch 24, destination near, 1 yocto)": "7UJiEKcCBy1uMrbVomMMUoCH291NYuuzgVFjhmiXB7wu"
+  },
+  "note": "Run by sdk/examples/evm-agent/test/evm-agent.rlp-only.testnet.live.test.ts. join, stake and claim were signed by the 0x key alone (NEP-518 rlp_execute, chain id 398) and sent by x207-demo-helper.testnet, which paid the NEAR gas. The admission (DAO), the voucher registration, the other side's settle and the keeper's close, commit and finalize are not the agent's."
+}
