@@ -117,7 +117,13 @@ describe.skipIf(!sandboxAvailable)("UM-115 cloud credit as a project member with
     });
     const brokerUrl = broker.url;
     const advanceTo = async (ms: number) => {
-      await sandbox.advanceTo(ms);
+      // In CI run 5a7b58d this call (about 2 days of block time, 172,800 blocks) did not finish in 13 minutes and the test hit its 900 s limit; org-member does the same advance in under 2 minutes.
+      // Steps of 6 hours with a line each, so that the next log shows how far it got and how long a step takes.
+      const startedAt = Date.now();
+      for (let at = await sandbox.blockTimestampMs(); at < ms; at = await sandbox.blockTimestampMs()) {
+        await sandbox.advanceTo(Math.min(ms, at + 6 * 3_600_000));
+        trace(`advanced to ${new Date(await sandbox.blockTimestampMs()).toISOString()} (target ${new Date(ms).toISOString()}), ${Math.round((Date.now() - startedAt) / 1000)} s`);
+      }
       clock.offsetMs = (await sandbox.blockTimestampMs()) - Date.now();
     };
 
