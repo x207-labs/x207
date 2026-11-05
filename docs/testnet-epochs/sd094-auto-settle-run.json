@@ -80,5 +80,16 @@
     "status": "active",
     "position_status": "paid",
     "outstanding_debt": "0"
+  },
+  "rlpExecute": {
+    "agentAddress": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+    "circle": "x207-v015.testnet",
+    "chainId": 398,
+    "hashes": {
+      "fund 1 NEAR to the eth-implicit account (plain transfer from x207-demo-helper.testnet)": "F2mEieTS3h1sQSjR4izG2gEonTB15Cgkm86r8U3k8Kzn",
+      "rlp_execute set_auto_settle {enabled:true} (signed by the 0x key, sent by a plain NEAR account)": "6zkgYgxW219YB3i3aE5UNhTRzKg1rBgxBVvc2UvT6N6y",
+      "rlp_execute set_auto_settle {enabled:false} (signed by the 0x key)": "8DwwJxWLpv9K9Eqxbr7zirjUimn8YdfVDfzoxZbGF9wo"
+    },
+    "note": "NEP-518: the 0x key signs an Ethereum tx (chain id 398); a plain NEAR account sends it to rlp_execute on the eth-implicit account of the agent; the circle sees the 0x account as predecessor. No x207 relayer. A first attempt whose RPC answer was a 500 had already executed (opt-in went off), so the two logged calls are on then off; the opt-in of this agent is off at the end of the run (epoch 2 above was finalized while it was on)."
   }
 }
