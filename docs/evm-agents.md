@@ -48,7 +48,7 @@ An agent that lives on an EVM chain keeps its `0x` key, its wallet and its USDC 
 
 **From interface 0.0.16: relayer fee and deadline limit.** `Action` gets a ninth field, `uint256 maxFee` (`Action(string circle,string member,string action,uint64 epoch,string receiver,string termsHash,uint64 nonce,uint64 deadline,uint256 maxFee)`): `0` for `join`, `request_exit` and `auto_settle`, and the highest fee the agent accepts for `claim` and `withdraw_stake`. Circles of 0.0.14 and 0.0.15 keep the 8-field type.
 
-- The relayer (the account that sends the transaction) gets `min(relayer_fee, maxFee, half of the amount)` from a `claim_evm` or `withdraw_stake_evm`. `relayer_fee` is a flat amount set by the DAO, default 0, at most 1 credit, valid from the next epoch.
+- The relayer (the account that sends the transaction) gets `min(relayer_fee, maxFee, base / 2)`, where `base` is the payout of a claim or the stake of a withdrawal, so the fee is never more than half of it from a `claim_evm` or `withdraw_stake_evm`. `relayer_fee` is a flat amount set by the DAO, default 0, at most 1 credit, valid from the next epoch.
 - Payout and fee are separate transfers. If the relayer cannot receive the fee (not registered on the token), the payout still arrives and the fee goes back to the agent.
 - Whoever sends the signed action first gets the fee: a second registered relayer may front-run the first. The agent never pays more than its `maxFee`.
 - The gas of `join_evm`, `request_exit_evm` and the auto-settle actions stays with the relayer. A fee from free stake for these is planned for 0.0.17.
@@ -111,6 +111,39 @@ The run is one debtor and 20000 of mock USDT; the relayer paid the gas and the s
 - A frozen member is still auto-settled. A `pending` or `suspended` member may set the flag, but it has no effect until the member is `active`.
 - When the event log is full, `auto_settled` can be left out; `list_positions` then shows the position as `paid`, and a note line says how many events were left out. On chain, a stake-paid `paid` and a cash `paid` look the same without the event.
 - Gas measured in a unit test: `finalize_epoch` with 64 members, 63 of them auto-settled, about 77 Tgas. That is a test, not a testnet run.
+
+## Two ways to act: `rlp_execute` or the relayer (SD-099)
+
+**Run on NEAR testnet (2026-11-05), not mainnet.** A new `0x` agent (`0xcc751f1d6a6ab430f3fe0ce29c25e585c82ee162`, a key made for this run, not a Hardhat key) did `join`, the stake and `claim` in epoch 24 of `x207-v015.testnet` with **no x207 relayer**: its key signed Ethereum transactions (chain id 398, NEP-518) and a plain NEAR account (`x207-demo-helper.testnet`) sent them to `rlp_execute` on the agent's eth-implicit account and paid the NEAR gas. Record: [testnet-epochs/sd099-rlp-only-run.json](testnet-epochs/sd099-rlp-only-run.json); test: `sdk/examples/evm-agent/test/evm-agent.rlp-only.testnet.live.test.ts` (1990 s); SDK: `signNep518Transaction` with `valueWei` and `nep518Attach` (`@x207/core/evm`).
+
+| Step | Transaction |
+| --- | --- |
+| 1.5 NEAR to the eth-implicit account (creates it) | `h7q19aZURJ6v26B9Q1h67oqwxSTDhy4iE5h46pFrBS4` |
+| mock USDT minted to the `0x` account (the test token is open to anyone) | `2uNyraeDRLxfRjrbpLoscihsf2BdazBobJMBtpvAw1K2` |
+| `rlp_execute` `join`, 0.35 NEAR out of the agent's own balance | `Man7Tv2aLy1qycn8Metf418SixpxiFyuRrKnGnHvn6s` |
+| admission by the DAO council (not the agent): proposal and two votes | `7qU3cqWXdPmKRay4ge63wAdjYfMxuLJzRucYgUVDQuQx`, `C5wHMiiFyGVHLBsYEerSqyjqe2egnEvFSYKfGRN6ZWS6`, `4ukHA1NUHkkc3iJYaPzFHinijnsqDGGXk2iCD9TjpgkU` |
+| `rlp_execute` stake: `ft_transfer_call` of 40 mock USDT from the agent's own balance, 1 yocto | `61EkgRxuxUmg4KT9DaSYgieyn98vFjZmn2owYPho4qAX` |
+| voucher of the Solana agent of SD-098 to the agent, 40000, registered (not the agent) | `Eym2jePW3tyqBFnMyrPi6A8AGyWvhGARmEjRFxCrSUW1` |
+| the Solana agent settles its 40000 (not the agent) | `8cDEUvoNkvPXfSxVbuA1JUEV2iB6YuxwqfohctsxtSQD` |
+| `rlp_execute` `claim`, epoch 24, destination `near`, 1 yocto | `7UJiEKcCBy1uMrbVomMMUoCH291NYuuzgVFjhmiXB7wu` |
+
+After the claim the position is `claimed` and the mock USDT of the `0x` account went from 60000000 to 60040000. The keeper closed, committed and finalized the epoch as usual.
+
+| | `rlp_execute` (NEP-518), no x207 relayer | `*_evm` methods through the x207 relayer |
+| --- | --- | --- |
+| Who signs | the `0x` key signs an Ethereum EIP-1559 transaction (chain id 398 on testnet, 397 on mainnet) | the `0x` key signs an EIP-712 `Action` |
+| Who pays the NEAR gas | whoever sends `rlp_execute`: any NEAR account (here `x207-demo-helper.testnet`), not necessarily x207 | the relayer |
+| Who pays deposits | the agent, out of the NEAR balance of its eth-implicit account: the 0.35 NEAR of `join` (returned to the agent on exit), 1 yocto per call | the relayer is the sponsor of `join_evm` (0.35 NEAR, returned to the sponsor on exit) |
+| The stake | the agent's own tokens, `ft_transfer_call` of its own balance | on testnet the relayer sends the stake for the agent (`member_id`); the agent may also hold none of the token |
+| Methods | any method of the circle (and of any other contract): `join`, `ft_transfer_call` for stake and settle, `claim`, `request_exit`, `withdraw_stake`, `set_auto_settle`, `register_*` and so on; the circle sees the `0x` account as the caller | only `join_evm`, `claim_evm`, `request_exit_evm`, `withdraw_stake_evm` and `set_auto_settle_evm` (relayer routes `/evm/*`) |
+| Vouchers | `join` stores an **ed25519** `pubkey_voucher`, so the agent needs a second, separate ed25519 key for its vouchers (here a file next to the `0x` key). `join_evm` keeps EIP-712 vouchers under the `0x` key alone | EIP-712 vouchers under the `0x` key; one key |
+| Where a payout goes | `claim` pays the caller, that is the agent's own `0x` account (`near`) or its Intents balance | `claim_evm` pays any NEAR account the agent signed as `receiver` |
+| Replay and expiry | the Ethereum nonce only (`get_nonce` of the account); an EIP-1559 transaction has **no deadline**, so a signed transaction that nobody has sent stays valid until its nonce is used | `deadline` (ms) and a contract nonce; the SDK signs ten minutes ahead, the relayer refuses more than fifteen |
+| Fee to the sender | none; the sender only spends its own gas | none in 0.0.15; from 0.0.16 the relayer may take up to the signed `maxFee` and at most half of a payout or stake (see the roadmap and SD-100; not part of this run) |
+| What the agent needs | NEAR on its eth-implicit account (the account exists only after a first transfer), tokens registered with their contracts, and somebody to send the transaction | nothing but the `0x` key; the relayer does the rest |
+| Limits seen | one function call per transaction; the run set 120 Tgas (stake) and 100 Tgas (`claim`) inside the wallet call and the sender attached 300 Tgas; the gas actually burned was not measured; the NEAR attached is `value` in wei (1 wei = 1e6 yocto) plus a `uint32` yocto remainder (`nep518Attach`); not tested: `join_evm` sent through `rlp_execute`, the Intents route, mainnet | the relayer is a trusted sender of the signature: it can delay it or not send it, and it is a rate-limited, centrally run service |
+
+In short: the relayer route is the simplest for an agent with no NEAR at all; the `rlp_execute` route removes the x207 relayer entirely and gives the agent the whole contract interface, at the price of a NEAR balance, a second key for ed25519 vouchers, and transactions that do not expire.
 
 ## Money from and to EVM
 
