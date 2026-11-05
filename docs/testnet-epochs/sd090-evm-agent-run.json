@@ -1,0 +1,40 @@
+{
+  "circle": "x207-v014.testnet",
+  "epoch": 2,
+  "agentAddress": "0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7",
+  "seller": "x207-demo-seller.testnet",
+  "evmRelayer": "x207-demo-helper.testnet",
+  "wallet": "0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7",
+  "paidCall": {
+    "status": 200,
+    "x402": {
+      "epoch": 2,
+      "seq": 1,
+      "cumulativeAmount": "20000"
+    },
+    "note": "the paid call of the first part of the run (05:40:32 UTC), before an RPC outage interrupted it"
+  },
+  "payout": "80000",
+  "hashes": {
+    "seller join": "FsgrVv8PRJiAHjBkRb5DBZg1ZavXRxxyzyxTZdpouDE9",
+    "dao add_proposal admit x207-demo-seller.testnet": "7uCBXS2Kv42N7qDaJjiYoBZMkiZB1RM9apYQnEr61CUN",
+    "dao vote a #7": "DHqJhokxMhWATEhwqERAxrZu7nKzbgWhH959DeEGmoFt",
+    "dao vote b #7": "HAE69fM9uvs675w28SxhnXYShWc1YP7c2VF1KeGRZ15i",
+    "join_evm": "E5dQ4Wn4TZyFUXheKvS1CS7whUaLHJ8sXp8hZ2zQJN3c",
+    "dao add_proposal admit 0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7": "3WTfEiLcMuay7AeG7NPoBY9ynsMM6AS5haqkG9dAQz93",
+    "dao vote a #8": "4JFYZdxiYoepXfQKqBPuj9T7tUAoEAm3JCK5hUbn8uSZ",
+    "dao vote b #8": "22BcSPvtgHzTH89AP7dUvX4rk7C81zL2CcELc2Rz6bUd",
+    "stake (relayer ft_transfer_call)": "95vup35nJTftkFjMKBcq4hxipGcHfSjnV6ffUdHXEAtP",
+    "seller stake ft_transfer_call": "7rQCsQfJBCrB7D2vPKeTwQh58t4UjAjSX9ggssTA6ZeK",
+    "seller settle ft_transfer_call (80000, epoch 2)": "6nFHqFmnrtJNuHrvHXQsD5Qd5bmfV9Xo6W79e8TY8QwK",
+    "storage_deposit (relayer, for the payout account)": "DEdRKLoDZbgbscprTkhP5D8S14xfNUhVQ8DdATunshfz",
+    "claim_evm": "ERoUbiz3U2MgCkWR8YDuhzria7j8RvwYE8NCvvpziQMm",
+    "register_cumulative agent->seller 20000 (eip712 voucher, epoch 2)": "H19ZgnLYAmvsFio1R1dqp9941LoJQ9FR7TzMdCrArZbv",
+    "register_cumulative seller->agent 100000 (ed25519 voucher, epoch 2)": "7LkqrQWhR32eX82477ojQ35ZJjnsGcHg3x82R4RkSUqJ",
+    "keeper close_epoch 2": "Aztg7FxNLThjGkRMEEMUGrzPaPMY4NqA6FEPEGmTRMHU",
+    "keeper commit_epoch 2": "CybAemjMvYY9GUEeCwb41HFZizpHbbkng6KKEdGR3biT",
+    "keeper finalize_epoch 2": "9ZnkmQkdz5zu2GvxJU49MayX2HoGmtdGwTCsdBfea85i"
+  },
+  "note": "Run of examples/evm-agent/test/evm-agent.testnet.live.test.ts in two parts (an RPC outage at 05:45 UTC stopped the first; the second resumed at epoch 2 with RESUME_EPOCH=2). The agent key is new (made for this run, kept in .secrets, not a public test key). Admission of the circle is dao: the council of x207v8.sputnikv2.testnet voted admit_member for the seller and the agent. Net of epoch 2: agent owes the seller 20000, the seller owes the agent 100000, the seller pays 80000, the agent claims 80000.",
+  "payoutAccount": "the eth-implicit NEAR account with the same 0x address as the agent: the 0x key itself holds the payout; storage_deposit on the mock USDT was paid by the relayer"
+}
