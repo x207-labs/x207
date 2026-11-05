@@ -1,6 +1,6 @@
 # Mainnet runbook for x207-circle (v0.0.13 tagged, v0.0.15 current) (UM-009, UM-026, UM-027, UM-028, UM-029, CT-049, CT-050, UM-040, UM-169)
 
-**UM-169 update (2026-11-05): which release goes to mainnet is an owner decision (section 0a), and section 12 has the exact command order with a testnet check of each command.** Sections 1 to 11 were written for v0.0.13; where v0.0.15 differs, section 0a and section 12 say so and win.
+**UM-169 update (2026-11-05): which release goes to mainnet is an owner decision (section 0a), and section 12 has the exact command order with a testnet check of each command.** Sections 1 to 10 were written for v0.0.13; where v0.0.15 differs, section 0a and section 12 say so and win.
 
 Status: **a plan for the owner. Nothing in it has been run on mainnet.** No mainnet transaction was sent from this repository, no mainnet key exists in it, and none may be sent without the owner: funding, keys and signatures are the owner's. The testnet keys in `.secrets/` are never used on mainnet.
 
@@ -170,11 +170,11 @@ Nothing here was run on mainnet. Each command was run on testnet with the equiva
 | `<circle>.near` (decision 1) | full access, `<keys-dir>/mainnet/<circle>.json` for the deploy script; the owner may delete it after step 5 (section 5) | owner | holds the contract; deploy and `new` |
 | keeper, solver, relayer | function-call or full access, in `.env` of the service | owner | epoch calls, `submit_clearing`, `register_cumulative` |
 | six agents | one key each (ed25519; or only a `0x` key for EVM agents) | owner or the agents | `join`, stake, vouchers, `claim` |
-| 1Click | JWT in `.env` (`ONECLICK_JWT`) | owner requests it | step 12.8 only |
+| 1Click | JWT in `.env` (`ONECLICK_JWT`) | owner requests it | the dry quote and the withdrawal to Base (section 4, 12.5) only |
 
 ### 12.2 Cost per step (NEAR and USDT; amounts for v0.0.15)
 
-`node scripts/mainnet-costs.mjs --wasm contracts/prebuilt/x207_circle-0.0.15.wasm` (run 2026-11-05): circle minimum 7.31 NEAR, recommended 8.58 (code 7.21 locked + `new` and catalog); keeper 0.17 / 0.41; solver 0.08 / 0.18; agents 0.4 / 0.5 each; the script's total 12.17 NEAR. With the DAO (1.5), the facilitator relayer (1.5) and the council (1.5) the plan is **about 16.6 NEAR and 20 USDT** (section 2 plus 0.38 NEAR of extra code storage). The deploy script's minimum for the circle account is 8 NEAR; fund 8.6.
+`node scripts/mainnet-costs.mjs --wasm contracts/prebuilt/x207_circle-0.0.15.wasm` (run 2026-11-05): circle minimum 7.31 NEAR, recommended 8.58 (code 7.21 locked + `new` and catalog); keeper 0.17 / 0.41; solver 0.08 / 0.18; agents 0.4 / 0.5 each; the script's total 12.17 NEAR. With the DAO (1.5), the facilitator relayer (1.5) and the council (1.5) the plan is **about 16.7 NEAR and 20 USDT** (section 2 plus 0.38 NEAR of extra code storage). The deploy script's minimum for the circle account is 8 NEAR; fund 8.6.
 
 | Step | NEAR | USDT |
 | --- | ---: | ---: |
@@ -188,7 +188,7 @@ Nothing here was run on mainnet. Each command was run on testnet with the equiva
 
 ### 12.3 Order
 
-All commands run from the root of this repository. "Verify" says what must be true before the next step; **stop at the first difference**.
+The step numbers of this table differ from the table of section 3 (here 9 is admit and stake, 10 is `set_params`, 11 is the claim to Intents); the schedule in section 7 uses the numbers of section 3. All commands run from the root of this repository. "Verify" says what must be true before the next step; **stop at the first difference**.
 
 | # | Step | Command | Testnet check (2026-11-05) | Verify |
 | --- | --- | --- | --- | --- |
