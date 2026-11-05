@@ -105,6 +105,11 @@ export function planFrom(args) {
   if (args.expectSha256 && !/^[0-9a-f]{64}$/.test(args.expectSha256)) fail("--expect-sha256 must be 64 lowercase hex characters");
   const usdt = args.usdt ?? net.usdt;
   if (!usdt) fail(`--usdt is required on ${args.network}`);
+  // CT-119: every run, dry run included, is pinned to a sha256 that a person checked: the list for a known tag, or --expect-sha256. A tag in the list cannot be
+  // re-pinned to another number, and a wasm with no pin at all (unknown tag or no tag) is refused.
+  const known = args.release ? KNOWN_SHA256[args.release] : undefined;
+  if (known && args.expectSha256 && args.expectSha256 !== known) fail(`--expect-sha256 ${args.expectSha256} conflicts with the pinned sha256 of ${args.release} (${known})`);
+  if (!known && !args.expectSha256) fail(`no pinned sha256 for ${args.release ?? "this wasm"}: add it to KNOWN_SHA256 after a reproducible build or pass --expect-sha256 <hex> checked by a person`);
   const params = args.paramsFile ? JSON.parse(readFileSync(args.paramsFile, "utf8")) : DEFAULT_PARAMS;
   for (const k of Object.keys(DEFAULT_PARAMS)) if (!(k in params)) fail(`params file: missing ${k}`);
   return {

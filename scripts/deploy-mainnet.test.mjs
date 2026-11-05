@@ -4,7 +4,7 @@ import { test } from "node:test";
 import { DeployError, KNOWN_SHA256, base58OfHex, inspect, parseArgs, planFrom, sumOf } from "./deploy-mainnet.mjs";
 import { estimateCosts, reserveNear } from "./lib/costs.mjs";
 
-const base = ["--network", "mainnet", "--circle", "x207-circle.near", "--owner", "x207.sputnik-dao.near", "--release", "v0.0.12"];
+const base = ["--network", "mainnet", "--circle", "x207-circle.near", "--owner", "x207.sputnik-dao.near", "--release", "v0.0.16"];
 const refuses = (argv, pattern) => assert.throws(() => planFrom(parseArgs(argv)), (e) => e instanceof DeployError && pattern.test(e.message));
 
 test("TC-UM-009-D01 (CT-049) nothing is sent by default; mainnet --execute needs --yes-owner-approved, and --yes alone means nothing", () => {
@@ -21,8 +21,15 @@ test("TC-CT-049-D01 the sha256 is pinned: v0.0.13 is known, another tag on mainn
   assert.equal(planFrom(parseArgs(v13)).expectSha256, KNOWN_SHA256["v0.0.13"]);
   assert.equal(KNOWN_SHA256["v0.0.13"], "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054");
   assert.equal(base58OfHex(KNOWN_SHA256["v0.0.13"]), "DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh");
-  assert.equal(planFrom(parseArgs([...base, "--expect-sha256", "a".repeat(64)])).expectSha256, "a".repeat(64));
-  refuses([...base, "--expect-sha256", "XYZ"], /64 lowercase hex/);
+  // CT-119: an unlisted tag needs --expect-sha256; a listed tag cannot be re-pinned; v0.0.16 is listed
+  const v99 = [...base.slice(0, -1), "v0.0.99"];
+  assert.equal(planFrom(parseArgs([...v99, "--expect-sha256", "a".repeat(64)])).expectSha256, "a".repeat(64));
+  refuses(v99, /no pinned sha256 for v0\.0\.99/);
+  refuses([...base, "--expect-sha256", "a".repeat(64)], /conflicts with the pinned sha256 of v0\.0\.16/);
+  assert.equal(planFrom(parseArgs(base)).expectSha256, KNOWN_SHA256["v0.0.16"]);
+  assert.equal(planFrom(parseArgs([...base, "--expect-sha256", KNOWN_SHA256["v0.0.16"]])).expectSha256, KNOWN_SHA256["v0.0.16"]);
+  refuses([...v99, "--expect-sha256", "XYZ"], /64 lowercase hex/);
+  refuses(["--network", "testnet", "--circle", "c.testnet", "--owner", "d.testnet", "--usdt", "u.testnet", "--wasm", "/tmp/x.wasm"], /no pinned sha256 for this wasm/);
   refuses(["--network", "mainnet", "--circle", "x207-circle.near", "--owner", "x207.sputnik-dao.near", "--wasm", "/tmp/x.wasm"], /--release <tag> or --expect-sha256/);
 });
 
