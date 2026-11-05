@@ -42,6 +42,7 @@ export const KNOWN_SHA256 = {
   // CT-111: reproducible build of commit 69b129f (scripts/repro-build.sh); the code of x207-v014.testnet
   "v0.0.15": "f832e53f01bf6b0739efb54bf0977d70544dd9bcece2234abd3e18525b4900de", // reproducible build of contracts HEAD at 3bf2044 (CT-111); the code of x207-v015.testnet
   "v0.0.16": "4295351f395d0cc31419d43adf10e5b60f3c2a0e546ae0e912c5da4fef5aebe7", // reproducible build of contracts 93f8d8e (CT-117); the code of x207-v016.testnet
+  "v0.0.17": "cbb8a9108f975ba8fca86dc6f6d470e3e377b91309fce56b2ec18a77ff4a4b97", // reproducible build of contracts 83cc5d7 and of the merge d6fdd66 (CT-118); the code of x207-v017.testnet
   "v0.0.14": "7d731dfb15db44aa3a1ca95c28616a6e2faecbf11b87de538940991da33d39f9",
   "v0.0.13": "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054",
   // not a release: the mock USDT that the quick demo deploys (UM-107, contracts/prebuilt/mock_ft.wasm; a test fixture, never for a real network)
