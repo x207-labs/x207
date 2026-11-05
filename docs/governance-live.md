@@ -23,3 +23,12 @@ The network demo has the step: with `DEMO_DAO_ACCOUNT=<Sputnik DAO> DEMO_DAO_COU
 
 - A proposal takes the whole `Params`: a file with only the changed field is refused by `contracts/dao/mainnet-set-params.mjs` (its dry run says which fields are missing). The council of this DAO has two members and both must approve.
 - The new values wait for the next epoch to open; no keeper runs on this circle all the time, so somebody has to close the running epoch (`scripts/keeper.mjs --once`, see [join-the-circle.md](join-the-circle.md)).
+
+## Clearing fee set to 0 (UM-153)
+
+The clearing fee is 0 in the MVP: the drop in treasury cash seen in the audit came from netting, not from solver clearing, so a fee would only hide that. Proposal 5 on `x207v8.sputnikv2.testnet` set `clearing_fee_bps` and `solver_fee_bps` to 0 on `x207-v013.testnet` (2026-11-05, the other `Params` unchanged):
+
+- add_proposal `4EtU84Dg4RA3HYayPeysJYYQMaa8EBCZpK1wP4wr3e4X`
+- votes `21qRz2xVaxYmrtKePKdbAgxo2ec3nbn1qzi34FR7F9NU` (`x207-dao-v8.testnet`) and `BYDPGpkBX7es4G2WUtzub3bnZ3F3D4FuZkWVvrRbW7kn` (`b.x207-dao-v8.testnet`); the second vote ran it, status `Approved`
+- effective from epoch 48; `get_params` then returns `fees: { clearing_fee_bps: 0, solver_fee_bps: 0 }`
+
