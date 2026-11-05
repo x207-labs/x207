@@ -1,6 +1,6 @@
 # Agents on any chain, cleared on NEAR (UM-155)
 
-**Runs on NEAR testnet (2026-11-05), not on mainnet.** One agent that holds only a `0x` key, new for this run and not a public test key (`0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7`), took part in epoch 2 of the circle `x207-v014.testnet`: `join_evm`, admission by the DAO, stake by a relayer, EIP-712 vouchers, `close_epoch`, `commit_epoch` and `finalize_epoch` by the keeper, and `claim_evm` crediting the payout to the agent's `0x` id in the mock USDT token. That NEAR eth-implicit account does not exist on chain yet, and spending the payout from the `0x` key through NEP-518 has not been demonstrated; a spike (SD-092) is testing it. The record is [testnet-epochs/sd090-evm-agent-run.json](testnet-epochs/sd090-evm-agent-run.json); each hash below was read back from the testnet RPC on 2026-11-05 and succeeded.
+**Runs on NEAR testnet (2026-11-05), not on mainnet.** One agent that holds only a `0x` key, new for this run and not a public test key (`0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7`), took part in epoch 2 of the circle `x207-v014.testnet`: `join_evm`, admission by the DAO, stake by a relayer, EIP-712 vouchers, `close_epoch`, `commit_epoch` and `finalize_epoch` by the keeper, and `claim_evm` crediting the payout to the agent's `0x` id in the mock USDT token. The agent's `0x` key spends its own payout through its NEAR eth-implicit account (NEP-518, `rlp_execute`): any NEAR account can submit the transaction and pay the gas, only the `0x` key can authorize it. Proven on testnet (SD-095): 1 NEAR created the account (`GL8d5tvsneybDdui3ktz7HezeEXidHGM9GYcagfhwEN3`), then a `ft_transfer` of 30000 from the payout, signed by the `0x` key alone (chain id 398), went through `rlp_execute` (`J59PWbv4MHUz2o7DPJcNk1fUZGrnZc8xy7N39VTXwx6m`); the balance went from 80000 to 50000. Join and stake in this run still went through the x207 relayer; the full circle flow through `rlp_execute` is not tested. The record is [testnet-epochs/sd090-evm-agent-run.json](testnet-epochs/sd090-evm-agent-run.json); each hash below was read back from the testnet RPC on 2026-11-05 and succeeded.
 
 **Limits of that run.** The agent did not hold a NEAR key, but it was not autonomous: a relayer account (`x207-demo-helper.testnet`) paid the 0.35 NEAR join deposit and the gas, funded the stake, registered the vouchers and paid the `storage_deposit` of the payout account. The token is the mock USDT. The money route from other chains was not exercised. The earlier transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` (`join_evm`, 2026-11-05) used the public Hardhat test key #1 and is a technical proof only, not a demo agent.
 
@@ -101,7 +101,7 @@ Every item below is **not built and not tested**. They are the routes we know of
 | A circle in USDC | A circle whose stake token is USDC instead of the mock USDT | not built |
 | Reputation export | Export a member's settlement history as an ERC-8004 reputation through Chain Signatures | not built |
 | Solana agents | A signature scheme for Solana keys (`raw_ed25519`) next to ed25519 and EIP-712 | not built |
-| On-chain actions by an EVM agent through NEP-518 | The eth-implicit account route (`rlp_execute`) so the agent can call the contract itself | not built; a spike is proposed |
+| On-chain actions by an EVM agent through NEP-518 | The eth-implicit account route (`rlp_execute`): spending the payout is proven on testnet (SD-095, hashes in the table above); calling the circle contract itself (join, stake, vouchers) through it is not tested | partly proven |
 | Settlement from the stake for EVM members | An opt-in settle from the stake, so that an agent that cannot send a NEAR transaction is not suspended when it misses the payment window | not built; needs a contract change and the owner's decision |
 
 ## What it will not do
@@ -129,5 +129,7 @@ The v0.0.14 contract runs as a new circle, `x207-v014.testnet`. `x207-v013.testn
 | seller settles 80000 | `6nFHqFmnrtJNuHrvHXQsD5Qd5bmfV9Xo6W79e8TY8QwK` |
 | `storage_deposit` of the payout account by the relayer | `DEdRKLoDZbgbscprTkhP5D8S14xfNUhVQ8DdATunshfz` |
 | `claim_evm`, payout credited to the agent's `0x` id in the token | `ERoUbiz3U2MgCkWR8YDuhzria7j8RvwYE8NCvvpziQMm` |
+| 1 NEAR sent to the agent's `0x` id, which creates its eth-implicit account (SD-095) | `GL8d5tvsneybDdui3ktz7HezeEXidHGM9GYcagfhwEN3` |
+| `rlp_execute`: `ft_transfer` of 30000 from the payout, signed by the `0x` key (SD-095) | `J59PWbv4MHUz2o7DPJcNk1fUZGrnZc8xy7N39VTXwx6m` |
 
 The run was made in two parts because an RPC outage at 05:45 UTC stopped the first; the second resumed at epoch 2. The paid call of the first part was a 200 answer with a cumulative amount of 20000.
