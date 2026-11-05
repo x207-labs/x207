@@ -1,7 +1,10 @@
 // UM-009: the guards of scripts/deploy-mainnet.mjs, without any network. Run: node --test scripts/deploy-mainnet.test.mjs
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { DeployError, KNOWN_SHA256, base58OfHex, inspect, parseArgs, planFrom, sumOf } from "./deploy-mainnet.mjs";
+import { createHash } from "node:crypto";
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { DeployError, KNOWN_SHA256, base58OfHex, fetchRelease, inspect, parseArgs, planFrom, sumOf } from "./deploy-mainnet.mjs";
 import { estimateCosts, reserveNear } from "./lib/costs.mjs";
 
 const base = ["--network", "mainnet", "--circle", "x207-circle.near", "--owner", "x207.sputnik-dao.near", "--release", "v0.0.16"];
@@ -104,4 +107,32 @@ test("TC-CT-049-D03 print-class-proposals: one command per class, those already 
   const existing = new Map([[CATALOG[0].assetType, toArgs(CATALOG[0]).entry]]);
   assert.equal(commandsFor({ ...o, existing }).length, CATALOG.length - 1);
   assert.equal(commandsFor({ ...o, only: [CATALOG[1].assetType] }).length, 1);
+});
+
+// CT-119: the `--release` path with a stubbed `gh`: the download is checked against SHA256SUMS, and the number that the run is pinned to is a separate check
+const stubGh = (wasmBytes, sumsHex) => (cmd, args) => {
+  assert.equal(cmd, "gh");
+  const dir = args[args.indexOf("-D") + 1];
+  const tag = args[2];
+  writeFileSync(join(dir, `x207-circle-${tag}.wasm`), wasmBytes);
+  writeFileSync(join(dir, "SHA256SUMS"), `${sumsHex}  x207-circle-${tag}.wasm\n`);
+  return { status: 0, stdout: "", stderr: "" };
+};
+
+test("TC-CT-119-D01 --release path with a stubbed gh: the wasm must match SHA256SUMS, and the pin of a listed tag cannot be replaced", () => {
+  const wasm = Buffer.from("fake wasm of v0.0.16");
+  const sha = createHash("sha256").update(wasm).digest("hex");
+  const got = fetchRelease("v0.0.16", stubGh(wasm, sha));
+  assert.equal(got.sha, sha);
+  assert.throws(() => fetchRelease("v0.0.16", stubGh(wasm, "0".repeat(64))), (e) => e instanceof DeployError && /SHA256SUMS says/.test(e.message));
+  assert.throws(() => fetchRelease("v0.0.16", () => ({ status: 1, stdout: "", stderr: "not found" })), (e) => e instanceof DeployError && /gh release download/.test(e.message));
+  // the run is pinned to the list: a download whose sha is not KNOWN_SHA256["v0.0.16"] (even with matching SHA256SUMS) is not the pinned release
+  assert.notEqual(got.sha, KNOWN_SHA256["v0.0.16"]);
+  const args = ["--network", "testnet", "--circle", "c.testnet", "--owner", "d.testnet", "--usdt", "u.testnet"];
+  assert.equal(planFrom(parseArgs([...args, "--release", "v0.0.16"])).expectSha256, KNOWN_SHA256["v0.0.16"]);
+  // v0.0.15 with the pin of v0.0.16 is refused before anything is downloaded
+  assert.throws(
+    () => planFrom(parseArgs([...args, "--release", "v0.0.15", "--expect-sha256", KNOWN_SHA256["v0.0.16"]])),
+    (e) => e instanceof DeployError && /conflicts with the pinned sha256 of v0\.0\.15/.test(e.message),
+  );
 });
