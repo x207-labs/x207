@@ -28,8 +28,8 @@ Numbers below are the ones of the README and of the hosted read API on 2026-11-0
 | --- | --- |
 | Repository | <https://github.com/x207-labs/x207> |
 | Dashboard (opens on epoch 8) | <https://x207-dashboard.vercel.app> |
-| Read API | `https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs/8/metrics` |
-| Remote MCP server (read-only, Streamable HTTP) | `https://x207-mcp-production.up.railway.app/mcp` |
+| Read API | `https://x207.boxd.sh/x207/circles/agents-main/epochs/8/metrics` |
+| Remote MCP server (read-only, Streamable HTTP) | `https://mcp.x207.boxd.sh/mcp` |
 | Local, no account | `npm run demo:quick` (about 5 minutes), `npm run demo:mcp` (about 2 minutes) |
 | Contract | release v0.0.13, `https://github.com/x207-labs/contracts/releases/tag/v0.0.13` |
 

@@ -12,4 +12,4 @@ All of them are open source and are used as libraries or as hosted endpoints; no
 | Backend | `hono`, `@hono/node-server`, `better-sqlite3` |
 | Frontend | `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `vite` |
 | Test and build | `vitest`, `typescript`, `@playwright/test`, `@testing-library/*`, `jsdom`, `axe-core`, `oxlint` |
-| Hosted services | the public NEAR testnet RPC (fastnear), GitHub, Vercel (dashboard), Railway (read API) |
+| Hosted services | the public NEAR testnet RPC (fastnear), GitHub, Vercel (dashboard), boxd (read API, MCP server, keeper) |

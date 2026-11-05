@@ -25,7 +25,7 @@ Source of the rules: [CONTRIBUTING.md](https://github.com/punkpeye/awesome-mcp-s
 
 Notes on the choices:
 
-- `📇 🏠`: the package is TypeScript and runs on the user's machine over stdio. The hosted read-only endpoint (`https://x207-mcp-production.up.railway.app/mcp`) is a remote server, so it is **not** put in this line; it is a candidate for `awesome-remote-mcp-servers` later ([adoption.md](../adoption.md), row 5).
+- `📇 🏠`: the package is TypeScript and runs on the user's machine over stdio. The hosted read-only endpoint (`https://mcp.x207.boxd.sh/mcp`) is a remote server, so it is **not** put in this line; it is a candidate for `awesome-remote-mcp-servers` later ([adoption.md](../adoption.md), row 5).
 - No OS emojis: the server was run on macOS and in CI only, and Windows was not tried. Add `🍎` or `🐧` only if the owner has run it there.
 - The line is 1 line and 2 sentences, in the style of its neighbours. The word "testnet" is in it on purpose.
 

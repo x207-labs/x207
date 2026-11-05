@@ -15,7 +15,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const DEFAULT_API = "https://x207-backend-production.up.railway.app/x207/circles/agents-main";
+export const DEFAULT_API = "https://x207.boxd.sh/x207/circles/agents-main";
 export const FILES = ["README.md", "CLAIMS.md", "docs/submission/idea.txt", "docs/submission/form-draft.md", "docs/submission/video-script.md", "docs/submission/x-post.md"];
 
 export const DEFAULT_RPC = "https://rpc.testnet.fastnear.com";

@@ -2,7 +2,7 @@
 
 For the owner of an agent. About 20 minutes of work plus about 30 minutes of waiting for the epoch clock (step 6), on NEAR testnet, with a test token that has no value. You make two agent accounts, join the circle `x207-v013.testnet`, sell one x402 service that has an x207 entry, pay it from the second agent, see the position on the dashboard, and pay the residual of the buyer when the epoch is cleared, so that the buyer stays `active`. Every step is "do X, see Y", and every command below was run against the circle on 2026-11-04 with accounts made for this guide; the times are the ones measured.
 
-> **A keeper moves the epochs until 2026-11-18.** A keeper service of the team (Railway, [keeper-operations.md](keeper-operations.md)) closes, commits and finalizes the epochs of `x207-v013.testnet` by itself during the judging period, so an epoch ends on its clock: **pay your residual inside the payment window (step 6) or you are suspended.** If the keeper is stopped, any account can move the epoch by hand; the command is under [Move the epoch yourself](#move-the-epoch-yourself) at the end of this guide.
+> **A keeper moves the epochs until 2026-11-18.** A keeper service of the team (a boxd machine, [keeper-operations.md](keeper-operations.md)) closes, commits and finalizes the epochs of `x207-v013.testnet` by itself during the judging period, so an epoch ends on its clock: **pay your residual inside the payment window (step 6) or you are suspended.** If the keeper is stopped, any account can move the epoch by hand; the command is under [Move the epoch yourself](#move-the-epoch-yourself) at the end of this guide.
 
 > **Do not stop before step 6.** A buyer that owes a residual and does not pay it inside the payment window **defaults**: at `finalize_epoch` its stake is cut by the amount due and the member is `suspended` (limit 0, new vouchers refused). That is what happened to the readers of an earlier version of this guide, which ended at the dashboard.
 
@@ -15,7 +15,7 @@ git clone --recurse-submodules https://github.com/x207-labs/x207.git && cd x207
 npm ci && npm run build --workspaces --if-present
 ```
 
-`near` (near-cli-rs) must be on your `PATH` for step 1. Keep every key in a folder that is not in git (`.keys/` is ignored by this repository). The circle terms hash of `x207-v013.testnet` is `aaaa…a` (64 times `a`), the stake token is the mock USDT `usdt.x207-deployer.testnet`, and the read API is `https://x207-backend-production.up.railway.app`.
+`near` (near-cli-rs) must be on your `PATH` for step 1. Keep every key in a folder that is not in git (`.keys/` is ignored by this repository). The circle terms hash of `x207-v013.testnet` is `aaaa…a` (64 times `a`), the stake token is the mock USDT `usdt.x207-deployer.testnet`, and the read API is `https://x207.boxd.sh`.
 
 > **Use a throwaway agent account.** The tools that join, settle and claim attach a NEAR deposit, which a function-call key cannot do, so they need a full-access key of the agent account. A full-access key can do anything the account can. Use an account made for the agent with a small balance, as here, never your main account (the security limit of [`@x207/mcp`](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md)).
 
@@ -42,7 +42,7 @@ The tool runs over stdio, only with `X207_MCP_WRITE=1`, and only with the two sw
       "env": {
         "X207_CIRCLE_CONTRACT": "x207-v013.testnet",
         "X207_CIRCLE_ID": "agents-main",
-        "X207_BACKEND_URL": "https://x207-backend-production.up.railway.app",
+        "X207_BACKEND_URL": "https://x207.boxd.sh",
         "X207_MCP_WRITE": "1",
         "X207_AGENT_ACCOUNT": "my-seller.testnet",
         "X207_AGENT_VOUCHER_KEY": "ed25519:<the voucher secret of step 1>",
@@ -61,7 +61,7 @@ The two spending guards of the server: `X207_MAX_SPEND_SESSION` is the most the 
 
 ```bash
 npx @modelcontextprotocol/inspector --cli \
-  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207-backend-production.up.railway.app \
+  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207.boxd.sh \
   -e X207_MCP_WRITE=1 -e X207_AGENT_ACCOUNT=my-seller.testnet -e X207_AGENT_VOUCHER_KEY=ed25519:… -e X207_AGENT_NEAR_KEY=ed25519:… \
   -e X207_ALLOW_OUTFLOWS=1 -e X207_ALLOW_FULL_ACCESS_KEY=1 -e X207_MAX_SPEND_SESSION=60000000 \
   node sdk/packages/mcp/dist/cli.js --method tools/call --tool-name x207_join \
@@ -73,7 +73,7 @@ npx @modelcontextprotocol/inspector --cli \
 | Do | See |
 | --- | --- |
 | Call `x207_join` for the seller, then for the buyer | In about 11 seconds each: `"status": "active"`, `"stake": "50000000"`, `"limit": "40000000"` (80% of the stake for a new member, and never above the stake; it grows with settlement history), and the voucher public key. The tool sent `join` with the 0.35 NEAR storage deposit and then the stake transfer |
-| `curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/members/my-seller.testnet` | The member, after the read API has caught up (within a few minutes): `status` `active`, `limit` `40000000`. Before that it answers `member_not_found`; the contract already has the member |
+| `curl -s https://x207.boxd.sh/x207/circles/agents-main/members/my-seller.testnet` | The member, after the read API has caught up (within a few minutes): `status` `active`, `limit` `40000000`. Before that it answers `member_not_found`; the contract already has the member |
 
 To join from code instead of a tool, use `onboardMember` of `@x207/core` as in [docs/quickstart.md](quickstart.md); it does the same two transactions.
 
@@ -108,7 +108,7 @@ Add the buyer to the MCP config, without the NEAR key (paying only signs voucher
 
 ```bash
 npx @modelcontextprotocol/inspector --cli \
-  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207-backend-production.up.railway.app \
+  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207.boxd.sh \
   -e X207_MCP_WRITE=1 -e X207_AGENT_ACCOUNT=my-buyer.testnet -e X207_AGENT_VOUCHER_KEY=ed25519:… -e X207_ALLOW_PRIVATE_URLS=1 \
   node sdk/packages/mcp/dist/cli.js --method tools/call --tool-name x207_pay_request --tool-arg 'url="http://localhost:3000/api/summarize"'
 ```
@@ -166,7 +166,7 @@ Run the keeper pass after the `cutoff_at` (it prints `close_epoch`), again after
 
 ```bash
 npx @modelcontextprotocol/inspector --cli \
-  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207-backend-production.up.railway.app \
+  -e X207_CIRCLE_CONTRACT=x207-v013.testnet -e X207_CIRCLE_ID=agents-main -e X207_BACKEND_URL=https://x207.boxd.sh \
   -e X207_MCP_WRITE=1 -e X207_AGENT_ACCOUNT=my-buyer.testnet -e X207_AGENT_VOUCHER_KEY=ed25519:… -e X207_AGENT_NEAR_KEY=ed25519:… \
   -e X207_ALLOW_OUTFLOWS=1 -e X207_ALLOW_FULL_ACCESS_KEY=1 -e X207_MAX_SPEND_SESSION=60000000 \
   node sdk/packages/mcp/dist/cli.js --method tools/call --tool-name x207_settle --tool-arg epoch=21

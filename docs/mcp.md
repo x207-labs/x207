@@ -22,7 +22,7 @@ Claude Desktop, read-only (`claude_desktop_config.json`; build once with `npm ru
       "args": ["/path/to/x207/sdk/packages/mcp/dist/cli.js"],
       "env": {
         "X207_CIRCLE_CONTRACT": "x207-v013.testnet",
-        "X207_BACKEND_URL": "https://x207-backend-production.up.railway.app"
+        "X207_BACKEND_URL": "https://x207.boxd.sh"
       }
     }
   }
@@ -33,17 +33,17 @@ Then ask: "Give me the overview of the x207 circle", "Inspect the member `x207-d
 
 ## Connect a client
 
-Hosted server (read-only, Streamable HTTP): `https://x207-mcp-production.up.railway.app/mcp`.
+Hosted server (read-only, Streamable HTTP): `https://mcp.x207.boxd.sh/mcp`.
 
 ```bash
-claude mcp add --transport http x207 https://x207-mcp-production.up.railway.app/mcp          # Claude Code
-codex mcp add x207 --url https://x207-mcp-production.up.railway.app/mcp                       # Codex
+claude mcp add --transport http x207 https://mcp.x207.boxd.sh/mcp          # Claude Code
+codex mcp add x207 --url https://mcp.x207.boxd.sh/mcp                       # Codex
 ```
 
 Claude Desktop: Settings, Connectors, Add custom connector, with the URL above; or in `claude_desktop_config.json`, through the `mcp-remote` bridge:
 
 ```json
-{ "mcpServers": { "x207": { "command": "npx", "args": ["-y", "mcp-remote", "https://x207-mcp-production.up.railway.app/mcp"] } } }
+{ "mcpServers": { "x207": { "command": "npx", "args": ["-y", "mcp-remote", "https://mcp.x207.boxd.sh/mcp"] } } }
 ```
 
 The commands above follow the documentation of Claude Code, Codex and Claude Desktop and were not run with those clients; the server was tested with the MCP Inspector.
@@ -61,7 +61,7 @@ The package `@x207/mcp` is on npm and needs only Node 22.22.2 or newer. It signs
       "env": {
         "X207_CIRCLE_CONTRACT": "x207-v013.testnet",
         "X207_CIRCLE_ID": "agents-main",
-        "X207_BACKEND_URL": "https://x207-backend-production.up.railway.app"
+        "X207_BACKEND_URL": "https://x207.boxd.sh"
       }
     }
   }

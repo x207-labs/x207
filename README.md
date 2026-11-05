@@ -9,11 +9,11 @@
 
 x402 lets agents pay. x207 lets many agents settle at once.
 
-[Dashboard](https://x207-dashboard.vercel.app) · [Read API](https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs) · [MCP server](https://x207-mcp-production.up.railway.app/mcp) · [Claims and proof](CLAIMS.md) · [What has run](docs/what-has-run.md) · [Join the circle](docs/join-the-circle.md)
+[Dashboard](https://x207-dashboard.vercel.app) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/mcp) · [Claims and proof](CLAIMS.md) · [What has run](docs/what-has-run.md) · [Join the circle](docs/join-the-circle.md)
 
 x207 is a multilateral clearing layer for x402 agent payments on NEAR. Agents in a circle pay each other with signed vouchers, backed by a stake that bounds what each can owe; at the end of each epoch an open solver removes the debt cycles across all of them in one on-chain clearing, and only the net positions are settled in USDT. It is built as a binding of the x402 `batch-settlement` scheme on the network `x207:<circleId>`, and a buyer outside the circle can still pay with the `exact` scheme on NEAR. The binding is proposed upstream in [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131).
 
-**Status.** Hackathon prototype for NEAR HACKATHON (1–14 Nov 2026). The contract (interface 0.0.13, release v0.0.13) runs as the circle `x207-v013.testnet` on NEAR testnet with a dashboard, a read API and an MCP server on top. The integration tests run in a local `near-sandbox`, and the end-to-end sandbox workflow of this repository passed on GitHub on 2026-11-04 for the commit `d3e5e6c` ([run 41796991326](https://github.com/x207-labs/x207/actions/runs/41796991326)). **No mainnet transaction has been sent.** **The team's keeper moves the epochs of `x207-v013.testnet` until 2026-11-18.** A worker run by the team (`scripts/keeper.mjs`, on Railway) calls `close_epoch`, `commit_epoch` and `finalize_epoch` after each cutoff, so the dashboard can show an epoch that has just passed its cutoff or is waiting in a window. After 2026-11-18 the worker is stopped; the contract has no paid keeper, and anybody can move the epoch: see [how to move an epoch yourself](docs/join-the-circle.md#move-the-epoch-yourself). The USDT on testnet is a **mock USDT** (testnet, `usdt.x207-deployer.testnet`): anybody can mint it, so no amount in this README is real money.
+**Status.** Hackathon prototype for NEAR HACKATHON (1–14 Nov 2026). The contract (interface 0.0.13, release v0.0.13) runs as the circle `x207-v013.testnet` on NEAR testnet with a dashboard, a read API and an MCP server on top. The integration tests run in a local `near-sandbox`, and the end-to-end sandbox workflow of this repository passed on GitHub on 2026-11-04 for the commit `d3e5e6c` ([run 41796991326](https://github.com/x207-labs/x207/actions/runs/41796991326)). **No mainnet transaction has been sent.** **The team's keeper moves the epochs of `x207-v013.testnet` until 2026-11-18.** A worker run by the team (`scripts/keeper.mjs`, on a boxd machine) calls `close_epoch`, `commit_epoch` and `finalize_epoch` after each cutoff, so the dashboard can show an epoch that has just passed its cutoff or is waiting in a window. After 2026-11-18 the worker is stopped; the contract has no paid keeper, and anybody can move the epoch: see [how to move an epoch yourself](docs/join-the-circle.md#move-the-epoch-yourself). The USDT on testnet is a **mock USDT** (testnet, `usdt.x207-deployer.testnet`): anybody can mint it, so no amount in this README is real money.
 
 ## The idea in one breath
 
@@ -41,15 +41,15 @@ Three read-only steps, with nothing to install, no account and no key. The circl
 2. **Read API** (the same data as JSON, circle `agents-main` on `x207-v013.testnet`):
 
    ```bash
-   curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs
-   curl -s https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs/8/metrics
+   curl -s https://x207.boxd.sh/x207/circles/agents-main/epochs
+   curl -s https://x207.boxd.sh/x207/circles/agents-main/epochs/8/metrics
    ```
 
    The second call returns the numbers in the next section. `docs/testnet-0.0.13-realistic.json` is the recorded run behind them.
 3. **Connect your AI agent** to the hosted MCP server (Streamable HTTP, read-only: six read tools, no key, no signing) and ask "Give me the report of epoch 8 of the x207 circle":
 
    ```bash
-   claude mcp add --transport http x207 https://x207-mcp-production.up.railway.app/mcp
+   claude mcp add --transport http x207 https://mcp.x207.boxd.sh/mcp
    ```
 
    Other clients, and `npx -y @x207/mcp` for a local stdio server: [docs/mcp.md](docs/mcp.md). Tested with the MCP Inspector; the client commands follow the documentation of each client and were not run with it.

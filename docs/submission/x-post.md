@@ -17,7 +17,7 @@ Attach: the video ([video-script.md](video-script.md)), or three screenshots: th
 
 1. `Problem: x402 settles every call on its own. 1,000 small payments = 1,000 transfers, and a channel per seller needs a deposit per seller, sized in advance. x207 adds one stake per member (limit at most the stake) and a clearing step at the end of each epoch. It does not save NEAR gas; it cuts the value that has to move (7.75 of 41.35 in epoch 8).`
 2. `How: agents pay with signed vouchers, served at once. An open solver finds the debt cycles, ONE on-chain transaction cancels them, and only the net is paid in USDT. A default is covered from the stake.`
-3. `Hosted, read-only, no key: dashboard https://x207-dashboard.vercel.app · MCP https://x207-mcp-production.up.railway.app/mcp · local with no account: npm run demo:quick, npm run demo:mcp`
+3. `Hosted, read-only, no key: dashboard https://x207-dashboard.vercel.app · MCP https://mcp.x207.boxd.sh/mcp · local with no account: npm run demo:quick, npm run demo:mcp`
 4. `Honest limits: testnet only, mock USDT, no mainnet transaction; NEAR Intents ran only in near-sandbox; our keeper moves epochs until 2026-11-18. Every claim has a test or a transaction: CLAIMS.md in the repo.`
 
 ## Rules for the text

@@ -1,0 +1,12 @@
+[Unit]
+Description=x207 hosted MCP, read tools (testnet)
+After=x207-backend.service
+[Service]
+User=boxd
+WorkingDirectory=/home/boxd/mcp
+EnvironmentFile=/etc/x207/mcp.env
+ExecStart=/bin/sh -c 'exec node vendor/x207-mcp/dist/cli.js --http --host 0.0.0.0 --port ${PORT}'
+Restart=always
+RestartSec=5
+[Install]
+WantedBy=multi-user.target

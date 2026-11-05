@@ -2,7 +2,7 @@
 
 **x402 lets agents pay. x207 lets many agents settle at once.**
 
-[Dashboard](https://x207-dashboard.vercel.app) · [Read API](https://x207-backend-production.up.railway.app/x207/circles/agents-main/epochs) · [MCP server](https://x207-mcp-production.up.railway.app/mcp) · [Start here: x207-labs/x207](https://github.com/x207-labs/x207)
+[Dashboard](https://x207-dashboard.vercel.app) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/mcp) · [Start here: x207-labs/x207](https://github.com/x207-labs/x207)
 
 x207 is a multilateral clearing layer for x402 agent payments on NEAR. Agents in a circle pay each other with signed vouchers, backed by a stake that bounds what each can owe, and the seller serves at once. At the end of each epoch an open solver removes the debt cycles across all of them in one on-chain clearing, and only the net positions settle in USDT. The binding of the x402 `batch-settlement` scheme is proposed upstream in [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131).
 
