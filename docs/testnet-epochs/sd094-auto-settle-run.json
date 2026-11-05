@@ -1,0 +1,84 @@
+{
+  "circle": "x207-v015.testnet",
+  "epoch": 2,
+  "agentAddress": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+  "seller": "x207-demo-seller.testnet",
+  "evmRelayer": "x207-demo-helper.testnet",
+  "paidCall": {
+    "status": 200,
+    "x402": {
+      "epoch": 2,
+      "seq": 1,
+      "cumulativeAmount": "20000",
+      "registration": "pending"
+    }
+  },
+  "positionBeforeFinalize": {
+    "epoch": 2,
+    "account_id": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+    "net": "-20000",
+    "role": "debtor",
+    "status": "due",
+    "amount": "20000",
+    "recovered": "0",
+    "payment_deadline": "1793869791445673284",
+    "updated_at_block": 276319675
+  },
+  "memberAfterFinalize": {
+    "account_id": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+    "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+    "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "stake": "39980000",
+    "limit": "31984000",
+    "status": "active",
+    "admitted": true,
+    "joined_at": "1793868139008672386",
+    "settled_history": "0",
+    "last_active_epoch": 2,
+    "exit_requested_epoch": null
+  },
+  "positionAfterFinalize": {
+    "epoch": 2,
+    "account_id": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+    "net": "-20000",
+    "role": "debtor",
+    "status": "paid",
+    "amount": "20000",
+    "recovered": "0",
+    "payment_deadline": "1793869791445673284",
+    "updated_at_block": 276321237
+  },
+  "stakeBefore": "40000000",
+  "stakeAfter": "39980000",
+  "hashes": {
+    "seller join": "9QBcEvWAcCotc3xnU5M4yFiuJ9YXBnyW677oiq3gPmDP",
+    "dao add_proposal admit x207-demo-seller.testnet": "AuVnHPXgiJKouXgxTKmpabfLKUZoNjJKMK3268ot3q8u",
+    "dao vote a #9": "97gkdBcnifE3cN7kTjvCuYHu3DCYNNSJnJDWpZSHg8AN",
+    "dao vote b #9": "FpEYyanmbV3QX7o3pCXQ3sytuE4qTdi5z5WZWvgd8hFK",
+    "seller ft_transfer_call": "A7Tif4oMT8ZFMv6ZDQ72HWfHE88verF8auf5Aopp2W4d",
+    "relayer tx": "8fmYNXCj17v9tWkcNq4931NGtnHV6TVUU7gW6WRw1G9g",
+    "join_evm": "8fmYNXCj17v9tWkcNq4931NGtnHV6TVUU7gW6WRw1G9g",
+    "dao add_proposal admit 0xcdaba48462aea97aff54fd15421a5dc8a589b845": "8zKgzAoUJCwpN4dqPGnqADS4bHirYE478jfasyyWFDoG",
+    "dao vote a #10": "C6xjvK45FVxrivJsAmGDeXHbZvfLjEo4aFnGtWNModpo",
+    "dao vote b #10": "2zn4g5sKswwW5VouV2STktgnfNDe4CSxPhd1NhnxUtqD",
+    "relayer tx (2)": "8QEC4iyJTsnNcsdmP3Z6uDmTdTrkTSZHfH7QULPwAQYj",
+    "stake (relayer ft_transfer_call)": "8QEC4iyJTsnNcsdmP3Z6uDmTdTrkTSZHfH7QULPwAQYj",
+    "relayer tx (3)": "AT1BuQFscV2yX2ixRYFTxytbXZY1uSYJBYfEoPw1CMeT",
+    "set_auto_settle_evm (enabled, relayer)": "AT1BuQFscV2yX2ixRYFTxytbXZY1uSYJBYfEoPw1CMeT",
+    "register_voucher (agent pays seller, epoch 2, 20000)": "5KpqyYs8X1GTxt6hPohy4QXZBn6RcJ6vk99D4JDxJs8A",
+    "keeper close_epoch 2": "4PYNRd2x4RXnwRonz6RhXJvyx7H7WXLavAUUFNRdzySn",
+    "keeper commit_epoch 2": "2VpyUHEKmT9AgAS6CCz7bfdr14T4Gx8U3265kjxw2iFP",
+    "keeper finalize_epoch 2 (event auto_settled: due 20000, stake 39980000, status active, position_status paid)": "FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek",
+    "seller claim (event residual_claimed 20000, destination near)": "AoMvsPrS5A2B3aw9etj3hJ2BTPr2aeBpX967t3MGvr91"
+  },
+  "note": "Run by examples/evm-agent/test/evm-agent.autosettle.testnet.live.test.ts. Keeper transactions (close_epoch, commit_epoch, finalize_epoch) are in the journal of x207-keeper-v015 and in the explorer under the keeper account. The agent never paid its residual; finalize_epoch took 20000 from its stake (40000000 to 39980000) and the member stayed active. The seller (creditor) claimed the 20000 afterwards. Contract 0.0.15 as deployed before the CT-111 reproducible redeploy.",
+  "autoSettledEvent": {
+    "epoch": 2,
+    "account_id": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+    "due": "20000",
+    "stake": "39980000",
+    "status": "active",
+    "position_status": "paid",
+    "outstanding_debt": "0"
+  }
+}
