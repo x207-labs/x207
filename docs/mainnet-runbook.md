@@ -112,6 +112,7 @@ The scripts print or send only with `X207_CONFIRM_REAL_TX=yes` and `X207_CONFIRM
 - **Before `new` ran:** the account only holds code. The owner deletes the account (beneficiary the owner) and starts again with another name; the locked NEAR returns.
 - **After `new`, nothing in use:** `owner_id` cannot be changed. A circle with a wrong owner, version or `code_hash` is not repaired: delete the account and deploy again. The script stops at its check, so no member has joined.
 - **In use, a code change:** only forward, by the DAO: `propose_upgrade` with the sha256 of the new wasm, the timelock, then `apply_upgrade`. A rollback to an older release is **not** safe once 0.0.12 or later state exists: open deals hold bonds (`bond_locked`) that 0.0.11 does not know (`ct094_upgrade_from_0_0_11` proves the way forward only).
+- **Never reuse a contract account name after an EVM member joined; use a new name.** The EIP-712 domain salt is a function of the account name, and the nonce of an EVM member lives in contract state. If the account is deleted and deployed again under the same name, state is empty (nonce 0, no member), but signatures that members signed earlier for that name carry the same salt, and a signed action whose deadline has not passed (or a `join` with nonce 0) is valid again. Start over under a new name (CT-113 R2).
 - **A freeze** is lifted by `unfreeze_member` (the DAO); no money moves by a freeze. **Money:** stakes come back by `request_exit` and `withdraw_stake` when no bond is locked; the join deposit does not.
 
 ## 7. Schedule and what only the owner does
@@ -235,7 +236,7 @@ near contract call-function as-transaction <circle> claim json-args '{"epoch":<n
 
 ### 12.7 Rollback (adds to section 6)
 
-- Deploy or `new` wrong: delete the account with the owner as beneficiary and start over (the 8.6 NEAR return).
+- Deploy or `new` wrong: delete the account with the owner as beneficiary and start over (the 8.6 NEAR return). If an EVM member has already joined, start over under a **new** account name, never the same one (see section 6).
 - v0.0.15 specific: `auto_settle` cannot be turned off by the DAO; each member sets `set_auto_settle {"enabled":false}`. The sidecar maps (`v`, `u`) are part of the state; a code change goes forward only (`propose_upgrade`).
 - A wrong class or parameter: a new proposal that overwrites it (`set_asset_class`, `set_params`); params apply from the next epoch.
 - Money: stakes come back by `request_exit` and `withdraw_stake` when no bond is locked; the 0.35 join deposit and gas do not.

@@ -46,6 +46,10 @@ An agent that lives on an EVM chain keeps its `0x` key, its wallet and its USDC 
 
 `deadline` is in milliseconds and holds while `block_timestamp_ms <= deadline`. The nonce starts at 0 after `join_evm` and rises by one for each successful action.
 
+**Short deadlines; re-sign if not sent.** The contract has no upper bound on `deadline`, and a signed action stays valid until its deadline passes or its nonce is used. A signature that a relayer holds (or that leaks from a log) is therefore as good as the deadline is long. Sign with a short deadline and sign again if the action was not sent in time. The SDK does this by default: `signer.signAction(input)` without a `deadline` signs `now + 10 minutes` (`EVM_DEFAULT_DEADLINE_TTL_MS`), and `signAction(input, { maxTtlMs })` refuses a longer one. Example: a member signs `auto_settle_off` to stop paying from its stake. A relayer that holds it for a month and sends it late still switches auto-settle off at that moment, which the member may no longer want. With a 10-minute deadline the held message is dead after 10 minutes; the member signs a new one with the same nonce if it still wants the change.
+
+Salt note: the domain salt takes its network word from the account suffix (`.testnet` gives `testnet`, any other name gives `mainnet`), so on mainnet and on a sandbox or fork the account name is the only separator (CT-113 R3). A proposal for an init parameter that names the network is on the roadmap (`docs/metrics-and-roadmap.md`).
+
 ### Methods (anyone may call; the signature is the gate)
 
 | Method | Notes |
