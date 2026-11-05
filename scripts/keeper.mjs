@@ -2,7 +2,7 @@
 // UM-022: keeper epoch. Memanggil close_epoch, commit_epoch, dan finalize_epoch tepat pada waktunya, tanpa input operator.
 //
 // Pakai (dari akar payung):
-//   KEEPER_SECRET_KEY=ed25519:... node scripts/keeper.mjs --rpc-url <url> --contract x207-circle.test.near --account keeper.test.near [--interval 10] [--once] [--prune-lag 2] [--lookback 3]
+//   KEEPER_SECRET_KEY=ed25519:... node scripts/keeper.mjs --rpc-url <url[,url2,...]> --contract x207-circle.test.near --account keeper.test.near [--interval 10] [--once] [--prune-lag 2] [--lookback 3]
 // Kunci hanya dibaca dari env KEEPER_SECRET_KEY dan tidak pernah dicetak. Log: satu baris JSON per transaksi.
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import { canReserve, keeperPass, PRUNE_GAS } from "./lib/keeper.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const { Account, JsonRpcProvider, KeyPairSigner } = createRequire(resolve(here, "../sdk/package.json"))("near-api-js");
+const { Account, FailoverRpcProvider, JsonRpcProvider, KeyPairSigner } = createRequire(resolve(here, "../sdk/package.json"))("near-api-js");
 
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((acc, arg, i, all) => (arg.startsWith("--") ? [...acc, [arg.slice(2), all[i + 1]?.startsWith("--") ? true : (all[i + 1] ?? true)]] : acc), []),
@@ -23,7 +23,9 @@ for (const [name, value] of [["--rpc-url", args["rpc-url"]], ["--contract", args
   }
 }
 
-const provider = new JsonRpcProvider({ url: args["rpc-url"] });
+// `--rpc-url a,b,c`: several endpoints, comma separated. On an error (429, 5xx, timeout) the next endpoint is tried, so one rate-limited public RPC does not stop the keeper.
+const rpcUrls = String(args["rpc-url"]).split(",").map((u) => u.trim()).filter(Boolean);
+const provider = rpcUrls.length > 1 ? new FailoverRpcProvider(rpcUrls.map((url) => new JsonRpcProvider({ url }))) : new JsonRpcProvider({ url: rpcUrls[0] });
 const account = new Account(args.account, provider, KeyPairSigner.fromSecretKey(secretKey));
 const view = async (method, viewArgs) => (await provider.callFunction({ contractId: args.contract, method, args: viewArgs, blockQuery: { finality: "final" } })) ?? null;
 // SV-020: the balance is checked against the reserve (gas times gas price) before a transaction is signed; if it is short the keeper logs a warning with the amounts and does not send
