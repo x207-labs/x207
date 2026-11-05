@@ -1,0 +1,71 @@
+# Judge FAQ: the hardest questions, with proof
+
+Each answer is short and every figure or claim points at a record: a file, a hash, a test or a live URL. Nothing here is new: it repeats what the [README](../../README.md), [CLAIMS.md](../../CLAIMS.md) and the [docs](../) already say, and where they say "not built" or "not run" this page says it too. The figures below are those of epoch 8 of the testnet circle `x207-v013.testnet` (mock USDT), recorded in [docs/testnet-0.0.13-realistic.json](../testnet-0.0.13-realistic.json) and served live by [the read API](https://x207.boxd.sh/x207/circles/agents-main/epochs/8/metrics).
+
+## Credit and default
+
+### 1. Why is mutual credit safe if members do not post full collateral?
+
+In this version they do post it: the hackathon build is economically fully collateralized, with `limit ≤ stake` for every member at all times (ADR-18), and the limit grows only from cash settlement. Credit above the stake is the later phase, with a written loss order (stake, then reserve fund, then a haircut for the direct creditors of the debtor, no cascade); it is roadmap, not built. Proof: [Risks and limitations, credit risk](../security-and-limits.md#risks-and-limitations), the clamp test [`ct038_wash_trading.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct038_wash_trading.rs) (`growth_is_clamped_to_stake`) and the first threat row of [CLAIMS.md](../../CLAIMS.md#security-claims).
+
+### 2. What happens when a debtor runs away?
+
+The creditors are still paid in full, and the debtor's own stake is cut by the amount due. In epoch 8, five of six debtors paid (7.2 USDT); the sixth, `m06`, owed 0.55 USDT, defaulted and was covered from its stake, then went `suspended` with limit 0. Proof: [README, the epoch 8 table](../../README.md#what-epoch-8-showed), the default path in [`ct037_default_flow.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct037_default_flow.rs), the sandbox run [`tests/e2e.sandbox.test.ts`](../../tests/e2e.sandbox.test.ts), and the first row of [CLAIMS.md](../../CLAIMS.md#product-claims) with its testnet transactions.
+
+### 3. A member can open many accounts and trade with itself to raise its limit. Does that work?
+
+Not beyond the stake and the cap. Cycle clearing does not count as history, a member without stake gets no credit, only cash settlement raises a limit, and the limit has a cap (`limit_cap`). Collusion paid in cash stays possible inside that cap; the docs list it as a limitation. Proof: [Cash collusion row](../security-and-limits.md#risks-and-limitations), [`ct038_wash_trading.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct038_wash_trading.rs) (`cycle_clearing_does_not_raise_limits`) and [`ct034_limits.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct034_limits.rs).
+
+## What the mechanism saves
+
+### 4. Netting versus clearing: what does 41.35 becoming 7.75 really mean?
+
+It is netting, and the contract does it without the solver. In epoch 8, 24 vouchers worth 41.35 credit came to 7.75 USDT due from six debtors, so 7.75 of the 41.35 moved as USDT (18.7%). Cycle clearing is a separate line: the solver cancelled 21.8 credit of the gross obligations (ratio 0.527), leaving 19.55 credit, and the net positions did not change. Proof: [README, what netting saves](../../README.md#what-epoch-8-showed), [CLAIMS.md](../../CLAIMS.md#product-claims) and the checked numbers (`npm run check:numbers`).
+
+### 5. Does cycle clearing change who pays what?
+
+No, not in the MVP: removing a cycle leaves every net position as it was. It gives a smaller record of gross obligations and it is the basis for the loss allocation after a default and for clearing across circles (roadmap, not built). Epoch 16 shows the point: one five-member cycle of 8 credit, no solver proposal, every net position 0, nobody paid. Proof: [README, what netting saves](../../README.md#what-epoch-8-showed) and [metrics and roadmap](../metrics-and-roadmap.md).
+
+### 6. Real x402 payment graphs are stars. Is there anything left to net?
+
+On a pure star, little. The docs say it: relief on star graphs stays near zero (under 1% in the density test), and real demand between agents is not proven. x207 reduces the value that has to move, not the gas on NEAR, which is higher, and it does not create demand. Proof: [Risks and limitations: star graphs and real demand](../security-and-limits.md#risks-and-limitations), [`tests/density.sandbox.test.ts`](../../tests/density.sandbox.test.ts) and the [metrics page](../metrics-and-roadmap.md).
+
+### 7. Does it scale, and what if the solver is lazy or hostile?
+
+A circle with 210 obligations cleared on testnet in four transactions (`close_epoch`, `submit_clearing`, `commit_epoch`, `finalize_epoch`). `submit_clearing` takes at most 300 edges, so a dense circle clears only part of its debt per epoch (a synthetic benchmark, no real payment graph). The solver is open: anybody may send a proposal, the contract verifies it and keeps only a better one; two solvers competed on testnet in epoch 18. Proof: the load-test row of [CLAIMS.md](../../CLAIMS.md#product-claims) ([docs/testnet-0.0.13.json](../testnet-0.0.13.json)), [Two solvers in one epoch](../competing-solvers.md) and the dense-circle row in [Risks and limitations](../security-and-limits.md#risks-and-limitations).
+
+## Chain choice and boundaries
+
+### 8. Why NEAR?
+
+Because the pieces x207 needs are NEAR resources that the code uses: USDT as a NEP-141 token (`ft_transfer_call`) for stake and residual payment, x402 `exact` on NEAR as the fallback for non-members, NEAR Intents and 1Click for paying a residual from another asset or withdrawing to another chain, and a Sputnik DAO for `set_params`. An agent on Base holds only a `0x` key and uses NEAR as its netting layer (`join_evm`, EIP-712). Intents has not run on testnet or mainnet; it ran against the real Intents wasm in near-sandbox. Proof: [How x207 uses NEAR](../architecture.md#6-how-x207-uses-near), [what has and has not run](../what-has-run.md), and the EVM agent transaction [`E5dQ4Wn4TZyFUXheKvS1CS7whUaLHJ8sXp8hZ2zQJN3c`](https://testnet.nearblocks.io/txns/E5dQ4Wn4TZyFUXheKvS1CS7whUaLHJ8sXp8hZ2zQJN3c) (`join_evm` on `x207-v014.testnet`).
+
+### 9. What is really on-chain and what is off-chain?
+
+On-chain, in the `x207-circle` contract: the obligation ledger, limits, epochs, stake, verification of the clearing proposal, settlement in USDT and default handling. Off-chain: the buyer signs vouchers, the facilitator holds them and registers them (a seller's delay risk is limited to vouchers not yet registered), the solver proposes cycles, and the listing book, negotiation and referral inbox of the marketplace run in the backend. The book cannot create a deal: the contract recomputes `terms_hash` and requires every signature. Proof: [Seven layers](../architecture.md#seven-layers), the [listing book row](../security-and-limits.md#risks-and-limitations) and [`ct065_bundle.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct065_bundle.rs).
+
+### 10. Is the ledger private?
+
+No. Who trades with whom is visible on-chain; the docs accept this for the MVP and list confidential settlement with Confidential Intents as roadmap, not built. Proof: [Public ledger row](../security-and-limits.md#risks-and-limitations) and [metrics and roadmap](../metrics-and-roadmap.md).
+
+### 11. Is it on mainnet?
+
+No. No mainnet transaction has been sent. The contract runs on NEAR testnet (`x207-v013.testnet` for the epochs above; `x207-v014.testnet` and `x207-v015.testnet` for EVM agents and auto-settle), and the go-live steps with a testnet check of each command are in the runbook, which also names what was not tested and why. Proof: [README status](../../README.md) ("What has not run"), [what has and has not run](../what-has-run.md) and [the mainnet runbook](../mainnet-runbook.md).
+
+## EVM agents and verification
+
+### 12. Can an EVM signature be replayed on another circle or network?
+
+We reviewed it and found no cross-circle or cross-network replay. The EIP-712 domain carries a salt of `keccak256("near:<network>:<contract id>")` and every action carries `circle`, so a signature for `x207-v014.testnet` verifies nowhere else, and `auto_settle` and `auto_settle_off` are different messages. The residual cases are on the record: the network word comes from the account suffix (`.testnet`, otherwise `mainnet`), so a sandbox or fork that uses a mainnet account name shares its salt, and a contract account name must never be reused after an EVM member joined. Proof: four PoC tests in [`ct113_evm_replay.rs`](https://github.com/x207-labs/contracts/blob/main/tests/ct113_evm_replay.rs), [EVM agents, salt note](../evm-agents.md) and [mainnet runbook, rollback](../mainnet-runbook.md).
+
+### 13. What about the EVM action deadline?
+
+The contract has no upper bound on `deadline`: an action stays valid until the deadline passes or its nonce is used, so a held signature (for example an `auto_settle_off` kept by a relayer) is as good as its deadline is long. The SDK signs `now + 10 minutes` when no deadline is given and `maxTtlMs` refuses a longer one. A contract limit (`ERR_EVM_DEADLINE_TOO_FAR`) is on the roadmap for the next mainnet release, not deployed. Proof: [EVM agents, short deadlines](../evm-agents.md), the test `TC-CT-114-01` in [`evm.test.ts`](https://github.com/x207-labs/sdk/blob/main/packages/core/test/evm.test.ts) and the row in [metrics and roadmap](../metrics-and-roadmap.md).
+
+### 14. How do we know the deployed contract is the code in the repository?
+
+The wasm is built in a pinned container and the build is reproducible: v0.0.14 has sha256 `7d731dfb15db44aa3a1ca95c28616a6e2faecbf11b87de538940991da33d39f9` and v0.0.15 has `f832e53f01bf6b0739efb54bf0977d70544dd9bcece2234abd3e18525b4900de`, and the testnet circles run those builds. `scripts/verify-release.sh` compares a release with the `code_hash` of an account. A build on a host machine gives other hashes because host paths are embedded; those older hashes are listed too. Proof: [prebuilt/README.md](https://github.com/x207-labs/contracts/blob/main/prebuilt/README.md), [verify-release.md](https://github.com/x207-labs/contracts/blob/main/docs/verify-release.md) and the reproducible-build row of [CLAIMS.md](../../CLAIMS.md#product-claims).
+
+### 15. Who runs the epochs, and is it decentralized?
+
+The team's keeper (`scripts/keeper.mjs`) calls `close_epoch`, `commit_epoch` and `finalize_epoch` for `x207-v013.testnet` until 2026-11-18, and then it stops. `submit_clearing` is permissionless (anybody may send a proposal in the window), and the parameters are owned by a Sputnik DAO: a real `set_params` proposal was voted by two council members and took effect in the next epoch. The clearing and solver fees are 0 since epoch 48, so a solver earns nothing in the MVP. Proof: [README status](../../README.md), [A DAO proposal on the live circle](../governance-live.md) and [Two solvers in one epoch](../competing-solvers.md).
