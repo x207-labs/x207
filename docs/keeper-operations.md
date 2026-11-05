@@ -18,11 +18,13 @@ Because the keeper finalizes every epoch at its `payment_deadline`, **a debtor t
 
 ## Monitoring (UM-151)
 
-The workflow [.github/workflows/monitor.yml](../.github/workflows/monitor.yml) runs `scripts/monitor-check.mjs` every 15 minutes on GitHub Actions (free, no secrets). It checks three things and, if any fails, opens one issue labelled `monitor` in this repository (later failures add a comment; the first green run closes the issue):
+The workflow [.github/workflows/monitor.yml](../.github/workflows/monitor.yml) runs `scripts/monitor-check.mjs` every 15 minutes on GitHub Actions (free, no secrets). It checks five things and, if any fails, opens one issue labelled `monitor` in this repository (later failures add a comment; the first green run closes the issue):
 
 | Check | Passes when |
 | --- | --- |
 | Read API | `GET https://x207.boxd.sh/healthz` answers HTTP 200 and `db.ok` is true. The `status` `degraded` that the endpoint shows while the indexer is idle is not a failure |
+| Indexer alive | The same `/healthz` shows `indexer.stale` false and `secondsSinceUpdate` at most 900. A halted indexer (on 2026-11-05 at 04:05 it stopped on a `set_params` event that named the nested field `fees.clearing_fee_bps`) leaves the API up and `db.ok` true while the dashboard freezes, so only this check sees it |
+| Read model epoch | `GET /x207/circles/agents-main/params` reports a `currentEpoch` at most 3 behind the epoch of the contract |
 | Hosted MCP | `initialize` on `https://mcp.x207.boxd.sh/mcp` answers a `serverInfo.name` |
 | Keeper heartbeat | The newest finalized epoch of `x207-v013.testnet` (read straight from NEAR RPC, so it does not depend on the machine) has a `payment_deadline` at most **2 × epoch_length + payment_window = 2 × 600 + 900 = 2100 s** ago. In normal running the keeper finalizes right after each `payment_deadline`, so the age stays under about 650 s; above 2100 s at least two epochs were missed |
 
