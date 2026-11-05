@@ -38,7 +38,7 @@ These are the values that `get_params` returns for `x207-v013.testnet` (read on 
 | `payment_window` | 900 s (15 minutes) | After `commit_epoch`, net debtors pay the residual |
 | `prune_delay_epochs` | 3 | `prune_epoch` refuses with `ERR_PRUNE_TOO_EARLY` until three epochs have passed (it was 2 until epoch 20; a DAO vote changed it, see [governance-live.md](governance-live.md)) |
 
-The DAO proposal period (1 hour on the DAO `x207v8.sputnikv2.testnet`) is a Sputnik setting, not a contract parameter. The other parameters (`base_limit_ratio` 8000, `limit_growth` 1000, `limit_cap` 1000000000, `limit_decay` 0, fees `clearing_fee_bps` 10 and `solver_fee_bps` 5, `admission` open, `bond_threshold` 100000000, `bond_bps` 2000, `max_search_share_bps` 500) are in the same record.
+The DAO proposal period (1 hour on the DAO `x207v8.sputnikv2.testnet`) is a Sputnik setting, not a contract parameter. The other parameters (`base_limit_ratio` 8000, `limit_growth` 1000, `limit_cap` 1000000000, `limit_decay` 0, fees `clearing_fee_bps` 0 and `solver_fee_bps` 0 (10 and 5 until epoch 47; DAO proposal 5, [governance-live.md](governance-live.md)), `admission` open, `bond_threshold` 100000000, `bond_bps` 2000, `max_search_share_bps` 500) are in the same record.
 
 T0 is the moment the epoch opens.
 

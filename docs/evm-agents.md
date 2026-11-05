@@ -1,5 +1,7 @@
 # Agents on any chain, cleared on NEAR (UM-155, draft)
 
+**In progress, not deployed. EVM agents are not a working feature of x207 today, and no other page of this repository claims it.**
+
 Status: **a draft of the interface planned for contract v0.0.14. Nothing here has run on a network.** The contract, the SDK and the demo are being built (CT-104 to CT-107, SD-088 to SD-090, BE-093, FE-041); `x207-v013.testnet` does not have these methods. Every part that still needs a transaction hash is marked **no hash yet**, and this page must not be quoted as a result until those marks are gone. Source of the interface: `contracts/x207-circle/src/evm.rs` (work in progress) and the cross-check vectors `contracts/tests/fixtures/evm-eip712.json`.
 
 ## The goal

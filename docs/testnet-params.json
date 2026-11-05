@@ -1,5 +1,5 @@
 {
-  "note": "Answer of the view get_params on x207-v013.testnet (interface 0.0.13), read on 2026-11-05 (prune_delay_epochs was 2 on 2026-11-04 and became 3 from epoch 20 by DAO proposal 4, see docs/governance-live.md) from https://rpc.testnet.fastnear.com with request_type call_function, finality final, args_base64 e30=. scripts/check-numbers.mjs compares the parameters quoted in docs/what-has-run.md and docs/testnet.md with this file, and with the chain unless --offline is given.",
+  "note": "Answer of the view get_params on x207-v013.testnet (interface 0.0.13), read on 2026-11-05 at block 276298961 (prune_delay_epochs was 2 on 2026-11-04 and became 3 from epoch 20 by DAO proposal 4, and both fees were 10 and 5 bps until epoch 47 and became 0 from epoch 48 by DAO proposal 5, see docs/governance-live.md) from https://rpc.testnet.fastnear.com with request_type call_function, finality final, args_base64 e30=. scripts/check-numbers.mjs compares the parameters quoted in docs/what-has-run.md and docs/testnet.md with this file, and with the chain unless --offline is given.",
   "account_id": "x207-v013.testnet",
   "read_at_utc": "2026-11-05",
   "get_params": {
@@ -10,7 +10,7 @@
     "limit_growth": 1000,
     "limit_cap": "1000000000",
     "limit_decay": 0,
-    "fees": { "clearing_fee_bps": 10, "solver_fee_bps": 5 },
+    "fees": { "clearing_fee_bps": 0, "solver_fee_bps": 0 },
     "admission": "open",
     "max_search_share_bps": 500,
     "bond_threshold": "100000000",
