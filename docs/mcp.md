@@ -50,7 +50,7 @@ The commands above follow the documentation of Claude Code, Codex and Claude Des
 
 ## Local stdio server from npm
 
-The package `@x207/mcp` is on npm and needs only Node 22.22.2 or newer. It signs nothing and holds no key. Add this to `claude_desktop_config.json` (Claude Desktop) or `.cursor/mcp.json` (Cursor), restart the app, and `npx` fetches the server the first time:
+The package `@x207/mcp` is on npm and needs only Node 22.22.2 or newer. It signs nothing and holds no key. Run `npx` from any folder except a clone of this repository: inside the clone `npx -y @x207/mcp` resolves to the workspace copy, whose command is not linked, and stops with `x207-mcp: command not found` (there use `node sdk/packages/mcp/dist/cli.js`). The server needs `X207_CIRCLE_CONTRACT` (as in the block below); without it, it exits with a message that names the variable. Add this to `claude_desktop_config.json` (Claude Desktop) or `.cursor/mcp.json` (Cursor), restart the app, and `npx` fetches the server the first time:
 
 ```json
 {
