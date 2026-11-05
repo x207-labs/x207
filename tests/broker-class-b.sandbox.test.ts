@@ -223,7 +223,13 @@ describe.skipIf(!sandboxAvailable)("F8 class B in near-sandbox: lease, renewal, 
 
     // the rent is not renewed: time passes expires_at, the key is deleted and the grant ends expired
     await advanceTo(expires + 5_000);
-    await broker.tick();
+    // The broker retries on its next poll when a DeleteKey did not go through (the lease stays open and the sweep reports the error without throwing); the test does the same, at most 5 polls.
+    // CI run 5a7b58d failed here once with the key still present after a single tick, and passed on a re-run of the same commit.
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await broker.tick();
+      if ((await viewKey(lease.accountId, key.getPublicKey().toString())) === null) break;
+      await new Promise((resolve) => setTimeout(resolve, 2_000));
+    }
     expect(await viewKey(lease.accountId, key.getPublicKey().toString())).toBeNull();
     expect((await view<AccessGrant>("get_grant", { grant_id: grant })).status).toBe("expired");
     await expect(lesseeCall(key, "get_params")).rejects.toThrow();

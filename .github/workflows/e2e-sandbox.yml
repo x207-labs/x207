@@ -24,7 +24,8 @@ jobs:
   e2e:
     name: e2e (shard ${{ matrix.shard }} of 4)
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    # A shard takes 28 to 31 minutes (run 5a7b58d: 28, 29 and 31 minutes for the three that finished); one shard hung for 54 minutes and held the queue, because a new push waits in the concurrency group. 45 leaves room for a slow runner.
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
