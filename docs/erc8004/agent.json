@@ -1,0 +1,25 @@
+{
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "x207 testnet circle (read-only)",
+  "description": "Prototype of x207, a netting layer for x402 agent payments on NEAR (NEAR HACKATHON, 1-14 Nov 2026). This entry points at the read-only parts of a TESTNET demo: an MCP server with six read tools and a read API for the circle agents-main. Testnet only, mock USDT, no mainnet transaction. The listed endpoints do not charge and do not return 402; the x402 batch-settlement binding for NEAR is in the SDK, not behind these endpoints. Nobody but the team has used it.",
+  "services": [
+    {
+      "name": "MCP",
+      "endpoint": "https://mcp.x207.boxd.sh/mcp",
+      "version": "2025-06-18"
+    },
+    {
+      "name": "web",
+      "endpoint": "https://x207.boxd.sh/x207/circles/agents-main/epochs/8/metrics",
+      "version": "read API, JSON"
+    },
+    {
+      "name": "web",
+      "endpoint": "https://x207-dashboard.vercel.app",
+      "version": "dashboard"
+    }
+  ],
+  "x402Support": false,
+  "active": true,
+  "registrations": []
+}
