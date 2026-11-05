@@ -36,5 +36,19 @@
     "keeper finalize_epoch 2": "9ZnkmQkdz5zu2GvxJU49MayX2HoGmtdGwTCsdBfea85i"
   },
   "note": "Run of examples/evm-agent/test/evm-agent.testnet.live.test.ts in two parts (an RPC outage at 05:45 UTC stopped the first; the second resumed at epoch 2 with RESUME_EPOCH=2). The agent key is new (made for this run, kept in .secrets, not a public test key). Admission of the circle is dao: the council of x207v8.sputnikv2.testnet voted admit_member for the seller and the agent. Net of epoch 2: agent owes the seller 20000, the seller owes the agent 100000, the seller pays 80000, the agent claims 80000.",
-  "payoutAccount": "credited to the agent's 0x id in the mock USDT token (usdt.x207-deployer.testnet); the eth-implicit NEAR account with that address does not exist on chain yet, and spending it from the 0x key through NEP-518 is being tested (SD-092); storage_deposit on the mock USDT was paid by the relayer"
+  "payoutAccount": "credited to the agent's 0x id in the mock USDT token (usdt.x207-deployer.testnet); the eth-implicit NEAR account with that address does not exist on chain yet, and spending it from the 0x key through NEP-518 is being tested (SD-092); storage_deposit on the mock USDT was paid by the relayer",
+  "spendFromOwnKey": {
+    "note": "SD-095: the agent's own 0x key moves part of its clearing payout via NEP-518 rlp_execute (chain id 398), no x207 relayer",
+    "agent": "0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7",
+    "token": "usdt.x207-deployer.testnet",
+    "fundTx": "GL8d5tvsneybDdui3ktz7HezeEXidHGM9GYcagfhwEN3",
+    "fundAmount": "1 NEAR",
+    "rlpExecuteTx": "J59PWbv4MHUz2o7DPJcNk1fUZGrnZc8xy7N39VTXwx6m",
+    "call": "ft_transfer receiver x207-deployer.testnet amount 30000 (1 yocto)",
+    "agentBalanceBefore": "80000",
+    "agentBalanceAfter": "50000",
+    "receiverBalanceBefore": "3000",
+    "receiverBalanceAfter": "33000",
+    "submittedBy": "x207-deployer.testnet (pays gas; signature of the 0x key is the authority)"
+  }
 }
