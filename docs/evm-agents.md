@@ -1,8 +1,12 @@
-# Agents on any chain, cleared on NEAR (UM-155, draft)
+# Agents on any chain, cleared on NEAR (UM-155)
 
-**In progress, not deployed. EVM agents are not a working feature of x207 today.** One step has run: `join_evm` on testnet, transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` on `x207-v014.testnet` (2026-11-05). That transaction was signed with the public Hardhat test key #1 (address `0x7099…79c8`): it is a technical proof only, not a demo agent. The official demo follows with a new key (SD-090). Vouchers, `claim_evm`, exit and the demo have no hash yet.
+**Runs on NEAR testnet (2026-11-05), not on mainnet.** One agent that holds only a `0x` key, new for this run and not a public test key (`0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7`), took part in epoch 2 of the circle `x207-v014.testnet`: `join_evm`, admission by the DAO, stake by a relayer, EIP-712 vouchers, `close_epoch`, `commit_epoch` and `finalize_epoch` by the keeper, and `claim_evm` to the agent's own eth-implicit account. The record is [testnet-epochs/sd090-evm-agent-run.json](testnet-epochs/sd090-evm-agent-run.json); each hash below was read back from the testnet RPC on 2026-11-05 and succeeded.
 
-Status: **a draft of the interface planned for contract v0.0.14. Only `join_evm` has run on a network (see above).** The contract, the SDK and the demo are being built (CT-104 to CT-107, SD-088 to SD-090, BE-093, FE-041); `x207-v013.testnet` does not have these methods. Every part that still needs a transaction hash is marked **no hash yet**, and this page must not be quoted as a result until those marks are gone. Source of the interface: `contracts/x207-circle/src/evm.rs` (work in progress) and the cross-check vectors `contracts/tests/fixtures/evm-eip712.json`.
+**Limits of that run.** The agent did not hold a NEAR key, but it was not autonomous: a relayer account (`x207-demo-helper.testnet`) paid the 0.35 NEAR join deposit and the gas, funded the stake, registered the vouchers and paid the `storage_deposit` of the payout account. The token is the mock USDT. The money route from other chains was not exercised. The earlier transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` (`join_evm`, 2026-11-05) used the public Hardhat test key #1 and is a technical proof only, not a demo agent.
+
+**In progress, not deployed:** settling from the stake for an EVM member (CT-108), a relayer fee, and every item of the roadmap below.
+
+Source of the interface: `contracts/x207-circle/src/evm.rs` and the cross-check vectors `contracts/tests/fixtures/evm-eip712.json`. The design sections below describe the interface; where this page says "draft" it means the text was written before the run and has not been re-read line by line against the contract.
 
 ## The goal
 
@@ -63,7 +67,7 @@ The argument `member` names whose action it is, so a relayer can send it. The vi
 
 | Route | State |
 | --- | --- |
-| Testnet: a relayer mints the mock USDT and stakes for the `0x…` member | **no hash yet** |
+| Testnet: a relayer stakes the mock USDT for the `0x…` member | ran: `95vup35nJTftkFjMKBcq4hxipGcHfSjnV6ffUdHXEAtP` |
 | Sandbox: the Intents path (`mt_on_transfer`, payout `intents`) in `near-sandbox`, as for KN-17 | **no result yet** |
 | Mainnet: USDC from Base or Arbitrum enters through NEAR Intents or 1Click, then `ft_transfer_call` stakes with `member_id`; the payout leaves through `claim_evm` to Intents and then to Base | roadmap, **not tested**, and no mainnet transaction is planned |
 
@@ -108,12 +112,22 @@ Every item below is **not built and not tested**. They are the routes we know of
 
 ## Release and what proves it
 
-The v0.0.14 contract is planned for a new circle, `x207-v014.testnet`. `x207-v013.testnet` is not upgraded and stays the proof that exists today (epoch 8, the keeper on boxd). The demo is done when one agent that holds only a `0x` key joins one epoch and reaches `finalized` on testnet. Until its transaction hashes are recorded here, nothing on this page is a claim.
+The v0.0.14 contract runs as a new circle, `x207-v014.testnet`. `x207-v013.testnet` is not upgraded and stays the proof of epoch 8 (the keeper on boxd). The demo is done when one agent that holds only a `0x` key joins one epoch and reaches `finalized` on testnet; that was met on 2026-11-05 with the run below. Net of epoch 2: the agent owed the seller 20000, the seller owed the agent 100000, the seller paid 80000 (mock USDT units) and the agent claimed 80000.
 
-| Step | Transaction |
+| Step | Transaction (testnet) |
 | --- | --- |
-| deploy `x207-v014.testnet` | **no hash yet** |
-| `join_evm` | `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` (testnet, 2026-11-05; read back from RPC: the call and its `eip712:` signature are in the transaction, status `SuccessValue`); signed with the public Hardhat test key #1, a technical proof only, not a demo agent |
-| stake by the relayer | **no hash yet** |
-| EVM-signed vouchers registered | **no hash yet** |
-| `claim_evm` after `finalize_epoch` | **no hash yet** |
+| deploy `x207-v014.testnet` | not recorded on this page |
+| seller `join` | `FsgrVv8PRJiAHjBkRb5DBZg1ZavXRxxyzyxTZdpouDE9` |
+| DAO proposal 7 to admit the seller: add, votes | `7uCBXS2Kv42N7qDaJjiYoBZMkiZB1RM9apYQnEr61CUN`, `DHqJhokxMhWATEhwqERAxrZu7nKzbgWhH959DeEGmoFt`, `HAE69fM9uvs675w28SxhnXYShWc1YP7c2VF1KeGRZ15i` |
+| `join_evm` (new key) | `E5dQ4Wn4TZyFUXheKvS1CS7whUaLHJ8sXp8hZ2zQJN3c` |
+| DAO proposal 8 to admit the agent: add, votes | `3WTfEiLcMuay7AeG7NPoBY9ynsMM6AS5haqkG9dAQz93`, `4JFYZdxiYoepXfQKqBPuj9T7tUAoEAm3JCK5hUbn8uSZ`, `22BcSPvtgHzTH89AP7dUvX4rk7C81zL2CcELc2Rz6bUd` |
+| stake of the agent by the relayer | `95vup35nJTftkFjMKBcq4hxipGcHfSjnV6ffUdHXEAtP` |
+| stake of the seller | `7rQCsQfJBCrB7D2vPKeTwQh58t4UjAjSX9ggssTA6ZeK` |
+| voucher agent to seller, 20000, EIP-712 | `H19ZgnLYAmvsFio1R1dqp9941LoJQ9FR7TzMdCrArZbv` |
+| voucher seller to agent, 100000, ed25519 | `7LkqrQWhR32eX82477ojQ35ZJjnsGcHg3x82R4RkSUqJ` |
+| `close_epoch`, `commit_epoch`, `finalize_epoch` by the keeper | `Aztg7FxNLThjGkRMEEMUGrzPaPMY4NqA6FEPEGmTRMHU`, `CybAemjMvYY9GUEeCwb41HFZizpHbbkng6KKEdGR3biT`, `9ZnkmQkdz5zu2GvxJU49MayX2HoGmtdGwTCsdBfea85i` |
+| seller settles 80000 | `6nFHqFmnrtJNuHrvHXQsD5Qd5bmfV9Xo6W79e8TY8QwK` |
+| `storage_deposit` of the payout account by the relayer | `DEdRKLoDZbgbscprTkhP5D8S14xfNUhVQ8DdATunshfz` |
+| `claim_evm` to the eth-implicit account of the agent | `ERoUbiz3U2MgCkWR8YDuhzria7j8RvwYE8NCvvpziQMm` |
+
+The run was made in two parts because an RPC outage at 05:45 UTC stopped the first; the second resumed at epoch 2. The paid call of the first part was a 200 answer with a cumulative amount of 20000.
