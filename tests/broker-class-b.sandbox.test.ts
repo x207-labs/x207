@@ -230,6 +230,11 @@ describe.skipIf(!sandboxAvailable)("F8 class B in near-sandbox: lease, renewal, 
       if ((await viewKey(lease.accountId, key.getPublicKey().toString())) === null) break;
       await new Promise((resolve) => setTimeout(resolve, 2_000));
     }
+    if ((await viewKey(lease.accountId, key.getPublicKey().toString())) !== null) {
+      // for the CI log: what the broker did (and what the chain says) when the key is still there
+      const g = await view<AccessGrant>("get_grant", { grant_id: grant });
+      process.stdout.write(`UM-062 key still present: grant status=${g.status} expires_at=${g.limits.expires_at} chain now=${await blockMs()} ms; broker log tail: ${log.slice(-12).join(" | ")}\n`);
+    }
     expect(await viewKey(lease.accountId, key.getPublicKey().toString())).toBeNull();
     expect((await view<AccessGrant>("get_grant", { grant_id: grant })).status).toBe("expired");
     await expect(lesseeCall(key, "get_params")).rejects.toThrow();
