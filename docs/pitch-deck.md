@@ -48,6 +48,15 @@ x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and a
 
 ---
 
+## What is new
+
+1. A multi-party x402 `batch-settlement` binding on NEAR, as far as we found: [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131), proposed and not yet accepted.
+2. Cumulative vouchers netted once per epoch across many buyers and sellers.
+3. One stake for sellers that are not known in advance (spike S1: with an exact forecast a channel locks less).
+4. An EVM agent signing EIP-712 can join: `join_evm` ran on testnet, transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` on `x207-v014.testnet`. The rest is in progress, not deployed.
+
+---
+
 ## Does netting really save anything?
 
 | Evidence | Result | Source |
