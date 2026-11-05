@@ -1,11 +1,17 @@
 name: Monitor boxd machine
 
 # UM-151: every 15 minutes check the read API, the hosted MCP and the keeper heartbeat (scripts/monitor-check.mjs).
-# A failure opens one issue labelled "monitor" (or adds a comment to the open one); the next green run closes it.
+# A failure opens one issue labelled "monitor", assigned to and mentioning the owner so GitHub notifies them (or adds a comment to the open one); the next green run closes it.
+# UM-157: "Run workflow" with api_url set to a wrong address is the test of the failure path.
 on:
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
+    inputs:
+      api_url:
+        description: "Test only: read API URL to check instead of the real one (a wrong URL makes the run fail, to prove the issue and the notification)"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -26,6 +32,8 @@ jobs:
           node-version: 20
       - name: Run checks
         id: check
+        env:
+          MONITOR_API_URL: ${{ github.event.inputs.api_url }}
         run: |
           set +e
           node scripts/monitor-check.mjs | tee monitor.log
@@ -34,14 +42,15 @@ jobs:
         if: steps.check.outputs.code != '0'
         env:
           GH_TOKEN: ${{ github.token }}
+          OWNER: Shenhan01-sys
         run: |
-          body="$(printf 'Monitor run: %s/%s/actions/runs/%s\n\n```\n%s\n```\n\nSee docs/keeper-operations.md (Monitoring, Backup and restore).' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$(cat monitor.log)")"
+          body="$(printf '@%s the monitor of the boxd machine found a problem.\nMonitor run: %s/%s/actions/runs/%s\n\n```\n%s\n```\n\nSee docs/keeper-operations.md (Monitoring, Backup and restore).' "$OWNER" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$(cat monitor.log)")"
           gh label create monitor --color B60205 --description "boxd machine monitor" 2>/dev/null || true
           number="$(gh issue list --label monitor --state open --json number --jq '.[0].number')"
           if [ -n "$number" ]; then
             gh issue comment "$number" --body "$body"
           else
-            gh issue create --title "boxd machine x207: a monitor check failed" --label monitor --body "$body"
+            gh issue create --title "boxd machine x207: a monitor check failed" --label monitor --assignee "$OWNER" --body "$body"
           fi
       - name: Close the open issue when all checks pass
         if: steps.check.outputs.code == '0'

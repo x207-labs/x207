@@ -7,7 +7,7 @@
 //      payment_deadline younger than 2 * epoch_length + payment_window seconds (2 * 600 + 900 = 2100)
 //   4. read model follows the chain: the epoch the API reports (`/params` currentEpoch) is at most MAX_EPOCH_LAG behind the epoch of the contract
 // Prints one line per check. Exit code 0 when all pass, 1 when any fails. No dependencies; needs Node 18 or newer.
-const API = process.env.MONITOR_API_URL ?? "https://x207.boxd.sh";
+const API = process.env.MONITOR_API_URL || "https://x207.boxd.sh";
 const MCP = process.env.MONITOR_MCP_URL ?? "https://mcp.x207.boxd.sh/mcp";
 const RPC = process.env.MONITOR_RPC_URL ?? "https://rpc.testnet.fastnear.com";
 const CONTRACT = process.env.MONITOR_CONTRACT ?? "x207-v013.testnet";
