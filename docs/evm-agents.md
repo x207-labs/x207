@@ -75,6 +75,7 @@ Status: **in contract 0.0.15, on `x207-v015.testnet`; checked by unit tests, a s
 | `register_cumulative`, one voucher of 20000 to the seller | `5KpqyYs8X1GTxt6hPohy4QXZBn6RcJ6vk99D4JDxJs8A` |
 | `finalize_epoch`: the agent did not pay; 20000 taken from its stake (40000000 to 39980000), event `auto_settled`, status `active`, position `paid` | `FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek` |
 | `claim` by the seller (event `residual_claimed` 20000) | `AoMvsPrS5A2B3aw9etj3hJ2BTPr2aeBpX967t3MGvr91` |
+| Variant: the same agent switches auto-settle on through its own eth-implicit account, `rlp_execute` (event `auto_settle_set`, `enabled: true`). The `0x` key signed an EIP-1559 transaction (chain id 398); an ordinary NEAR account, `x207-demo-helper.testnet`, submitted it and paid the gas | `6zkgYgxW219YB3i3aE5UNhTRzKg1rBgxBVvc2UvT6N6y` |
 
 The run is one debtor and 20000 of mock USDT; the relayer paid the gas and the stake of the agent. It ran on the build with code hash `4eZhZF16ySGGv9ux3gzbxnH6znVxcHNQYivVFdfpuHz5`; the contract now deployed is the reproducible build `Hhs82yW5…` of the same source (CT-111). It shows that the path works once, not how it behaves with many debtors. Source: [contracts/docs/evm-agents.md](https://github.com/x207-labs/contracts/blob/main/docs/evm-agents.md) and the [security review](https://github.com/x207-labs/contracts/blob/main/docs/security-review-auto-settle.md).
 
@@ -137,7 +138,7 @@ Every item below is **not built and not tested**. They are the routes we know of
 | A circle in USDC | A circle whose stake token is USDC instead of the mock USDT | not built |
 | Reputation export | Export a member's settlement history as an ERC-8004 reputation through Chain Signatures | not built |
 | Solana agents | A signature scheme for Solana keys (`raw_ed25519`) next to ed25519 and EIP-712 | not built |
-| On-chain actions by an EVM agent through NEP-518 | The eth-implicit account route (`rlp_execute`): spending the payout is proven on testnet (SD-095, hashes in the table above); calling the circle contract itself (join, stake, vouchers) through it is not tested | partly proven |
+| On-chain actions by an EVM agent through NEP-518 | The eth-implicit account route (`rlp_execute`): spending the payout is proven on testnet (SD-095, hashes in the table above); calling the circle contract itself through it ran once, for `set_auto_settle` (SD-094, the variant row of the table in the section on settling from the stake); join, stake and vouchers through it are not tested. The key authorizes; any NEAR account can submit the transaction and pays the gas, and x207 has no relayer method for it | partly proven |
 | Settlement from the stake for EVM members | An opt-in settle from the stake, so that an agent that cannot send a NEAR transaction is not suspended when it misses the payment window | built in 0.0.15 and run once on testnet (see above) |
 
 ## What it will not do

@@ -9,7 +9,7 @@ Target: [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issu
 ```text
 Update on the NEAR binding: the voucher can be signed by an EVM key, so an agent that only holds a 0x key (the usual x402 client on Base) can take part without creating a NEAR key first.
 
-On NEAR testnet (circle x207-v014.testnet, mock USDT, no mainnet transaction) one new 0x key joined the circle (join_evm), signed an EIP-712 voucher, was netted with the other members' vouchers in one epoch, and received its payout. The contract checks the signature with ecrecover and requires the recovered address to equal the member id. Afterwards the same 0x key moved part of its payout itself, through its NEAR eth-implicit account (NEP-518 rlp_execute), without our relayer.
+On NEAR testnet (circle x207-v014.testnet, mock USDT, no mainnet transaction) one new 0x key joined the circle (join_evm), signed an EIP-712 voucher, was netted with the other members' vouchers in one epoch, and received its payout. The contract checks the signature with ecrecover and requires the recovered address to equal the member id. Afterwards the same 0x key moved part of its payout itself, through its NEAR eth-implicit account (NEP-518 rlp_execute): the 0x key signed the transaction, and any NEAR account can submit it and pay the gas (there is no x207 relayer method in this step).
 
 Limits: our relayer still paid the join deposit, the stake and the gas, and the full circle flow through rlp_execute is not tested. The EIP-712 domain carries a salt bound to the NEAR network and contract account, not an EVM chainId.
 
