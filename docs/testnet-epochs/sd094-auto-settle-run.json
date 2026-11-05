@@ -69,7 +69,8 @@
     "keeper close_epoch 2": "4PYNRd2x4RXnwRonz6RhXJvyx7H7WXLavAUUFNRdzySn",
     "keeper commit_epoch 2": "2VpyUHEKmT9AgAS6CCz7bfdr14T4Gx8U3265kjxw2iFP",
     "keeper finalize_epoch 2 (event auto_settled: due 20000, stake 39980000, status active, position_status paid)": "FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek",
-    "seller claim (event residual_claimed 20000, destination near)": "AoMvsPrS5A2B3aw9etj3hJ2BTPr2aeBpX967t3MGvr91"
+    "seller claim (event residual_claimed 20000, destination near)": "AoMvsPrS5A2B3aw9etj3hJ2BTPr2aeBpX967t3MGvr91",
+    "set_auto_settle_evm (enabled true again, relayer, after the rlp_execute toggles)": "8ib8fk8fQR2gB5hS81o1V2kDLnPFbFA873Vub9RUWxgT"
   },
   "note": "Run by examples/evm-agent/test/evm-agent.autosettle.testnet.live.test.ts. Keeper transactions (close_epoch, commit_epoch, finalize_epoch) are in the journal of x207-keeper-v015 and in the explorer under the keeper account. The agent never paid its residual; finalize_epoch took 20000 from its stake (40000000 to 39980000) and the member stayed active. The seller (creditor) claimed the 20000 afterwards. Contract 0.0.15 as deployed before the CT-111 reproducible redeploy.",
   "autoSettledEvent": {
@@ -90,6 +91,6 @@
       "rlp_execute set_auto_settle {enabled:true} (signed by the 0x key, sent by a plain NEAR account)": "6zkgYgxW219YB3i3aE5UNhTRzKg1rBgxBVvc2UvT6N6y",
       "rlp_execute set_auto_settle {enabled:false} (signed by the 0x key)": "8DwwJxWLpv9K9Eqxbr7zirjUimn8YdfVDfzoxZbGF9wo"
     },
-    "note": "NEP-518: the 0x key signs an Ethereum tx (chain id 398); a plain NEAR account sends it to rlp_execute on the eth-implicit account of the agent; the circle sees the 0x account as predecessor. No x207 relayer. A first attempt whose RPC answer was a 500 had already executed (opt-in went off), so the two logged calls are on then off; the opt-in of this agent is off at the end of the run (epoch 2 above was finalized while it was on)."
+    "note": "NEP-518: the 0x key signs an Ethereum tx (chain id 398); a plain NEAR account sends it to rlp_execute on the eth-implicit account of the agent; the circle sees the 0x account as predecessor. No x207 relayer. A first attempt whose RPC answer was a 500 had already executed (opt-in went off), so the two logged calls are on then off; the opt-in of this agent is off at the end of the run (epoch 2 above was finalized while it was on). The opt-in was switched on again afterwards with set_auto_settle_evm (see hashes), so it is ON at the end."
   }
 }

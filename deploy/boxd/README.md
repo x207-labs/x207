@@ -39,6 +39,7 @@ The contract 0.0.14 (EVM members) is live on a new circle `x207-v014.testnet` (a
 | Unit | What | Port | Public URL |
 | --- | --- | --- | --- |
 | `x207-backend-v014` | read API and indexer of `x207-v014.testnet` (`X207_NO_SEED=1`, `X207_START_BLOCK=276299160`, the block before the creation of the account; SQLite `/var/lib/x207/x207-v014.sqlite`) | 8081 | https://v014.x207.boxd.sh (proxy `v014`) |
+| `x207-backend-v015` | read API and indexer of `x207-v015.testnet` (contract 0.0.15, opt-in auto-settle; `X207_NO_SEED=1`, `X207_START_BLOCK=276314900`; SQLite `/var/lib/x207/x207-v015.sqlite`) | 8082 | https://v015.x207.boxd.sh (proxy `v015`) |
 | `x207-keeper-v014` | `scripts/keeper.mjs` on `x207-v014.testnet`, with a second full-access key of `x207-v013-aux.testnet` (the two keepers do not share a nonce) | none | none |
 
 Member ids that start with `0x` (EVM agents) appear in the same endpoints as any member (`/x207/circles/agents-main/members/0x…`); their `pubkeyVoucher` is a placeholder key, because the contract checks their EIP-712 signature against the address.
@@ -55,3 +56,5 @@ curl https://v014.x207.boxd.sh/healthz
 The facilitator with the relayer routes `/evm/*` (SD-089) is a separate process that is not on this machine yet; see `sdk/.env.example` for `X207_EVM_RELAYER_ACCOUNT_ID` and the other variables.
 
 Note: `boxd machine cp -r <dir> x207:<target>/vendor` makes `<target>/vendor/vendor` when `<target>/vendor` does not exist yet; copy to `<target>` and check the result. Both backends read the free neardata plan (30 blocks per minute for the machine), so two instances catch up more slowly than one.
+
+Three indexers on one IP share the neardata limit of 30 blocks a minute, so every backend env sets `X207_INDEXER_POLL_MS=8000`. The keepers use `KEEPER_RPC_URL=https://near-testnet.drpc.org,https://rpc.testnet.fastnear.com` (failover).
