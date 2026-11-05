@@ -40,6 +40,7 @@ export const DEFAULT_PARAMS = {
 /** Releases whose sha256 was checked by a person (reproducible build, twice, byte-identical). A tag listed here must match, whatever SHA256SUMS says. */
 export const KNOWN_SHA256 = {
   // CT-111: reproducible build of commit 69b129f (scripts/repro-build.sh); the code of x207-v014.testnet
+  "v0.0.15": "f832e53f01bf6b0739efb54bf0977d70544dd9bcece2234abd3e18525b4900de", // reproducible build of contracts HEAD at 3bf2044 (CT-111); the code of x207-v015.testnet
   "v0.0.14": "7d731dfb15db44aa3a1ca95c28616a6e2faecbf11b87de538940991da33d39f9",
   "v0.0.13": "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054",
   // not a release: the mock USDT that the quick demo deploys (UM-107, contracts/prebuilt/mock_ft.wasm; a test fixture, never for a real network)
