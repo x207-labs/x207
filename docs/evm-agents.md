@@ -1,6 +1,6 @@
 # Agents on any chain, cleared on NEAR (UM-155, draft)
 
-**In progress, not deployed. EVM agents are not a working feature of x207 today.** One step has run: `join_evm` on testnet, transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` on `x207-v014.testnet` (2026-11-05). Vouchers, `claim_evm`, exit and the demo have no hash yet.
+**In progress, not deployed. EVM agents are not a working feature of x207 today.** One step has run: `join_evm` on testnet, transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` on `x207-v014.testnet` (2026-11-05). That transaction was signed with the public Hardhat test key #1 (address `0x7099…79c8`): it is a technical proof only, not a demo agent. The official demo follows with a new key (SD-090). Vouchers, `claim_evm`, exit and the demo have no hash yet.
 
 Status: **a draft of the interface planned for contract v0.0.14. Only `join_evm` has run on a network (see above).** The contract, the SDK and the demo are being built (CT-104 to CT-107, SD-088 to SD-090, BE-093, FE-041); `x207-v013.testnet` does not have these methods. Every part that still needs a transaction hash is marked **no hash yet**, and this page must not be quoted as a result until those marks are gone. Source of the interface: `contracts/x207-circle/src/evm.rs` (work in progress) and the cross-check vectors `contracts/tests/fixtures/evm-eip712.json`.
 
@@ -90,7 +90,7 @@ The v0.0.14 contract is planned for a new circle, `x207-v014.testnet`. `x207-v01
 | Step | Transaction |
 | --- | --- |
 | deploy `x207-v014.testnet` | **no hash yet** |
-| `join_evm` | `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` (testnet, 2026-11-05; read back from RPC: the call and its `eip712:` signature are in the transaction, status `SuccessValue`) |
+| `join_evm` | `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` (testnet, 2026-11-05; read back from RPC: the call and its `eip712:` signature are in the transaction, status `SuccessValue`); signed with the public Hardhat test key #1, a technical proof only, not a demo agent |
 | stake by the relayer | **no hash yet** |
 | EVM-signed vouchers registered | **no hash yet** |
 | `claim_evm` after `finalize_epoch` | **no hash yet** |

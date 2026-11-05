@@ -16,7 +16,7 @@ Numbers below are the ones of the README and of the hosted read API on 2026-11-0
 | `nearAddress` | FILL: the prize account; the hackathon rules ask for a NEAR **mainnet** account (`name.near` or a 64-character implicit account) that the team makes in any wallet. Not `x207-v013.testnet`, not an account of the project keys | owner |
 | `projectUrl` | `https://github.com/x207-labs/x207` (the umbrella repository; the six product repositories are its submodules and are public too: `contracts`, `sdk`, `backend`, `frontend`, `solver`, `agents`) | ready |
 | `demoUrl` | FILL: the public post on X that the owner publishes (draft in [x-post.md](x-post.md)) | owner |
-| `idea` | the text of [idea.txt](idea.txt), 1,978 characters (limit 20 to 2,000) | ready |
+| `idea` | the text of [idea.txt](idea.txt), 1,992 characters (limit 20 to 2,000) | ready |
 | `consent` | `true` only after the owner has read the notice: "I agree that the organizers may use these details to review our submission and contact us about this hackathon." | owner |
 | `website` | **never send it** (spam trap: any value rejects the submission) | |
 
@@ -49,7 +49,7 @@ Say "netting settled 41.35 of obligations with 7.75 USDT due, of which five debt
 
 <!-- UM-162: DRAFT, NOT ACTIVE. Add the rows below only after the demo SD-090 has a testnet transaction hash, and before 2026-11-11 (the owner's condition).
 Track to add (id `open`, hint CHAIN ABSTRACTION), in `tracks` after the six locked ones:
-| Open (`open`), hint "Chain Abstraction" | An agent that holds only a `0x` key and USDC on an EVM chain takes part in a circle on NEAR: it signs vouchers with EIP-712, a relayer sends them, and the circle nets them. | `join_evm` on `x207-v014.testnet`, tx `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A`; add the hashes of the SD-090 demo here | The money route from other chains (NEAR Intents 1Click, HOT Bridge with Omni Balance) is mainnet and not tested; the demo proves signatures and netting only; the signer used so far is a well-known test key |
+| Open (`open`), hint "Chain Abstraction" | An agent that holds only a `0x` key and USDC on an EVM chain takes part in a circle on NEAR: it signs vouchers with EIP-712, a relayer sends them, and the circle nets them. | `join_evm` on `x207-v014.testnet`, tx `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A`; add the hashes of the SD-090 demo here | The money route from other chains (NEAR Intents 1Click, HOT Bridge with Omni Balance) is mainnet and not tested; the demo proves signatures and netting only; the signer used so far is the public Hardhat test key #1: the transaction is a technical proof only, not a demo agent, and the official demo follows with a new key (SD-090) |
 Sentence to add to `business`: "An agent can pay its suppliers across chains: it signs on its home chain, the circle nets the payments on NEAR, and the residual leaves through NEAR Intents (a 1Click dry quote to Base ran; the payment itself has not run, and no mainnet transaction was sent)."
 Sentence to add to `agents`: "An agent on any chain can join: an EVM agent with only a `0x` key signs EIP-712 vouchers (`join_evm` ran on testnet); the rest of the flow is in progress."
 -->
