@@ -49,6 +49,7 @@ An agent that lives on an EVM chain keeps its `0x` key, its wallet and its USDC 
 **From interface 0.0.16: relayer fee and deadline limit.** `Action` gets a ninth field, `uint256 maxFee` (`Action(string circle,string member,string action,uint64 epoch,string receiver,string termsHash,uint64 nonce,uint64 deadline,uint256 maxFee)`): `0` for `join`, `request_exit` and `auto_settle`, and the highest fee the agent accepts for `claim` and `withdraw_stake`. Circles of 0.0.14 and 0.0.15 keep the 8-field type.
 
 - The relayer (the account that sends the transaction) gets `min(relayer_fee, maxFee, base / 2)`, where `base` is the payout of a claim or the stake of a withdrawal, so the fee is never more than half of it from a `claim_evm` or `withdraw_stake_evm`. `relayer_fee` is a flat amount set by the DAO, default 0, at most 1 credit, valid from the next epoch.
+- Read the live `relayer_fee` from `get_params`; `get_epoch(...).params.relayer_fee` shows `"0"` on 0.0.16 and is not the value in force.
 - Payout and fee are separate transfers. If the relayer cannot receive the fee (not registered on the token), the payout still arrives and the fee goes back to the agent.
 - Whoever sends the signed action first gets the fee: a second registered relayer may front-run the first. The agent never pays more than its `maxFee`.
 - The gas of `join_evm`, `request_exit_evm` and the auto-settle actions stays with the relayer. A fee from free stake for these is planned for 0.0.17.
