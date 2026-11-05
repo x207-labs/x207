@@ -20,7 +20,7 @@ A letter means "the process does this to the store in at least one step". The st
 
 | Cell | Operation | Contract method or event | Status names |
 | --- | --- | --- | --- |
-| P1 / D1 | Create the member row, then activate it | `join` creates `pending`; `ft_on_transfer` with the stake action and admission set `active` and the first `limit` | `pending` to `active` |
+| P1 / D1 | Create the member row, then activate it | `join` (an EVM member: `join_evm`) creates `pending`; `ft_on_transfer` with the stake action and admission set `active` and the first `limit` | `pending` to `active` |
 | P1 / D6 | Add the stake to the pool | `ft_on_transfer` (action `stake`) | stake per member |
 | P1 / D7 | Read admission and `base_limit_ratio` | `get_params` | |
 | P2 / D1 | Read the voucher key, status and limit to check a voucher | view `member`, `headroom` | only `active` members pay |
@@ -31,9 +31,9 @@ A letter means "the process does this to the store in at least one step". The st
 | P3 / D4 | Store the best proposal, the solver and the cleared total | `submit_clearing`; `commit_epoch` | |
 | P3 / D5 | Create the net positions of the epoch | `commit_epoch` | debtor `due`, creditor `claimable` |
 | P3 / D9 | The solver reads the cutoff snapshot from the index | `epoch_cutoff`, read API `.../obligations?stage=cutoff` | |
-| P4 / D5 | Read what is due or claimable, then mark it | `ft_on_transfer` (action `settle`), `mt_on_transfer` (a residual paid through NEAR Intents, same settle logic), `claim` | `due` to `paid`; `claimable` to `claimed` |
+| P4 / D5 | Read what is due or claimable, then mark it | `ft_on_transfer` (action `settle`), `mt_on_transfer` (a residual paid through NEAR Intents, same settle logic), `claim` (an EVM member: `claim_evm`) | `due` to `paid`; `claimable` to `claimed` |
 | P4 / D6 | USDT enters the pool on settle and leaves on claim; USDT booked by `mt_on_transfer` stays on `intents.near` until somebody moves it into the pool | `ft_on_transfer`, `mt_on_transfer`, `withdraw_intents_balance` (callback `on_intents_withdrawn`, event `intents_withdrawn`), `claim` (`near` or `intents`) | |
-| P4 / D1 | Raise the cash settlement history; a member leaving records `exit_requested_epoch`, then becomes `exited` | `ft_on_transfer`, `mt_on_transfer`, `request_exit`, `withdraw_stake` | `active` to `exited` |
+| P4 / D1 | Raise the cash settlement history; a member leaving records `exit_requested_epoch`, then becomes `exited` | `ft_on_transfer`, `mt_on_transfer`, `request_exit`, `withdraw_stake` (an EVM member: `request_exit_evm`, `withdraw_stake_evm`) | `active` to `exited` |
 | P5 / D8 | Record an intent hash and the committed bundle with its per-leg limits; the owner of an intent takes it back and gets the slot of the book back | `post_intent`, `remove_intent`, `commit_bundle` (events `intent_posted`, `bundle_committed`) | bundle `active` |
 | P5 / D1 | Reserve headroom for each leg of a bundle; the reservation is a separate key beside D8, not a field of the member row | `commit_bundle` (view `headroom` shows it) | |
 | P5 / D1 | The arbiter of a deal with a bond rules: the bond of the guilty party passes to the other party, or both bonds are released | `rule_deal` (event `deal_ruled`; `bond_released` per bond) | bond locked to released or paid |
