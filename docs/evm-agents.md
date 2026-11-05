@@ -46,7 +46,15 @@ An agent that lives on an EVM chain keeps its `0x` key, its wallet and its USDC 
 
 `deadline` is in milliseconds and holds while `block_timestamp_ms <= deadline`. The nonce starts at 0 after `join_evm` and rises by one for each successful action.
 
-**Short deadlines; re-sign if not sent.** The contract has no upper bound on `deadline`, and a signed action stays valid until its deadline passes or its nonce is used. A signature that a relayer holds (or that leaks from a log) is therefore as good as the deadline is long. Sign with a short deadline and sign again if the action was not sent in time. The SDK does this by default: `signer.signAction(input)` without a `deadline` signs `now + 10 minutes` (`EVM_DEFAULT_DEADLINE_TTL_MS`), and `signAction(input, { maxTtlMs })` refuses a longer one. Example: a member signs `auto_settle_off` to stop paying from its stake. A relayer that holds it for a month and sends it late still switches auto-settle off at that moment, which the member may no longer want. With a 10-minute deadline the held message is dead after 10 minutes; the member signs a new one with the same nonce if it still wants the change.
+**From interface 0.0.16: relayer fee and deadline limit.** `Action` gets a ninth field, `uint256 maxFee` (`Action(string circle,string member,string action,uint64 epoch,string receiver,string termsHash,uint64 nonce,uint64 deadline,uint256 maxFee)`): `0` for `join`, `request_exit` and `auto_settle`, and the highest fee the agent accepts for `claim` and `withdraw_stake`. Circles of 0.0.14 and 0.0.15 keep the 8-field type.
+
+- The relayer (the account that sends the transaction) gets `min(relayer_fee, maxFee, half of the amount)` from a `claim_evm` or `withdraw_stake_evm`. `relayer_fee` is a flat amount set by the DAO, default 0, at most 1 credit, valid from the next epoch.
+- Payout and fee are separate transfers. If the relayer cannot receive the fee (not registered on the token), the payout still arrives and the fee goes back to the agent.
+- Whoever sends the signed action first gets the fee: a second registered relayer may front-run the first. The agent never pays more than its `maxFee`.
+- The gas of `join_evm`, `request_exit_evm` and the auto-settle actions stays with the relayer. A fee from free stake for these is planned for 0.0.17.
+- A `deadline` more than 24 hours ahead is refused with `ERR_EVM_DEADLINE_TOO_FAR`.
+
+**Short deadlines; re-sign if not sent.** Up to 0.0.15 the contract has no upper bound on `deadline` (0.0.16 caps it at 24 hours), and a signed action stays valid until its deadline passes or its nonce is used. A signature that a relayer holds (or that leaks from a log) is therefore as good as the deadline is long. Sign with a short deadline and sign again if the action was not sent in time. The SDK does this by default: `signer.signAction(input)` without a `deadline` signs `now + 10 minutes` (`EVM_DEFAULT_DEADLINE_TTL_MS`), and `signAction(input, { maxTtlMs })` refuses a longer one. Example: a member signs `auto_settle_off` to stop paying from its stake. A relayer that holds it for a month and sends it late still switches auto-settle off at that moment, which the member may no longer want. With a 10-minute deadline the held message is dead after 10 minutes; the member signs a new one with the same nonce if it still wants the change.
 
 Salt note: the domain salt takes its network word from the account suffix (`.testnet` gives `testnet`, any other name gives `mainnet`), so on mainnet and on a sandbox or fork the account name is the only separator (CT-113 R3). A proposal for an init parameter that names the network is on the roadmap (`docs/metrics-and-roadmap.md`).
 
@@ -55,9 +63,9 @@ Salt note: the domain salt takes its network word from the account suffix (`.tes
 | Method | Notes |
 | --- | --- |
 | `join_evm(address, terms_hash, deadline, signature)` | `#[payable]`, at least 0.35 NEAR. The caller is the `sponsor` and pays the storage deposit; on exit the refund goes back to the sponsor. |
-| `claim_evm(member, epoch, receiver, nonce, deadline, signature)` | The payout goes to `receiver`, any NEAR account the agent signed. On mainnet this would be the NEAR Intents contract through `ft_transfer_call`, which credits the id `0x…`; the agent then withdraws to Base through Intents. On testnet it is an ordinary NEAR account. |
+| `claim_evm(member, epoch, receiver, nonce, deadline, signature)` (0.0.16: `…, deadline, max_fee, signature`) | The payout goes to `receiver`, any NEAR account the agent signed. On mainnet this would be the NEAR Intents contract through `ft_transfer_call`, which credits the id `0x…`; the agent then withdraws to Base through Intents. On testnet it is an ordinary NEAR account. |
 | `request_exit_evm(member, nonce, deadline, signature)` | |
-| `withdraw_stake_evm(member, receiver, nonce, deadline, signature)` | The Intents contract is refused as a receiver. |
+| `withdraw_stake_evm(member, receiver, nonce, deadline, signature)` (0.0.16: `…, deadline, max_fee, signature`) | The Intents contract is refused as a receiver. |
 | `set_auto_settle_evm(member, enabled, nonce, deadline, signature)` | Turns settling from the stake on or off for an EVM member; see [the section below](#settling-from-the-stake-opt-in-ct-108). |
 
 The argument `member` names whose action it is, so a relayer can send it. The view `evm_signer(account_id)` returns `{ address, sponsor, nonce }` or null. New errors: `ERR_BAD_EVM_SIG`, `ERR_EVM_NONCE`, `ERR_EVM_EXPIRED`, `ERR_NOT_EVM_MEMBER`, `ERR_BAD_EVM_ADDRESS`, `ERR_BAD_EVM_RECEIVER`; a failed check inside a bundle uses `ERR_BUNDLE_SIGNATURES`.
