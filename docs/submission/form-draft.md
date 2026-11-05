@@ -51,6 +51,7 @@ Say "netting settled 41.35 of obligations with 7.75 USDT due, of which five debt
 Track to add (id `open`, hint CHAIN ABSTRACTION), in `tracks` after the six locked ones:
 | Open (`open`), hint "Chain Abstraction" | An agent that holds only a `0x` key and USDC on an EVM chain takes part in a circle on NEAR: it signs vouchers with EIP-712, a relayer sends them, and the circle nets them. | `join_evm` on `x207-v014.testnet`, tx `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A`; add the hashes of the SD-090 demo here | The money route from other chains (NEAR Intents 1Click, HOT Bridge with Omni Balance) is mainnet and not tested; the demo proves signatures and netting only; the signer used so far is the public Hardhat test key #1: the transaction is a technical proof only, not a demo agent, and the official demo follows with a new key (SD-090) |
 Sentence to add to `business`: "An agent can pay its suppliers across chains: it signs on its home chain, the circle nets the payments on NEAR, and the residual leaves through NEAR Intents (a 1Click dry quote to Base ran; the payment itself has not run, and no mainnet transaction was sent)."
+Sentence for the README and idea.txt (UM-165, activate only with the SD-090 hash): "An agent on Base only holds a `0x` key; NEAR is its netting layer."
 Sentence to add to `agents`: "An agent on any chain can join: an EVM agent with only a `0x` key signs EIP-712 vouchers (`join_evm` ran on testnet); the rest of the flow is in progress."
 -->
 
