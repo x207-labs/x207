@@ -4,7 +4,7 @@
 
 **Limits of that run.** The agent did not hold a NEAR key, but it was not autonomous: a relayer account (`x207-demo-helper.testnet`) paid the 0.35 NEAR join deposit and the gas, funded the stake, registered the vouchers and paid the `storage_deposit` of the payout account. The token is the mock USDT. The money route from other chains was not exercised. The earlier transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` (`join_evm`, 2026-11-05) used the public Hardhat test key #1 and is a technical proof only, not a demo agent.
 
-**Built, deployed, demo run pending:** settling from the stake (CT-108) is in contract 0.0.15, deployed as `x207-v015.testnet` (code hash `Hhs82yW5iJD2QH4juP6Ud5u7ApHGhcw8Zo5xCK1hxmoj` (since the redeploy of 2026-11-05; the SD-094 transactions ran on the earlier build, code hash `4eZhZF16ySGGv9ux3gzbxnH6znVxcHNQYivVFdfpuHz5`, sha256 `3632861b…`)); see [the section below](#settling-from-the-stake-opt-in-ct-108). No epoch has been settled from a stake on chain yet: `TODO(SD-094)` holds the transaction hashes. **In progress, not deployed:** a relayer fee, and every item of the roadmap below.
+**Built, deployed, run once on testnet:** settling from the stake (CT-108) is in contract 0.0.15, deployed as `x207-v015.testnet` (code hash `Hhs82yW5iJD2QH4juP6Ud5u7ApHGhcw8Zo5xCK1hxmoj` (since the redeploy of 2026-11-05; the SD-094 transactions ran on the earlier build, code hash `4eZhZF16ySGGv9ux3gzbxnH6znVxcHNQYivVFdfpuHz5`, sha256 `3632861b…`)); see [the section below](#settling-from-the-stake-opt-in-ct-108). One epoch was settled from a stake on testnet (SD-094, hashes in the section below). **In progress, not deployed:** a relayer fee, and every item of the roadmap below.
 
 Source of the interface: `contracts/x207-circle/src/evm.rs` and the cross-check vectors `contracts/tests/fixtures/evm-eip712.json`. The design sections below describe the interface; where this page says "draft" it means the text was written before the run and has not been re-read line by line against the contract.
 
@@ -67,7 +67,16 @@ The argument `member` names whose action it is, so a relayer can send it. The vi
 
 ## Settling from the stake (opt-in, CT-108)
 
-Status: **in contract 0.0.15, on `x207-v015.testnet`; checked by unit tests and a security review, not yet by a run on chain.** The run on testnet (SD-094) has no hashes yet: `TODO(SD-094)`. Until it has, this section describes what the contract does, not something that was seen to work on testnet. Source: [contracts/docs/evm-agents.md](https://github.com/x207-labs/contracts/blob/main/docs/evm-agents.md) and the [security review](https://github.com/x207-labs/contracts/blob/main/docs/security-review-auto-settle.md).
+Status: **in contract 0.0.15, on `x207-v015.testnet`; checked by unit tests, a security review and one run on testnet (SD-094).** The run, in epoch 2 of `x207-v015.testnet` with the mock USDT (record: [testnet-epochs/sd094-auto-settle-run.json](testnet-epochs/sd094-auto-settle-run.json); each hash was read back from the testnet RPC on 2026-11-05 and succeeded):
+
+| Step | Transaction |
+| --- | --- |
+| `set_auto_settle_evm` (the EVM agent `0xcdaba48462aea97aff54fd15421a5dc8a589b845` opts in; the relayer submits) | `AT1BuQFscV2yX2ixRYFTxytbXZY1uSYJBYfEoPw1CMeT` |
+| `register_cumulative`, one voucher of 20000 to the seller | `5KpqyYs8X1GTxt6hPohy4QXZBn6RcJ6vk99D4JDxJs8A` |
+| `finalize_epoch`: the agent did not pay; 20000 taken from its stake (40000000 to 39980000), event `auto_settled`, status `active`, position `paid` | `FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek` |
+| `claim` by the seller (event `residual_claimed` 20000) | `AoMvsPrS5A2B3aw9etj3hJ2BTPr2aeBpX967t3MGvr91` |
+
+The run is one debtor and 20000 of mock USDT; the relayer paid the gas and the stake of the agent. It ran on the build with code hash `4eZhZF16ySGGv9ux3gzbxnH6znVxcHNQYivVFdfpuHz5`; the contract now deployed is the reproducible build `Hhs82yW5…` of the same source (CT-111). It shows that the path works once, not how it behaves with many debtors. Source: [contracts/docs/evm-agents.md](https://github.com/x207-labs/contracts/blob/main/docs/evm-agents.md) and the [security review](https://github.com/x207-labs/contracts/blob/main/docs/security-review-auto-settle.md).
 
 **What it is.** A member that opts in and does not pay its `due` in the payment window has the `due` taken from its own stake by `finalize_epoch`. The member stays `active`: no `member_defaulted`, no suspension, no limit set to 0. The position goes from `due` to `paid`, and creditors claim in full unless another debtor of that epoch defaults with a shortfall (the pool is then shared pro rata). Settling from the stake does not raise `settled_history`; only a cash settlement does. A default does not reset `settled_history` either: it takes the stake, sets the limit to 0 and suspends the member. It is off by default.
 
@@ -129,7 +138,7 @@ Every item below is **not built and not tested**. They are the routes we know of
 | Reputation export | Export a member's settlement history as an ERC-8004 reputation through Chain Signatures | not built |
 | Solana agents | A signature scheme for Solana keys (`raw_ed25519`) next to ed25519 and EIP-712 | not built |
 | On-chain actions by an EVM agent through NEP-518 | The eth-implicit account route (`rlp_execute`): spending the payout is proven on testnet (SD-095, hashes in the table above); calling the circle contract itself (join, stake, vouchers) through it is not tested | partly proven |
-| Settlement from the stake for EVM members | An opt-in settle from the stake, so that an agent that cannot send a NEAR transaction is not suspended when it misses the payment window | built in 0.0.15 (see above); demo run pending |
+| Settlement from the stake for EVM members | An opt-in settle from the stake, so that an agent that cannot send a NEAR transaction is not suspended when it misses the payment window | built in 0.0.15 and run once on testnet (see above) |
 
 ## What it will not do
 
