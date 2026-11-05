@@ -1,11 +1,13 @@
 {
-  "_note": "Seconds per test file in the green E2E run 41796991326 (UM-025). Used only to balance the shards of e2e-sandbox.yml; a file that is not listed counts as defaultSeconds. Update after a run if the balance drifts.",
+  "_note": "Seconds per test file in the green E2E run 41796991326 (UM-025), corrected by the jobs of run 42011918002 (UM-183: security-review-contract3b 1150, rent 398, cloud-credit about 100 after UM-182). Used only to balance the shards of e2e-sandbox.yml; a file that is not listed counts as defaultSeconds. Update after a run if the balance drifts.",
   "defaultSeconds": 70,
   "seconds": {
-    "tests/security-review-contract3b.sandbox.test.ts": 872,
+    "tests/security-review-contract3b.sandbox.test.ts": 1150,
     "tests/security-review-contract3.sandbox.test.ts": 717,
-    "tests/density.sandbox.test.ts": 351,
-    "tests/rent.sandbox.test.ts": 346,
+    "tests/density.sandbox.test.ts": 352,
+    "tests/rent.sandbox.test.ts": 398,
+    "tests/proxy-credit-quota.sandbox.test.ts": 115,
+    "tests/cloud-credit.sandbox.test.ts": 100,
     "tests/e2e.sandbox.test.ts": 271,
     "tests/asset-catalog.sandbox.test.ts": 213,
     "tests/invoice.sandbox.test.ts": 149,

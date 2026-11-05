@@ -21,7 +21,7 @@ test("every file lands in exactly one shard and the split does not depend on inp
 
 test("the real repository: all files covered once, shards within 25% of each other, e2e barter marketplace broker-class-b present", () => {
   const files = testFiles();
-  const shards = splitShards(files, 4, loadTable());
+  const shards = splitShards(files, 5, loadTable());
   const all = shards.flatMap((s) => s.files);
   assert.equal(new Set(all).size, files.length);
   assert.equal(all.length, files.length);
