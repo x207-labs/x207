@@ -77,6 +77,29 @@ The argument `member` names whose action it is, so a relayer can send it. The vi
 
 Open points we have not checked: the fees and minimums of the route (a small payment can lose a large share of its value, see [gas-epoch8-vs-transfers.md](gas-epoch8-vs-transfers.md)), whether a given token and chain pair is supported on the day, and the time a deposit takes. No mainnet transaction is planned without the owner's approval.
 
+## Who pays the relayer (draft; no fee is built)
+
+An EVM agent holds no NEAR token, so someone else sends its transactions and pays their gas. In the planned design:
+
+- **Join.** The caller of `join_evm` is the `sponsor` and pays the storage deposit, at least 0.35 NEAR. On exit the refund of that deposit goes back to the sponsor, not to the agent.
+- **Gas.** The relayer pays the gas of every `*_evm` call (`claim_evm`, `request_exit_evm`, `withdraw_stake_evm`) and of the relayed voucher registrations. Today that relayer is the team's account on testnet.
+- **Fee.** There is none. The clearing fee and the solver fee are 0 since epoch 48 ([governance-live.md](governance-live.md)), and the contract has no relayer fee, so a relayer earns nothing from relaying. A third party has no reason to run one until a fee exists.
+- **Sybil limit.** Anyone can create `0x…` addresses for free, and each one costs the sponsor 0.35 NEAR to join, so a sponsor that pays for strangers can be drained. The tool the circle has is its admission mode: `x207-v013.testnet` has `admission` open; with admission set to DAO, a new member needs a DAO vote through `admit_member`. A stake is also required to get any limit, and a member without a stake can owe nothing.
+- **Open questions:** whether a relayer may take a fee from the agent's payout, and whether the sponsor deposit should be charged to the agent's stake. Neither is decided.
+
+## Cross-chain roadmap (not built)
+
+Every item below is **not built and not tested**. They are the routes we know of that would make an EVM agent need the team's relayer less, and none is needed for the testnet demo.
+
+| Item | What it would do | State |
+| --- | --- | --- |
+| Funding through NEAR Intents with ERC-191 signatures | The agent funds and withdraws its Intents balance by signing on its home chain, with `ft_withdraw` and a `msg` that names the circle | not built |
+| A circle in USDC | A circle whose stake token is USDC instead of the mock USDT | not built |
+| Reputation export | Export a member's settlement history as an ERC-8004 reputation through Chain Signatures | not built |
+| Solana agents | A signature scheme for Solana keys (`raw_ed25519`) next to ed25519 and EIP-712 | not built |
+| On-chain actions by an EVM agent through NEP-518 | The eth-implicit account route (`rlp_execute`) so the agent can call the contract itself | not built; a spike is proposed |
+| Settlement from the stake for EVM members | An opt-in settle from the stake, so that an agent that cannot send a NEAR transaction is not suspended when it misses the payment window | not built; needs a contract change and the owner's decision |
+
 ## What it will not do
 
 - No intent, grant, escrow or deal for an EVM member in the first version: those methods still need the member as the caller.
