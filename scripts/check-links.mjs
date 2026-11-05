@@ -4,6 +4,7 @@
 //     does not count: on GitHub it is a dead link, so it must be an absolute URL.
 //   - An anchor (`file.md#heading`) must be a heading of that file.
 //   - A link to https://github.com/x207-labs/... must answer with a status below 400 (a 404 fails). With --external every other http(s) link is checked too.
+//     5xx, 429 and no response are tried again three times (2 s, 4 s, 8 s); other 4xx fail at once. One request at a time goes to github.com.
 //
 // Usage: node scripts/check-links.mjs [--root <umbrella dir>] [--offline] [--external]
 // Exit code 0 when every link resolves, 1 otherwise.
@@ -52,23 +53,71 @@ export function relativeProblems(file, links, inTree, anchors = () => null) {
   return problems;
 }
 
-async function status(url, fetchFn) {
-  const head = await fetchFn(url, { method: "HEAD", redirect: "follow" }).catch(() => null);
-  if (head && head.status !== 405 && head.status !== 403) return head.status;
-  const get = await fetchFn(url, { method: "GET", redirect: "follow" }).catch(() => null);
+async function statusOnce(url, fetchFn) {
+  const init = { redirect: "follow", headers: { "user-agent": "x207-check-links (+https://github.com/x207-labs/x207)" } };
+  const head = await fetchFn(url, { ...init, method: "HEAD" }).catch(() => null);
+  // a HEAD that is refused, limited or answered by a busy server is asked again as a GET, which is what a browser sends
+  if (head && head.status < 400) return head.status;
+  if (head && head.status === 404) return head.status;
+  const get = await fetchFn(url, { ...init, method: "GET" }).catch(() => null);
   return get ? get.status : 0;
 }
 
-/** Problems of the absolute links: a status of 400 or more (a 404 above all). `fetchFn` is injectable for tests. */
-export async function urlProblems(file, links, { external = false, fetchFn = fetch } = {}) {
-  const problems = [];
-  for (const link of links) {
-    if (!/^https?:/.test(link)) continue;
-    if (!external && !link.startsWith("https://github.com/x207-labs/")) continue;
-    const code = await status(link.split("#")[0], fetchFn);
-    if (code === 0 || code >= 400) problems.push(`${file}: ${link} answers ${code === 0 ? "no response" : code}`);
+/** A server that is busy or limiting us is not a dead link: 5xx, 429 and no response are tried again, after these delays. Any other 4xx fails at once. */
+export const RETRY_DELAYS_MS = [2000, 4000, 8000];
+const retryable = (code) => code === 0 || code === 429 || code >= 500;
+const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+
+export async function status(url, fetchFn, { delays = RETRY_DELAYS_MS, sleep = wait } = {}) {
+  let code = await statusOnce(url, fetchFn);
+  for (const ms of delays) {
+    if (!retryable(code)) break;
+    await sleep(ms);
+    code = await statusOnce(url, fetchFn);
   }
-  return problems;
+  return code;
+}
+
+/** At most `max` tasks at a time. */
+function limiter(max) {
+  let active = 0;
+  const queue = [];
+  const next = () => {
+    if (active >= max || queue.length === 0) return;
+    active++;
+    const { task, resolve: ok, reject } = queue.shift();
+    task().then(ok, reject).finally(() => {
+      active--;
+      next();
+    });
+  };
+  return (task) => new Promise((resolve, reject) => { queue.push({ task, resolve, reject }); next(); });
+}
+
+/** One request at a time to github.com (it answers 504 to a burst), four to any other host. */
+export const HOST_LIMITS = { "github.com": 1, default: 4 };
+
+/** Problems of absolute links given as `{ file, link }`, in the order given: a status of 400 or more (a 404 above all) after the retries. A URL that appears twice is asked once. */
+export async function checkUrls(entries, { external = false, fetchFn = fetch, delays = RETRY_DELAYS_MS, sleep = wait, limits = HOST_LIMITS } = {}) {
+  const runners = new Map();
+  const runnerOf = (host) => {
+    if (!runners.has(host)) runners.set(host, limiter(limits[host] ?? limits.default));
+    return runners.get(host);
+  };
+  const asked = new Map();
+  const codeOf = (link) => {
+    const url = link.split("#")[0];
+    if (!asked.has(url)) asked.set(url, runnerOf(new URL(url).host)(() => status(url, fetchFn, { delays, sleep })));
+    return asked.get(url);
+  };
+  const wanted = entries.filter(({ link }) => /^https?:/.test(link) && (external || link.startsWith("https://github.com/x207-labs/")));
+  const codes = await Promise.all(wanted.map(({ link }) => codeOf(link)));
+  return wanted.flatMap(({ file, link }, i) => (codes[i] === 0 || codes[i] >= 400 ? [`${file}: ${link} answers ${codes[i] === 0 ? "no response" : codes[i]}`] : []));
+}
+
+/** Problems of the absolute links of one file. `fetchFn`, `delays` and `sleep` are injectable for tests. */
+export function urlProblems(file, links, options = {}) {
+  return checkUrls(links.map((link) => ({ file, link })), options);
 }
 
 async function main(argv) {
@@ -86,13 +135,15 @@ async function main(argv) {
     return cache.get(p);
   };
   const problems = [];
+  const entries = [];
   let count = 0;
   for (const file of files) {
     const links = linksOf(readFileSync(join(root, file), "utf8"));
     count += links.length;
     problems.push(...relativeProblems(file, links, inTree, anchors));
-    if (!argv.includes("--offline")) problems.push(...(await urlProblems(file, links, { external: argv.includes("--external") })));
+    entries.push(...links.map((link) => ({ file, link })));
   }
+  if (!argv.includes("--offline")) problems.push(...(await checkUrls(entries, { external: argv.includes("--external") })));
   process.stdout.write(`${files.length} Markdown files, ${count} links\n`);
   for (const p of problems) process.stdout.write(`  ${p}\n`);
   process.stdout.write(problems.length === 0 ? "Every link resolves.\n" : `${problems.length} link(s) do not resolve.\n`);
