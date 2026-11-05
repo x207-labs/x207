@@ -1,6 +1,6 @@
 # Draft comment for x402-foundation/x402#4131: EVM keys sign the voucher (UM-167)
 
-Status on 2026-11-05: **a draft. Nothing is posted. The owner posts it.** Post it only if the issue is still open and the last comment does not already answer the point. Before posting, read the issue again and drop any sentence that repeats it.
+Status: **posted on 2026-11-05** as [issuecomment-6653355933](https://github.com/x402-foundation/x402/issues/4131#issuecomment-6653355933), with the text below. Post it only if the issue is still open and the last comment does not already answer the point. Before posting, read the issue again and drop any sentence that repeats it.
 
 Target: [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131), the proposal for a multi-party binding of the `batch-settlement` scheme on NEAR. The facts below are in [evm-agents.md](../evm-agents.md); the hashes are in [testnet-epochs/sd090-evm-agent-run.json](../testnet-epochs/sd090-evm-agent-run.json), checked by `npm run check:claims`.
 
