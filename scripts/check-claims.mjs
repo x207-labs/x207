@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 // UM-103: check CLAIMS.md. Every path in backticks must exist, every test id (TC-..., K-...) and every `fn name` must appear in a source
 // file of this repository, and every transaction hash must appear in a record of the repository (docs/*.json, docs/*.md, contracts/docs).
-// With --online each hash is also asked of the testnet RPC. Reads files only (and the RPC with --online); changes nothing.
+// With --online every transaction hash in CLAIMS.md, README.md and docs/ is also asked of the chain (NEAR testnet `tx`, Base Sepolia
+// `eth_getTransactionReceipt`, see online-hashes.mjs) and the run reports how many were checked, passed, failed and skipped (UM-190).
+// Reads files only (and the RPCs with --online); changes nothing.
 //
 // Usage: node scripts/check-claims.mjs [--root <umbrella dir>] [--file CLAIMS.md] [--online]
 // Exit code 0 when every reference resolves, 1 otherwise.
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { readFiles, verifyHashes } from "./online-hashes.mjs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -50,9 +53,19 @@ function searchIn(root, needle, globs = []) {
   return run("grep", ["-rIlF", ...exclude, "--", needle, ...present]);
 }
 
-async function txExists(hash) {
-  const res = await fetch("https://rpc.testnet.fastnear.com", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tx", params: { tx_hash: hash, sender_account_id: "x207-v013.testnet", wait_until: "NONE" } }) }).then((r) => r.json());
-  return !res.error || !/UNKNOWN_TRANSACTION|not found/i.test(JSON.stringify(res.error));
+/** Files whose hashes --online asks the chains about: the claims file, README.md and every .md/.json under docs/. */
+function docFiles(root, claims) {
+  const out = [claims];
+  if (existsSync(join(root, "README.md"))) out.push("README.md");
+  const walk = (dir) => {
+    for (const e of readdirSync(join(root, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${e.name}`;
+      if (e.isDirectory()) walk(rel);
+      else if (/\.(md|json)$/.test(e.name)) out.push(rel);
+    }
+  };
+  if (existsSync(join(root, "docs"))) walk("docs");
+  return [...new Set(out)];
 }
 
 async function main(argv) {
@@ -65,8 +78,14 @@ async function main(argv) {
     grep: (needle) => searchIn(root, needle),
     records: (hash) => searchIn(root, hash),
   });
-  if (argv.includes("--online")) for (const h of result.hashes) if (!(await txExists(h))) result.missing.push(`transaction ${h} is unknown to the testnet RPC`);
   process.stdout.write(`${file}: ${Object.entries(result.counts).map(([k, v]) => `${v} ${k}`).join(", ")}\n`);
+  if (argv.includes("--online")) {
+    const v = await verifyHashes(readFiles(docFiles(root, file), root));
+    process.stdout.write(`online: ${v.found} hash(es) found in the docs, ${v.checked} checked, ${v.passed} passed, ${v.failed} failed, ${v.skipped} skipped\n`);
+    for (const r of v.rows.filter((x) => x.status !== "passed")) process.stdout.write(`  ${r.status}: ${r.hash} (${r.chain}; ${r.paths.join(", ")}): ${r.reason}\n`);
+    for (const r of v.rows.filter((x) => x.status === "failed")) result.missing.push(`transaction ${r.hash} failed the online check: ${r.reason}`);
+    if (v.found > 0 && v.checked === 0) result.missing.push("online check could not verify any hash (every hash was skipped)");
+  }
   for (const m of result.missing) process.stdout.write(`  missing: ${m}\n`);
   process.stdout.write(result.missing.length === 0 ? "Every reference resolves.\n" : `${result.missing.length} reference(s) do not resolve.\n`);
   return result.missing.length === 0 ? 0 : 1;
