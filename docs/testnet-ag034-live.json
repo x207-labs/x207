@@ -1,0 +1,162 @@
+{
+  "network": "testnet",
+  "accounts": [],
+  "steps": [
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "98frAJYVTXmFRCtU4oo4YrWJLZAK4rmf9wQaFFga16Zp",
+      "at": "2026-11-05T14:56:00.265Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "DRS24ahdKTdEGDUUfmBVpq5AYPPheu9qyXsNw8Zj6okP",
+      "at": "2026-11-05T15:03:44.579Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "CgB3m2WVm4CGbdTs2VCZyQqzSV8TAYY8LeNJo4yNgReU",
+      "at": "2026-11-05T15:03:49.103Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "7tY9uNUsMYR21bFSoWmf9N2XEDPUv1DYGXQsDtU7DXRZ",
+      "at": "2026-11-05T15:03:53.074Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "aDJsDLMpbRQW1ZEccmPN5kTGnVu2ZZ8CnXe26CZXVdE",
+      "at": "2026-11-05T15:03:57.582Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "HS4pcy9UHWxCi7QtuGpzoSrjyTGp61FvmVuRmsVLTQ6u",
+      "at": "2026-11-05T15:04:01.544Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "GreyLTbvsk4UqTQWU4yRqiv6QZaY2GnFoctVMavD1YsW",
+      "at": "2026-11-05T15:04:05.887Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "FiErYaHUQkU5LiAZmaxP8k2QQzrxoEDvQszjX5cBh5Tb",
+      "at": "2026-11-05T15:04:10.154Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "4GwwmSrRVgMFQsGqXkNwav3KhbDNVdyqtEtU51LTsiYe",
+      "at": "2026-11-05T15:04:14.592Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "5auGwwWjxNnmH7qnsNSNq5FqEmyxAizvKmVvQGwzhsmz",
+      "at": "2026-11-05T15:04:19.048Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "6Rz3ov2wBcqrXyM6Ldoy5uZVsCHyYJoSvtSDbEjgB6pC",
+      "at": "2026-11-05T15:04:22.775Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "56NzTXZiVXMhoAqp8BbpT2wBKNPAm1xsAnU3yUo4DdYk",
+      "at": "2026-11-05T15:04:27.133Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "HFgoRqkEatf6bP4oALaHFHodYcb6BQXuf4s9G87Kqiof",
+      "at": "2026-11-05T15:04:31.283Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "HvyxyU4KtXomcvcbZKDra6vPPSMHvuejgYBfihwH3EN",
+      "at": "2026-11-05T15:04:39.249Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "7ySCvhyoA4noyWKvdbj4NZQbozjssmCVUn513nqLjbmC",
+      "at": "2026-11-05T15:04:43.555Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "2yLMjoTWEmz4RmJwMeswZFireKdTPTifohXKS1u8AHWK",
+      "at": "2026-11-05T15:06:03.090Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.submit_clearing",
+      "hash": "6A9WjRQw3h3Ju2CgHE29TQi1zioKCxQJVinjw1wSB1qC",
+      "at": "2026-11-05T15:06:09.232Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "EjbYyQD1bFAJKjVZzM22Li2sqgDG9EUDiqqx9H2tArLk",
+      "at": "2026-11-05T15:07:13.721Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.settle.ft_transfer_call",
+      "hash": "GjFJbJWj51p1f85qiEdEHT8fjMGx3h3mGrHsDLgMnVXH",
+      "at": "2026-11-05T15:07:20.177Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.settle.ft_transfer_call",
+      "hash": "EuomR3rSPKPXtuaWx7ugWu1EriGB9B7BhQ3KW6SbvGpA",
+      "at": "2026-11-05T15:07:25.465Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "BWC36fuoYMVw88hyHkZbD1Cajmt4mv4BaK97Vnxuyf7a",
+      "at": "2026-11-05T15:15:52.620Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "621CPkQ2diTG2HLohw144pedywTM4NyW8viG7QMYivgX",
+      "at": "2026-11-05T15:17:13.997Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "95YKuhNQXH2s6fqZCek7Hc4QiypNnFQgSXHzgeG8h6EG",
+      "at": "2026-11-05T15:19:49.705Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "G29Bgs9sc43DwgNoVvYgpLkooLSLXeW8cXutZSz95Kg6",
+      "at": "2026-11-05T15:22:26.313Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.claim.claim",
+      "hash": "335ata3u53gQFN31t7DUkadZ4c5kRKimUmtjeADSdcpm",
+      "at": "2026-11-05T15:22:31.920Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.claim.claim",
+      "hash": "FzzcE4YgFdy6c2bgbcv8PQWekyDU4FxtvDaT8jFUFtvv",
+      "at": "2026-11-05T15:22:37.138Z"
+    }
+  ]
+}

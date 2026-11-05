@@ -125,7 +125,22 @@ describe("demo real network", () => {
     log("== F1 onboarding");
     const outcomes = await onboardAgents({
       agents: AGENT_NAMES.map((n) => {
-        return { accountId: accounts[n], sendCall: createNearSender({ rpcUrl, accountId: accounts[n], secretKey: ownerKey(accounts[n]), onTx: stamp(n) }) };
+        const send = createNearSender({ rpcUrl, accountId: accounts[n], secretKey: ownerKey(accounts[n]), onTx: stamp(n) });
+        // AG-034: the public testnet RPC sometimes answers 429 or "Internal server error" after the transaction has landed. For the stake transfer, ask the contract
+        // whether the member is active before failing; otherwise the voucher key of a half-onboarded agent is lost.
+        const sendCall: typeof send = async (call) => {
+          try {
+            return await send(call);
+          } catch (error) {
+            if (call.methodName !== "ft_transfer_call") throw error;
+            await sleep(10_000);
+            const member = (await view("member", { account_id: accounts[n] })) as { status: string } | null;
+            if (member?.status !== "active") throw error;
+            log(`   ${n}: stake landed although the RPC answered: ${(error as Error).message.slice(0, 80)}`);
+            return undefined;
+          }
+        };
+        return { accountId: accounts[n], sendCall };
       }),
       circleContract: contract, circleId: process.env.CIRCLE_ID ?? "agents-main", termsHash: env("TERMS_HASH"), stakeAmount: env("STAKE_AMOUNT"),
       policy: loadSpendPolicy(resolve(env("SPEND_POLICY_FILE"))), view, keysDir, network, usdtTokenId: usdt, log,
