@@ -1,0 +1,56 @@
+name: Monitor boxd machine
+
+# UM-151: every 15 minutes check the read API, the hosted MCP and the keeper heartbeat (scripts/monitor-check.mjs).
+# A failure opens one issue labelled "monitor" (or adds a comment to the open one); the next green run closes it.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run checks
+        id: check
+        run: |
+          set +e
+          node scripts/monitor-check.mjs | tee monitor.log
+          echo "code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+      - name: Open or update the issue on failure
+        if: steps.check.outputs.code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body="$(printf 'Monitor run: %s/%s/actions/runs/%s\n\n```\n%s\n```\n\nSee docs/keeper-operations.md (Monitoring, Backup and restore).' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$(cat monitor.log)")"
+          gh label create monitor --color B60205 --description "boxd machine monitor" 2>/dev/null || true
+          number="$(gh issue list --label monitor --state open --json number --jq '.[0].number')"
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "$body"
+          else
+            gh issue create --title "boxd machine x207: a monitor check failed" --label monitor --body "$body"
+          fi
+      - name: Close the open issue when all checks pass
+        if: steps.check.outputs.code == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for number in $(gh issue list --label monitor --state open --json number --jq '.[].number'); do
+            gh issue close "$number" --comment "All checks pass again: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          done
+      - name: Fail the run when a check failed
+        if: steps.check.outputs.code != '0'
+        run: exit 1
