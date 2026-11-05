@@ -89,7 +89,7 @@ npm run demo:mcp      # an AI agent through the MCP tools on a local circle; abo
 npm run demo:swarm    # six agents trade for four epochs; the keeper and the solver clear each epoch on their own; about 5 minutes
 ```
 
-Measured on a clean clone on 2026-11-05 (macOS, Apple silicon, Node 26): clone, `npm ci` and build 45 seconds; `demo:quick` 3 min 43 s including the first downloads; `demo:mcp` 2 min 5 s; `demo:swarm` 4 min 45 s. The "5 minutes" of the heading is the first demo; all three together take about 11 minutes. Docker is not needed. The first run needs internet access to GitHub and `build.nearprotocol.com`. On Linux arm64 (Docker `node:22.22.2-trixie`, Node 22.22.2, npm 10.9.7): setup about 3 minutes (`better-sqlite3` is compiled), `demo:quick` 4 min 26 s, `demo:mcp` 2 min 8 s.
+Measured on a clean clone on 2026-11-05 (macOS, Apple silicon, Node 26): clone, `npm ci` and build 45 seconds; `demo:quick` 3 min 43 s including the first downloads; `demo:mcp` 2 min 5 s; `demo:swarm` 4 min 45 s. The "5 minutes" of the heading is the first demo; all three together take about 11 minutes. Docker is not needed. The first run needs internet access to GitHub and `build.nearprotocol.com`. Tested Node versions: 22.22.2 (the minimum, Linux arm64) and 26.11.1 (macOS). On Linux arm64 (Docker `node:22.22.2-trixie`, Node 22.22.2, npm 10.9.7): setup about 3 minutes (`better-sqlite3` is compiled), `demo:quick` 4 min 26 s, `demo:mcp` 2 min 8 s.
 
 Each demo fetches what it needs the first time: the wasm of the release v0.0.13 from GitHub (its sha256 is checked against the number written in this repository) and the near-sandbox 2.13.4 binary.
 
