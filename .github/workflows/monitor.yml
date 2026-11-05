@@ -1,6 +1,7 @@
 name: Monitor boxd machine
 
 # UM-151: every 15 minutes check the read API, the hosted MCP and the keeper heartbeat (scripts/monitor-check.mjs).
+# UM-172: it also reads the indexer lag of the v013, v014 and v015 APIs; a lag that does not shrink names the neardata cache (x207-neardata-cache) in the issue.
 # A failure opens one issue labelled "monitor", assigned to and mentioning the owner so GitHub notifies them (or adds a comment to the open one); the next green run closes it.
 # UM-157: "Run workflow" with api_url set to a wrong address is the test of the failure path.
 on:

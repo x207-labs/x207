@@ -18,7 +18,7 @@ Because the keeper finalizes every epoch at its `payment_deadline`, **a debtor t
 
 ## Monitoring (UM-151)
 
-The workflow [.github/workflows/monitor.yml](../.github/workflows/monitor.yml) runs `scripts/monitor-check.mjs` every 15 minutes on GitHub Actions (free, no secrets). It checks five things and, if any fails, opens one issue labelled `monitor` in this repository (later failures add a comment; the first green run closes the issue):
+The workflow [.github/workflows/monitor.yml](../.github/workflows/monitor.yml) runs `scripts/monitor-check.mjs` every 15 minutes on GitHub Actions (free, no secrets). It checks six things and, if any fails, opens one issue labelled `monitor` in this repository (later failures add a comment; the first green run closes the issue):
 
 | Check | Passes when |
 | --- | --- |
@@ -26,6 +26,7 @@ The workflow [.github/workflows/monitor.yml](../.github/workflows/monitor.yml) r
 | Indexer alive | The same `/healthz` shows `indexer.stale` false and `secondsSinceUpdate` at most 900. A halted indexer (on 2026-11-05 at 04:05 it stopped on a `set_params` event that named the nested field `fees.clearing_fee_bps`) leaves the API up and `db.ok` true while the dashboard freezes, so only this check sees it |
 | Read model epoch | `GET /x207/circles/agents-main/params` reports a `currentEpoch` at most 3 behind the epoch of the contract |
 | Hosted MCP | `initialize` on `https://mcp.x207.boxd.sh/mcp` answers a `serverInfo.name` |
+| Indexer lag of the three circle APIs (UM-172) | `GET /healthz` of `x207.boxd.sh`, `v014.x207.boxd.sh` and `v015.x207.boxd.sh` shows `indexer.lagBlocks` at most 300, or, when it is higher, a lag that is smaller 90 s later (a backend that is catching up). Since BE-098 the three backends read neardata only through the cache `x207-neardata-cache` (127.0.0.1:8099, `Restart=always`), so a dead cache stops all three indexers; a lag that does not shrink names the cache in the issue. On the machine: `curl localhost:8099/healthz` (`hits`, `upstream`, `errors`) and `sudo systemctl status x207-neardata-cache`; to bypass it set `X207_NEARDATA_URL=https://testnet.neardata.xyz` in `/etc/x207/backend*.env` |
 | Keeper heartbeat | The newest finalized epoch of `x207-v013.testnet` (read straight from NEAR RPC, so it does not depend on the machine) has a `payment_deadline` at most **2 × epoch_length + payment_window = 2 × 600 + 900 = 2100 s** ago. In normal running the keeper finalizes right after each `payment_deadline`, so the age stays under about 650 s; above 2100 s at least two epochs were missed |
 
 Each check retries three times, 5 s apart, before it counts as failed. Run it by hand with `node scripts/monitor-check.mjs` (exit code 1 on failure), or from the Actions tab with "Run workflow". GitHub pauses scheduled workflows in a repository after 60 days without activity; the circle is only needed until 2026-11-18, so this does not matter.

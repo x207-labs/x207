@@ -6,6 +6,7 @@
 //   3. keeper heartbeat: the newest finalized epoch on the circle contract (read straight from NEAR RPC, so it does not depend on the machine) has a
 //      payment_deadline younger than 2 * epoch_length + payment_window seconds (2 * 600 + 900 = 2100)
 //   4. read model follows the chain: the epoch the API reports (`/params` currentEpoch) is at most MAX_EPOCH_LAG behind the epoch of the contract
+//   5. indexer lag of the circle APIs v013, v014, v015: above MONITOR_MAX_LAG (300) blocks and not shrinking after 90 s fails, and the message names the cache `x207-neardata-cache` (UM-172)
 // Prints one line per check. Exit code 0 when all pass, 1 when any fails. No dependencies; needs Node 18 or newer.
 const API = process.env.MONITOR_API_URL || "https://x207.boxd.sh";
 const MCP = process.env.MONITOR_MCP_URL ?? "https://mcp.x207.boxd.sh/mcp";
@@ -107,6 +108,44 @@ try {
   }
 } catch (error) {
   report("keeper heartbeat", false, String(error.message ?? error));
+}
+
+// 5. (UM-172) indexer lag of every circle API on the machine. The three backends read neardata only through the cache `x207-neardata-cache` (127.0.0.1:8099 on the machine), so a dead cache stops all
+//    three indexers at once. This check sees it from outside: a lag above MAX_LAG blocks that does not shrink between two reads RECHECK seconds apart fails (a backend that is catching up shrinks and passes).
+const LAG_APIS = (process.env.MONITOR_LAG_APIS ?? "https://x207.boxd.sh,https://v014.x207.boxd.sh,https://v015.x207.boxd.sh").split(",").map((u) => u.trim()).filter(Boolean);
+const MAX_LAG = Number(process.env.MONITOR_MAX_LAG ?? 300);
+const RECHECK_SECONDS = Number(process.env.MONITOR_LAG_RECHECK_S ?? 90);
+const readLag = async (base) => {
+  const health = await withRetry(async () => {
+    const response = await fetch(`${base}/healthz`, { signal: AbortSignal.timeout(20_000) });
+    if (response.status !== 200) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  });
+  return Number(health.indexer?.lagBlocks);
+};
+const lagHint = "the three indexers read neardata through x207-neardata-cache: on the machine run `curl localhost:8099/healthz` and `sudo systemctl status x207-neardata-cache` (docs/keeper-operations.md)";
+const first = new Map();
+for (const base of LAG_APIS) {
+  try {
+    first.set(base, await readLag(base));
+  } catch (error) {
+    report(`indexer lag ${base}`, false, `${String(error.message ?? error)}; ${lagHint}`);
+  }
+}
+const behind = [...first].filter(([, lag]) => !(lag <= MAX_LAG));
+if (behind.length > 0) await new Promise((resolve) => setTimeout(resolve, RECHECK_SECONDS * 1000));
+for (const [base, lag] of first) {
+  if (lag <= MAX_LAG) {
+    report(`indexer lag ${base}`, true, `${lag} blocks (limit ${MAX_LAG})`);
+    continue;
+  }
+  try {
+    const second = await readLag(base);
+    const shrinking = second < lag;
+    report(`indexer lag ${base}`, shrinking, `${lag} blocks, ${RECHECK_SECONDS} s later ${second} (limit ${MAX_LAG})${shrinking ? ", catching up" : `, not shrinking: ${lagHint}`}`);
+  } catch (error) {
+    report(`indexer lag ${base}`, false, `${String(error.message ?? error)}; ${lagHint}`);
+  }
 }
 
 if (failures.length > 0) {
