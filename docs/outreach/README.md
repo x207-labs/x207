@@ -24,7 +24,7 @@ Only these. Each is in [what-has-run.md](../what-has-run.md) or [join-the-circle
 ## Before sending
 
 1. Run `npm run metrics:adoption` and update any number a text quotes if it changed.
-2. The npm package `@x207/mcp` is at 0.0.3 in the repository, in [adoption.md](../adoption.md) and in the Official MCP Registry. Check `npm view @x207/mcp version` and make the texts agree with it.
+2. The npm package `@x207/mcp` is at 0.0.4 in the repository, in [adoption.md](../adoption.md) and in the Official MCP Registry. Check `npm view @x207/mcp version` and make the texts agree with it.
 3. The pull request texts below name the repository `x207-labs/sdk`. Check that it is still public.
 4. Each pull request text is one pull request for one line. Do not bundle targets.
 5. **Account rule of the x402 repository:** its CONTRIBUTING asks for human review of AI-written pull requests. The texts here were drafted by an AI session; read them and own them before they go out under the owner's name.

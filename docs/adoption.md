@@ -9,7 +9,7 @@ Measure the effect with `npm run metrics:adoption` (repositories, npm downloads,
 | Step | State |
 | --- | --- |
 | Public repositories | the seven product repositories are public |
-| npm packages | `@x207/mcp` 0.0.3, `@x207/core` 0.0.1, `@x207/scheme` 0.0.1 are on npm |
+| npm packages | `@x207/mcp` 0.0.4, `@x207/core` 0.0.1, `@x207/scheme` 0.0.1 are on npm |
 | Proposal to the x402 Foundation | issue [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131), open; draft in [x402-binding-issue.md](x402-binding-issue.md). The spec is in [`sdk/spec`](https://github.com/x207-labs/sdk/blob/main/spec/scheme_batch_settlement_x207.md); a spec-only pull request is planned after a maintainer answers |
 
 ## Targets
@@ -18,7 +18,7 @@ Order of effort, lowest first. "Owner" means the person who holds the GitHub, np
 
 | # | Channel | Does it take submissions? | Steps | Who | Blocked by |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Official MCP Registry (registry.modelcontextprotocol.io), preview | Yes, free | **Done 2026-11-04:** `io.github.x207-labs/x207-mcp` 0.0.3 is `active` ([query](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.x207-labs/x207-mcp)), with the npm package `@x207/mcp` 0.0.3 and the hosted Streamable HTTP endpoint. Published by the workflow [publish-mcp-registry.yml](https://github.com/x207-labs/sdk/blob/main/.github/workflows/publish-mcp-registry.yml) with GitHub OIDC; the interactive `mcp-publisher login github` cannot publish under an organization namespace | Owner (dispatches the workflow for a new version) | none |
+| 1 | Official MCP Registry (registry.modelcontextprotocol.io), preview | Yes, free | **Done 2026-11-05 (0.0.3 on 2026-11-04):** `io.github.x207-labs/x207-mcp` 0.0.4 is `active` ([query](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.x207-labs/x207-mcp)), with the npm package `@x207/mcp` 0.0.4 and the hosted Streamable HTTP endpoint. Published by the workflow [publish-mcp-registry.yml](https://github.com/x207-labs/sdk/blob/main/.github/workflows/publish-mcp-registry.yml) with GitHub OIDC; the interactive `mcp-publisher login github` cannot publish under an organization namespace | Owner (dispatches the workflow for a new version) | none |
 | 2 | PulseMCP | Submissions are paused; it says it will pick up Official Registry entries. Checked | Nothing to do beyond row 1 | none | row 1 |
 | 3 | awesome-mcp-servers (`punkpeye/awesome-mcp-servers`) | Yes, a pull request. Checked (CONTRIBUTING) | **PR open since 2026-11-05:** [punkpeye/awesome-mcp-servers#18606](https://github.com/punkpeye/awesome-mcp-servers/pull/18606), one line under Finance & Fintech; text in [outreach/awesome-mcp-servers.md](outreach/awesome-mcp-servers.md) | Owner | a maintainer's review; fits `@x207/mcp` because it is a public repository |
 | 4 | Glama (glama.ai/mcp/servers) | It indexes GitHub repositories; an "Add Server" button and a claim flow exist. Partly checked: the help text could not be read | Add or claim the server | Owner | none known |

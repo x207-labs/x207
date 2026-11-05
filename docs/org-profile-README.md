@@ -31,7 +31,7 @@ On NEAR testnet, in the circle `x207-v013.testnet` (contract release v0.0.13), a
 ## Try it
 
 1. Open the [dashboard](https://x207-dashboard.vercel.app): read-only, no account.
-2. Ask an AI client about the circle through the [MCP server](https://github.com/x207-labs/x207/blob/main/docs/mcp.md): hosted and read-only, or `npx -y @x207/mcp` (0.0.3), also in the Official MCP Registry as `io.github.x207-labs/x207-mcp`.
+2. Ask an AI client about the circle through the [MCP server](https://github.com/x207-labs/x207/blob/main/docs/mcp.md): hosted and read-only, or `npx -y @x207/mcp` (0.0.4), also in the Official MCP Registry as `io.github.x207-labs/x207-mcp`.
 3. Or run everything on your machine in a local sandbox: `npm run demo:quick` in the [umbrella](https://github.com/x207-labs/x207#run-it-locally-5-minutes).
 
 ## Repositories

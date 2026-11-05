@@ -6,7 +6,7 @@ Proof on NEAR testnet (circle x207-v013.testnet, contract 0.0.13): in a realisti
 
 How NEAR fits in: a Rust contract (x207-circle), mock NEP-141 USDT, x402 on NEAR, Sputnik DAO for parameters, NEAR Intents for the residual payment, and an MCP server so an AI agent can read the circle and, with a key it holds, join and pay. The residual batch through the real Intents contract ran only in near-sandbox.
 
-Try it: hosted dashboard, read API and remote MCP server (@x207/mcp 0.0.3, also in the MCP Registry); npm run demo:quick runs it all locally, no account.
+Try it: hosted dashboard, read API and remote MCP server (@x207/mcp 0.0.4, also in the MCP Registry); npm run demo:quick runs it all locally, no account.
 
 Limits: it burns more gas than plain transfers unless a pair trades about 3 to 4 times per epoch, a member locks a stake of at least 125% of its debt, and it helps only where debts go in cycles (measured x402 traffic on Base is mostly star-shaped: arXiv:2607.12575).
 
