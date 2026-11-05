@@ -15,7 +15,7 @@ An agent that lives on an EVM chain keeps its `0x` key, its wallet and its USDC 
 ## Where v0.0.13 stops
 
 - A voucher is checked with `env::ed25519_verify` over the NEP-413 hash and the member's `pubkey_voucher`. `join` refuses any key that is not ed25519 (`ERR_BAD_PUBKEY`).
-- A member is keyed by its NEAR `AccountId`, and the caller of `join` is the member itself. `register_*`, `commit_bundle` and the stake and settle calls can already be relayed; `join`, `claim`, `request_exit` and `withdraw_stake` need the member as the caller.
+- A member is keyed by its NEAR `AccountId`, and the caller of `join` is the member itself. `register_*`, `commit_bundle` and the stake and settle calls can already be relayed; `join`, `claim`, `request_exit`, `withdraw_stake` and `set_auto_settle` need the member as the caller.
 - The SDK has only an ed25519 signer.
 
 ## Design (draft)
@@ -42,6 +42,7 @@ An agent that lives on an EVM chain keeps its `0x` key, its wallet and its USDC 
 | `claim` | the epoch claimed | the payout account | "" | the signer's nonce |
 | `request_exit` | 0 | "" | "" | the signer's nonce |
 | `withdraw_stake` | 0 | the payout account | "" | the signer's nonce |
+| `auto_settle` (on) / `auto_settle_off` (off) | 0 | "" | "" | the signer's nonce |
 
 `deadline` is in milliseconds and holds while `block_timestamp_ms <= deadline`. The nonce starts at 0 after `join_evm` and rises by one for each successful action.
 
@@ -53,6 +54,7 @@ An agent that lives on an EVM chain keeps its `0x` key, its wallet and its USDC 
 | `claim_evm(member, epoch, receiver, nonce, deadline, signature)` | The payout goes to `receiver`, any NEAR account the agent signed. On mainnet this would be the NEAR Intents contract through `ft_transfer_call`, which credits the id `0x…`; the agent then withdraws to Base through Intents. On testnet it is an ordinary NEAR account. |
 | `request_exit_evm(member, nonce, deadline, signature)` | |
 | `withdraw_stake_evm(member, receiver, nonce, deadline, signature)` | The Intents contract is refused as a receiver. |
+| `set_auto_settle_evm(member, enabled, nonce, deadline, signature)` | Turns settling from the stake on or off for an EVM member; see [the section below](#settling-from-the-stake-opt-in-ct-108). |
 
 The argument `member` names whose action it is, so a relayer can send it. The view `evm_signer(account_id)` returns `{ address, sponsor, nonce }` or null. New errors: `ERR_BAD_EVM_SIG`, `ERR_EVM_NONCE`, `ERR_EVM_EXPIRED`, `ERR_NOT_EVM_MEMBER`, `ERR_BAD_EVM_ADDRESS`, `ERR_BAD_EVM_RECEIVER`; a failed check inside a bundle uses `ERR_BUNDLE_SIGNATURES`.
 
@@ -67,25 +69,26 @@ The argument `member` names whose action it is, so a relayer can send it. The vi
 
 Status: **in contract 0.0.15, on `x207-v015.testnet`; checked by unit tests and a security review, not yet by a run on chain.** The run on testnet (SD-094) has no hashes yet: `TODO(SD-094)`. Until it has, this section describes what the contract does, not something that was seen to work on testnet. Source: [contracts/docs/evm-agents.md](https://github.com/x207-labs/contracts/blob/main/docs/evm-agents.md) and the [security review](https://github.com/x207-labs/contracts/blob/main/docs/security-review-auto-settle.md).
 
-**What it is.** A member that opts in and does not pay its `due` in the payment window has the `due` taken from its own stake by `finalize_epoch`. The member stays `active`: no `member_defaulted`, no suspension, no reset of its history. The position goes from `due` to `paid` and creditors claim in full. It is off by default.
+**What it is.** A member that opts in and does not pay its `due` in the payment window has the `due` taken from its own stake by `finalize_epoch`. The member stays `active`: no `member_defaulted`, no suspension, no limit set to 0. The position goes from `due` to `paid`, and creditors claim in full unless another debtor of that epoch defaults with a shortfall (the pool is then shared pro rata). Settling from the stake does not raise `settled_history`; only a cash settlement does. A default does not reset `settled_history` either: it takes the stake, sets the limit to 0 and suspends the member. It is off by default.
 
 | Item | What it does |
 | --- | --- |
-| `set_auto_settle(enabled)` | A NEAR member turns it on or off. It needs 1 yocto, so a function-call access key cannot switch it off. Errors: `ERR_NOT_MEMBER`, `ERR_MEMBER_EXITED` |
-| `set_auto_settle_evm(member, enabled, nonce, deadline, signature)` | The same for an EVM member; anyone relays it, the signature of the `0x` key is the gate. The signed action is `auto_settle` (on) or `auto_settle_off` (off), so a signed "on" cannot be replayed as "off" |
+| `set_auto_settle(enabled)` | A NEAR member turns it on or off. It needs 1 yocto, so a function-call access key cannot switch it off. Errors: `ERR_NOT_MEMBER`, `ERR_MEMBER_EXITED`, and the 1 yocto check of NEAR |
+| `set_auto_settle_evm(member, enabled, nonce, deadline, signature)` | The same for an EVM member; anyone relays it, the signature of the `0x` key is the gate. The signed action is `auto_settle` (on) or `auto_settle_off` (off), so a signed "on" cannot be replayed as "off". Errors: `ERR_NOT_MEMBER`, `ERR_MEMBER_EXITED`, `ERR_NOT_EVM_MEMBER`, `ERR_EVM_NONCE`, `ERR_EVM_EXPIRED`, `ERR_BAD_EVM_SIG` |
 | `is_auto_settle(account_id)` | View: is the flag on |
 | Events | `auto_settle_set { account_id, enabled }`; `auto_settled { epoch, account_id, due, stake, status: "active", position_status: "paid", outstanding_debt }`, written by `finalize_epoch` |
 
 **The rule at `finalize_epoch`.** For a debtor whose `due` is unpaid, the contract pays from the stake only if all of these hold: the flag is on; the member is `active`; its free stake (stake minus a locked bond) is at least the `due`; and the flag was set at or before `committed_at` of that epoch. If one fails, nothing partial happens and the usual default path runs unchanged. The stake shrinks by the `due`, so the next credit limit follows it.
 
-**Why the time rule.** Without it a member could miss its `due`, wait until the payment window is closed, and only then opt in, which would turn a default into a stake-paid settlement and remove the penalty (finding M1 of the review, fixed in 0.0.15). An opt-in after the commit counts from the next epoch. This differs from the backlog row, which said "opt in at `join_evm`": the flag is a toggle that can be set at any time.
+**Why the time rule.** Without it a member could miss its `due`, wait until the payment window is closed, and only then opt in, which would turn a default into a stake-paid settlement and remove the penalty (finding M1 of the security review, fixed in 0.0.15). An opt-in after the commit counts from the next epoch. The opt-in is a toggle that can be set at any time, not tied to `join_evm`.
 
 **Limits.**
 - It moves the `due` from the member's own stake. It does not create credit and it does not save cash for the creditors; they are paid either way (from the debtor's cash or from its stake).
 - A member whose free stake is below the `due` still defaults, as before.
 - A member that was suspended and reactivated, and that no call has touched yet, can still be defaulted as before (finding L1, accepted and documented).
+- A frozen member is still auto-settled. A `pending` or `suspended` member may set the flag, but it has no effect until the member is `active`.
 - When the event log is full, `auto_settled` can be left out; `list_positions` then shows the position as `paid`, and a note line says how many events were left out. On chain, a stake-paid `paid` and a cash `paid` look the same without the event.
-- Gas measured in a unit test: `finalize_epoch` with 64 members, 63 of them auto-settled, 76.9 Tgas. That is a test, not a testnet run.
+- Gas measured in a unit test: `finalize_epoch` with 64 members, 63 of them auto-settled, about 77 Tgas. That is a test, not a testnet run.
 
 ## Money from and to EVM
 
@@ -110,7 +113,7 @@ Open points we have not checked: the fees and minimums of the route (a small pay
 An EVM agent holds no NEAR token, so someone else sends its transactions and pays their gas. In the planned design:
 
 - **Join.** The caller of `join_evm` is the `sponsor` and pays the storage deposit, at least 0.35 NEAR. On exit the refund of that deposit goes back to the sponsor, not to the agent.
-- **Gas.** The relayer pays the gas of every `*_evm` call (`claim_evm`, `request_exit_evm`, `withdraw_stake_evm`) and of the relayed voucher registrations. Today that relayer is the team's account on testnet.
+- **Gas.** The relayer pays the gas of every `*_evm` call (`claim_evm`, `request_exit_evm`, `withdraw_stake_evm`, `set_auto_settle_evm`) and of the relayed voucher registrations. Today that relayer is the team's account on testnet.
 - **Fee.** There is none. The clearing fee and the solver fee are 0 since epoch 48 ([governance-live.md](governance-live.md)), and the contract has no relayer fee, so a relayer earns nothing from relaying. A third party has no reason to run one until a fee exists.
 - **Sybil limit.** Anyone can create `0x…` addresses for free, and each one costs the sponsor 0.35 NEAR to join, so a sponsor that pays for strangers can be drained. The tool the circle has is its admission mode: `x207-v013.testnet` has `admission` open; with admission set to DAO, a new member needs a DAO vote through `admit_member`. A stake is also required to get any limit, and a member without a stake can owe nothing.
 - **Open questions:** whether a relayer may take a fee from the agent's payout, and whether the sponsor deposit should be charged to the agent's stake. Neither is decided.
@@ -126,7 +129,7 @@ Every item below is **not built and not tested**. They are the routes we know of
 | Reputation export | Export a member's settlement history as an ERC-8004 reputation through Chain Signatures | not built |
 | Solana agents | A signature scheme for Solana keys (`raw_ed25519`) next to ed25519 and EIP-712 | not built |
 | On-chain actions by an EVM agent through NEP-518 | The eth-implicit account route (`rlp_execute`): spending the payout is proven on testnet (SD-095, hashes in the table above); calling the circle contract itself (join, stake, vouchers) through it is not tested | partly proven |
-| Settlement from the stake for EVM members | An opt-in settle from the stake, so that an agent that cannot send a NEAR transaction is not suspended when it misses the payment window | not built; needs a contract change and the owner's decision |
+| Settlement from the stake for EVM members | An opt-in settle from the stake, so that an agent that cannot send a NEAR transaction is not suspended when it misses the payment window | built in 0.0.15 (see above); demo run pending |
 
 ## What it will not do
 
