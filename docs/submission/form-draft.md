@@ -16,7 +16,7 @@ Numbers below are the ones of the README and of the hosted read API on 2026-11-0
 | `nearAddress` | FILL: the prize account; the hackathon rules ask for a NEAR **mainnet** account (`name.near` or a 64-character implicit account) that the team makes in any wallet. Not `x207-v013.testnet`, not an account of the project keys | owner |
 | `projectUrl` | `https://github.com/x207-labs/x207` (the umbrella repository; the six product repositories are its submodules and are public too: `contracts`, `sdk`, `backend`, `frontend`, `solver`, `agents`) | ready |
 | `demoUrl` | FILL: the public post on X that the owner publishes (draft in [x-post.md](x-post.md)) | owner |
-| `idea` | the text of [idea.txt](idea.txt), 1,995 characters (limit 20 to 2,000) | ready |
+| `idea` | the text of [idea.txt](idea.txt), 1,992 characters (limit 20 to 2,000) | ready |
 | `consent` | `true` only after the owner has read the notice: "I agree that the organizers may use these details to review our submission and contact us about this hackathon." | owner |
 | `website` | **never send it** (spam trap: any value rejects the submission) | |
 
@@ -38,20 +38,20 @@ Numbers below are the ones of the README and of the hosted read API on 2026-11-0
 | Statement | Value | Source |
 | --- | --- | --- |
 | Vouchers in the epoch | 24, worth 41.35 credit, among 15 participants | `/epochs/8/metrics`: `voucherCount`, `totalVoucherValue`, `graph.participants` |
-| Cancelled by the clearing | 21.8 credit (ratio 0.527) | `cleared`, `clearedRatio` |
-| Left as residual obligations | 19.55 credit | `debtAfter` |
-| What those residuals net to | 7.75 USDT due from six debtors: five paid 7.2 USDT, and the 0.55 of `m06`, which did not pay, was taken from its stake | `netDebt`; `docs/testnet-0.0.13-realistic.json` (`positions.debtors`, `finalize.defaulted`) |
+| Cancelled by cycle clearing (gross obligations; does not change who pays what) | 21.8 credit (ratio 0.527) | `cleared`, `clearedRatio` |
+| Gross obligations left after cycle clearing | 19.55 credit | `debtAfter` |
+| What multilateral netting moved (the cash saving, independent of the solver: epoch 16 had a cycle of 8 credit, `cleared` 0, every net 0, no payment) | 7.75 USDT due from six debtors: five paid 7.2 USDT, and the 0.55 of `m06`, which did not pay, was taken from its stake | `netDebt`; `docs/testnet-0.0.13-realistic.json` (`positions.debtors`, `finalize.defaulted`) |
 | `residualTransfers` | 14 = six members paying in and eight claiming out (members with a net position), not 14 payments | `residualTransfers` |
 | Load test | epoch 2: a complete graph of 210 obligations among 15 participants, cleared in four transactions (`close_epoch`, `submit_clearing`, `commit_epoch`, `finalize_epoch`) | `contracts/docs/gas-and-cost.md` |
 | Local `demo:quick` | 120 payments became 6, cleared ratio 0.6333, one clearing transaction (sandbox, not testnet) | output of `npm run demo:quick` on a clean clone, 2026-11-04 |
 
-Say "21.8 cancelled, 19.55 left, netting to 7.75 USDT due, of which five debtors paid 7.2 and 0.55 came from the stake of the one that defaulted". Do not say "half of the credit never moves": 7.75 of 41.35 credit is due as USDT (18.7%), 7.2 of it was paid by debtors, and 21.8 is the part cancelled.
+Say "netting settled 41.35 of obligations with 7.75 USDT due, of which five debtors paid 7.2 and 0.55 came from the stake of the one that defaulted; separately, cycle clearing cancelled 21.8 of the gross obligations". Never say that clearing reduced the cash: the 7.75 is the net position and does not depend on the solver. Do not say "half of the credit never moves": 7.75 of 41.35 credit is due as USDT (18.7%).
 
 What has not run, and must not be implied: any mainnet transaction, NEAR Intents on testnet (`intents.testnet` has no code; the residual batch ran against the real Intents wasm in `near-sandbox`), a real wallet through NEAR Connect on the dashboard, the TEE broker, a proof by a third party outside the team.
 
 ## Story of the submission (UM-139)
 
-Background, then problem, then x207, then limits, in this order in the video, the post and the idea text. The word is **clearing**, not credit: a member locks one stake, the limit is at most that stake, and the clearing cancels debt cycles so that only the residual moves. Evidence of the problem is in the spikes of [spikes/README.md](../../spikes/README.md) (run on 2026-11-04) and in sources read on that day: arXiv:2607.12575 (21.20% fictitious, 63.78% internal, star-shaped), American Banker 2026-09-18 (daily volume about 800 thousand to about 40 thousand dollars), [problem-and-gap.md](../problem-and-gap.md). Not claimed anywhere: saving gas, credit without cash, mainnet, outside users.
+Background, then problem, then x207, then limits, in this order in the video, the post and the idea text. The word is **clearing**, not credit: a member locks one stake, the limit is at most that stake, and the contract nets the positions so that only the net moves; cycle clearing cancels debt cycles in the gross record, which does not change what anyone pays in the MVP. Evidence of the problem is in the spikes of [spikes/README.md](../../spikes/README.md) (run on 2026-11-04) and in sources read on that day: arXiv:2607.12575 (21.20% fictitious, 63.78% internal, star-shaped), American Banker 2026-09-18 (daily volume about 800 thousand to about 40 thousand dollars), [problem-and-gap.md](../problem-and-gap.md). Not claimed anywhere: saving gas, credit without cash, mainnet, outside users.
 
 ## Tracks
 

@@ -25,7 +25,7 @@ Multilateral clearing for agent payments on NEAR, with a stake-bound limit. Hack
 ## The solution
 
 - Agents in a **circle** lock one stake each and pay with signed vouchers over the normal x402 flow. A voucher is a cumulative promise per pair and epoch, so 120 calls become 12 on-chain registrations, not 120 transactions. That saves gas only when a pair trades about 3 to 4 times or more per epoch (docs/gas-epoch8-vs-transfers.md).
-- At the end of each epoch a **solver** removes debt cycles across all members in one on-chain clearing. Only net positions are settled in USDT.
+- At the end of each epoch the contract **nets** every member's position in one on-chain step, and only net positions are settled in USDT; that is where the cash saving comes from. An open **solver** also removes debt cycles from the gross obligations. In the MVP that does not change who pays what (net positions do not change when a cycle is removed); it shrinks the record of gross obligations and is the basis for loss allocation on a default and for clearing across circles (roadmap).
 - The limit comes from stake (at most the stake), so it is not credit without cash. A default is covered from the stake of the defaulter.
 
 Source for the registration count: our sandbox run `npm run demo:sandbox`, 120 paid calls, `medium` density (docs/sandbox-demo.md).
@@ -47,7 +47,7 @@ x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and a
 
 ---
 
-## Does clearing really save anything?
+## Does netting really save anything?
 
 | Evidence | Result | Source |
 | --- | --- | --- |
@@ -56,14 +56,14 @@ x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and a
 | Our sandbox, `low` density, 60 calls | cleared ratio 0.5, 5 residual payments | same |
 | Star-shaped payment graph (everyone pays one hub) | 0, no cycle | `docs/relief-curve.md` (synthetic graphs) |
 
-The sandbox circle is dense on purpose (ADR-16). These are properties of the mechanism on those graphs, not an estimate of any market.
+The cash saving is the netting of positions and does not need the solver: in epoch 16 of the testnet circle five vouchers of 8 credit went round one cycle, `cleared` was 0, every net position was 0 and nobody paid. Cycle clearing (21.8 of the gross obligations in epoch 8) does not change what anyone pays in the MVP. The sandbox circle is dense on purpose (ADR-16). These are properties of the mechanism on those graphs, not an estimate of any market.
 
 ---
 
 ## Market reality, stated plainly
 
 - Agent payment volume is small. Chainalysis counted more than 100 million agentic transactions on Base up to Q1 2026 and concluded that mass adoption remains distant; analyses that filter wash trading (a16z, TRM Labs) reduce the headline figures sharply. Source: the project research report, summarized in README section 8; the figures are quoted from those reports, not measured by us.
-- Real payment graphs are star-shaped with few cycles, so clearing helps little there.
+- Real payment graphs are star-shaped with few cycles, so netting and clearing help little there.
 - x207 does not create demand. It lowers the cost of small payments between agents that already trade with each other, and it adds barter where money is not the natural unit.
 
 ---

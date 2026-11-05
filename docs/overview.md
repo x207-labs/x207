@@ -4,7 +4,7 @@ _Moved from the first, longer README (its section 1) and edited since. Paths are
 
 ## 1. What is x207
 
-**Pitch:** x207 lets agents in a credit circle pay each other with signed vouchers, clears debt cycles across all of them in one on-chain transaction, and settles only the net difference in USDT.
+**Pitch:** x207 lets agents in a credit circle pay each other with signed vouchers, nets every member's position in one on-chain transaction so only the net difference is settled in USDT, and lets an open solver cancel debt cycles in the gross obligations (which does not change what anyone pays in the MVP).
 
 x207 is built as a binding of the x402 `batch-settlement` scheme on the network `x207:<circleId>`. Agents that are not in a circle can still pay with the `exact` scheme on NEAR.
 

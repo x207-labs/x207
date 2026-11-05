@@ -1,6 +1,6 @@
 # Gas of epoch 8 against 24 plain token transfers (UM-125)
 
-An honest comparison, with numbers from the chain. Epoch 8 of the circle `x207-v013.testnet` is the realistic epoch (UM-106, [testnet-0.0.13-realistic.json](testnet-0.0.13-realistic.json)): 24 vouchers between 15 members, 41.35 credit of obligations, 21.8 credit cancelled by the clearing, 19.55 left, 7.75 USDT due from six debtors (five paid 7.2, one defaulted and 0.55 came from its stake). The comparison asks: what would it cost on NEAR to settle the same 24 payments with 24 plain `ft_transfer` calls, one per voucher, instead?
+An honest comparison, with numbers from the chain. Epoch 8 of the circle `x207-v013.testnet` is the realistic epoch (UM-106, [testnet-0.0.13-realistic.json](testnet-0.0.13-realistic.json)): 24 vouchers between 15 members, 41.35 credit of obligations, multilateral netting leaves 7.75 USDT due from six debtors (separately, the solver cancelled 21.8 credit of the gross obligations, 19.55 left, which does not change what anyone pays) (five paid 7.2, one defaulted and 0.55 came from its stake). The comparison asks: what would it cost on NEAR to settle the same 24 payments with 24 plain `ft_transfer` calls, one per voucher, instead?
 
 **Result in one line: x207 does not save gas. It burns more NEAR gas than 24 plain transfers; what it saves is the value that has to move.** Gas on testnet is cheap either way (a few thousandths of a NEAR); the point of clearing is the money, not the Tgas.
 
@@ -25,7 +25,7 @@ Read it this way: the four steps of the clearing alone (47.1 Tgas) are close to 
 | --- | --- | --- |
 | Value that moves as tokens | **7.75 USDT** due (7.2 paid, 0.55 from stake) of 41.35 credit of obligations | **41.35** (the whole amount, 24 times) |
 | Token transfers | 5 in from debtors, up to 8 out to creditors (3 claimed in the run) | 24 |
-| Liquidity the payers need | only the residual, after 21.8 credit was cancelled | the full amount of each payment, before the service is given |
+| Liquidity the payers need | only the net position, 7.75 in total after netting (the 21.8 credit the solver cancelled of the gross obligations does not change it) | the full amount of each payment, before the service is given |
 | A payer that does not pay | its stake covers it (0.55 in the run); the other creditors are paid | that payee is not paid; nothing covers it |
 
 So the claim that is supported: clearing moved 81% less value (7.75 of 41.35) in at most 13 token transfers instead of 24. The claim that is not supported: that it is cheaper in gas. It is not.
@@ -47,7 +47,7 @@ The exit to another chain has a fixed cost too. [spikes/s4-crosschain-minimums.m
 | USDC on Base | 0.007583 arrives (24.2% lost) | 0.097469 (2.5%) | 0.996529 (0.3%) | 4.990736 (0.2%) |
 | USDT on Tron | refused, minimum about 1.89 | refused | refused | 4.126108 (17.5% lost) |
 
-A cross-chain payment of a few cents can lose a quarter of its value or be refused, and x207 sends only the residual, not each call. In epoch 8 that was 7.75 USDT for six debtors. Fees and minimums change from day to day, and paying several debtors in one `execute_intents` has run only in `near-sandbox`, not on testnet ([what-has-run.md](what-has-run.md)).
+A cross-chain payment of a few cents can lose a quarter of its value or be refused, and x207 sends only the net position, not each call. In epoch 8 that was 7.75 USDT for six debtors. Fees and minimums change from day to day, and paying several debtors in one `execute_intents` has run only in `near-sandbox`, not on testnet ([what-has-run.md](what-has-run.md)).
 
 ## Method
 1. **A, from the chain.** The 36 transactions of epoch 8 are the steps of the realistic run recorded in `docs/testnet-0.0.13-realistic.json` (hashes and names only). Each was read with the RPC method `tx` (`wait_until: FINAL`) and its gas burnt and tokens burnt were summed over the transaction outcome and every receipt outcome. The result, with every hash, is [gas-epoch8.json](gas-epoch8.json). None of them failed. The `mint` calls that gave the debtors mock USDT are left out: they exist only because the token is a testnet mock.
