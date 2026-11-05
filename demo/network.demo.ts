@@ -35,7 +35,7 @@ import { createNearAiClient } from "../agents/shared/nearai.ts";
 import { AGENT_NAMES, AGENTS, type AgentName } from "../agents/shared/registry.ts";
 import { createAgentBuyer, createSellerPaywall } from "../agents/shared/x207.ts";
 import { runBarterRing } from "./barter-step.ts";
-import { recordStep } from "../sdk/test-support/demo-record.ts";
+import { recordAccounts, recordStep } from "../sdk/test-support/demo-record.ts";
 import { Account, JsonRpcProvider, KeyPair, KeyPairSigner } from "../sdk/node_modules/near-api-js/lib/index.js";
 import { keeperPass } from "../scripts/lib/keeper.mjs";
 import { serveWeb } from "../agents/test/helpers.ts";
@@ -103,6 +103,17 @@ describe("demo real network", () => {
     if (defaulter && !AGENT_NAMES.includes(defaulter)) throw new Error(`DEMO_DEFAULT must be one of ${AGENT_NAMES.join(", ")}`);
     // X207_DEMO_RECORD=<file>: every hash goes to that JSON file as soon as it exists (docs/testnet-demo.json), never keys.
     const record = process.env.X207_DEMO_RECORD;
+    // The sender of each hash is needed to check it online (check:claims --online): list the accounts of the run, never keys.
+    if (record) {
+      recordAccounts(record, [
+        { id: contract, role: "circle contract" },
+        { id: usdt, role: "USDT token" },
+        { id: env("KEEPER_ACCOUNT_ID"), role: "keeper" },
+        { id: env("SOLVER_ACCOUNT_ID"), role: "solver" },
+        { id: env("RELAYER_ACCOUNT_ID"), role: "relayer" },
+        ...AGENT_NAMES.map((n) => ({ id: accounts[n], role: `agent ${n}` })),
+      ]);
+    }
     const note = (stage: string, hash: string) => {
       hashes.push({ stage, hash });
       if (record) recordStep(record, { section: "network-demo", step: stage, hash });

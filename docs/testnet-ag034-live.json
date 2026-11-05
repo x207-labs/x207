@@ -1,6 +1,18 @@
 {
   "network": "testnet",
-  "accounts": [],
+  "accounts": [
+    { "id": "x207-rh-circle.testnet", "role": "circle contract (0.0.13)" },
+    { "id": "usdt.x207-deployer.testnet", "role": "mock USDT token" },
+    { "id": "x207rh-keeper.testnet", "role": "keeper (close_epoch, commit_epoch, finalize_epoch)" },
+    { "id": "solver.x207rh-keeper.testnet", "role": "solver (submit_clearing)" },
+    { "id": "relayer.x207rh-keeper.testnet", "role": "relayer (register)" },
+    { "id": "translator.x207rh-scraper.testnet", "role": "agent translator (debtor, settle)" },
+    { "id": "summarizer.x207rh-scraper.testnet", "role": "agent summarizer (debtor, settle)" },
+    { "id": "scraper.x207rh-scraper.testnet", "role": "agent scraper" },
+    { "id": "image.x207rh-scraper.testnet", "role": "agent image" },
+    { "id": "cleaner.x207rh-scraper.testnet", "role": "agent cleaner (creditor, claim)" },
+    { "id": "gpu.x207rh-scraper.testnet", "role": "agent gpu (creditor, claim)" }
+  ],
   "steps": [
     {
       "section": "network-demo",
