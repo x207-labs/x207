@@ -28,7 +28,7 @@ Seconds, wall clock. Network speed changes the clone and `npm ci` figures.
 | `npm run check:links` | 73 | OK | 42 | OK |
 | `npm run check:pins` | 0 | OK | 0 | OK |
 | `npm run demo:quick` | 197 | not rerun | 192 | OK |
-| `npm run demo:mcp` | 126 | **FAILED** in 1 s | **FAILED** in 1 s | **broken since sdk `9eecbcd` (UM-187)**, see below |
+| `npm run demo:mcp` | 126 | **FAILED** in 1 s | **FAILED** in 1 s | **blocked, fix pending**: broken since sdk `9eecbcd` (UM-187), see below; to be rerun after the fix |
 | `npm run demo:swarm` | 285 | not rerun | 285 | OK |
 | `curl -s https://x207.boxd.sh/x207/circles/agents-main/epochs` | OK | 4 | 2 | OK (JSON) |
 | `curl -s .../epochs/8/metrics` | OK | 1 | 1 | OK (JSON, epoch 8 finalized) |
@@ -44,7 +44,7 @@ Commands that need keys (`scripts/keeper.mjs`, the agents with a live model, the
 
 ## Problems found
 
-1. **`npm run demo:mcp` fails on a clean clone (open, not fixed here).** Error: `Cannot find package '@x402/extensions/bazaar' imported from sdk/examples/seller/src/seller.ts`. sdk commit `9eecbcd` (UM-187) made the example seller import it, but `sdk/examples/seller` is not an npm workspace and the root `package-lock.json` has no entry for `@x402/extensions`, so `npm ci` never installs it. It passed in run A (before UM-187) and fails in B and C. Fix belongs to the sdk owner: put `@x402/extensions` `2.29.0` in a workspace package (or make `examples/seller` a workspace), regenerate the lock, bump the pointer. Reported to the coordinator.
+1. **`npm run demo:mcp` fails on a clean clone (blocked, fix pending; being fixed by the owner of UM-187 as P0).** Error: `Cannot find package '@x402/extensions/bazaar' imported from sdk/examples/seller/src/seller.ts`. sdk commit `9eecbcd` (UM-187) made the example seller import it, but `sdk/examples/seller` is not an npm workspace and the root `package-lock.json` has no entry for `@x402/extensions`, so `npm ci` never installs it. It passed in run A (before UM-187) and fails in B and C. Fix belongs to the sdk owner: put `@x402/extensions` `2.29.0` in a workspace package (or make `examples/seller` a workspace), regenerate the lock, bump the pointer. Reported to the coordinator.
 2. **Lagging submodule pointer broke `check:claims` (fixed).** Run A: the payung pointed at older commits of the sub-repos than the files `CLAIMS.md` names, so `check:claims` failed on a clean clone while it passed on the working machine (whose sub-repos were newer). Fixed by `3a3a23c`.
 3. **`npx -y @x207/mcp` inside the clone stops with `x207-mcp: command not found`.** npx resolves the name to the workspace copy, whose command is not linked. Outside the clone it works. Fixed in [docs/mcp.md](../mcp.md): run `npx` from any other folder, or use `node sdk/packages/mcp/dist/cli.js` in the clone; the variable `X207_CIRCLE_CONTRACT` is required.
 4. **`verify-release.sh` path and a hidden prerequisite.** The FAQ named `scripts/verify-release.sh`; the file is `contracts/scripts/verify-release.sh`, and it needs `gh`. Fixed in [judge-faq.md](judge-faq.md). On a bare Debian image install it first (`apt-get install -y gh`).
