@@ -1,0 +1,78 @@
+{
+  "circle": "x207-v015.testnet",
+  "epoch": 20,
+  "solanaAddress": "7iN9bPDScwoE38x6PRa3svPbx5QFeg3d4zbRHAgCb6kn",
+  "solanaAgentNearAccount": "63bed8d66b6bf410807fcc2a53fe9e822614c3e4ab4e91b14853c80a1fbe283f",
+  "evmAgentAddress": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+  "payoutReceiver": "x207-demo-helper.testnet",
+  "vouchers": {
+    "evmToSolana": "20000",
+    "solanaToEvm": "50000"
+  },
+  "epochAfterCommit": {
+    "total_obligation": "70000",
+    "total_cleared": "0"
+  },
+  "positionsAfterCommit": {
+    "solana": {
+      "epoch": 20,
+      "account_id": "63bed8d66b6bf410807fcc2a53fe9e822614c3e4ab4e91b14853c80a1fbe283f",
+      "net": "-30000",
+      "role": "debtor",
+      "status": "due",
+      "amount": "30000",
+      "recovered": "0",
+      "payment_deadline": "1793880515585436181",
+      "updated_at_block": 276337755
+    },
+    "evm": {
+      "epoch": 20,
+      "account_id": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+      "net": "30000",
+      "role": "creditor",
+      "status": "claimable",
+      "amount": "30000",
+      "recovered": "0",
+      "payment_deadline": "1793880515585436181",
+      "updated_at_block": 276337755
+    }
+  },
+  "positionsAfterClaim": {
+    "solana": {
+      "epoch": 20,
+      "account_id": "63bed8d66b6bf410807fcc2a53fe9e822614c3e4ab4e91b14853c80a1fbe283f",
+      "net": "-30000",
+      "role": "debtor",
+      "status": "paid",
+      "amount": "30000",
+      "recovered": "0",
+      "payment_deadline": "1793880515585436181",
+      "updated_at_block": 276337808
+    },
+    "evm": {
+      "epoch": 20,
+      "account_id": "0xcdaba48462aea97aff54fd15421a5dc8a589b845",
+      "net": "30000",
+      "role": "creditor",
+      "status": "claimed",
+      "amount": "30000",
+      "recovered": "0",
+      "payment_deadline": "1793880515585436181",
+      "updated_at_block": 276339492
+    }
+  },
+  "hashes": {
+    "fund 1 NEAR to the implicit account (plain transfer from x207-demo-helper.testnet)": "DhqmnRkhP1m1wg6qWcgNdCqorSqDCz7JLiRrSrV6vdFA",
+    "solana agent join": "4fL9QXeRHK3xJ3szTCDFme6cXMKMKZWnUL354kZz5dhN",
+    "dao add_proposal admit solana agent": "GBFB2G7jwncSTT45Q4qrPZNW5cYVmTNMhrNvYqMs5NeT",
+    "dao vote a #11": "6dgbfvqGFr9xgm8qbBiKFrU33563rjAw6ftf5PXw5ULD",
+    "dao vote b #11": "EtEcPZqCzRX3ydQ4fUntffWSPQPAnSkwskC2tBw3sCGs",
+    "mint 100 mock USDT to the solana agent": "2J9v7JMAe8DeMuRx3XefuoDA1duyoEv3tBe7JcCUBN12",
+    "solana agent stake (ft_transfer_call)": "2vJfxwqwE87u1GDNuQ9r23sjC7SfPRY1pHL4CagZ6uVU",
+    "register_cumulative evm agent -> solana agent 20000 (eip712 voucher, epoch 20)": "4cyfGwuAQdSJPUjj6xN6jSL3PDRpwQsxWsr1c1S29XGR",
+    "register_cumulative solana agent -> evm agent 50000 (ed25519 voucher, epoch 20)": "8169xNQb9wUgFoTmVGR3xrj9XNnT9wYLN2dy5CMUg877",
+    "solana agent settle ft_transfer_call (30000, epoch 20)": "GrZpuZ5o2qYdvU9P6QTy1qHXE8xooFFYsmm5hmUo8Gee",
+    "claim_evm (the evm agent, sent by the relayer)": "DrbrNnD8eAintZHkxwCC9rLRanBgF927gi57mLQCyyrp"
+  },
+  "note": "Run by sdk/examples/solana-agent/test/solana-agent.mixed-epoch.testnet.live.test.ts. Keeper transactions (close_epoch, commit_epoch, finalize_epoch) are in the journal of x207-keeper-v015 and in the explorer under the keeper account."
+}
