@@ -4,7 +4,7 @@
 
 **Limits of that run.** The agent did not hold a NEAR key, but it was not autonomous: a relayer account (`x207-demo-helper.testnet`) paid the 0.35 NEAR join deposit and the gas, funded the stake, registered the vouchers and paid the `storage_deposit` of the payout account. The token is the mock USDT. The money route from other chains was not exercised. The earlier transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` (`join_evm`, 2026-11-05) used the public Hardhat test key #1 and is a technical proof only, not a demo agent.
 
-**In progress, not deployed:** settling from the stake for an EVM member (CT-108), a relayer fee, and every item of the roadmap below.
+**Built, deployed, demo run pending:** settling from the stake (CT-108) is in contract 0.0.15, deployed as `x207-v015.testnet` (code hash `4eZhZF16ySGGv9ux3gzbxnH6znVxcHNQYivVFdfpuHz5`); see [the section below](#settling-from-the-stake-opt-in-ct-108). No epoch has been settled from a stake on chain yet: `TODO(SD-094)` holds the transaction hashes. **In progress, not deployed:** a relayer fee, and every item of the roadmap below.
 
 Source of the interface: `contracts/x207-circle/src/evm.rs` and the cross-check vectors `contracts/tests/fixtures/evm-eip712.json`. The design sections below describe the interface; where this page says "draft" it means the text was written before the run and has not been re-read line by line against the contract.
 
@@ -62,6 +62,30 @@ The argument `member` names whose action it is, so a relayer can send it. The vi
 - Off-chain verification uses `viem` `recoverTypedDataAddress`.
 - MCP: the variable `X207_EVM_PRIVATE_KEY` as an alternative to an ed25519 key. Write tools stay opt-in.
 - The facilitator gets `POST /evm/join`, `/evm/claim`, `/evm/exit` and `/evm/withdraw`, which pass the signature to the `*_evm` methods, with a rate limit per address.
+
+## Settling from the stake (opt-in, CT-108)
+
+Status: **in contract 0.0.15, on `x207-v015.testnet`; checked by unit tests and a security review, not yet by a run on chain.** The run on testnet (SD-094) has no hashes yet: `TODO(SD-094)`. Until it has, this section describes what the contract does, not something that was seen to work on testnet. Source: [contracts/docs/evm-agents.md](https://github.com/x207-labs/contracts/blob/main/docs/evm-agents.md) and the [security review](https://github.com/x207-labs/contracts/blob/main/docs/security-review-auto-settle.md).
+
+**What it is.** A member that opts in and does not pay its `due` in the payment window has the `due` taken from its own stake by `finalize_epoch`. The member stays `active`: no `member_defaulted`, no suspension, no reset of its history. The position goes from `due` to `paid` and creditors claim in full. It is off by default.
+
+| Item | What it does |
+| --- | --- |
+| `set_auto_settle(enabled)` | A NEAR member turns it on or off. It needs 1 yocto, so a function-call access key cannot switch it off. Errors: `ERR_NOT_MEMBER`, `ERR_MEMBER_EXITED` |
+| `set_auto_settle_evm(member, enabled, nonce, deadline, signature)` | The same for an EVM member; anyone relays it, the signature of the `0x` key is the gate. The signed action is `auto_settle` (on) or `auto_settle_off` (off), so a signed "on" cannot be replayed as "off" |
+| `is_auto_settle(account_id)` | View: is the flag on |
+| Events | `auto_settle_set { account_id, enabled }`; `auto_settled { epoch, account_id, due, stake, status: "active", position_status: "paid", outstanding_debt }`, written by `finalize_epoch` |
+
+**The rule at `finalize_epoch`.** For a debtor whose `due` is unpaid, the contract pays from the stake only if all of these hold: the flag is on; the member is `active`; its free stake (stake minus a locked bond) is at least the `due`; and the flag was set at or before `committed_at` of that epoch. If one fails, nothing partial happens and the usual default path runs unchanged. The stake shrinks by the `due`, so the next credit limit follows it.
+
+**Why the time rule.** Without it a member could miss its `due`, wait until the payment window is closed, and only then opt in, which would turn a default into a stake-paid settlement and remove the penalty (finding M1 of the review, fixed in 0.0.15). An opt-in after the commit counts from the next epoch. This differs from the backlog row, which said "opt in at `join_evm`": the flag is a toggle that can be set at any time.
+
+**Limits.**
+- It moves the `due` from the member's own stake. It does not create credit and it does not save cash for the creditors; they are paid either way (from the debtor's cash or from its stake).
+- A member whose free stake is below the `due` still defaults, as before.
+- A member that was suspended and reactivated, and that no call has touched yet, can still be defaulted as before (finding L1, accepted and documented).
+- When the event log is full, `auto_settled` can be left out; `list_positions` then shows the position as `paid`, and a note line says how many events were left out. On chain, a stake-paid `paid` and a cash `paid` look the same without the event.
+- Gas measured in a unit test: `finalize_epoch` with 64 members, 63 of them auto-settled, 76.9 Tgas. That is a test, not a testnet run.
 
 ## Money from and to EVM
 
