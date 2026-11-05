@@ -1,0 +1,405 @@
+{
+  "circle": "x207-v016.testnet",
+  "relayer": "x207-v16-rly.testnet",
+  "receiver": "x207-v16-recv.testnet",
+  "steps": [
+    {
+      "label": "join_evm A",
+      "tx": null,
+      "events": [
+        {
+          "event": "member_joined"
+        }
+      ],
+      "note": "hash not captured (output reader bug); member exists on chain"
+    },
+    {
+      "label": "stake A",
+      "tx": "3EJyreqMjh4RA1TyoKbQ4tpnnoUXv3As9fybJvKirira",
+      "events": [
+        {
+          "event": "stake_added"
+        }
+      ]
+    },
+    {
+      "label": "join_evm B",
+      "tx": "3D8e1uFH4j4YvAj4a13NQRqJ5kdSWcJm9LF54VRLUPjx",
+      "events": [
+        {
+          "event": "member_joined"
+        }
+      ]
+    },
+    {
+      "label": "stake B",
+      "tx": "syMuVuQTwCC7uF2AtF75yfHD5grXBeSY8UurkgSez2G",
+      "events": [
+        {
+          "event": "stake_added"
+        }
+      ]
+    },
+    {
+      "label": "join_evm C",
+      "tx": "74XvGSZz5aQhgkfz6Drmpb1cHXhm2MwSd7UHJzvqXfAU",
+      "events": [
+        {
+          "event": "member_joined"
+        }
+      ]
+    },
+    {
+      "label": "stake C",
+      "tx": "E7MPuNK8TUm8uiJZQRC3EteyFfKmUCiX8UzJyL6RbQaW",
+      "events": [
+        {
+          "event": "stake_added"
+        }
+      ]
+    },
+    {
+      "label": "close_epoch 1 (empty, nobody closed it)",
+      "tx": "71gR6TAK9VQFdDn2gmvhzv6ankHuTXZ8NwNpCopwe1W",
+      "events": [
+        {
+          "event": "epoch_cutoff"
+        }
+      ]
+    },
+    {
+      "label": "set_auto_settle_evm A",
+      "tx": "yTtcbgbkCAsHKBwkRRhNXNq6bwHSSY4i1afuT55jPmY",
+      "events": [
+        {
+          "event": "auto_settle_set"
+        }
+      ]
+    },
+    {
+      "label": "request_exit_evm B",
+      "tx": "6zc6Ep5qDrpqTyh9FoeZfiimTp5ZVXohJMCZ9bmhuA3A",
+      "events": [
+        {
+          "event": "exit_requested"
+        }
+      ]
+    },
+    {
+      "label": "register_cumulative A->B",
+      "tx": "5TgD4VSLdYGnN79y1Pq58KDWp8pp4xPEXWjW7FG9cQPS",
+      "events": [
+        {
+          "event": "voucher_registered"
+        }
+      ]
+    },
+    {
+      "label": "register_cumulative A->C",
+      "tx": "HbrYiYJ3CofyjiT2vNRTQUNn2sRwf3sYEosd9sF3Cdfx",
+      "events": [
+        {
+          "event": "voucher_registered"
+        }
+      ]
+    },
+    {
+      "label": "close_epoch 2",
+      "tx": "GRNFEnhEw2DLTZUTQ9PyyRp5RzjpQCbaYhDkat9X8Jo6",
+      "events": [
+        {
+          "event": "epoch_cutoff",
+          "data": [
+            {
+              "epoch": 2,
+              "closed_at": "1793885541479074725",
+              "proposal_deadline": "1793885601479074725",
+              "edge_count": 2,
+              "participant_count": 3,
+              "total_obligation": "40000000",
+              "next_epoch": 3,
+              "next_cutoff_at": "1793886141479074725"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "commit_epoch 2",
+      "tx": "Gfxx72Dso6PxGs5KXRKPLjmGyNqWccPh8Q8PtpqFcPxd",
+      "events": [
+        {
+          "event": "clearing_applied",
+          "data": [
+            {
+              "epoch": 2,
+              "solver": null,
+              "cleared_total": "0",
+              "edge_count": 0,
+              "edges_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "clearing_fee": "0",
+              "solver_fee": "0"
+            }
+          ]
+        },
+        {
+          "event": "epoch_committed",
+          "data": [
+            {
+              "epoch": 2,
+              "committed_at": "1793885613000219479",
+              "payment_deadline": "1793886513000219479",
+              "total_due": "40000000",
+              "total_claimable": "40000000",
+              "position_count": 3,
+              "positions_hash": "3126b3688dfff75f2f8cf44e0ecc09eb3fd05bd182fda691469c2446c0bd40ec",
+              "positions": [
+                {
+                  "account_id": "0xc996174c333fbddfa0760a08949c93c071d6f12e",
+                  "net": "-40000000",
+                  "role": "debtor",
+                  "status": "due",
+                  "amount": "40000000",
+                  "outstanding_debt": "40000000"
+                },
+                {
+                  "account_id": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+                  "net": "20000000",
+                  "role": "creditor",
+                  "status": "claimable",
+                  "amount": "20000000",
+                  "outstanding_debt": "0"
+                },
+                {
+                  "account_id": "0x3cbbc98a6838a6ca47534da1a04da711dcf31a48",
+                  "net": "20000000",
+                  "role": "creditor",
+                  "status": "claimable",
+                  "amount": "20000000",
+                  "outstanding_debt": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "finalize_epoch 2",
+      "tx": "49ZHxZRYQREBwgtYNLtB18W6Rh2L13rPjUb49wmbjoSb",
+      "events": [
+        {
+          "event": "auto_settled",
+          "data": [
+            {
+              "epoch": 2,
+              "account_id": "0xc996174c333fbddfa0760a08949c93c071d6f12e",
+              "due": "40000000",
+              "stake": "60000000",
+              "status": "active",
+              "position_status": "paid",
+              "outstanding_debt": "0"
+            }
+          ]
+        },
+        {
+          "event": "limits_updated",
+          "data": [
+            {
+              "epoch": 2,
+              "changes": [
+                {
+                  "account_id": "0xc996174c333fbddfa0760a08949c93c071d6f12e",
+                  "old_limit": "60000000",
+                  "new_limit": "48000000",
+                  "status": "active"
+                }
+              ],
+              "chunk": 0,
+              "chunks": 1
+            }
+          ]
+        },
+        {
+          "event": "epoch_finalized",
+          "data": [
+            {
+              "epoch": 2,
+              "finalized_at": "1793888732747111651",
+              "defaulted_count": 0,
+              "total_defaulted": "0",
+              "pool": "40000000",
+              "shortfall": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "claim_evm B maxFee 250000",
+      "tx": "5z7MukAhhmLNrBsJvzYfSqgvbQR4yv7AZVtTXBLVewH4",
+      "events": [
+        {
+          "event": "relayer_fee_paid",
+          "data": [
+            {
+              "account_id": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+              "relayer": "x207-v16-rly.testnet",
+              "action": "claim",
+              "epoch": 2,
+              "amount": "250000"
+            }
+          ]
+        },
+        {
+          "event": "residual_claimed",
+          "data": [
+            {
+              "epoch": 2,
+              "account_id": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+              "amount": "19750000",
+              "destination": "near",
+              "status": "claimed"
+            }
+          ]
+        }
+      ],
+      "expectedFee": "250000",
+      "relayerDelta": "250000",
+      "receiverDelta": "19750000"
+    },
+    {
+      "label": "claim_evm C maxFee 0",
+      "tx": "4K38p3vDvUSCjafdn6iHn8QCpgHpAewRDTdPCtPjbdnx",
+      "events": [
+        {
+          "event": "residual_claimed",
+          "data": [
+            {
+              "epoch": 2,
+              "account_id": "0x3cbbc98a6838a6ca47534da1a04da711dcf31a48",
+              "amount": "20000000",
+              "destination": "near",
+              "status": "claimed"
+            }
+          ]
+        }
+      ],
+      "expectedFee": "0",
+      "relayerDelta": "0",
+      "receiverDelta": "20000000"
+    },
+    {
+      "label": "withdraw_stake_evm B",
+      "tx": "AjKoYpQ6zo5rk3hMzpfuGXkCt3kviVBtj1DQ3Bc46Kfh",
+      "events": [
+        {
+          "event": "relayer_fee_paid",
+          "data": [
+            {
+              "account_id": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+              "relayer": "x207-v16-rly.testnet",
+              "action": "withdraw_stake",
+              "epoch": 0,
+              "amount": "100000"
+            }
+          ]
+        },
+        {
+          "event": "stake_withdrawn",
+          "data": [
+            {
+              "account_id": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+              "amount": "99900000"
+            }
+          ]
+        }
+      ],
+      "expectedFee": "100000",
+      "relayerDelta": "100000",
+      "receiverDelta": "99900000"
+    }
+  ],
+  "epoch": 2,
+  "agents": {
+    "A": "0xc996174c333fbddfa0760a08949c93c071d6f12e",
+    "B": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+    "C": "0x3cbbc98a6838a6ca47534da1a04da711dcf31a48"
+  },
+  "relayerFee": "250000",
+  "positions": {
+    "B": {
+      "account_id": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+      "amount": "20000000",
+      "epoch": 2,
+      "net": "20000000",
+      "payment_deadline": "1793886513000219479",
+      "recovered": "0",
+      "role": "creditor",
+      "status": "claimable",
+      "updated_at_block": 276347724
+    },
+    "C": {
+      "account_id": "0x3cbbc98a6838a6ca47534da1a04da711dcf31a48",
+      "amount": "20000000",
+      "epoch": 2,
+      "net": "20000000",
+      "payment_deadline": "1793886513000219479",
+      "recovered": "0",
+      "role": "creditor",
+      "status": "claimable",
+      "updated_at_block": 276347724
+    }
+  },
+  "memberA": {
+    "account_id": "0xc996174c333fbddfa0760a08949c93c071d6f12e",
+    "admitted": false,
+    "exit_requested_epoch": null,
+    "joined_at": "1793883678805385572",
+    "last_active_epoch": 2,
+    "limit": "48000000",
+    "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+    "settled_history": "0",
+    "stake": "60000000",
+    "status": "active",
+    "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "final": {
+    "memberB": {
+      "account_id": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+      "admitted": false,
+      "exit_requested_epoch": 2,
+      "joined_at": "1793883712816308361",
+      "last_active_epoch": 2,
+      "limit": "0",
+      "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+      "settled_history": "0",
+      "stake": "0",
+      "status": "exited",
+      "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "positionB": {
+      "account_id": "0x8222daa4f51163c98ef13abaeeccba8384d7a47a",
+      "amount": "20000000",
+      "epoch": 2,
+      "net": "20000000",
+      "payment_deadline": "1793886513000219479",
+      "recovered": "0",
+      "role": "creditor",
+      "status": "claimed",
+      "updated_at_block": 276353043
+    },
+    "positionC": {
+      "account_id": "0x3cbbc98a6838a6ca47534da1a04da711dcf31a48",
+      "amount": "20000000",
+      "epoch": 2,
+      "net": "20000000",
+      "payment_deadline": "1793886513000219479",
+      "recovered": "0",
+      "role": "creditor",
+      "status": "claimed",
+      "updated_at_block": 276353056
+    }
+  },
+  "circleUsdt": "160000000"
+}
