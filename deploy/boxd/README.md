@@ -31,3 +31,24 @@ curl https://x207.boxd.sh/healthz
 curl -s https://mcp.x207.boxd.sh/mcp -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"t","version":"1"}}}'
 boxd machine exec x207 -- 'sudo journalctl -u x207-keeper -n 20 --no-pager'
 ```
+
+## Second circle for EVM agents (BE-093)
+
+The contract 0.0.14 (EVM members) is deployed to a new circle `x207-v014.testnet`; `x207-v013.testnet` keeps running. A second copy of the same backend follows the new circle: same code and folder, its own read model, no seed.
+
+| Unit | What | Port | Public URL |
+| --- | --- | --- | --- |
+| `x207-backend-v014` | read API and indexer of `x207-v014.testnet` (`X207_NO_SEED=1`, SQLite `/var/lib/x207/x207-v014.sqlite`) | 8081 | https://v014.x207.boxd.sh (proxy `v014`) |
+
+Member ids that start with `0x` (EVM agents) appear in the same endpoints as any member (`/x207/circles/agents-main/members/0x…`); their `pubkeyVoucher` is a placeholder key, because the contract checks their EIP-712 signature against the address.
+
+```bash
+# after the deploy of x207-v014.testnet: put its deploy block in backend-v014.env (X207_START_BLOCK), then
+boxd machine cp backend-v014.env x207:/tmp/backend-v014.env
+boxd machine cp x207-backend-v014.service x207:/tmp/x207-backend-v014.service
+boxd machine exec x207 -- 'sudo mv /tmp/backend-v014.env /etc/x207/ && sudo chown root:boxd /etc/x207/backend-v014.env && sudo chmod 640 /etc/x207/backend-v014.env && sudo mv /tmp/x207-backend-v014.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable --now x207-backend-v014'
+boxd machine proxy add v014 --vm x207 --port 8081
+curl https://v014.x207.boxd.sh/healthz
+```
+
+The facilitator with the relayer routes `/evm/*` (SD-089) is a separate process that is not on this machine yet; see `sdk/.env.example` for `X207_EVM_RELAYER_ACCOUNT_ID` and the other variables.
