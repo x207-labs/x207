@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// SD-085: makes the folder that `railway up` uploads for the public read-only MCP server (`@x207/mcp`, Streamable HTTP, the six read tools).
+// SD-085: makes the folder that `railway up` uploaded for (since UM-148 the folder is copied to the boxd machine, see deploy/boxd/README.md) the public read-only MCP server (`@x207/mcp`, Streamable HTTP, the six read tools).
 //   node scripts/railway-mcp-bundle.mjs <out dir>        (run `npm run build --workspaces --if-present` first)
 // The folder holds the built packages `@x207/core`, `@x207/scheme` and `@x207/mcp` (`vendor/`, they are not on the npm registry), a package.json that points to them, the Dockerfile and
 // `railway.json`. Nothing secret goes in: the server holds no key, and the variables are public URLs and names (see the README, "Connect your AI agent").
