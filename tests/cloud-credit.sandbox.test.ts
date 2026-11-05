@@ -117,14 +117,11 @@ describe.skipIf(!sandboxAvailable)("UM-115 cloud credit as a project member with
     });
     const brokerUrl = broker.url;
     const advanceTo = async (ms: number) => {
-      // In CI run 5a7b58d this call (about 2 days of block time, 172,800 blocks) did not finish in 13 minutes and the test hit its 900 s limit; org-member does the same advance in under 2 minutes.
-      // Steps of 6 hours with a line each, so that the next log shows how far it got and how long a step takes.
-      const startedAt = Date.now();
-      for (let at = await sandbox.blockTimestampMs(); at < ms; at = await sandbox.blockTimestampMs()) {
-        await sandbox.advanceTo(Math.min(ms, at + 6 * 3_600_000));
-        trace(`advanced to ${new Date(await sandbox.blockTimestampMs()).toISOString()} (target ${new Date(ms).toISOString()}), ${Math.round((Date.now() - startedAt) / 1000)} s`);
-      }
-      clock.offsetMs = (await sandbox.blockTimestampMs()) - Date.now();
+      // UM-182: only the clock of the broker and the facilitator moves, not the chain. Two days of block time are 172,800 blocks; on the CI runner the sandbox does 500 blocks in about 2.8 s
+      // (CI run 42011918002: 121 s per 6 hours), so the advance alone needs about 16 minutes, more than the 900 s of this test, and the sandbox process died during it (ECONNREFUSED).
+      // The end of the paid day is read from `now()` (the provider adapter and the lease), and `revoke_grant` by the operator does not look at block time, so the chain can stay where it is.
+      clock.offsetMs = ms - Date.now();
+      trace(`clock moved to ${new Date(ms).toISOString()} (chain block time stays ${new Date(await sandbox.blockTimestampMs()).toISOString()})`);
     };
 
     const offer = async (grantor: "scraper" | "gpu" | "cleaner", assetType: string, delivery: string, scope: object): Promise<number> => {
