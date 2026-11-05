@@ -1,6 +1,6 @@
 # Discovery: x402 Bazaar and ERC-8004 (UM-187, testnet only)
 
-Status on 2026-11-05: **nothing is registered and nothing is listed.** This page says what is prepared, what was read, and what would have to be true before a listing shows up. No mainnet transaction is planned.
+Status on 2026-11-05: **one ERC-8004 identity is registered on Base Sepolia (agent id 10597); nothing is listed in the Bazaar.** This page says what was done, what was read, and what would have to be true before a Bazaar listing shows up. No mainnet transaction is planned.
 
 ## x402 Bazaar
 
@@ -22,7 +22,7 @@ ERC-8004 (Trustless Agents, [eips.ethereum.org/EIPS/eip-8004](https://eips.ether
 - Call: `register(string agentURI) returns (uint256 agentId)`; the event is `Registered(uint256 indexed agentId, string agentURI, address indexed owner)`.
 - Registration file: [`docs/erc8004/agent.json`](erc8004/agent.json), to be served from `https://raw.githubusercontent.com/x207-labs/x207/main/docs/erc8004/agent.json` once pushed. It names the MCP server and the read API, sets `x402Support` to `false` (none of the listed endpoints returns a `402`), says testnet and mock USDT, and has `registrations: []` until an `agentId` exists.
 - Cost, from `eth_estimateGas` on 2026-11-05 (read-only, nothing sent): 203,545 gas; at the gas price of that day (about 0.009 gwei) that is about 0.0000019 ETH of Base Sepolia, and about 0.00002 ETH if the price were ten times higher. The registering key is a new key that holds no other asset; it is kept in `.secrets/` and is not part of any repository.
-- Not done: the `register` transaction (the address has no balance), and the `registrations` entry in the file.
+- Done on 2026-11-05: `register(agentURI)` with that URL, transaction [`0x347fb05ab7325bb33c0e6144423ef46aa2fd42ff549b27aad0e545f19a72975d`](https://sepolia.basescan.org/tx/0x347fb05ab7325bb33c0e6144423ef46aa2fd42ff549b27aad0e545f19a72975d) in block 54794990, status success, 200,784 gas used (the estimate was 203,545). The event `Registered` gives `agentId` 10597 and owner `0xDa0D668e69699A2F08076f8d2FC87331EBf26aDb`, the new key that holds no other asset. The `registrations` entry of the file names that id and registry; it is in the repository but the raw GitHub copy has it only after the next push.
 
 ## What is not claimed
 
