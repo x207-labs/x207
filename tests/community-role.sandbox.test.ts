@@ -103,8 +103,10 @@ describe.skipIf(!sandboxAvailable)("UM-099 community roles in near-sandbox (#24 
     });
     const brokerUrl = broker.url;
     const advanceTo = async (ms: number) => {
-      await sandbox.advanceTo(ms);
-      clock.offsetMs = (await sandbox.blockTimestampMs()) - Date.now();
+      // UM-186: only the clock of the broker and the facilitator moves, not the chain, as in tests/cloud-credit.sandbox.test.ts (UM-182). A day of block time is 86,400 blocks and the
+      // CI sandbox does about 500 blocks in 2.8 s, so two days of advance took more than the 900 s of this test (run 42019312849, shard 2). The end of the paid day is read from `now()`
+      // (the provider adapter and the lease), and the broker's revoke does not look at block time, so the chain can stay where it is.
+      clock.offsetMs = ms - Date.now();
     };
 
     const offer = async (grantor: "scraper" | "gpu" | "cleaner", assetType: string, delivery: string, scope: object): Promise<number> => {

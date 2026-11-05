@@ -8,6 +8,7 @@
     "tests/rent.sandbox.test.ts": 398,
     "tests/proxy-credit-quota.sandbox.test.ts": 115,
     "tests/cloud-credit.sandbox.test.ts": 100,
+    "tests/community-role.sandbox.test.ts": 110,
     "tests/e2e.sandbox.test.ts": 271,
     "tests/asset-catalog.sandbox.test.ts": 213,
     "tests/invoice.sandbox.test.ts": 149,
