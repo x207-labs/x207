@@ -67,6 +67,16 @@ The argument `member` names whose action it is, so a relayer can send it. The vi
 | Sandbox: the Intents path (`mt_on_transfer`, payout `intents`) in `near-sandbox`, as for KN-17 | **no result yet** |
 | Mainnet: USDC from Base or Arbitrum enters through NEAR Intents or 1Click, then `ft_transfer_call` stakes with `member_id`; the payout leaves through `claim_evm` to Intents and then to Base | roadmap, **not tested**, and no mainnet transaction is planned |
 
+## Funding from other chains
+
+**This route is mainnet and has not been tested. The testnet demo proves only the EIP-712 signatures and the netting; no money crosses a chain in it.** What is planned, from the design note:
+
+1. **In.** USDC or USDT on an EVM chain enters through [NEAR Intents 1Click](https://docs.near-intents.org/), or through HOT Bridge with Omni Balance ([HEX guide](https://hot-labs.gitbook.io/hex/)), which takes USDT from more than twenty networks and credits `intents.near` with the Omni address in the `msg` field. The token then reaches the circle as an `ft_transfer_call` that stakes with `member_id = 0x…`.
+2. **Out.** `claim_evm` names the Intents contract as `receiver` (an `ft_transfer_call` that credits the id `0x…` there); the agent then withdraws to its home chain through Intents. `withdraw_stake_evm` refuses the Intents contract as a receiver.
+3. **What has run so far on this route:** a 1Click quote for a withdrawal of 5 credit to USDC on Base, with `dry: true` on 2026-11-04 (4.989148 USDC out, no deposit address, no funds moved; [what-has-run.md](what-has-run.md), [recorded answer](https://github.com/x207-labs/backend/blob/main/docs/reference.md#live-quote-of-1click-be-090)). Nothing for the deposit direction, and no quote for an `0x…` member.
+
+Open points we have not checked: the fees and minimums of the route (a small payment can lose a large share of its value, see [gas-epoch8-vs-transfers.md](gas-epoch8-vs-transfers.md)), whether a given token and chain pair is supported on the day, and the time a deposit takes. No mainnet transaction is planned without the owner's approval.
+
 ## What it will not do
 
 - No intent, grant, escrow or deal for an EVM member in the first version: those methods still need the member as the caller.
