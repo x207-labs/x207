@@ -18,7 +18,7 @@ import type { ObligationGraph } from "../solver/src/graph/index.ts";
 import { Recorder, patient, sleep } from "./support/testnet-kit.ts";
 
 const ENABLED = process.env.X207_TESTNET === "1";
-const RPCS = [process.env.X207_TESTNET_RPC ?? "https://rpc.testnet.fastnear.com", "https://rpc.testnet.near.org"];
+const RPCS = [process.env.X207_TESTNET_RPC ?? "https://rpc.testnet.fastnear.com", "https://near-testnet.drpc.org"]; // UM-191: rpc.testnet.near.org is deprecated
 const CIRCLE = "x207-v013.testnet";
 const AUX = "x207-v013-aux.testnet";
 const USDT = "usdt.x207-deployer.testnet";

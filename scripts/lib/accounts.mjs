@@ -14,7 +14,7 @@ export const AGENTS = ["translator", "summarizer", "scraper", "image", "cleaner"
 
 export const NETWORKS = {
   sandbox: { contractId: "x207-circle.test.near" },
-  testnet: { contractId: "x207-circle.testnet", rpcUrl: "https://rpc.testnet.near.org" },
+  testnet: { contractId: "x207-circle.testnet", rpcUrl: "https://rpc.testnet.fastnear.com" }, // UM-191: rpc.testnet.near.org is deprecated (429 for every transaction); --rpc-url takes another endpoint
 };
 
 /** Contract account first, then the six agent sub-accounts. */

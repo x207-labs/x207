@@ -10,7 +10,7 @@ import { GRAPH } from "./lib/realistic-epoch.mjs";
 
 const CIRCLE = "x207-v013.testnet";
 const AUX = "x207-v013-aux.testnet";
-const RPCS = [process.env.X207_TESTNET_RPC ?? "https://rpc.testnet.fastnear.com", "https://rpc.testnet.near.org"];
+const RPCS = [process.env.X207_TESTNET_RPC ?? "https://rpc.testnet.fastnear.com", "https://near-testnet.drpc.org"]; // UM-191: rpc.testnet.near.org is deprecated
 const secretsDir = process.env.X207_SECRETS_DIR ?? resolve("../../.secrets/testnet-deployer");
 const args = process.argv.slice(2);
 const opt = (name, fallback) => (args.includes(name) ? args[args.indexOf(name) + 1] : fallback);

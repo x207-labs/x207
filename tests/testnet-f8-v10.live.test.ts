@@ -25,7 +25,7 @@ import { Account, JsonRpcProvider, KeyPair, KeyPairSigner } from "../backend/nod
 import { Recorder, TxFeedSource, patient, sleep } from "./support/testnet-kit.ts";
 
 const ENABLED = process.env.X207_TESTNET === "1";
-const RPCS = ["https://rpc.testnet.fastnear.com", "https://rpc.testnet.near.org", "https://test.rpc.fastnear.com", "https://archival-rpc.testnet.near.org"];
+const RPCS = ["https://rpc.testnet.fastnear.com", "https://near-testnet.drpc.org", "https://test.rpc.fastnear.com"]; // UM-191: the *.near.org endpoints are deprecated
 const RPC = RPCS[0]!;
 const V9 = "x207-circle-v10f.testnet";
 const AUX = "x207-aux-v10.testnet";

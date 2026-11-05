@@ -23,7 +23,7 @@ import { resolve } from "node:path";
 import { promisify } from "node:util";
 import { describe, it } from "vitest";
 import { buildClaimCall, buildSettleTransferCall, type ContractAbi } from "@x207/core";
-import { createNearSender, createNearView } from "@x207/core/signer";
+import { createNearSender as createNearSenderBase, createNearView as createNearViewBase } from "@x207/core/signer";
 import { NearRegistrationChain, NearRpc, PendingStore, RegistrationScheduler, createApp, createFacilitatorService } from "@x207/facilitator";
 import { defineCircleConfig } from "@x207/scheme";
 import { onboardAgents } from "../agents/onboarding/onboard.ts";
@@ -41,6 +41,12 @@ import { keeperPass } from "../scripts/lib/keeper.mjs";
 import { serveWeb } from "../agents/test/helpers.ts";
 
 const run = promisify(execFile);
+
+// UM-191: RPC_URLS=a,b,c lists the endpoints. The first one that RPC_URL names is asked first; a rate limit (429) moves a transaction on to the next one,
+// a rate limit, a 5xx or a dead endpoint moves a view on (sdk/packages/core/src/rpc-failover.ts).
+const otherEndpoints = (first: string): string[] => (process.env.RPC_URLS ?? "").split(",").map((u) => u.trim()).filter((u) => u !== "" && u !== first);
+const createNearSender = (options: Parameters<typeof createNearSenderBase>[0]) => createNearSenderBase({ fallbackRpcUrls: otherEndpoints(options.rpcUrl), ...options });
+const createNearView = (rpcUrl: string, contractId: string) => createNearViewBase([rpcUrl, ...otherEndpoints(rpcUrl)], contractId);
 
 const NETWORKS = {
   testnet: { rpc: "https://rpc.testnet.fastnear.com", usdt: "usdt.x207-deployer.testnet", contract: "circle.x207-deployer.testnet" },
