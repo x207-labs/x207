@@ -9,6 +9,7 @@ The targets and the reasons are in [adoption.md](../adoption.md) (rows 3, 8, 9, 
 | [awesome-mcp-servers.md](awesome-mcp-servers.md) | `punkpeye/awesome-mcp-servers` | PR open: [#18606](https://github.com/punkpeye/awesome-mcp-servers/pull/18606) |
 | [awesome-near.md](awesome-near.md) | `near/awesome-near` | PR open: [#90](https://github.com/near/awesome-near/pull/90) |
 | [x402-slack.md](x402-slack.md) | x402 Foundation Slack | not sent: join, pick the channel, post one message |
+| [x402-4131-evm-comment.md](x402-4131-evm-comment.md) | comment on x402#4131 | draft, the owner posts it |
 | [near-ai-agent-market.md](near-ai-agent-market.md) | `market.near.ai` | not sent, blocked (see the file) |
 
 ## Claims every text may make
