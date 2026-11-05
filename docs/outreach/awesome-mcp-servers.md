@@ -62,3 +62,25 @@ Why it fits the list: public repository, Apache-2.0, installed and run locally w
 Narrative: the coordinator chose "multilateral clearing" over "mutual-credit" before submitting, and the text above is the submitted one. Use the same words in every later text.
 
 Before sending, the owner checks one fact in the body: the count of tools (14 names appear in [`sdk/packages/mcp/README.md`](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md) and [mcp.md](../mcp.md): `x207_accept_offer`, `x207_circle_overview`, `x207_claim`, `x207_confirm_milestone`, `x207_epoch_report`, `x207_join`, `x207_list_offer`, `x207_make_offer`, `x207_member_inspect`, `x207_order_status`, `x207_pay_request`, `x207_search_listings`, `x207_settle`, `x207_simulate_clearing`).
+
+## Glama listing (UM-154): steps for the owner
+
+Why: the `awesome-mcp-servers` bot and the maintainers look for a Glama score badge on the line, and Glama only scores a server that has a Dockerfile it can build and a server that answers `tools/list`. Source of the Glama steps: community reports (issues and pull requests of other servers), because Glama has no public page that states the rules; check the Glama admin page if a step differs.
+
+Done by Worker E (nothing to do here): `sdk/Dockerfile` and `sdk/.dockerignore` build `@x207/mcp` from the repository (stdio, read tools only, defaults to `x207-v013.testnet` and `https://x207.boxd.sh`, no key, `X207_MCP_WRITE` not set). Checked on 2026-11-05:
+
+```bash
+cd sdk && docker build -t x207-mcp .          # builds, image 98 MB
+# initialize, then tools/list over stdin: serverInfo x207 0.0.4, capability tools, 6 tools
+# x207_circle_overview, x207_member_inspect, x207_epoch_report, x207_simulate_clearing, x207_search_listings, x207_order_status
+```
+
+Steps for the owner, after the sdk repository (with `Dockerfile`) is pushed to `x207-labs/sdk`:
+
+1. Sign in at https://glama.ai with the GitHub account that owns or administers `x207-labs/sdk`.
+2. Open https://glama.ai/mcp/servers and use "Add Server" (or search for `x207-labs/sdk`; Glama indexes public GitHub repositories, so the server may already exist). Give the repository URL `https://github.com/x207-labs/sdk`.
+3. Claim the server (Glama shows a "Claim" or admin button for the repository owner). Claiming is what unlocks the admin page.
+4. On the admin page open the Dockerfile settings. Glama detects a `Dockerfile` in the repository root on the next refetch; if it asks for build steps instead, use: install `npm ci --ignore-scripts`, build `npx tsc -b packages/mcp`, run `node packages/mcp/dist/cli.js`, and set the environment `X207_CIRCLE_CONTRACT=x207-v013.testnet`, `X207_CIRCLE_ID=agents-main`, `X207_BACKEND_URL=https://x207.boxd.sh`. Do not set any key or `X207_MCP_WRITE`.
+5. Run the build/introspection check on the admin page. It must show the server starting and answering `initialize` and `tools/list` with 6 tools. If it fails, copy the log into the hand-over note of the coordinator; the local check above passes with the same image.
+6. When the listing shows a score, copy its badge markdown (`[![...glama.ai/mcp/servers/.../badge](...)](https://glama.ai/mcp/servers/...)`) and add it to the line in PR #18606, before the `📇 🏠` emojis, as the neighbours do. Then tick the Glama box in the PR body.
+7. Optional: Glama can read a `glama.json` in the repository root with `{"$schema": "https://glama.ai/mcp/schemas/server.json", "maintainers": ["<github user>"]}` to name who may claim. It is not created here, because the GitHub user name of the owner is theirs to choose.
