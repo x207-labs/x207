@@ -1,6 +1,6 @@
 # Agents on any chain, cleared on NEAR (UM-155)
 
-**Runs on NEAR testnet (2026-11-05), not on mainnet.** One agent that holds only a `0x` key, new for this run and not a public test key (`0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7`), took part in epoch 2 of the circle `x207-v014.testnet`: `join_evm`, admission by the DAO, stake by a relayer, EIP-712 vouchers, `close_epoch`, `commit_epoch` and `finalize_epoch` by the keeper, and `claim_evm` to the agent's own eth-implicit account. The record is [testnet-epochs/sd090-evm-agent-run.json](testnet-epochs/sd090-evm-agent-run.json); each hash below was read back from the testnet RPC on 2026-11-05 and succeeded.
+**Runs on NEAR testnet (2026-11-05), not on mainnet.** One agent that holds only a `0x` key, new for this run and not a public test key (`0x58cd3d4987ad29a7bafdb8cdb90bfbe995e680b7`), took part in epoch 2 of the circle `x207-v014.testnet`: `join_evm`, admission by the DAO, stake by a relayer, EIP-712 vouchers, `close_epoch`, `commit_epoch` and `finalize_epoch` by the keeper, and `claim_evm` crediting the payout to the agent's `0x` id in the mock USDT token. That NEAR eth-implicit account does not exist on chain yet, and spending the payout from the `0x` key through NEP-518 has not been demonstrated; a spike (SD-092) is testing it. The record is [testnet-epochs/sd090-evm-agent-run.json](testnet-epochs/sd090-evm-agent-run.json); each hash below was read back from the testnet RPC on 2026-11-05 and succeeded.
 
 **Limits of that run.** The agent did not hold a NEAR key, but it was not autonomous: a relayer account (`x207-demo-helper.testnet`) paid the 0.35 NEAR join deposit and the gas, funded the stake, registered the vouchers and paid the `storage_deposit` of the payout account. The token is the mock USDT. The money route from other chains was not exercised. The earlier transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` (`join_evm`, 2026-11-05) used the public Hardhat test key #1 and is a technical proof only, not a demo agent.
 
@@ -128,6 +128,6 @@ The v0.0.14 contract runs as a new circle, `x207-v014.testnet`. `x207-v013.testn
 | `close_epoch`, `commit_epoch`, `finalize_epoch` by the keeper | `Aztg7FxNLThjGkRMEEMUGrzPaPMY4NqA6FEPEGmTRMHU`, `CybAemjMvYY9GUEeCwb41HFZizpHbbkng6KKEdGR3biT`, `9ZnkmQkdz5zu2GvxJU49MayX2HoGmtdGwTCsdBfea85i` |
 | seller settles 80000 | `6nFHqFmnrtJNuHrvHXQsD5Qd5bmfV9Xo6W79e8TY8QwK` |
 | `storage_deposit` of the payout account by the relayer | `DEdRKLoDZbgbscprTkhP5D8S14xfNUhVQ8DdATunshfz` |
-| `claim_evm` to the eth-implicit account of the agent | `ERoUbiz3U2MgCkWR8YDuhzria7j8RvwYE8NCvvpziQMm` |
+| `claim_evm`, payout credited to the agent's `0x` id in the token | `ERoUbiz3U2MgCkWR8YDuhzria7j8RvwYE8NCvvpziQMm` |
 
 The run was made in two parts because an RPC outage at 05:45 UTC stopped the first; the second resumed at epoch 2. The paid call of the first part was a 200 answer with a cumulative amount of 20000.
