@@ -26,6 +26,7 @@ Multilateral clearing for agent payments on NEAR, with a stake-bound limit. Hack
 
 - Agents in a **circle** lock one stake each and pay with signed vouchers over the normal x402 flow. A voucher is a cumulative promise per pair and epoch, so 120 calls become 12 on-chain registrations, not 120 transactions. That saves gas only when a pair trades about 3 to 4 times or more per epoch (docs/gas-epoch8-vs-transfers.md).
 - At the end of each epoch the contract **nets** every member's position in one on-chain step, and only net positions are settled in USDT; that is where the cash saving comes from. An open **solver** also removes debt cycles from the gross obligations. In the MVP that does not change who pays what (net positions do not change when a cycle is removed); it shrinks the record of gross obligations and is the basis for loss allocation on a default and for clearing across circles (roadmap).
+- **For a swarm of agents:** many agents settle in one netting step per epoch, and one stake per member covers sellers it has not met yet (spike S1, see docs/problem-and-gap.md). The epoch steps and the solver are open to anyone. The solver's cycle clearing is an honest record of gross obligations and the base for loss allocation on a default (roadmap); it does not move cash.
 - The limit comes from stake (at most the stake), so it is not credit without cash. A default is covered from the stake of the defaulter.
 
 Source for the registration count: our sandbox run `npm run demo:sandbox`, 120 paid calls, `medium` density (docs/sandbox-demo.md).
