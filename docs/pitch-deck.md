@@ -53,7 +53,7 @@ x207 is an **evolution** of x402, not a replacement: it keeps the 402 flow and a
 1. A multi-party x402 `batch-settlement` binding on NEAR, as far as we found: [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131), proposed and not yet accepted.
 2. Cumulative vouchers netted once per epoch across many buyers and sellers.
 3. One stake for sellers that are not known in advance (spike S1: with an exact forecast a channel locks less).
-4. An EVM agent signing EIP-712 can join: `join_evm` ran on testnet, transaction `GD92fvfjRMjmdRfDW3d8PqCft7GzPyiAGX6hLTjJ3E8A` on `x207-v014.testnet`, signed with the public Hardhat test key #1: a technical proof, not a demo agent (the demo follows with a new key). The rest is in progress, not deployed.
+4. An agent on Base only holds a `0x` key; NEAR is its netting layer. On `x207-v014.testnet` a new-key EVM agent joined (`join_evm` `E5dQ4Wn4TZyFUXheKvS1CS7whUaLHJ8sXp8hZ2zQJN3c`), signed an EIP-712 voucher, was netted in epoch 2 and claimed (`claim_evm` `ERoUbiz3U2MgCkWR8YDuhzria7j8RvwYE8NCvvpziQMm`). A relayer still paid deposit and gas; settling from the stake is in progress; the cross-chain money route is mainnet and not tested.
 
 ---
 
