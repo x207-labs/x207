@@ -53,6 +53,15 @@ const NETWORKS = {
   mainnet: { rpc: "https://rpc.mainnet.fastnear.com", usdt: "usdt.tether-token.near", contract: undefined },
 } as const;
 
+// P1: DEMO_CIRCLE_VERSION=v018 picks the circle of contract 0.0.18 (sale of a NEAR account); v017 is the default. CIRCLE_CONTRACT still wins over both.
+// TODO(0.0.18): confirm the account id of v018 after the testnet deploy (the name follows the pattern of the others).
+const TESTNET_CIRCLES = { v017: "x207-v017.testnet", v018: "x207-v018.testnet" } as const;
+const testnetCircle = (): string => {
+  const version = (process.env.DEMO_CIRCLE_VERSION ?? "v017") as keyof typeof TESTNET_CIRCLES;
+  if (!(version in TESTNET_CIRCLES)) throw new Error("DEMO_CIRCLE_VERSION must be v017 or v018");
+  return TESTNET_CIRCLES[version];
+};
+
 const env = (name: string): string => {
   const value = process.env[name];
   if (!value) throw new Error(`variable ${name} is required`);
@@ -67,7 +76,7 @@ describe("demo real network", () => {
     if (!(network in NETWORKS)) throw new Error("DEMO_NETWORK must be testnet or mainnet");
     const defaults = NETWORKS[network];
     const rpcUrl = process.env.RPC_URL ?? defaults.rpc;
-    const contract = process.env.CIRCLE_CONTRACT ?? defaults.contract;
+    const contract = process.env.CIRCLE_CONTRACT ?? (network === "testnet" ? testnetCircle() : defaults.contract);
     if (!contract) throw new Error("variable CIRCLE_CONTRACT is required");
     const usdt = process.env.USDT_TOKEN_ID ?? defaults.usdt;
     const payments = Number(process.env.DEMO_PAYMENTS ?? 20);
