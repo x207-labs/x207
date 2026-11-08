@@ -1,0 +1,12 @@
+[Unit]
+Description=x207 epoch keeper (testnet, x207-v017.testnet)
+After=network-online.target
+[Service]
+User=boxd
+WorkingDirectory=/home/boxd/keeper
+EnvironmentFile=/etc/x207/keeper-v017.env
+ExecStart=/bin/sh -c 'exec node scripts/keeper.mjs --rpc-url "$KEEPER_RPC_URL" --contract "$KEEPER_CONTRACT" --account "$KEEPER_ACCOUNT" --interval "$KEEPER_INTERVAL" --lookback "$KEEPER_LOOKBACK"'
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
