@@ -49,6 +49,12 @@ test("code hashes, keys and mainnet lines are skipped with a reason, not checked
   assert.ok(skipped.length >= 2 && skipped.every((s) => s.reason));
 });
 
+test("a Solana address (named \"address\") is skipped, not asked of the NEAR RPC", () => {
+  const { hashes, skipped } = hashesIn("docs/s.md", `| Solana agent | Solana address \`${FAKE_MIXED}\`; NEAR account \`x207-v015.testnet\` |`);
+  assert.equal(hashes.length, 0);
+  assert.match(skipped[0].reason, /address/);
+});
+
 test("in a JSON record only transaction fields count; codeHash is skipped", () => {
   const text = JSON.stringify({ contract: "x207-v013.testnet", build: { codeHash: REAL }, steps: [{ account: "x207-v013.testnet", hash: FAKE_MIXED }] });
   const { hashes, skipped } = hashesIn("docs/r.json", text);

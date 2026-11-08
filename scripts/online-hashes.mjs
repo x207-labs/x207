@@ -12,7 +12,7 @@ const NEAR_HASH = /(?<![A-Za-z0-9:])[1-9A-HJ-NP-Za-km-z]{43,44}(?![A-Za-z0-9])/g
 const EVM_HASH = /(?<![A-Za-z0-9])0x[0-9a-fA-F]{64}(?![A-Za-z0-9])/g;
 const ACCOUNT = /[a-z0-9][a-z0-9_.-]*\.testnet|\b[0-9a-f]{64}\b/g;
 // Words just before a token that say it is not a transaction hash.
-const NOT_A_TX = /(code ?hash|code_hash|codehash|block|receipt|sha-?256|wasm|terms_hash|edgesHash|key|signature|nonce)[^A-Za-z0-9]{0,6}$/i;
+const NOT_A_TX = /(code ?hash|code_hash|codehash|block|receipt|sha-?256|wasm|terms_hash|edgesHash|key|signature|nonce|address)[^A-Za-z0-9]{0,6}$/i;
 const JSON_TX_KEYS = new Set(["hash", "txHash", "tx_hash", "tx", "transactionHash", "hashes", "txs"]);
 const JSON_SKIP_KEYS = /code.?hash|terms_hash|edgesHash|block|receipt|sha/i;
 const looksMixed = (s) => /[0-9]/.test(s) && /[a-z]/.test(s) && /[A-Z]/.test(s);
@@ -44,7 +44,7 @@ export function hashesIn(path, text) {
       if (!looksMixed(m[0])) continue;
       const before = line.slice(Math.max(0, m.index - 24), m.index);
       if (/code ?hash|code_hash/i.test(line.slice(Math.max(0, m.index - 70), m.index))) skipped.push({ hash: m[0], reason: "named as a code hash, not a transaction" });
-      else if (NOT_A_TX.test(before)) skipped.push({ hash: m[0], reason: `named as ${before.trim().split(/\s+/).pop()}, not a transaction` });
+      else if (NOT_A_TX.test(before)) skipped.push({ hash: m[0], reason: `named as "${before.match(NOT_A_TX)[1]}", not a transaction` });
       else if (/mainnet/i.test(line)) skipped.push({ hash: m[0], reason: "line mentions mainnet; the testnet RPC cannot answer" });
       else add(m[0], "near-testnet");
     }
@@ -52,14 +52,14 @@ export function hashesIn(path, text) {
   return { hashes: [...found.values()], skipped };
 }
 
-async function rpc(endpoints, method, params, fetchImpl) {
+async function rpc(endpoints, method, params, fetchImpl, retryMs) {
   let last = "no endpoint";
   let unknown = null;
   for (const url of endpoints) {
-    for (let attempt = 0; attempt < 3; attempt++) {
+    for (let attempt = 0; attempt < 4; attempt++) {
       try {
         const res = await fetchImpl(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
-        if (res.status === 429 && attempt < 2) { await new Promise((r) => setTimeout(r, 500 * 3 ** attempt)); continue; }
+        if (res.status === 429 && attempt < 3) { await new Promise((r) => setTimeout(r, (retryMs ?? 2000) * 3 ** attempt)); continue; }
         if (!res.ok) { last = `${url} answered HTTP ${res.status}`; break; }
         const body = await res.json();
         // A plain (non-archival) NEAR RPC forgets old transactions, so its UNKNOWN_TRANSACTION proves nothing: ask the next endpoint.
@@ -76,7 +76,7 @@ async function rpc(endpoints, method, params, fetchImpl) {
 export async function checkNear({ hash, senders }, fetchImpl = fetch, endpoints = NEAR_RPC, hint = { sender: null }) {
   // Archival nodes answered for any signer in a spot check (UM-190), so a few guesses are enough to call a hash unknown.
   const order = [...new Set([hint.sender, ...senders].filter(Boolean))].slice(0, 4);
-  if (order.length === 0) return { status: "skipped", reason: "no account named in the file to use as signer" };
+  if (order.length === 0) return { status: "skipped", reason: "sender unknown (no account named in the file to use as signer)" };
   let unknown = 0;
   for (const sender of order) {
     const r = await rpc(endpoints, "tx", { tx_hash: hash, sender_account_id: sender, wait_until: "NONE" }, fetchImpl);
@@ -101,7 +101,7 @@ export async function checkEvm({ hash }, fetchImpl = fetch, endpoints = BASE_RPC
 }
 
 /** Checks every hash in `files` ([{path, text}]). Returns counts and the rows that failed or were skipped. */
-export async function verifyHashes(files, { fetchImpl = fetch, concurrency = 1, minGapMs = 300, nearEndpoints = NEAR_RPC, baseEndpoints = BASE_RPC } = {}) {
+export async function verifyHashes(files, { fetchImpl = fetch, concurrency = 1, minGapMs = 300, only = null, nearEndpoints = NEAR_RPC, baseEndpoints = BASE_RPC } = {}) {
   // The public testnet RPCs share one IP with the other sessions and answer 429 under load: one request at a time, at least `minGapMs` apart.
   const rawFetch = fetchImpl;
   let next = 0;
@@ -121,6 +121,8 @@ export async function verifyHashes(files, { fetchImpl = fetch, concurrency = 1, 
     }
     for (const x of s) if (!todo.has(x.hash)) skipped.set(x.hash, { hash: x.hash, status: "skipped", reason: x.reason, paths: new Set([path]) });
   }
+  // `only`: re-check just these hashes (a Set), e.g. the ones an earlier run had to skip.
+  if (only) { for (const k of [...todo.keys()]) if (!only.has(k)) todo.delete(k); skipped.clear(); }
   const hints = new Map();
   const queue = [...todo.values()];
   const rows = [];
