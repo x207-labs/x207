@@ -9,7 +9,7 @@ The barter catalog of the design notes (90 kinds) is data in [scripts/lib/asset-
 Generated from the `status` of every entry by `scripts/catalog-coverage.mjs`; nothing in this section is written by hand.
 
 <!-- coverage:start -->
-94 entries: 85 kinds that can be offered and 9 refused kinds (class X). Of the 85 kinds that can be offered, **49 are built** against the real components, **24 run end to end with a mock of ours** as the provider or issuer, 5 are planned as a named backlog item and 7 are on the roadmap only. That is 73 of 85 (86 percent) with a pipeline that runs, and 49 of 85 (58 percent) without any mock.
+94 entries: 85 kinds that can be offered and 9 refused kinds (class X). Of the 85 kinds that can be offered, **49 are built** against the real components, **25 run end to end with a mock of ours** as the provider or issuer, 5 are planned as a named backlog item and 6 are on the roadmap only. That is 74 of 85 (87 percent) with a pipeline that runs, and 49 of 85 (58 percent) without any mock.
 
 By class:
 
@@ -18,9 +18,9 @@ By class:
 | A | 5 | 0 | 5 | 4 | 0 | 14 |
 | B | 7 | 11 | 0 | 2 | 0 | 20 |
 | C | 3 | 13 | 0 | 0 | 0 | 16 |
-| D | 34 | 0 | 0 | 1 | 0 | 35 |
+| D | 34 | 1 | 0 | 0 | 0 | 35 |
 | X | 0 | 0 | 0 | 0 | 9 | 9 |
-| **All** | 49 | 24 | 5 | 7 | 9 | 94 |
+| **All** | 49 | 25 | 5 | 6 | 9 | 94 |
 
 By pipeline (taken from the delivery method of the entry):
 
@@ -30,10 +30,10 @@ By pipeline (taken from the delivery method of the entry):
 | P2 access rent through the broker | 5 | 11 | 0 | 2 | 0 | 18 |
 | P3 one-time secrets and codes | 1 | 13 | 0 | 0 | 0 | 14 |
 | P4 platform transfer | 4 | 0 | 0 | 0 | 0 | 4 |
-| P5 metered resources and services | 30 | 0 | 0 | 1 | 0 | 31 |
+| P5 metered resources and services | 30 | 1 | 0 | 0 | 0 | 31 |
 | P7 licenses and files | 4 | 0 | 0 | 0 | 0 | 4 |
 | refused (no pipeline) | 0 | 0 | 0 | 0 | 9 | 9 |
-| **All** | 49 | 24 | 5 | 7 | 9 | 94 |
+| **All** | 49 | 25 | 5 | 6 | 9 | 94 |
 
 `built` means the pipeline runs against the real contract, backend, broker or a real testnet; it does not mean that a real third-party provider was used. `mock` means the provider or issuer behind the pipeline is a mock written by us (a mock OAuth server, a mock issuer of codes, a mock reseller), so the x207 side is tested and the provider side is not. Regenerate with `node scripts/catalog-coverage.mjs --write`; the test `scripts/catalog-coverage.test.mjs` fails when the numbers in this file are out of date.
 <!-- coverage:end -->
@@ -82,4 +82,4 @@ On testnet and mainnet the contract is owned by a Sputnik DAO (ADR-13, ADR-20). 
 - Delivery of the F rows is off-chain and cannot be atomic like an escrow; the dispute window and confirmation of the receiver (BE-047, CT-093) are not built.
 
 ## Metered resources (P5, UM-085)
-The twelve kinds of pipeline P5 are class D rows of the catalog, delivery `x402_endpoint`: #31 `compute:cpu-idle`, #32 `compute:gpu-hours`, #33 `storage:capacity`, #34 `cdn:static-cache`, #35 `model:inference`, #36 `model:fine-tuning`, #44 `oracle:data-feed`, #45 `iot:sensor-data`, #47 `gas:relayer`, #49 `queue:priority-slot`, #55 `network:proxy-bandwidth`, #90 `compute:home-device`. The presets of `createMeteredEndpoint` (`METERED_PRESETS` in `@x207/core`), the table of the backend (`RESOURCE_ASSET_TYPES`, BE-050) and the listing form of the frontend (FE-024) use these names and numbers; `tests/metered-catalog.test.ts` compares them. The units (`call`, `minute`, `day`, `GB`, `job`, `request`) are not the `UNITS` of the contract: class D does not go through a grant.
+The twelve kinds of pipeline P5 are class D rows of the catalog, delivery `x402_endpoint`: #31 `compute:cpu-idle`, #32 `compute:gpu-hours`, #33 `storage:capacity`, #34 `cdn:static-cache`, #35 `model:inference`, #36 `model:fine-tuning`, #44 `oracle:data-feed`, #45 `iot:sensor-data`, #47 `gas:relayer`, #49 `queue:priority-slot`, #55 `network:proxy-bandwidth`, #90 `compute:home-device`. The presets of `createMeteredEndpoint` (`METERED_PRESETS` in `@x207/core`), the table of the backend (`RESOURCE_ASSET_TYPES`, BE-050) and the listing form of the frontend (FE-024) use these names and numbers; `tests/metered-catalog.test.ts` compares them. The units (`call`, `minute`, `day`, `GB`, `job`, `request`) are not the `UNITS` of the contract: class D does not go through a grant. Kind #90 `compute:home-device` is the last of the twelve to run (AG-049, `agents/scenario/home-device.ts`): a **mock** device is rented by the minute in prepaid slices of 30 minutes and by the day, so a device that goes offline costs the buyer at most one slice; no real home device is connected, which is why the catalog counts it as `mock`, not `built`.
