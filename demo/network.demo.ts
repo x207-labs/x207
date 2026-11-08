@@ -49,7 +49,7 @@ const createNearSender = (options: Parameters<typeof createNearSenderBase>[0]) =
 const createNearView = (rpcUrl: string, contractId: string) => createNearViewBase([rpcUrl, ...otherEndpoints(rpcUrl)], contractId);
 
 const NETWORKS = {
-  testnet: { rpc: "https://rpc.testnet.fastnear.com", usdt: "usdt.x207-deployer.testnet", contract: "circle.x207-deployer.testnet" },
+  testnet: { rpc: "https://rpc.testnet.fastnear.com", usdt: "usdt.x207-deployer.testnet", contract: "x207-v017.testnet" }, // A-AG-15: the released circle (v0.0.17); like every testnet circle so far it stakes the mock USDT above (no view shows the token, so this is by the docs, not read from the chain)
   mainnet: { rpc: "https://rpc.mainnet.fastnear.com", usdt: "usdt.tether-token.near", contract: undefined },
 } as const;
 
