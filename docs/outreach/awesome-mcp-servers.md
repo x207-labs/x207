@@ -2,6 +2,8 @@
 
 **Status: PR open, 2026-11-05: [punkpeye/awesome-mcp-servers#18606](https://github.com/punkpeye/awesome-mcp-servers/pull/18606).** Submitted by the coordinator; on 2026-11-05 the line gained the Glama score badge (commit `78a6e08` in the fork `Shenhan01-sys:add-x207-mcp-server`) and the body was rewritten to "multilateral netting" with the Glama box ticked. The text below is that final version. Nothing is decided until a maintainer merges or comments. Outside members of the circle: still 0 ([adoption.md](../adoption.md)).
 
+**Read again on 2026-11-08 (read only, nothing posted):** the PR is still `OPEN` and `MERGEABLE`, with no maintainer comment and no human review (one Copilot review). The checks `check-submission` pass and `welcome` is skipped; the labels are `has-emoji`, `valid-name` and `has-glama`. The last bot comment (2026-11-05 05:01 UTC, `glama-badge-check`) asks that Glama has scored the server; the Glama page [x207-labs/sdk](https://glama.ai/mcp/servers/x207-labs/sdk) now shows TDQS A 4.4 of 5, scored 2026-11-05 05:35 across 6 tools, so that request is met. The badge URL answers 200 and the hosted MCP endpoint answers `initialize` (server `x207` 0.0.6). Still open, and both need the owner or a public action: the connector listing is not claimed, and no outside agent has joined.
+
 Source of the rules: [CONTRIBUTING.md](https://github.com/punkpeye/awesome-mcp-servers/blob/main/CONTRIBUTING.md) and the legend of the [README](https://github.com/punkpeye/awesome-mcp-servers/blob/main/README.md), read on 2026-11-05.
 
 ## What the rules say
