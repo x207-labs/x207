@@ -53,9 +53,11 @@ test("the counts at the top are the counts of the rows", () => {
   assert.match(text, new RegExp(`\\| \\*\\*All\\*\\* \\| \\*\\*${rows.length}\\*\\* \\|`));
   const offered = rows.length - counts.X;
   assert.equal(offered, 85);
-  assert.match(text, /2 of 85 kinds have run on testnet, 18 /);
-  assert.equal(counts.testnet + counts.sandbox, 18);
-  assert.equal(counts.testnet + counts.sandbox + counts.mock, 49);
+  assert.match(text, /11 of 85 kinds have run on testnet/);
+  assert.match(text, /24 \(testnet plus sandbox\)/);
+  assert.match(text, /55 \(add the 31 with a mock\)/);
+  assert.equal(counts.testnet + counts.sandbox, 24);
+  assert.equal(counts.testnet + counts.sandbox + counts.mock, 55);
 });
 
 test("a row that is not generic, P1, roadmap or X names at least one proof path that exists", () => {
