@@ -162,6 +162,21 @@ A member can opt in with `set_auto_settle(true)` (1 yocto; an EVM member signs `
 
 The six product repositories are git submodules of this one. `vault`, the design notes, is private.
 
+## Tracks and hints
+
+Seven tracks are ticked on the form; `swarms` is the main one. A hint is a wish of the track, not a requirement, so the table says for each hint how far x207 meets it. The claim of each track, its evidence and what weakens it are in [docs/submission/form-draft.md](docs/submission/form-draft.md#tracks).
+
+| Track (`id`) | Hint | How x207 meets it |
+| --- | --- | --- |
+| AI Swarms (`swarms`), main | Multi-Agent Systems | Many agents in one circle settle in one netting step per epoch (epoch 8: 15 members, 24 vouchers); the agents run in rule or mock mode, not as a swarm of language models |
+| AI Swarms (`swarms`) | Sub-Accounts | Used only for lease accounts |
+| Agent Economy (`agents`) | Agent Commerce | The whole project: vouchers over x402, an MCP server, marketplace and barter between agents |
+| Agent Economy (`agents`) | NEAR Intents | Met only in `near-sandbox` (`intents.testnet` has no code); no payment through Intents ran |
+| Real-World Money (`realworld`) | Meta Transactions | Not a focus; a relayer submits the transactions of EVM agents, and the x402 `exact` scheme on NEAR uses NEP-366 delegate actions |
+| Unstoppable DeFi (`defi`) | Chain Signatures | Not used |
+| Open (`open`) | Chain Abstraction | An agent that holds only a `0x` key takes part in a circle on NEAR (testnet, relayer-assisted, mock USDT) |
+| Autonomous Business (`business`), Social (`social`) | none named | See the form draft |
+
 ## Hackathon disclosures
 
 **Code written with AI help.** The code, tests and documents of this project were written with AI coding assistants: Claude Code (Anthropic) in several parallel sessions, each working on one repository under a human owner who set the design, reviewed the results and decided what to publish. Many commits carry a `Co-Authored-By: Claude` trailer. Every number in this README comes from a run or a file named next to it; where a run did not happen, the text says so.
