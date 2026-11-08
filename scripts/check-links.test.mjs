@@ -1,7 +1,7 @@
 // Tests for scripts/check-links.mjs (UM-105). Run: node --test scripts/check-links.test.mjs
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { anchorsOf, checkUrls, linksOf, relativeProblems, status, urlProblems } from "./check-links.mjs";
+import { anchorsOf, BOT_BLOCKED_HOSTS, checkUrls, linksOf, relativeProblems, status, urlProblems } from "./check-links.mjs";
 
 test("links come from the text, not from code", () => {
   const md = "See [a](docs/a.md#top) and [b](https://github.com/x207-labs/sdk/blob/main/x.md) and <https://example.com/x>.\n`[c](no.md)`\n```\n[d](nope.md)\n```\n";
@@ -14,6 +14,16 @@ test("a relative link into a submodule or to a missing file is a problem; a file
   assert.equal(problems.length, 2);
   assert.ok(problems[0].includes("not in the repository"));
   assert.ok(problems[1].includes("submodule"));
+});
+
+test("explorer hosts that block bots are not asked even with external, and the reason is written down (UM-197)", async () => {
+  const asked = [];
+  const fetchFn = async (url) => { asked.push(url); return { status: 403 }; };
+  const links = ["https://testnet.nearblocks.io/txns/abc", "https://sepolia.basescan.org/tx/0x1", "https://example.org/x"];
+  const problems = await urlProblems("README.md", links, { fetchFn, external: true, delays: [] });
+  assert.ok(asked.length > 0 && asked.every((u) => u === "https://example.org/x"));
+  assert.equal(problems.length, 1);
+  for (const reason of Object.values(BOT_BLOCKED_HOSTS)) assert.match(reason, /403/);
 });
 
 test("a 404 on a x207-labs URL fails; other hosts are skipped unless external", async () => {

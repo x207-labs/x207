@@ -94,6 +94,17 @@ function limiter(max) {
   return (task) => new Promise((resolve, reject) => { queue.push({ task, resolve, reject }); next(); });
 }
 
+/**
+ * Hosts that answer 403 to every client that is not a browser (bot protection), so a script cannot say whether such a link is alive (audit A-UM-05, UM-197).
+ * `--external` does not ask them; the links stay in the documents. Check a transaction without the explorer:
+ * `curl https://api-testnet.nearblocks.io/v3/txns/<hash>`, or `npm run check:claims -- --online` (RPC), which asks the chain itself.
+ */
+export const BOT_BLOCKED_HOSTS = {
+  "testnet.nearblocks.io": "403 to non-browser clients (verified 2026-11-08); the API api-testnet.nearblocks.io/v3 answers",
+  "sepolia.basescan.org": "403 to non-browser clients (verified 2026-11-08); `eth_getTransactionReceipt` on a Base Sepolia RPC answers",
+};
+const botBlocked = (link) => new URL(link).host in BOT_BLOCKED_HOSTS;
+
 /** One request at a time to github.com (it answers 504 to a burst), four to any other host. */
 export const HOST_LIMITS = { "github.com": 1, default: 4 };
 
@@ -110,7 +121,7 @@ export async function checkUrls(entries, { external = false, fetchFn = fetch, de
     if (!asked.has(url)) asked.set(url, runnerOf(new URL(url).host)(() => status(url, fetchFn, { delays, sleep })));
     return asked.get(url);
   };
-  const wanted = entries.filter(({ link }) => /^https?:/.test(link) && (external || link.startsWith("https://github.com/x207-labs/")));
+  const wanted = entries.filter(({ link }) => /^https?:/.test(link) && !botBlocked(link) && (external || link.startsWith("https://github.com/x207-labs/")));
   const codes = await Promise.all(wanted.map(({ link }) => codeOf(link)));
   return wanted.flatMap(({ file, link }, i) => (codes[i] === 0 || codes[i] >= 400 ? [`${file}: ${link} answers ${codes[i] === 0 ? "no response" : codes[i]}`] : []));
 }
