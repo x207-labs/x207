@@ -1,0 +1,564 @@
+{
+  "circle": "x207-v017.testnet",
+  "relayer": "x207-v16-rly.testnet",
+  "relayerNotRegistered": "x207-v17-nor.testnet",
+  "steps": [
+    {
+      "label": "join_evm A",
+      "tx": "14ps5mv9pqvB9icuXmSJ9H8qY4E1Gi1dj1A5Zf9GFnUY",
+      "events": [
+        {
+          "event": "member_joined",
+          "data": [
+            {
+              "account_id": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+              "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+              "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "status": "pending",
+              "joined_at": "1793897524093497937"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "stake A",
+      "tx": "CgX6DffYU5239HKepN9rBVEFRwxBY5XPNEFM6jkfvG2J",
+      "events": [
+        {
+          "event": "stake_added",
+          "data": [
+            {
+              "account_id": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+              "sender_id": "x207-v16-rly.testnet",
+              "amount": "12000000",
+              "stake": "12000000",
+              "limit": "9600000",
+              "status": "active"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "join_evm B",
+      "tx": "Atm9fnLpyEh82yweLWNhrfjKGYCuv4p2A63zW2E1scmw",
+      "events": [
+        {
+          "event": "member_joined",
+          "data": [
+            {
+              "account_id": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+              "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+              "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "status": "pending",
+              "joined_at": "1793897567618655224"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "stake B",
+      "tx": "8bwVomhyd6LgqCm3eTjaKBAnqNHo5u4jNtBBBeDi97g6",
+      "events": [
+        {
+          "event": "stake_added",
+          "data": [
+            {
+              "account_id": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+              "sender_id": "x207-v16-rly.testnet",
+              "amount": "12000000",
+              "stake": "12000000",
+              "limit": "9600000",
+              "status": "active"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "join_evm C",
+      "tx": "Dw6Po6ossFLPonuHTduTj3sca9AN5XUA7ZdHcnjvgUok",
+      "events": [
+        {
+          "event": "member_joined",
+          "data": [
+            {
+              "account_id": "0xe96941e4c64989b8516c69d1f4a916d1435f7af4",
+              "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+              "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "status": "pending",
+              "joined_at": "1793897579457184201"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "stake C",
+      "tx": "79cHGjMKvCXoPWn2D2wnVV6My6E2UZFoxBc87EcovqMA",
+      "events": [
+        {
+          "event": "stake_added",
+          "data": [
+            {
+              "account_id": "0xe96941e4c64989b8516c69d1f4a916d1435f7af4",
+              "sender_id": "x207-v16-rly.testnet",
+              "amount": "12000000",
+              "stake": "12000000",
+              "limit": "9600000",
+              "status": "active"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "join_evm E",
+      "tx": "3ozzZDC5mdSQccKYrjDWzaAX2aAofRVKroU4rX1jQSww",
+      "events": [
+        {
+          "event": "member_joined",
+          "data": [
+            {
+              "account_id": "0x87c504b53680b718a3cfbbb203c553ce34113a2c",
+              "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+              "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "status": "pending",
+              "joined_at": "1793897590988987750"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "stake E",
+      "tx": "CMCR8k5S6fpUqHq1obB9XKfPfombxC3Fvztgufe5XQnE",
+      "events": [
+        {
+          "event": "stake_added",
+          "data": [
+            {
+              "account_id": "0x87c504b53680b718a3cfbbb203c553ce34113a2c",
+              "sender_id": "x207-v16-rly.testnet",
+              "amount": "12000000",
+              "stake": "12000000",
+              "limit": "9600000",
+              "status": "active"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "join_evm D maxFee 250000 (refused)",
+      "tx": null,
+      "events": [],
+      "failureText": "ERR_EVM_FEE_NOT_ALLOWED: join_evm carries no relayer fee, sign maxFee 0 or leave max_fee out"
+    },
+    {
+      "label": "set_auto_settle_evm A maxFee 250000",
+      "tx": "KLgwiuyygQcSoNrxXDK8s2U1KrYsTCSH7UzLGjaFN2Q",
+      "events": [
+        {
+          "event": "auto_settle_set",
+          "data": [
+            {
+              "account_id": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "event": "relayer_fee_paid",
+          "data": [
+            {
+              "account_id": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+              "relayer": "x207-v16-rly.testnet",
+              "action": "auto_settle",
+              "epoch": 1,
+              "amount": "250000"
+            }
+          ]
+        }
+      ],
+      "maxFee": "250000",
+      "relayerDelta": "250000",
+      "stakeDelta": "-250000"
+    },
+    {
+      "label": "request_exit_evm B maxFee 250000",
+      "tx": "A8BqrTX4XSNYs5eWwKFtxz76z4hFtS8Ke28bHRQYXgWn",
+      "events": [
+        {
+          "event": "exit_requested",
+          "data": [
+            {
+              "account_id": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+              "epoch": 1
+            }
+          ]
+        },
+        {
+          "event": "relayer_fee_paid",
+          "data": [
+            {
+              "account_id": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+              "relayer": "x207-v16-rly.testnet",
+              "action": "request_exit",
+              "epoch": 1,
+              "amount": "250000"
+            }
+          ]
+        }
+      ],
+      "maxFee": "250000",
+      "relayerDelta": "250000",
+      "stakeDelta": "-250000"
+    },
+    {
+      "label": "set_auto_settle_evm C maxFee 0",
+      "tx": "CemKXgCmAtF82C3xQ95VepdRpEoTYB7hTZfVXJXu2MoR",
+      "events": [
+        {
+          "event": "auto_settle_set",
+          "data": [
+            {
+              "account_id": "0xe96941e4c64989b8516c69d1f4a916d1435f7af4",
+              "enabled": true
+            }
+          ]
+        }
+      ],
+      "maxFee": "0",
+      "relayerDelta": "0",
+      "stakeDelta": "0"
+    },
+    {
+      "label": "request_exit_evm C maxFee 0",
+      "tx": "DrGn1bm4mCNFXk76LWBHJZ9eN7GKQS6wJgfkdBmQztR7",
+      "events": [
+        {
+          "event": "exit_requested",
+          "data": [
+            {
+              "account_id": "0xe96941e4c64989b8516c69d1f4a916d1435f7af4",
+              "epoch": 1
+            }
+          ]
+        }
+      ],
+      "maxFee": "0",
+      "relayerDelta": "0",
+      "stakeDelta": "0"
+    },
+    {
+      "label": "set_auto_settle_evm E maxFee 250000 (relayer not registered)",
+      "tx": "FAqzfL7rH1eiAsauyREY62sSKmpXFqQfuSUjhhTqH23W",
+      "events": [
+        {
+          "event": "auto_settle_set",
+          "data": [
+            {
+              "account_id": "0x87c504b53680b718a3cfbbb203c553ce34113a2c",
+              "enabled": true
+            }
+          ]
+        },
+        {
+          "event": "relayer_fee_paid",
+          "data": [
+            {
+              "account_id": "0x87c504b53680b718a3cfbbb203c553ce34113a2c",
+              "relayer": "x207-v17-nor.testnet",
+              "action": "auto_settle",
+              "epoch": 1,
+              "amount": "250000"
+            }
+          ]
+        }
+      ],
+      "maxFee": "250000",
+      "relayerDelta": "250000",
+      "stakeDelta": "-250000",
+      "eventNames": [
+        "auto_settle_set",
+        "relayer_fee_paid"
+      ]
+    },
+    {
+      "label": "register_cumulative A->B",
+      "tx": "6qCx1PL6yXjK1SqGGaFTET9Z6DehghRFvZkZeHdTwvtB",
+      "events": [
+        {
+          "event": "voucher_registered",
+          "data": [
+            {
+              "payer": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+              "payee": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+              "epoch": 1,
+              "seq": 1,
+              "cumulative_amount": "5000000",
+              "delta": "5000000",
+              "obligation": "5000000",
+              "outstanding_debt": "5000000",
+              "mode": "cumulative"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "close_epoch 1",
+      "tx": "8BFFhuLuYBoP7dVEYqzhiUeEV7E2JJoGFU1Ej493vCf",
+      "events": [
+        {
+          "event": "epoch_cutoff",
+          "data": [
+            {
+              "epoch": 1,
+              "closed_at": "1793897871109944006",
+              "proposal_deadline": "1793897931109944006",
+              "edge_count": 1,
+              "participant_count": 2,
+              "total_obligation": "5000000",
+              "next_epoch": 2,
+              "next_cutoff_at": "1793898459035385930"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "commit_epoch 1",
+      "tx": "CKZfNwwR3GQi2ReuqMmD93BuXGBpaetTzxKrzGFGSkjN",
+      "events": [
+        {
+          "event": "clearing_applied",
+          "data": [
+            {
+              "epoch": 1,
+              "solver": null,
+              "cleared_total": "0",
+              "edge_count": 0,
+              "edges_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+              "clearing_fee": "0",
+              "solver_fee": "0"
+            }
+          ]
+        },
+        {
+          "event": "epoch_committed",
+          "data": [
+            {
+              "epoch": 1,
+              "committed_at": "1793897942219678169",
+              "payment_deadline": "1793898842219678169",
+              "total_due": "5000000",
+              "total_claimable": "5000000",
+              "position_count": 2,
+              "positions_hash": "1523b07a971667b247e2a8347f83d04b6225367f77a461a6cb5a8d62b34d1ed9",
+              "positions": [
+                {
+                  "account_id": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+                  "net": "-5000000",
+                  "role": "debtor",
+                  "status": "due",
+                  "amount": "5000000",
+                  "outstanding_debt": "5000000"
+                },
+                {
+                  "account_id": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+                  "net": "5000000",
+                  "role": "creditor",
+                  "status": "claimable",
+                  "amount": "5000000",
+                  "outstanding_debt": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "finalize_epoch 1",
+      "tx": "HC2DAZAH71MkqybwJJfpJ3cLH3fKbBQZvE8yDrjNpzpj",
+      "events": [
+        {
+          "event": "auto_settled",
+          "data": [
+            {
+              "epoch": 1,
+              "account_id": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+              "due": "5000000",
+              "stake": "6750000",
+              "status": "active",
+              "position_status": "paid",
+              "outstanding_debt": "0"
+            }
+          ]
+        },
+        {
+          "event": "limits_updated",
+          "data": [
+            {
+              "epoch": 1,
+              "changes": [
+                {
+                  "account_id": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+                  "old_limit": "6750000",
+                  "new_limit": "5400000",
+                  "status": "active"
+                },
+                {
+                  "account_id": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+                  "old_limit": "9600000",
+                  "new_limit": "9400000",
+                  "status": "active"
+                },
+                {
+                  "account_id": "0x87c504b53680b718a3cfbbb203c553ce34113a2c",
+                  "old_limit": "9600000",
+                  "new_limit": "9400000",
+                  "status": "active"
+                }
+              ],
+              "chunk": 0,
+              "chunks": 1
+            }
+          ]
+        },
+        {
+          "event": "epoch_finalized",
+          "data": [
+            {
+              "epoch": 1,
+              "finalized_at": "1793898854055636440",
+              "defaulted_count": 0,
+              "total_defaulted": "0",
+              "pool": "5000000",
+              "shortfall": "0"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "agents": {
+    "A": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+    "B": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+    "C": "0xe96941e4c64989b8516c69d1f4a916d1435f7af4",
+    "D": "0x17cb62a46d75791210b66530161174fe444a9baf",
+    "E": "0x87c504b53680b718a3cfbbb203c553ce34113a2c"
+  },
+  "relayerFee": "250000",
+  "joinWithFeeRefused": {
+    "tx": null,
+    "error": "ERR_EVM_FEE_NOT_ALLOWED"
+  },
+  "epoch": 1,
+  "paramsAtStart": {
+    "relayer_fee": "250000",
+    "epoch": 1
+  },
+  "failedFeeNote": "NOT reproduced on testnet: the mock USDT registers the receiver on ft_transfer, so the second relayer (not registered beforehand) was paid (relayer_fee_paid). The failed-fee path (stake credited back, limit restored, relayer_fee_failed) is covered by the contract unit tests ct118_* and the sandbox tests TC-CT-118-01..05, not by this run.",
+  "failedFee": {
+    "label": "set_auto_settle_evm E maxFee 250000 (relayer not registered)",
+    "tx": "FAqzfL7rH1eiAsauyREY62sSKmpXFqQfuSUjhhTqH23W",
+    "events": [
+      {
+        "event": "auto_settle_set",
+        "data": [
+          {
+            "account_id": "0x87c504b53680b718a3cfbbb203c553ce34113a2c",
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "event": "relayer_fee_paid",
+        "data": [
+          {
+            "account_id": "0x87c504b53680b718a3cfbbb203c553ce34113a2c",
+            "relayer": "x207-v17-nor.testnet",
+            "action": "auto_settle",
+            "epoch": 1,
+            "amount": "250000"
+          }
+        ]
+      }
+    ],
+    "maxFee": "250000",
+    "relayerDelta": "250000",
+    "stakeDelta": "-250000",
+    "eventNames": [
+      "auto_settle_set",
+      "relayer_fee_paid"
+    ]
+  },
+  "paramsAfterClose": {
+    "epoch": 1,
+    "relayer_fee": "250000"
+  },
+  "paramsAfterFinalize": {
+    "epoch": 1,
+    "relayer_fee": "250000"
+  },
+  "members": {
+    "A": {
+      "account_id": "0xa45b6f0b1e3003ba9523ed8e440f8debeab27270",
+      "admitted": false,
+      "exit_requested_epoch": null,
+      "joined_at": "1793897524093497937",
+      "last_active_epoch": 1,
+      "limit": "5400000",
+      "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+      "settled_history": "0",
+      "stake": "6750000",
+      "status": "active",
+      "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "B": {
+      "account_id": "0x09a18d06c1f5e30ffb762038f5280c5979f533f9",
+      "admitted": false,
+      "exit_requested_epoch": 1,
+      "joined_at": "1793897567618655224",
+      "last_active_epoch": 1,
+      "limit": "9400000",
+      "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+      "settled_history": "0",
+      "stake": "11750000",
+      "status": "active",
+      "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "C": {
+      "account_id": "0xe96941e4c64989b8516c69d1f4a916d1435f7af4",
+      "admitted": false,
+      "exit_requested_epoch": 1,
+      "joined_at": "1793897579457184201",
+      "last_active_epoch": 1,
+      "limit": "9600000",
+      "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+      "settled_history": "0",
+      "stake": "12000000",
+      "status": "active",
+      "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "E": {
+      "account_id": "0x87c504b53680b718a3cfbbb203c553ce34113a2c",
+      "admitted": false,
+      "exit_requested_epoch": null,
+      "joined_at": "1793897590988987750",
+      "last_active_epoch": 1,
+      "limit": "9400000",
+      "pubkey_voucher": "ed25519:8opHzTAnfzRpPEx21XtnrVTX28YQuCpAjcn1PczScKh",
+      "settled_history": "0",
+      "stake": "11750000",
+      "status": "active",
+      "terms_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  "circleUsdt": "47250000"
+}
