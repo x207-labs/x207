@@ -1,0 +1,12 @@
+[Unit]
+Description=x207 read API and indexer of x207-v017.testnet (EVM agents, relayer fee on every EVM action)
+After=network-online.target
+[Service]
+User=boxd
+WorkingDirectory=/home/boxd/backend
+EnvironmentFile=/etc/x207/backend-v017.env
+ExecStart=/bin/sh start.sh
+Restart=always
+RestartSec=5
+[Install]
+WantedBy=multi-user.target
