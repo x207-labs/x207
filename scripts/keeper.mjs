@@ -7,7 +7,7 @@
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { canReserve, keeperPass, PRUNE_GAS } from "./lib/keeper.mjs";
+import { canReserve, hashIfOk, keeperPass, PRUNE_GAS } from "./lib/keeper.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const { Account, FailoverRpcProvider, JsonRpcProvider, KeyPairSigner } = createRequire(resolve(here, "../sdk/package.json"))("near-api-js");
@@ -39,7 +39,7 @@ const reserveOk = async (gas) => {
 const send = async ({ methodName, args: callArgs, gas = 200_000_000_000_000n }) => {
   if (!(await reserveOk(gas))) throw new Error(`balance of ${args.account} is below the reserve of ${methodName}`);
   const result = await account.callFunctionRaw({ contractId: args.contract, methodName, args: callArgs, deposit: 0n, gas, waitUntil: "FINAL" });
-  return result.transaction.hash;
+  return hashIfOk(result, methodName);
 };
 // `--prune-lag N`: panggil prune_epoch untuk epoch finalized yang sudah N epoch di belakang (interface 0.0.8). Bukan bawaan: yang dibuang tidak terbaca lagi.
 const prune = args["prune-lag"] && args["prune-lag"] !== true

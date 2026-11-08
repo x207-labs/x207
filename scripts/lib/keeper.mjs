@@ -26,6 +26,28 @@ export const KEEPER_GAS = {
 };
 
 /**
+ * A-BE-14: `callFunctionRaw` returns (does not throw) when the receipt failed. `null` when the transaction and every receipt succeeded,
+ * else a short text of the first failure (`transaction` for the transaction itself, `receipt` for a receipt of the chain).
+ */
+export function txFailure(result) {
+  const text = (failure) => JSON.stringify(failure).slice(0, 300);
+  if (result?.status && typeof result.status === "object" && "Failure" in result.status) return `transaction ${text(result.status.Failure)}`;
+  for (const r of result?.receipts_outcome ?? []) {
+    const status = r?.outcome?.status;
+    if (status && typeof status === "object" && "Failure" in status) return `receipt ${text(status.Failure)}`;
+  }
+  return null;
+}
+
+/** Throws when the transaction or one of its receipts failed (the message names the method, the hash and the failure); else returns the hash. */
+export function hashIfOk(result, methodName) {
+  const failure = txFailure(result);
+  const hash = result?.transaction?.hash;
+  if (failure) throw new Error(`${methodName} failed (tx ${hash}): ${failure}`);
+  return hash;
+}
+
+/**
  * The node reserves ten times the gas price (burn price 1e8, reserve 1e9 yoctoNEAR per gas on testnet) plus about 0.9 Tgas of fixed fees, that is 0.001 NEAR per Tgas
  * (measured, solver/src/submit/rpc.ts). `true` when `balance` (yoctoNEAR) covers the reserve of `gas` at the burn price `gasPrice`.
  */
