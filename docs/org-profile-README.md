@@ -2,7 +2,7 @@
 
 **x402 lets agents pay. x207 lets many agents settle at once.**
 
-[Dashboard](https://x207-dashboard.vercel.app) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/mcp) · [Start here: x207-labs/x207](https://github.com/x207-labs/x207)
+[Dashboard](https://x207-dashboard.vercel.app/stats) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/mcp) · [Start here: x207-labs/x207](https://github.com/x207-labs/x207)
 
 x207 is a multilateral clearing layer for x402 agent payments on NEAR. Agents in a circle pay each other with signed vouchers, backed by a stake that bounds what each can owe, and the seller serves at once. At the end of each epoch the circle contract nets every member's position in one on-chain step, and only the net positions settle in USDT. An open solver also removes debt cycles from the gross obligations; in the MVP that does not change who pays what. The binding of the x402 `batch-settlement` scheme is proposed upstream in [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131).
 
@@ -30,7 +30,7 @@ On NEAR testnet, in the circle `x207-v013.testnet` (contract release v0.0.13), a
 
 ## Try it
 
-1. Open the [dashboard](https://x207-dashboard.vercel.app): read-only, no account.
+1. Open the [dashboard](https://x207-dashboard.vercel.app/stats) (the root of the site is a landing page): read-only, no account.
 2. Ask an AI client about the circle through the [MCP server](https://github.com/x207-labs/x207/blob/main/docs/mcp.md): hosted and read-only, or `npx -y @x207/mcp` (0.0.4), also in the Official MCP Registry as `io.github.x207-labs/x207-mcp`.
 3. Or run everything on your machine in a local sandbox: `npm run demo:quick` in the [umbrella](https://github.com/x207-labs/x207#run-it-locally-5-minutes).
 
