@@ -40,7 +40,8 @@ test("every status is one of the known ones, X is exactly the refused class, #11
     const row = rows.find((r) => r.assetType === e.assetType);
     assert.equal(row.status === "X", e.cls === "X", `${e.assetType}: X must be the refused class and only it`);
   }
-  for (const no of ["11", "12", "13", "14"]) assert.equal(rows.find((r) => r.no === no).status, "P1 in progress");
+  for (const no of ["12", "13"]) assert.equal(rows.find((r) => r.no === no).status, "P1 in progress");
+  for (const no of ["11", "14"]) assert.equal(rows.find((r) => r.no === no).status, "testnet");
 });
 
 test("the counts at the top are the counts of the rows", () => {
@@ -53,11 +54,11 @@ test("the counts at the top are the counts of the rows", () => {
   assert.match(text, new RegExp(`\\| \\*\\*All\\*\\* \\| \\*\\*${rows.length}\\*\\* \\|`));
   const offered = rows.length - counts.X;
   assert.equal(offered, 85);
-  assert.match(text, /11 of 85 kinds have run on testnet/);
-  assert.match(text, /24 \(testnet plus sandbox\)/);
-  assert.match(text, /55 \(add the 31 with a mock\)/);
-  assert.equal(counts.testnet + counts.sandbox, 24);
-  assert.equal(counts.testnet + counts.sandbox + counts.mock, 55);
+  assert.match(text, /13 of 85 kinds have run on testnet/);
+  assert.match(text, /26 \(testnet plus sandbox\)/);
+  assert.match(text, /57 \(add the 31 with a mock\)/);
+  assert.equal(counts.testnet + counts.sandbox, 26);
+  assert.equal(counts.testnet + counts.sandbox + counts.mock, 57);
 });
 
 test("a row that is not generic, P1, roadmap or X names at least one proof path that exists", () => {
