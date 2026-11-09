@@ -44,7 +44,7 @@ export const KNOWN_SHA256 = {
   "v0.0.16": "4295351f395d0cc31419d43adf10e5b60f3c2a0e546ae0e912c5da4fef5aebe7", // reproducible build of contracts 93f8d8e (CT-117); the code of x207-v016.testnet
   "v0.0.17": "cbb8a9108f975ba8fca86dc6f6d470e3e377b91309fce56b2ec18a77ff4a4b97", // reproducible build of contracts 83cc5d7 and of the merge d6fdd66 (CT-118); the code of x207-v017.testnet
   // TODO(0.0.18): fill with the sha256 that Worker F's final repro-build.sh prints twice (CT-125); an empty slot counts as "not pinned" (demo-quick and deploy-mainnet stop), so nothing runs on a guess
-  "v0.0.18": "e64d4ec74c42897fc94ddd1dcf6f3b60822486b8ff981f9da5056028a9e1534a", // reproducible build of contracts 993128d on branch p1-0.0.18, twice byte-identical (P1, UM-076); the code of x207-v018.testnet; not a release yet
+  "v0.0.18": "4701ecce4168d18b0674b6b4af9f789219afc33be99d89c09f3a433c0bd0d198", // reproducible build of contracts 993128d on branch p1-0.0.18, twice byte-identical (P1, UM-076); the code of x207-v018.testnet; not a release yet
   "v0.0.14": "7d731dfb15db44aa3a1ca95c28616a6e2faecbf11b87de538940991da33d39f9",
   "v0.0.13": "b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054",
   // not a release: the mock USDT that the quick demo deploys (UM-107, contracts/prebuilt/mock_ft.wasm; a test fixture, never for a real network)
