@@ -29,7 +29,7 @@ export const PETA_MODUL = {
     "@defuse-protocol/one-click-sdk-typescript": "0.1.26",
     "@defuse-protocol/intents-sdk": "0.93.0",
   },
-  cargo: { "near-sdk": "5.29.1" },
+  cargo: { "near-sdk": "5.30.1" }, // 0.0.18 (branch p1-0.0.18): CT-122 moved the contracts to 5.30.1; main stays on 5.29.1 until the migration is approved
 };
 
 function walk(dir, found = []) {

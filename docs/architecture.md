@@ -78,7 +78,7 @@ flowchart TB
 
 | ID | Module | Stack |
 | --- | --- | --- |
-| M1 | `x207-circle` contract | Rust, `near-sdk` 5.29.1 |
+| M1 | `x207-circle` contract | Rust, `near-sdk` 5.30.1 |
 | M2 | `@x207/scheme`, the x402 binding | TypeScript |
 | M3 | Facilitator | TypeScript |
 | M4 | Clearing solver | TypeScript |

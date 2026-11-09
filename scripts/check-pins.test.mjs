@@ -18,10 +18,10 @@ name = "demo"
 version = "0.0.1"
 
 [dependencies]
-near-sdk = "=5.29.1"
+near-sdk = "=5.30.1"
 
 [dev-dependencies]
-near-sdk = { version = "=5.29.1", features = ["unit-testing"] }
+near-sdk = { version = "=5.30.1", features = ["unit-testing"] }
 tokio = { version = "=1.54.1", features = ["full"] }
 local = { path = "../local" }
 `;
@@ -88,8 +88,8 @@ test("TC-UM-007-03b a Peta Modul package pinned to another exact version fails",
 });
 
 test("TC-UM-007-04 Cargo: bare version and caret fail, only =x.y.z passes", () => {
-  for (const version of ["5.29.1", "^5.29.1", "~5.29.1", ">=5.29.1"]) {
-    withFixture({ cargo: CARGO.replace('[dependencies]\nnear-sdk = "=5.29.1"', `[dependencies]\nnear-sdk = "${version}"`) }, (root) => {
+  for (const version of ["5.30.1", "^5.30.1", "~5.30.1", ">=5.30.1"]) {
+    withFixture({ cargo: CARGO.replace('[dependencies]\nnear-sdk = "=5.30.1"', `[dependencies]\nnear-sdk = "${version}"`) }, (root) => {
       const errors = run(root);
       assert.equal(errors.length, 1, version);
       assert.match(errors[0], /Cargo\.toml/);
