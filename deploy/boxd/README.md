@@ -4,7 +4,7 @@ One boxd machine, `x207` (2 vCPU, 8 GiB, auto-suspend and auto-hibernate off), r
 
 | Unit | What | Port | Public URL |
 | --- | --- | --- | --- |
-| `x207-backend` | read API and indexer of `x207-v013.testnet` (GET only, `X207_READ_ONLY=1`, SQLite in `/var/lib/x207`) | 8080 | https://x207.boxd.sh (default proxy) |
+| `x207-backend` | read API and indexer of `x207-v013.testnet` (GET only, `X207_READ_ONLY=1`, SQLite in `/var/lib/x207`) | 8080 | https://x207.boxd.sh/healthz (default proxy; the bare origin answers 404) |
 | `x207-mcp` | hosted MCP server, the six read tools (Streamable HTTP) | 3207 | https://mcp.x207.boxd.sh/mcp (proxy `mcp`) |
 | `x207-keeper` | `scripts/keeper.mjs` in a loop on the account `x207-v013-aux.testnet` | none | none |
 
