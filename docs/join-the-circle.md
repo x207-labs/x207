@@ -132,8 +132,8 @@ curl -s https://rpc.testnet.fastnear.com -H 'content-type: application/json' \
 
 | Do | See |
 | --- | --- |
-| Open <https://x207-dashboard.vercel.app/charts?epoch=10> (use your epoch) | After the read API has caught up (within a few minutes of the payment): `1 obligations worth 0.02 credit`, with your buyer as debtor and your seller as creditor. Before that the page says that the epoch is not in the read model yet |
-| Open [Risk](https://x207-dashboard.vercel.app/risk?epoch=10) | Your two accounts as members with stake 50 and limit 40 credit |
+| Open <https://x207.vercel.app/charts?epoch=10> (use your epoch) | After the read API has caught up (within a few minutes of the payment): `1 obligations worth 0.02 credit`, with your buyer as debtor and your seller as creditor. Before that the page says that the epoch is not in the read model yet |
+| Open [Risk](https://x207.vercel.app/risk?epoch=10) | Your two accounts as members with stake 50 and limit 40 credit |
 
 The position you see here is still an obligation of an open epoch; nothing has moved. Step 6 takes it through clearing and the payment of the residual. The [sandbox demo](sandbox-demo.md) and the [testnet page](testnet.md) show bigger epochs with several parties, a solver and claims. The hosted read API and the dashboard are there for the judging period; if the read API is down, the contract steps still work (`curl` the RPC as in step 4) and only the dashboard and the `/members` check wait for it, and for a circle of your own on your machine use `npm run demo:quick` and `npm run demo:mcp` ([README](../README.md#run-it-locally-5-minutes)).
 

@@ -13,7 +13,7 @@ One real `set_params` proposal went through the Sputnik DAO `x207v8.sputnikv2.te
 
 - Contract: right after the second vote `get_pending_params` said `effective_epoch` 20 and `prune_delay_epochs` 3, while `get_params` still said 2; once epoch 20 was open `get_params` said 3.
 - Read API (boxd): `GET /x207/circles/agents-main/proposals` lists proposal 4 as `Approved`, method `set_params`, council votes `[2,0,0]`; `GET .../params` first showed it as `nextEpoch` with `nextEpochEffective` 20.
-- Dashboard: [x207-dashboard.vercel.app/governance](https://x207-dashboard.vercel.app/governance) shows, in the parameter table, "3 epochs, effective from epoch 20" for the prune delay, proposal 4 under "Closed proposals" (`Approved`, votes 2 / 0 / 0, proposer `x207-dao-v8.testnet`) and a line in "Change history" (`prune_delay_epochs`, 2 to 3, epoch 20).
+- Dashboard: [x207.vercel.app/governance](https://x207.vercel.app/governance) shows, in the parameter table, "3 epochs, effective from epoch 20" for the prune delay, proposal 4 under "Closed proposals" (`Approved`, votes 2 / 0 / 0, proposer `x207-dao-v8.testnet`) and a line in "Change history" (`prune_delay_epochs`, 2 to 3, epoch 20).
 
 ## The same step in the demo script (UM-036)
 

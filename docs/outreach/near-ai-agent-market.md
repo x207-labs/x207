@@ -17,7 +17,7 @@ Because the work is a read of a free API, the owner may decide that the honest p
 | Name | `x207 epoch reporter (testnet)` |
 | Handle | `x207-epoch-reporter` (becomes `market.near.ai/a/x207-epoch-reporter`; check that it is free) |
 | Tagline (one sentence) | Reads one clearing epoch of an x207 clearing circle on NEAR testnet and returns a plain report: cleared ratio, residual payments and each member's settlement. Testnet data, mock USDT. |
-| Photos and videos (up to 6, optional) | Two pictures at most: the dashboard view of epoch 8 (https://x207-dashboard.vercel.app/stats) and the epoch-8 chart in the root README. Caption each: "Testnet, mock USDT." No video. |
+| Photos and videos (up to 6, optional) | Two pictures at most: the dashboard view of epoch 8 (https://x207.vercel.app/stats) and the epoch-8 chart in the root README. Caption each: "Testnet, mock USDT." No video. |
 | Hosting | Self-hosted. Leave the webhook URL empty if the worker polls with its token. |
 | Price per hire | Left to the owner. Required before the listing can go live. |
 | Delivery SLA | Left to the owner. Say a number only if a worker really runs; the team's keeper moves the epochs of the circle only until 2026-11-18, and an epoch asked about may not be closed yet. |

@@ -9,7 +9,7 @@
 
 x402 lets agents pay. x207 lets many agents settle at once.
 
-[Dashboard](https://x207-dashboard.vercel.app/stats) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/mcp) · [Claims and proof](CLAIMS.md) · [What has run](docs/what-has-run.md) · [Join the circle](docs/join-the-circle.md)
+[Dashboard](https://x207.vercel.app/stats) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/mcp) · [Claims and proof](CLAIMS.md) · [What has run](docs/what-has-run.md) · [Join the circle](docs/join-the-circle.md)
 
 x207 is a multilateral netting and clearing layer for x402 agent payments on NEAR. Agents in a circle pay each other with signed vouchers, backed by a stake that bounds what each can owe; at the end of each epoch the circle contract nets every member's position in one on-chain step, so only the net positions are settled in USDT, and an open solver removes the debt cycles from the gross obligations in the same step. It is built as a binding of the x402 `batch-settlement` scheme on the network `x207:<circleId>`, and a buyer outside the circle can still pay with the `exact` scheme on NEAR. The binding is proposed upstream in [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131).
 
@@ -39,7 +39,7 @@ One paid call as a sequence, the epoch as a state machine, and the data flow: [d
 
 Three read-only steps, with nothing to install, no account and no key. The circle is shared testnet and anybody can add epochs, so the newest ones change; epoch 8 is fixed.
 
-1. **Dashboard:** <https://x207-dashboard.vercel.app/stats> (the root of the site is a landing page; the dashboard is at `/stats`) showed, as of 2026-11-04, epoch 8: members, obligation graph, clearing statistics, risk. Epoch 8 was run by the team's demo script from a team machine.
+1. **Dashboard:** <https://x207.vercel.app/stats> (the root of the site is a landing page; the dashboard is at `/stats`) showed, as of 2026-11-04, epoch 8: members, obligation graph, clearing statistics, risk. Epoch 8 was run by the team's demo script from a team machine.
 2. **Read API** (the same data as JSON, circle `agents-main` on `x207-v013.testnet`):
 
    ```bash

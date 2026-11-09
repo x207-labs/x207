@@ -15,7 +15,7 @@
     },
     {
       "name": "web",
-      "endpoint": "https://x207-dashboard.vercel.app/stats",
+      "endpoint": "https://x207.vercel.app/stats",
       "version": "dashboard"
     }
   ],

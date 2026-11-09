@@ -27,12 +27,12 @@ Numbers below are the ones of the README and of the hosted read API on 2026-11-0
 | What | URL |
 | --- | --- |
 | Repository | <https://github.com/x207-labs/x207> |
-| Dashboard (epoch 8 among the epochs; the root of the site is a landing page, the dashboard is at `/stats`) | <https://x207-dashboard.vercel.app/stats> |
+| Dashboard (epoch 8 among the epochs; the root of the site is a landing page, the dashboard is at `/stats`) | <https://x207.vercel.app/stats> |
 | Read API | `https://x207.boxd.sh/x207/circles/agents-main/epochs/8/metrics` |
 | Remote MCP server (read-only, Streamable HTTP) | `https://mcp.x207.boxd.sh/mcp` |
 | Local, no account | `npm run demo:quick` (about 5 minutes), `npm run demo:mcp` (about 2 minutes) |
 | Contract | release v0.0.13, `https://github.com/x207-labs/contracts/releases/tag/v0.0.13` (epoch 8). Later releases: v0.0.14 (EVM members, `x207-v014.testnet`) and v0.0.15 (settling from the stake, `x207-v015.testnet`), `https://github.com/x207-labs/contracts/releases/tag/v0.0.15`; both deployed from the reproducible build of the tag |
-| Dashboard circles | `https://x207-dashboard.vercel.app/stats?circle=v014` and `?circle=v015` (the old `/?circle=` links redirect to `/stats`) show the circles of the later releases (testnet, mock USDT; the circle picker in the header) |
+| Dashboard circles | `https://x207.vercel.app/stats?circle=v014` and `?circle=v015` (the old `/?circle=` links redirect to `/stats`) show the circles of the later releases (testnet, mock USDT; the circle picker in the header) |
 
 ## The numbers that may be quoted (epoch 8, API and README agree)
 
