@@ -107,7 +107,8 @@ export function analyseContract(): ContractWrites {
   for (const [name, body] of bodies) {
     const stores = new Set<string>();
     for (const { stores: s, field } of WRITES) {
-      if (new RegExp(`\\bself\\.${field}\\s*\\.\\s*${MUTATE}|\\bself\\.${field}\\s*(?:\\+=|-=|=(?!=))`).test(body)) s.forEach((x) => stores.add(x));
+      // `\s*` around the dots: rustfmt splits a long chain over lines (`self\n.members\n.get_mut(..)`), as in `admit_member`
+      if (new RegExp(`\\bself\\s*\\.\\s*${field}\\s*\\.\\s*${MUTATE}|\\bself\\s*\\.\\s*${field}\\s*(?:\\+=|-=|=(?!=))`).test(body)) s.forEach((x) => stores.add(x));
     }
     for (const { stores: s, opener } of KEYED) {
       for (const m of body.matchAll(new RegExp(`let\\s+mut\\s+(\\w+)\\s*=\\s*${opener}\\(\\)`, "g"))) {
