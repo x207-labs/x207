@@ -144,7 +144,7 @@ A member can opt in with `set_auto_settle(true)` (1 yocto; an EVM member signs `
 - SDK: `USDT_TOKEN_ID` read from config (an override, `usdtTokenId`, exists already);
 - backend: the Intents asset `nep141:<usdc>`, plus quote and withdraw;
 - faucet: real USDC cannot be minted by us, so test funds would come from the Circle faucet. Whether it serves ordinary NEAR accounts has not been checked;
-- frontend environment variables.
+- frontend: only the new circle's contract id. The dashboard reads the token from the circle's `get_circle` view; the build setting `VITE_X207_USDT_TOKEN_ID` is only the fallback.
 
 **Names stay.** The field `usdt_token_id` and the error `ERR_ESCROW_USDT` keep their names: renaming them changes the interface. The name is historical; the field holds whatever token the circle was created with.
 
