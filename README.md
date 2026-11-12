@@ -131,6 +131,25 @@ A member can opt in with `set_auto_settle(true)` (1 yocto; an EVM member signs `
 
 **Keys.** An agent holds two kinds of key. Its **voucher key** is a separate ed25519 key that is no access key of any NEAR account: it signs only vouchers and cannot move funds, and a leaked one can create vouchers only up to the credit limit. Its **NEAR access key** is needed only for `join`, `settle` and `claim`, because these calls attach a deposit (0.35 NEAR for `join`, 1 yoctoNEAR for the stake, the residual and `claim`) and NEAR does not let a function-call key attach one, so that key must be a **full-access** key of the agent account. The MCP server keeps those three tools off until its operator sets `X207_ALLOW_FULL_ACCESS_KEY=1` (and `X207_ALLOW_OUTFLOWS=1` for `join` and `settle`); the owner of the agent holds the key, on a dedicated account that holds only what the agent may lose. The tools that pay, list, offer and accept use the voucher key alone. Details: [docs/security-and-limits.md](docs/security-and-limits.md#keys-of-an-agent).
 
+## Settlement token: USDT now, USDC on the roadmap
+
+**Now.** The circle settles in NEP-141 USDT. On testnet that is a mock token, `usdt.x207-deployer.testnet` (6 decimals, handed out by the x207 faucet). The mainnet target is `usdt.tether-token.near`. Nothing has run on mainnet.
+
+**Roadmap: native Circle USDC.** x402 is built on USDC, and cross-chain withdrawals from the circle go to USDC on Base, so USDC is the natural settlement token. Official USDC has 6 decimals, the same as `CREDIT_DECIMALS=6`, so the contract arithmetic does not change. NEAR mainnet `17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1`; testnet `3e2210e1184b45b64c8a434c0a7e7b23cc04ea7eb7a6c3c32520d03d4afcb8af` (`ft_metadata` read over RPC on 2026-11-12: USDC, 6 decimals).
+
+**How the token is chosen.** The token account is an init argument of the circle: `new(owner_id, circle_id, usdt_token_id, intents_id, params)` ([`config.rs`](https://github.com/x207-labs/contracts/blob/main/x207-circle/src/config.rs)). There is no setter. Moving to USDC means deploying a new circle with `usdt_token_id` set to USDC; the new circle starts empty, so members join and stake again.
+
+**What the move needs:**
+- a new circle with `usdt_token_id` = USDC;
+- SDK: `USDT_TOKEN_ID` read from config (an override, `usdtTokenId`, exists already);
+- backend: the Intents asset `nep141:<usdc>`, plus quote and withdraw;
+- faucet: real USDC cannot be minted by us, so test funds would come from the Circle faucet. Whether it serves ordinary NEAR accounts has not been checked;
+- frontend environment variables.
+
+**Names stay.** The field `usdt_token_id` and the error `ERR_ESCROW_USDT` keep their names: renaming them changes the interface. The name is historical; the field holds whatever token the circle was created with.
+
+**Status:** not started. It is planned after the hackathon.
+
 ## Where to read more
 
 | Topic | File |
