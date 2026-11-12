@@ -1,0 +1,100 @@
+{
+  "network": "testnet",
+  "circle": "x207mn-circle.testnet",
+  "owner": "x207mn.sputnikv2.testnet",
+  "release": {
+    "tag": null,
+    "source": "file contracts/prebuilt/x207_circle-0.0.18.wasm",
+    "wasmSha256": "4701ecce4168d18b0674b6b4af9f789219afc33be99d89c09f3a433c0bd0d198",
+    "codeHash": "5nBeeNaeWbVH7Q1c3mfG1NPThENb9PA8BvVgjauf6Aib"
+  },
+  "initArgs": {
+    "owner_id": "x207mn.sputnikv2.testnet",
+    "circle_id": "agents-main",
+    "usdt_token_id": "x207mn-usdt.testnet",
+    "intents_id": "intents.testnet",
+    "params": {
+      "epoch_length": 600,
+      "payment_window": 900,
+      "proposal_window": 60,
+      "base_limit_ratio": 8000,
+      "limit_growth": 1000,
+      "limit_cap": "1000000000",
+      "limit_decay": 0,
+      "fees": {
+        "clearing_fee_bps": 0,
+        "solver_fee_bps": 0
+      },
+      "admission": "open"
+    }
+  },
+  "pinnedSha256": "4701ecce4168d18b0674b6b4af9f789219afc33be99d89c09f3a433c0bd0d198",
+  "costs": {
+    "rows": [
+      {
+        "account": "circle",
+        "minimum": 7.98,
+        "recommended": 9.25,
+        "basis": "measured size of the release wasm",
+        "note": "code 7.88 NEAR locked as storage (787568 bytes), state of `new` and of the asset catalog about 0.37, 1 NEAR spare. The member storage is paid by the join deposit (0.35 NEAR each, not returned). deploy-mainnet.mjs refuses an account below 8 NEAR."
+      },
+      {
+        "account": "keeper",
+        "minimum": 0.17,
+        "recommended": 0.41,
+        "basis": "estimate (reserve rule, measured on testnet)",
+        "note": "the largest call is commit_epoch at 150 Tgas, which reserves 0.1509 NEAR; close/finalize/prune reserve 0.0209/0.1009/0.2009. The keeper refuses to sign below the reserve. Recommended covers 20 epochs."
+      },
+      {
+        "account": "solver",
+        "minimum": 0.08,
+        "recommended": 0.18,
+        "basis": "estimate (reserve rule, measured on testnet)",
+        "note": "submit_clearing at 60 Tgas reserves 0.0609 NEAR and burns about 0.003 for 210 edges. The solver stops with a clear message below the reserve. Recommended covers 20 epochs."
+      },
+      {
+        "account": "each agent",
+        "minimum": 0.4,
+        "recommended": 0.5,
+        "basis": "JOIN_STORAGE_DEPOSIT 0.35 NEAR + gas",
+        "note": "the join deposit is not returned (6 agents: 3.0 NEAR with the spare)"
+      }
+    ],
+    "total": 12.84,
+    "epochBurn": {
+      "edgesPerEpoch": 210,
+      "wholeEpoch": 0.1075
+    }
+  },
+  "facts": {
+    "ownerIsDao": true,
+    "usdt": null,
+    "intentsHasCode": false,
+    "circleNear": "10000",
+    "circleCodeHash": "11111111111111111111111111111111",
+    "alreadyDeployed": false
+  },
+  "warnings": [
+    "x207mn-usdt.testnet does not answer ft_metadata (the mock token of testnet has none)",
+    "intents.testnet has no code"
+  ],
+  "problems": [],
+  "steps": [
+    {
+      "step": "deploy",
+      "hash": "Ak3QVYSBueqbssaeE8Lf2kYL63kifgumKcqW2FjAEEMW"
+    },
+    {
+      "step": "init",
+      "hash": "DnVgVM9XUDDGyqXQ7tMZa4ptFuMv2bjx685nYRWHPUHe"
+    }
+  ],
+  "check": {
+    "codeHash": "5nBeeNaeWbVH7Q1c3mfG1NPThENb9PA8BvVgjauf6Aib",
+    "codeHashIsTheRelease": true,
+    "owner": "x207mn.sputnikv2.testnet",
+    "ownerIsTheDao": true,
+    "interfaceVersion": "0.0.18",
+    "interfaceIsTheTag": null
+  }
+}

@@ -244,3 +244,136 @@ near contract call-function as-transaction <circle> claim json-args '{"epoch":<n
 ### 12.8 Not tested, and why
 
 Mainnet itself (the owner's decision); `usdt.tether-token.near` and `intents.near` behaviour (they exist only on mainnet; Intents `execute_intents` batch limits are from the sandbox, section 4); the v3.2 global-code DAO factory (testnet factory deploys the whole code); a full `join` → `stake` → epoch → `claim` chain with a real admitted member on v0.0.15 (needs a DAO `admit_member` vote; the same chain ran on v0.0.13 in section 10 and the auto-settle epoch ran in CT-108's testnet tests); the reproducible hash of v0.0.15 (the Docker build was started but `timeout` is missing on this Mac, so it did not finish; run `contracts/scripts/repro-build.sh HEAD <dir>` on the tagging machine).
+
+## 13. Mainnet preparation for v0.0.18, backend, appraiser and frontend (BE-121, 2026-11-12)
+
+**Nothing in this section ran on mainnet.** It was prepared on 2026-11-12 and rehearsed on testnet in a mainnet-like configuration (13.6). Every mainnet transaction and deploy needs the owner's explicit approval per step. The keys in `.secrets/testnet-deployer/` are never used or moved for mainnet; mainnet accounts are created and funded by the owner. Sections 1 to 12 stay valid for the order of steps; this section replaces their numbers for v0.0.18 (wasm 787,568 bytes, sha256 `4701ecce4168d18b0674b6b4af9f789219afc33be99d89c09f3a433c0bd0d198`, tag `v0.0.18`, pinned in `scripts/deploy-mainnet.mjs`).
+
+### 13.1 Inventory of what must exist on mainnet
+
+The owner creates every account with a full-access key in the owner's keychain (`near account create-account fund-myself …`). There is no faucet. Names are proposals; decision 1 of section 1 fixes the circle name.
+
+| Account | Role | Who signs with it | Minimum NEAR | Notes |
+| --- | --- | --- | ---: | --- |
+| `<owner>.near` (exists) | pays the DAO deposit, adds proposals, funds the others | owner | see 13.2 | the owner's own account |
+| `<council-a>.near`, `<council-b>.near` | DAO council, two votes pass | owner (keychain, one key each) | 0.5 each | add a third if the owner wants 2 of 3 |
+| `x207-circle.near` (decision 1) | holds contract 0.0.18 | `deploy-mainnet.mjs` once, key file in a folder with a `mainnet` subfolder; delete the key after step M5 | 9.25 | top-level name: `near account create-account fund-myself x207-circle.near '9.3 NEAR' …` |
+| `<keeper>.near` | `commit_epoch`, `close_epoch`, `finalize_epoch`, `prune_epoch` | script (`scripts/keeper.mjs`) | 0.41 | the keeper refuses to sign below its reserve |
+| `<solver>.near` | `submit_clearing` | script (`solver`) | 0.18 | |
+| `<relayer>.near` | facilitator relayer, pays gas for `register_cumulative` | script (`backend`/facilitator) | 1.5 | |
+| `<agent-1..6>.near` (or sub-accounts of the circle) | demo members: `join`, stake, vouchers, `claim` | script or owner | 0.5 each | the join deposit is 0.35 NEAR and is not returned |
+| `<creditor-base>` | an EVM address on Base that receives USDC in UM-027 | owner's wallet | n/a | a fresh address the owner controls |
+
+Third-party contracts (all read on 2026-11-04, section 9): `usdt.tether-token.near` (6 decimals, `storage_deposit` 0.00125 NEAR per holder), `intents.near` (the circle is not registered there; no storage deposit by the user), `sputnik-dao.near` (factory, v3.2 global code). 1Click needs an `ONECLICK_JWT` that the owner requests.
+
+New infrastructure (templates committed, nothing started):
+
+| Unit | What | Port | File | Needs |
+| --- | --- | --- | --- | --- |
+| `x207-neardata-cache-mainnet` | one reader of `mainnet.neardata.xyz` (`302` on `/v0/last_block/final`, checked 2026-11-12) | 8098 | `deploy/boxd/x207-neardata-cache-mainnet.service` | none |
+| `x207-backend-mainnet` | read API + indexer of the mainnet circle, `X207_READ_ONLY=1`, no faucet | 8085 | `deploy/boxd/x207-backend-mainnet.service`, `deploy/boxd/backend-mainnet.env` | the circle account and its deploy block |
+| appraiser (inside the backend unit) | `POST /x207/appraise`, same NEAR AI model as testnet | 8085 | `X207_APPRAISER_NEARAI_KEY` set on the machine only | the same key as v018; it does not touch money |
+| proxy | `boxd machine proxy add mainnet --vm x207 --port 8085` gives `https://mainnet.x207.boxd.sh` | | | |
+
+The indexer reads `https://tx.main.fastnear.com/v0/account` (answers for `usdt.tether-token.near`, checked 2026-11-12) and `https://rpc.mainnet.fastnear.com`; the MPC contract of the marketplace is `v1.signer`. The unit uses its own SQLite `/var/lib/x207/x207-mainnet.sqlite`, so the testnet units are untouched.
+
+### 13.2 Cost, with the source of every number
+
+Price of storage 1e19 yoctoNEAR per byte, gas price 1e8 (read from the mainnet RPC on 2026-11-04, section 9). `node scripts/mainnet-costs.mjs --wasm contracts/prebuilt/x207_circle-0.0.18.wasm` (run 2026-11-12) gives the lines marked [costs].
+
+| Item | NEAR | USDT | Source |
+| --- | ---: | ---: | --- |
+| Contract code of 0.0.18, locked as storage (787,568 bytes × 1e19) | 7.876 | 0 | arithmetic, [costs] "code 7.88" |
+| State of `new`, asset catalog, 1 NEAR spare → circle account funded | 9.25 (minimum 7.98; `deploy-mainnet.mjs` refuses below 8) | 0 | [costs] |
+| Keeper (reserve of `commit_epoch` 150 Tgas = 0.15 NEAR, covers 20 epochs at 0.41) | 0.41 | 0 | [costs] |
+| Solver (`submit_clearing` 60 Tgas reserves 0.061, burns about 0.003) | 0.18 | 0 | [costs] |
+| Six demo agents: join deposit 0.35 + gas, funded 0.5 | 3.0 | 0 | [costs] |
+| Facilitator relayer | 1.5 | 0 | section 12.2 |
+| DAO factory deposit (kept in the DAO; start with 1, raise only if refused) | 1.0 to 1.5 | 0 | section 9 |
+| Two council accounts | 1.0 | 0 | 0.5 each, new accounts |
+| DAO gas (`create` 300 Tgas = 0.03; each `add_proposal` and `act_proposal` about 0.002 to 0.02) | 0.1 | 0 | 1 Tgas = 1e12 × 1e8 yocto = 0.0001 NEAR |
+| Class proposals: bond 0.1 NEAR × 94, **returned when finalized** (float, not a cost) | 9.4 float | 0 | section 12.2; `print-class-proposals.mjs` prints 94 for v0.0.18 |
+| Token storage: 0.00125 NEAR per USDT holder, 9 holders | 0.011 | 0 | section 9 |
+| `set_params` proposal bond 0.1, returned | 0.1 float | 0 | `mainnet-set-params.mjs` |
+| USDT: 6 agents stake 2 each + spare for residuals and fees | 0 | 20 | sections 2 and 12.2 |
+| Withdraw USDT to USDC on Base through 1Click (fee not known until the dry quote) | < 0.01 gas | ≤ 1 | UM-027; **the minimum amount of the route is not verified**, read it from the dry quote |
+
+**Total the owner must hold: about 17 NEAR (of which 9.4 comes back and about 8 is locked in the contract code) and 20 USDT**, plus a few cents of NEAR AI credit (an appraisal costs about 0.00022 USD; the caps of 20 per IP and 200 per day bound it to about 0.044 USD a day). The old figure of section 12.2 (16.7 NEAR) grew by the 0.0.15 → 0.0.18 code: 0.66 NEAR more storage. The boxd machine already runs; the mainnet unit adds one SQLite file and one process.
+
+### 13.3 Ordered steps
+
+"Signs": **owner** = the owner approves and signs in the keychain; **script** = a script signs with a key the owner placed. Every step ends with a check; stop at the first difference. Commands run from the root of this repository. `<circle>`, `<dao>`, `<owner>`, `<m>` as in section 12.
+
+| # | Step | Command | Signs | Verify | Rollback |
+| --- | --- | --- | --- | --- | --- |
+| M0 | Accounts | the owner creates and funds the accounts of 13.1; copy `.env.mainnet.example` to `.env.mainnet` (ids only) | owner | `node scripts/mainnet-preflight.mjs`: NEAR rows OK for every account | none needed; unused accounts can be deleted |
+| M1 | Reproducible build and release check | `gh release download v0.0.18 -R x207-labs/contracts`; `contracts/scripts/repro-build.sh <commit of the tag> <dir>` (needs Docker; the pinned hash comes from two byte-identical builds of `f551f51`, see `KNOWN_SHA256`); `shasum -a 256 x207-circle-v0.0.18.wasm` | none | sha256 equals `4701ecce…d198` (also `KNOWN_SHA256["v0.0.18"]`, `SHA256SUMS`, and `contracts/prebuilt/`) | none |
+| M2 | DAO | `node contracts/dao/create-dao.mjs --name x207 --council <a>.near,<b>.near --signer <owner> --network mainnet`, the owner reads and runs the printed command (300 Tgas, deposit 1 NEAR) | owner | `get_policy` of `x207.sputnik-dao.near` lists the council and `proposal_period` 3600000000000 | an unspent name is free again; the deposit stays in the DAO; if `create` is refused the deposit returns |
+| M3 | Deploy dry run | `node scripts/deploy-mainnet.mjs --network mainnet --circle <circle> --owner <dao> --wasm x207-circle-v0.0.18.wasm --expect-sha256 4701ecce4168d18b0674b6b4af9f789219afc33be99d89c09f3a433c0bd0d198 --params-file params.json --out docs/mainnet-dry-run.json` | none (no key read) | `problems` is empty; `facts.usdt` is `usdt.tether-token.near` | none |
+| M4 | **Owner go for mainnet** | the owner reads `docs/mainnet-dry-run.json` | owner | explicit "yes" in chat | |
+| M5 | Deploy and `new` | the same command plus `--keys-dir <dir> --out docs/mainnet-deploy.json --execute --yes-owner-approved` (`usdt_token_id=usdt.tether-token.near`, `intents_id=intents.near`, `owner_id=<dao>`) | script, key of `<circle>` | `code_hash` = release, `get_owner` = `<dao>`, `interface_version` 0.0.18 | `near account delete-account <circle> beneficiary <owner>`, start over under a new name if a member already joined |
+| M6 | Verify | `contracts/scripts/verify-release.sh v0.0.18 <circle> https://rpc.mainnet.fastnear.com`, then `X207_EXPECTED_WASM_SHA256=4701ecce… node scripts/mainnet-preflight.mjs`; the owner deletes the circle's full-access key | owner | "MATCH"; preflight shows no MISSING row for the contract | |
+| M7 | Token storage | step 8 of 12.3, for the circle and every holder | owner | `storage_balance_of` is not null | none (0.00125 NEAR each) |
+| M8 | Asset classes | `node scripts/print-class-proposals.mjs --network mainnet …` (94 proposals), the council votes with `contracts/dao/vote-proposal.mjs` | owner / council | `list_asset_classes` | a new proposal overwrites a class |
+| M9 | Backend and appraiser | on the boxd machine: fill `<circle>` and the block in `deploy/boxd/backend-mainnet.env`, copy it to `/etc/x207/backend-mainnet.env`, copy the two `.service` files, build the backend bundle as for v018, set `X207_APPRAISER_NEARAI_KEY` with the temporary-file method of BE-120, `systemctl enable --now x207-neardata-cache-mainnet x207-backend-mainnet`, `boxd machine proxy add mainnet --vm x207 --port 8085` | owner approves, Worker runs | `curl https://mainnet.x207.boxd.sh/healthz`; `/x207/circles/agents-main/params` equals `get_params`; the indexer follows blocks | `systemctl disable --now` both units; the testnet units are not touched |
+| M10 | Frontend | 13.4 | owner | the page shows the mainnet circle | delete the Vercel project |
+| M11 | Join and stake (UM-026) | section 12.4, six agents, 2 USDT each; `admission` as the owner decided | script / owner | `member` is `active` with `stake` 2000000; the indexer shows it | `request_exit` + `withdraw_stake` (the 0.35 NEAR does not return) |
+| M12 | One clearing epoch | `DEMO_NETWORK=mainnet X207_CONFIRM_REAL_TX=yes X207_CONFIRM_MAINNET=yes npm run demo:mainnet` with the env of 13.6 (about 25 minutes) | script | `get_epoch` goes `open` → `committed` → `finalized`; transfers = members with a non-zero net position | a failed epoch is finalized by the keeper; stakes are not lost |
+| M13 | Residual through Intents (BE-026, UM-027) | `claim` with `destination: "intents"` (12.5), `simulate_intents`, a dry 1Click quote, then a nominal amount | owner | `intents_balance`; `mt_balance_of` at `intents.near` | funds stay on `intents.near` under the creditor's key |
+| M14 | Withdraw to Base (UM-027) | 1Click quote with the real destination, then the withdrawal | owner | USDC arrives at `<creditor-base>`; hash recorded | stop at the dry quote if it fails (section 12.5) |
+| M15 | DAO `set_params` (CT-050, UM-028) | section 12.3 step 10 | owner / council | `Approved`, `get_pending_params`, active after the next epoch | a new proposal restores the old value |
+
+### 13.4 Frontend on mainnet
+
+Do not touch the testnet production project (`x207-dashboard`, `x207`). Create a **separate Vercel project** `x207-mainnet` from the same `frontend/` directory (a project, not a branch, so the testnet alias keeps its own environment). Its build variables, from `frontend/.env.example`:
+
+| Variable | Value |
+| --- | --- |
+| `VITE_NEAR_NETWORK` | `mainnet` |
+| `VITE_X207_CONTRACT_ID` | `<circle>` |
+| `VITE_X207_CIRCLE` | `agents-main` |
+| `VITE_X207_API_URL` | `https://mainnet.x207.boxd.sh` |
+| `VITE_X207_USE_FIXTURES` | `false` |
+| `VITE_NEAR_RPC_URL` | `https://rpc.mainnet.fastnear.com` |
+
+`X207_CORS_ORIGINS` of the mainnet backend lists `https://x207-mainnet.vercel.app`; change both together if the owner picks another name. Per the standing order the frontend work is last and needs the owner's explicit yes; only `VITE_*` values go to Vercel, never a key.
+
+### 13.5 Parameterised scripts
+
+`deploy-mainnet.mjs`, `mainnet-preflight.mjs` (`X207_PREFLIGHT_NETWORK`), `contracts/dao/*.mjs` (`--network`, `--factory`, `--deposit`), `print-class-proposals.mjs` (`--network`), `verify-release.sh` (account and RPC arguments) and `demo/network.demo.ts` (`DEMO_NETWORK`) already take the network as an argument, which is what made 13.6 possible with new names and no code change. Added in BE-121: the three `deploy/boxd` mainnet templates above. The gate stays: `deploy-mainnet.mjs` needs `--execute --yes-owner-approved`, the demo needs `X207_CONFIRM_REAL_TX=yes` and `X207_CONFIRM_MAINNET=yes`, and a keys folder with `testnet` in its path is refused for mainnet.
+
+### 13.6 Rehearsal on testnet, mainnet-like (2026-11-12)
+
+Same scripts and steps as 13.3 with new faucet accounts (keys in `.secrets/testnet-mainnet-rehearsal/`, outside every repository; not the old circle and not `.secrets/testnet-deployer/`). Circle `x207mn-circle.testnet`, DAO `x207mn.sputnikv2.testnet`, council `x207mn-c1`, `x207mn-c2`, mock token `x207mn-usdt.testnet` (testnet has no real USDT), keeper `x207mn-keeper.testnet`, solver `solver.x207mn-c1.testnet`, relayer `relayer.x207mn-c2.testnet`, six agents `<name>.x207mn-keeper.testnet`, three extra members `x207mn-a1..a3`. Release 0.0.18, `admission: "open"`.
+
+| Step | Result | Transaction |
+| --- | --- | --- |
+| M2 DAO | `get_policy`: council c1, c2; `proposal_period` 3600000000000 (testnet factory takes 7 NEAR, mainnet 1) | `Hh9hqhZvYHCA54SVTYRLzgkd4WYBbPq51pDtQXnk3PaK` |
+| mock token | deploy + `new` | `CRdWa5mdXz85Y8g67RFZHEDg2ZcCLXYRq5YDPXYHyP7R` |
+| M3 dry run | `problems: []`, `steps: []`, "nothing signed, no key read" | none |
+| M5 deploy / `new` | `code_hash` `5nBeeNaeWbVH7Q1c3mfG1NPThENb9PA8BvVgjauf6Aib` = release, `ownerIsTheDao: true`, `interface_version` 0.0.18 | deploy `Ak3QVYSBueqbssaeE8Lf2kYL63kifgumKcqW2FjAEEMW`, `new` `DnVgVM9XUDDGyqXQ7tMZa4ptFuMv2bjx685nYRWHPUHe` |
+| M6 verify | `verify-release.sh v0.0.18 x207mn-circle.testnet`: "MATCH: the account runs the wasm of v0.0.18"; preflight OK for code, version, owner (USDT, Intents and 1Click rows MISSING on testnet, as expected) | none |
+| M8 class | 1 of 94 proposals: `Approved` after two votes (the other 93 not run) | add `AxC9Gs68zbbqnrkrYvRNkRLNvfx2soUthi9ghWRrZbA9`, votes `8UJ81umhTiN8ZNNCGtjCSfF65PCDvg42VLADj6uN1ar1`, `7sXevyjU27vKjdds6M77Bm6QuzGBNGAzJjHbTT3vtUGo` |
+| M11 join, stake (3 members) | `member`: `active`, `stake` 2000000, `limit` 1600000 | join/stake a1 `2NtrZ1Z94e2Har9gaQ4sUbYuQd8HnGLzd5J3KPjVvvWa` / `4zozgXBgEWWvJfYiYzzSGQqHgHhPRiEbANU4Fm8kbTGN`; a2 `Fj94tgVxnL2o8HFs3epSb4bd2fMgojUwtRfkBnLVMaWB` / `72cc85YQGTWCWrp8Uq93LTYAS7acUDvUna5xXYKkEo55`; a3 `224gjYowNp8A9zMzK1zua5mEReoF6ahb6D2K6cJfTE3M` / `3DPCiDUqukq6e8XBrarD5CgQomyY4hNwjWr8T91YzUr4` |
+| M15 `set_params` | dry run `epoch_length: 600 -> 900`; proposal `Approved` after two votes; `get_pending_params` shows 900 | add `67MTTPU9Sscq3RL1mgtaTB4fqQyHjRUE8koKkvb9PXsn`, votes `2TxjgBCUDuUYe7td36J6RyjvJa7hZfvsqghxurNTvRLy`, `HXbbvNCnmc7iEXAxMu1wQ26R9K8BQ6nK6GcyBoDPZrp3` |
+| M12 epoch | `demo:testnet` (`DEMO_MINT_USDT=yes`, `DEMO_DEFAULT=summarizer`), 1 test passed in 1357 s: 6 agents joined and staked, 20 vouchers, cleared 280000 of 400000 (20 payments became 2 transfers), `finalize_epoch`, creditors `claimable`; the debtor `summarizer` was `defaulted`, 40000 of 2000000 slashed, limit 0. All hashes in `docs/rehearsal/mn-demo.json` | `close_epoch` `88qCwosVt5EsfxivaQ71waEHdD4BLoLWzWbzcWJapxgs`, `submit_clearing` `EMhEuMtJgx5G27kosEZQs1g6zpi7yDNrYLPcHHMKPuEn`, `commit_epoch` `65TkuQfFLc4SRQwwgW49t7htaAyW99egAot1MyznQL8m`, `finalize_epoch` `996tmyF8PEipneEoKv4Zao3jvqbNYkrKXxVqLjowUVA7`, claims `AWBmb4quwNty3A5Zhhwn1yKeBLQKuZ6pQ9SWev5QFwrT`, `GFs9HjAUNBK66Rj33MPKxzPCzMQZSFNBjpaRipRtYJPK` |
+| M13, M14 | **not run**: `intents.testnet` has no code and testnet has no 1Click route to Base | |
+
+What the rehearsal taught: the faucet refused the 11th top-level account of one run (10 were created), so the six agents were made as sub-accounts of a funded parent (`create-faucet-accounts.mjs` gives them 2 NEAR each), which also fits `AGENT_ACCOUNT_TEMPLATE`; the DAO deposit of testnet (7 NEAR) is not the mainnet one (start at 1).
+
+### 13.7 Readiness of the mainnet backlog items (read from the Backlog Masters on 2026-11-12)
+
+| Item | Status | What is missing | Blocked by |
+| --- | --- | --- | --- |
+| CT-045 DAO script | selesai (script, tested on testnet and in the sandbox) | the mainnet run: M2 | owner's council accounts and the "go" of M4; the v3.2 global-code DAO factory was never run (section 9) |
+| CT-049 real USDT stake and claim to Intents | sebagian (`7d7b97d`, prepared for v0.0.13) | M5 for 0.0.18, M7, M11, M13 with real USDT; the tx hashes of stake and claim | accounts, 20 USDT, CT-045 |
+| CT-050 DAO `set_params` on mainnet | sebagian (`ca93f61`, dry run) | M15 on mainnet | CT-049 (a live circle) |
+| BE-026 residual path | sebagian (`b3072ef`, stages 1 to 3 on 2026-11-04) | stage 4: one nominal residual through `intents.near` | `ONECLICK_JWT`, a funded circle, owner confirmation |
+| BE-029 entry path | selesai (sandbox `42c1637`) | nothing new; mainnet use is M13 | none |
+| BE-033 end-to-end residual | sebagian (`723436c`) | one withdrawal to another chain (M14) | BE-026 stage 4, UM-024 |
+| UM-026 onboarding e2e | belum | M11 with real USDT, indexer shows `active` | accounts, USDT, M9 backend |
+| UM-027 settlement e2e | belum | M12 to M14, USDC arrives on Base | everything above, a minimum amount of 1Click that is not verified |
+| UM-028 governance e2e | belum | M15, then the dashboard shows the new `epoch_length` | M10 frontend, which waits for the owner's "go" |
+| UM-040 two dress rehearsals on mainnet | belum | the whole of 13.3 twice, hashes in the README before 2026-11-14T23:59Z | the owner's decision and funding; each run is about 25 minutes of epoch plus the DAO waits |
+
+None of these rows can be closed without a mainnet transaction, so none is closed by this preparation.

@@ -1,0 +1,285 @@
+{
+  "network": "testnet",
+  "accounts": [
+    {
+      "id": "x207mn-circle.testnet",
+      "role": "circle contract"
+    },
+    {
+      "id": "x207mn-usdt.testnet",
+      "role": "USDT token"
+    },
+    {
+      "id": "x207mn-keeper.testnet",
+      "role": "keeper"
+    },
+    {
+      "id": "solver.x207mn-c1.testnet",
+      "role": "solver"
+    },
+    {
+      "id": "relayer.x207mn-c2.testnet",
+      "role": "relayer"
+    },
+    {
+      "id": "translator.x207mn-keeper.testnet",
+      "role": "agent translator"
+    },
+    {
+      "id": "summarizer.x207mn-keeper.testnet",
+      "role": "agent summarizer"
+    },
+    {
+      "id": "scraper.x207mn-keeper.testnet",
+      "role": "agent scraper"
+    },
+    {
+      "id": "image.x207mn-keeper.testnet",
+      "role": "agent image"
+    },
+    {
+      "id": "cleaner.x207mn-keeper.testnet",
+      "role": "agent cleaner"
+    },
+    {
+      "id": "gpu.x207mn-keeper.testnet",
+      "role": "agent gpu"
+    }
+  ],
+  "steps": [
+    {
+      "section": "network-demo",
+      "step": "translator.usdt.mint",
+      "hash": "4qwvVZGxKR7EVsqipQeWfk4QhvfMGmsafESxCSmrgNiW",
+      "at": "2026-11-12T17:01:33.640Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.usdt.mint",
+      "hash": "2kJEUgjXtDnPNvxAnG3E4V1DCM8RGzvbD17YEZVQPe4y",
+      "at": "2026-11-12T17:01:37.385Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.usdt.mint",
+      "hash": "J6kUQiqwCX8K61fYQTk8hvxTpoZ4uB1TN6BWssBQgg8z",
+      "at": "2026-11-12T17:01:41.381Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.usdt.mint",
+      "hash": "Ar7DczRnKoWVrt8hzHCNd94S6KpKzy7hmqzP8Ur5nwL5",
+      "at": "2026-11-12T17:01:45.017Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.usdt.mint",
+      "hash": "5x55nSs6a3MPCyFENyqivJBiiMnUBHdsMoT5hegZwMxi",
+      "at": "2026-11-12T17:01:49.299Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.usdt.mint",
+      "hash": "7kDQAjKbKHVu4Y3rRRREeQf8YkaLbUED43L13dBCK7Rw",
+      "at": "2026-11-12T17:01:53.120Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.join",
+      "hash": "4JJrZoYXDsG18KNrxqoDz6i4hsxKRox3jJv3wYuBgzsj",
+      "at": "2026-11-12T17:01:57.248Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.ft_transfer_call",
+      "hash": "6ekZcAJkCQKWcJgnbipQieBJUB3iaHL9Ldza3Qo7WetR",
+      "at": "2026-11-12T17:02:02.202Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.join",
+      "hash": "2iB7ygGm8Ucm4STtVmYj2yiLkTN687GhnSQRvvk9c2pd",
+      "at": "2026-11-12T17:02:06.619Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "summarizer.ft_transfer_call",
+      "hash": "CrDBMbrhKu4fb43ZXG1HD7NHRhi1BokxpfEqu4oPkPfY",
+      "at": "2026-11-12T17:02:11.842Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.join",
+      "hash": "fGNZJrszgBzRkwuWN3waMFSAWEHfz96b1XZoVf2pFYt",
+      "at": "2026-11-12T17:02:16.553Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "scraper.ft_transfer_call",
+      "hash": "GvJ2psYmPSYTSuFJ2yqnwC2jKGcTHTvmkSuoQWawwUPr",
+      "at": "2026-11-12T17:02:21.936Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.join",
+      "hash": "9SCjLmnkaEzASDm6UsUYFgehPFMueZnmdeyurTTE6bAD",
+      "at": "2026-11-12T17:02:26.886Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "image.ft_transfer_call",
+      "hash": "9rghRaQNMbtSsZQE1Mjgw4x75Ax82z3EBUKyoGLM9hFj",
+      "at": "2026-11-12T17:02:32.236Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.join",
+      "hash": "3jZ8DoM737XUws2XtWP7kg24GEjLaxKR2dpxdFtWEidv",
+      "at": "2026-11-12T17:02:36.498Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.ft_transfer_call",
+      "hash": "5pCJjtEd6xeDwAPvMb5VWpjRqhjULAFuuaNK85d7PN4f",
+      "at": "2026-11-12T17:02:41.981Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.join",
+      "hash": "BJMWk62uktMs39FXRXd3JTZz23w7JVnjMXt5GJnV5PTS",
+      "at": "2026-11-12T17:02:46.813Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.ft_transfer_call",
+      "hash": "3EXtJCAkdAQEUd24wo4vjn9KEoHe1GEp9YD41e6VExsk",
+      "at": "2026-11-12T17:02:51.800Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "AHgZNwXr6Xt7eHMziXkd7GpECVkYYxTf8ukXkB9yxMrf",
+      "at": "2026-11-12T17:05:12.266Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "CmQ7HaEB8WMQe6vuRtW7iPAANhJYg9W9eckRQYUYdJ1v",
+      "at": "2026-11-12T17:05:15.844Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "2zVRRT5WKdMpeVn6M6WrsmUsacAHn7T3TdFS3ksPktZ1",
+      "at": "2026-11-12T17:05:20.091Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "2uBBjKASNzNEFaTT3Tm84bEn7qPgwPMQFpvBL6WDTSRd",
+      "at": "2026-11-12T17:05:24.352Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "DxvFace4N2W8P8eiiiSS3MFkBAoDy3Myn9Bt41KCeuRR",
+      "at": "2026-11-12T17:05:28.798Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "FwqUEeQQuGCWpAe36NspSs7PBgnDPyayNiXvVdfbQ691",
+      "at": "2026-11-12T17:05:32.877Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "7oPWXUPRtE53twxcQvhEovokozsr4CpmCrkSPtvBh8nX",
+      "at": "2026-11-12T17:05:37.278Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "9UcRLydAUASFPrfefHpKmjGetUPsEP867endG26F1999",
+      "at": "2026-11-12T17:05:41.395Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "7fpP5nE6vR5DtVxFv3N3LUrjgZcSCieoZffqurHe2zdW",
+      "at": "2026-11-12T17:05:45.873Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "BCq9gvqUA1mEDezmaD5PMXcTm8ajBY7UxRJYsPE3fnDg",
+      "at": "2026-11-12T17:05:50.783Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "6Gb4xYfTyEWoGnrQxS2dsRtduFfi6cTzkQ1XRS1q5kne",
+      "at": "2026-11-12T17:05:55.588Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "relayer.register",
+      "hash": "9GHxTd3MgdJoKSGadguyAQZSPHxTmq15Tf8cfpeiW2iH",
+      "at": "2026-11-12T17:05:59.645Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "88qCwosVt5EsfxivaQ71waEHdD4BLoLWzWbzcWJapxgs",
+      "at": "2026-11-12T17:07:24.799Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "solver.submit_clearing",
+      "hash": "EMhEuMtJgx5G27kosEZQs1g6zpi7yDNrYLPcHHMKPuEn",
+      "at": "2026-11-12T17:07:30.930Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "65TkuQfFLc4SRQwwgW49t7htaAyW99egAot1MyznQL8m",
+      "at": "2026-11-12T17:08:42.190Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "translator.settle.ft_transfer_call",
+      "hash": "HUcBqGNpHwiTvjXbNp8BCqafbJxuVokJSYf1KwD4SAPw",
+      "at": "2026-11-12T17:08:49.975Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.close_epoch",
+      "hash": "FbQZWguKxzXg1HsJjJj1jr59tTRSRJm4vyTrtFK3ToKL",
+      "at": "2026-11-12T17:22:22.470Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.commit_epoch",
+      "hash": "9NYHzXKtTeHFoYNaXYFbG3qdctm7SJ74xiNzcsqwjWdu",
+      "at": "2026-11-12T17:23:32.579Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "keeper.finalize_epoch",
+      "hash": "996tmyF8PEipneEoKv4Zao3jvqbNYkrKXxVqLjowUVA7",
+      "at": "2026-11-12T17:23:53.426Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "cleaner.claim.claim",
+      "hash": "AWBmb4quwNty3A5Zhhwn1yKeBLQKuZ6pQ9SWev5QFwrT",
+      "at": "2026-11-12T17:23:58.921Z"
+    },
+    {
+      "section": "network-demo",
+      "step": "gpu.claim.claim",
+      "hash": "GFs9HjAUNBK66Rj33MPKxzPCzMQZSFNBjpaRipRtYJPK",
+      "at": "2026-11-12T17:24:04.334Z"
+    }
+  ]
+}

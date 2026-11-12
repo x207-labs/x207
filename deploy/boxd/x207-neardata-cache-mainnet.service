@@ -1,0 +1,14 @@
+[Unit]
+Description=x207 neardata cache for mainnet (one reader of mainnet.neardata.xyz; the testnet cache keeps port 8099)
+After=network-online.target
+Before=x207-backend-mainnet.service
+[Service]
+User=boxd
+WorkingDirectory=/home/boxd/keeper
+Environment=NEARDATA_UPSTREAM=https://mainnet.neardata.xyz
+Environment=PORT=8098
+ExecStart=/usr/bin/env node /home/boxd/neardata-cache.mjs
+Restart=always
+RestartSec=3
+[Install]
+WantedBy=multi-user.target

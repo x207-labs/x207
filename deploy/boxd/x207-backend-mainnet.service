@@ -1,0 +1,12 @@
+[Unit]
+Description=x207 read API and indexer of the MAINNET circle (BE-121 template; start only after the owner deployed the circle)
+After=network-online.target x207-neardata-cache-mainnet.service
+[Service]
+User=boxd
+WorkingDirectory=/home/boxd/backend-mainnet
+EnvironmentFile=/etc/x207/backend-mainnet.env
+ExecStart=/bin/sh start.sh
+Restart=always
+RestartSec=5
+[Install]
+WantedBy=multi-user.target
