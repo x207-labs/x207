@@ -4,6 +4,8 @@
 
 **Read again on 2026-11-08 (read only, nothing posted):** the PR is still `OPEN` and `MERGEABLE`, with no maintainer comment and no human review (one Copilot review). The checks `check-submission` pass and `welcome` is skipped; the labels are `has-emoji`, `valid-name` and `has-glama`. The last bot comment (2026-11-05 05:01 UTC, `glama-badge-check`) asks that Glama has scored the server; the Glama page [x207-labs/sdk](https://glama.ai/mcp/servers/x207-labs/sdk) now shows TDQS A 4.4 of 5, scored 2026-11-05 05:35 across 6 tools, so that request is met. The badge URL answers 200 and the hosted MCP endpoint answers `initialize` (server `x207` 0.0.6). Still open, and both need the owner or a public action: the connector listing is not claimed, and no outside agent has joined.
 
+**Updated on 2026-11-13 (UM-206, owner's OK):** the line, the title and the "What it is" paragraph now say "the barter protocol for AI agents on NEAR" (fork commit `6911791`); `check-submission` passes on it. The text below is this version. The Glama listing is now named "x207 barter protocol", and the hosted MCP runs 0.0.7.
+
 Source of the rules: [CONTRIBUTING.md](https://github.com/punkpeye/awesome-mcp-servers/blob/main/CONTRIBUTING.md) and the legend of the [README](https://github.com/punkpeye/awesome-mcp-servers/blob/main/README.md), read on 2026-11-05.
 
 ## What the rules say
@@ -22,7 +24,7 @@ Source of the rules: [CONTRIBUTING.md](https://github.com/punkpeye/awesome-mcp-s
 ## The line
 
 ```markdown
-- [x207-labs/sdk](https://github.com/x207-labs/sdk) [![x207-labs/sdk MCP server](https://glama.ai/mcp/servers/x207-labs/sdk/badges/score.svg)](https://glama.ai/mcp/servers/x207-labs/sdk) 📇 🏠 - MCP server (`@x207/mcp`) for x207, multilateral netting of x402 agent payments on NEAR testnet: read circle members, limits, epochs and clearing reports, and, with opt-in write tools, pay x402 endpoints with signed vouchers that are netted once per epoch. Testnet only, mock USDT.
+- [x207-labs/sdk](https://github.com/x207-labs/sdk) [![x207-labs/sdk MCP server](https://glama.ai/mcp/servers/x207-labs/sdk/badges/score.svg)](https://glama.ai/mcp/servers/x207-labs/sdk) 📇 🏠 - MCP server (`@x207/mcp`) for x207, the barter protocol for AI agents on NEAR: read circle members, limits, epochs, barter listings and clearing reports, and, with opt-in write tools, join a barter circle and pay x402 endpoints with signed credit vouchers that are netted once per epoch. Testnet only, mock USDT.
 ```
 
 Notes on the choices:
@@ -38,7 +40,7 @@ Branch: `add-x207-mcp-server`. Commit message: `Add x207 MCP server`.
 Title:
 
 ```text
-Add x207 MCP server (clearing of x402 agent payments, NEAR testnet)
+Add x207 MCP server (barter protocol for AI agents, NEAR testnet)
 ```
 
 Body:
@@ -46,7 +48,7 @@ Body:
 ```markdown
 Adds one line to **Finance & Fintech**: [x207-labs/sdk](https://github.com/x207-labs/sdk), the MCP server `@x207/mcp`.
 
-What it is: a server for x207, a multilateral netting layer for x402 agent payments on NEAR. Agents in a circle pay each other with signed vouchers backed by a stake; once per epoch the contract nets every position and only the net amounts move in USDT. The server reads a circle (members, limits, epochs, clearing reports) and, only when the user turns the write tools on, joins a circle and pays x402 endpoints.
+What it is: a server for x207, the barter protocol for AI agents on NEAR. Agents in a circle trade with each other on credit, with signed vouchers backed by a stake; once per epoch the contract nets every position and only the net amounts move in USDT. The server reads a circle (members, limits, epochs, clearing reports) and, only when the user turns the write tools on, joins a circle and pays x402 endpoints.
 
 Scope, stated plainly:
 - Runs on NEAR **testnet** (`x207-v013.testnet`). No mainnet transaction has been sent.
