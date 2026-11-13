@@ -20,12 +20,12 @@ test("the idea text of the repository is within 20-2000 characters", () => {
   assert.ok(IDEA.trim().length >= 20 && IDEA.trim().length <= 2000, `length ${IDEA.trim().length}`);
 });
 
-test("a complete input gives exactly the API fields, the eight tracks and no problem", () => {
+test("a complete input gives exactly the API fields, the four tracks and no problem", () => {
   const { payload, problems } = buildPayload({ human: HUMAN, idea: IDEA, requestId: REQUEST_ID });
   assert.deepEqual(problems, []);
   assert.deepEqual(Object.keys(payload), FIELDS);
   assert.deepEqual(payload.tracks, TRACKS);
-  assert.equal(TRACKS.length, 8);
+  assert.equal(TRACKS.length, 4);
   assert.equal(payload.projectUrl, "https://github.com/x207-labs/x207");
   assert.ok(!("website" in payload));
 });
@@ -51,8 +51,8 @@ test("rules of the API: lengths, size, address pattern, urls, consent, placehold
   assert.match(bad({}, { idea: "short" }), /idea: 20-2000/);
   assert.match(bad({}, { idea: "x".repeat(2001) }), /idea: 20-2000/);
   assert.match(bad({}, { requestId: "not-a-uuid" }), /requestId:/);
-  assert.match(bad({}, { tracks: TRACKS.slice(1) }), /missing swarms/);
-  assert.match(bad({}, { tracks: [...TRACKS, "open"] }), /each listed once/);
+  assert.match(bad({}, { tracks: TRACKS.slice(1) }), /missing agents/);
+  assert.match(bad({}, { tracks: [...TRACKS, "agents"] }), /each listed once/);
   assert.match(bad({ website: "spam" }), /fields the API does not take: website/);
 });
 

@@ -17,7 +17,8 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const TRACKS = ["swarms", "agents", "defi", "social", "business", "realworld", "security", "open"];
+// UM-204: the owner chose these four tracks on 2026-11-13; they replace the eight of K-59.
+export const TRACKS = ["agents", "swarms", "privacy", "security"];
 export const ALL_TRACKS = ["defi", "thesis", "privacy", "business", "swarms", "security", "agents", "realworld", "games", "nfts", "memecoins", "social", "open"];
 export const SIZES = ["1", "2 - 4", "4 - 6", "6 - 8", "8+"];
 export const FIELDS = ["requestId", "projectName", "leadName", "email", "size", "tracks", "nearAddress", "projectUrl", "demoUrl", "idea", "consent"];
@@ -71,7 +72,7 @@ export function buildPayload({ human = {}, idea, requestId, projectUrl = DEFAULT
   const unique = new Set(payload.tracks);
   if (unique.size !== payload.tracks.length || !payload.tracks.every((t) => ALL_TRACKS.includes(t))) problems.push("tracks: each listed once, from the track ids of the form");
   const missing = TRACKS.filter((t) => !unique.has(t));
-  if (missing.length > 0) problems.push(`tracks: K-59 requires all eight tracks, missing ${missing.join(", ")}`);
+  if (missing.length > 0) problems.push(`tracks: the owner's choice of 2026-11-13 requires all four tracks, missing ${missing.join(", ")}`);
   if (Buffer.byteLength(JSON.stringify(payload)) > 12000) problems.push("body: more than 12000 bytes");
   const extra = Object.keys(human).filter((k) => !HUMAN_FIELDS.includes(k) && k !== "requestId");
   if (extra.length > 0) problems.push(`file: fields the API does not take: ${extra.join(", ")}`);
