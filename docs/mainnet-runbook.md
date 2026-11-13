@@ -273,7 +273,7 @@ New infrastructure (templates committed, nothing started):
 | `x207-neardata-cache-mainnet` | one reader of `mainnet.neardata.xyz` (`302` on `/v0/last_block/final`, checked 2026-11-12) | 8098 | `deploy/boxd/x207-neardata-cache-mainnet.service` | none |
 | `x207-backend-mainnet` | read API + indexer of the mainnet circle, `X207_READ_ONLY=1`, no faucet | 8085 | `deploy/boxd/x207-backend-mainnet.service`, `deploy/boxd/backend-mainnet.env` | the circle account and its deploy block |
 | appraiser (inside the backend unit) | `POST /x207/appraise`, same NEAR AI model as testnet | 8085 | `X207_APPRAISER_NEARAI_KEY` set on the machine only | the same key as v018; it does not touch money |
-| proxy | `boxd machine proxy add mainnet --vm x207 --port 8085` gives `https://mainnet.x207.boxd.sh` | | | |
+| proxy | `boxd machine proxy add mainnet --vm x207 --port 8085` gives the planned address mainnet.x207.boxd.sh (planned, not deployed) | | | |
 
 The indexer reads `https://tx.main.fastnear.com/v0/account` (answers for `usdt.tether-token.near`, checked 2026-11-12) and `https://rpc.mainnet.fastnear.com`; the MPC contract of the marketplace is `v1.signer`. The unit uses its own SQLite `/var/lib/x207/x207-mainnet.sqlite`, so the testnet units are untouched.
 
@@ -315,7 +315,7 @@ Price of storage 1e19 yoctoNEAR per byte, gas price 1e8 (read from the mainnet R
 | M6 | Verify | `contracts/scripts/verify-release.sh v0.0.18 <circle> https://rpc.mainnet.fastnear.com`, then `X207_EXPECTED_WASM_SHA256=4701ecce… node scripts/mainnet-preflight.mjs`; the owner deletes the circle's full-access key | owner | "MATCH"; preflight shows no MISSING row for the contract | |
 | M7 | Token storage | step 8 of 12.3, for the circle and every holder | owner | `storage_balance_of` is not null | none (0.00125 NEAR each) |
 | M8 | Asset classes | `node scripts/print-class-proposals.mjs --network mainnet …` (94 proposals), the council votes with `contracts/dao/vote-proposal.mjs` | owner / council | `list_asset_classes` | a new proposal overwrites a class |
-| M9 | Backend and appraiser | on the boxd machine: fill `<circle>` and the block in `deploy/boxd/backend-mainnet.env`, copy it to `/etc/x207/backend-mainnet.env`, copy the two `.service` files, build the backend bundle as for v018, set `X207_APPRAISER_NEARAI_KEY` with the temporary-file method of BE-120, `systemctl enable --now x207-neardata-cache-mainnet x207-backend-mainnet`, `boxd machine proxy add mainnet --vm x207 --port 8085` | owner approves, Worker runs | `curl https://mainnet.x207.boxd.sh/healthz`; `/x207/circles/agents-main/params` equals `get_params`; the indexer follows blocks | `systemctl disable --now` both units; the testnet units are not touched |
+| M9 | Backend and appraiser | on the boxd machine: fill `<circle>` and the block in `deploy/boxd/backend-mainnet.env`, copy it to `/etc/x207/backend-mainnet.env`, copy the two `.service` files, build the backend bundle as for v018, set `X207_APPRAISER_NEARAI_KEY` with the temporary-file method of BE-120, `systemctl enable --now x207-neardata-cache-mainnet x207-backend-mainnet`, `boxd machine proxy add mainnet --vm x207 --port 8085` | owner approves, Worker runs | `curl` the `/healthz` path of the planned address mainnet.x207.boxd.sh (planned, not deployed); `/x207/circles/agents-main/params` equals `get_params`; the indexer follows blocks | `systemctl disable --now` both units; the testnet units are not touched |
 | M10 | Frontend | 13.4 | owner | the page shows the mainnet circle | delete the Vercel project |
 | M11 | Join and stake (UM-026) | section 12.4, six agents, 2 USDT each; `admission` as the owner decided | script / owner | `member` is `active` with `stake` 2000000; the indexer shows it | `request_exit` + `withdraw_stake` (the 0.35 NEAR does not return) |
 | M12 | One clearing epoch | `DEMO_NETWORK=mainnet X207_CONFIRM_REAL_TX=yes X207_CONFIRM_MAINNET=yes npm run demo:mainnet` with the env of 13.6 (about 25 minutes) | script | `get_epoch` goes `open` → `committed` → `finalized`; transfers = members with a non-zero net position | a failed epoch is finalized by the keeper; stakes are not lost |
@@ -332,11 +332,11 @@ Do not touch the testnet production project (`x207-dashboard`, `x207`). Create a
 | `VITE_NEAR_NETWORK` | `mainnet` |
 | `VITE_X207_CONTRACT_ID` | `<circle>` |
 | `VITE_X207_CIRCLE` | `agents-main` |
-| `VITE_X207_API_URL` | `https://mainnet.x207.boxd.sh` |
+| `VITE_X207_API_URL` | planned: mainnet.x207.boxd.sh over https (not deployed) |
 | `VITE_X207_USE_FIXTURES` | `false` |
 | `VITE_NEAR_RPC_URL` | `https://rpc.mainnet.fastnear.com` |
 
-`X207_CORS_ORIGINS` of the mainnet backend lists `https://x207-mainnet.vercel.app`; change both together if the owner picks another name. Per the standing order the frontend work is last and needs the owner's explicit yes; only `VITE_*` values go to Vercel, never a key.
+`X207_CORS_ORIGINS` of the mainnet backend lists the planned frontend address x207-mainnet.vercel.app (planned, not deployed); change both together if the owner picks another name. Per the standing order the frontend work is last and needs the owner's explicit yes; only `VITE_*` values go to Vercel, never a key.
 
 ### 13.5 Parameterised scripts
 
