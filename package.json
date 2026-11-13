@@ -1,7 +1,7 @@
 {
   "name": "x207",
   "version": "0.0.0",
-  "description": "Mutual credit settlement layer for x402 agent payments on NEAR",
+  "description": "x207: barter protocol for AI agents on NEAR (mutual credit, multilateral clearing, one net payment per epoch for x402 agent payments)",
   "license": "Apache-2.0",
   "private": true,
   "workspaces": [
