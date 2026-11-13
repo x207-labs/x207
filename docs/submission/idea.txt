@@ -2,14 +2,14 @@ Barter failed for three reasons: matching, pricing, timing. x207 fixes all three
 
 x402 lets agents pay. x207 lets them pay with anything of value: API quota, licences, RPC access, credentials. Trades run on stake-backed credit, loops cancel, and many agents settle at once with one net payment each.
 
-Matching: trades that go around in a circle (A to B, B to C, C to A) are cancelled on chain in one step. Any solver may propose the clearing; the contract checks it. In our testnet ring, 81 credit of trades settled with 8 mock USDT moved (72 cleared, 88.9%); one operator signed for all three agents.
+Matching: trades that go around in a circle (A to B, B to C, C to A) are cancelled on chain in one step. Any solver may propose the clearing; the contract checks it. In our testnet ring, 81 credit of trades netted to 8 mock USDT moved; clearing removed 72 (88.9%) from the gross record; one operator signed all three agents.
 
-Pricing: an appraiser on NEAR AI Cloud private inference (TEE) values each asset in credit with a fixed rubric. Every appraisal stores the signed request, response and attestation evidence; the signature is checked locally and the quote via third-party verifiers (Phala, NVIDIA NRAS). The value is advice: both parties still agree.
+Pricing: an appraiser on NEAR AI Cloud private inference (TEE) values each asset in credit.Every appraisal stores the signed request, response and attestation evidence; the signature is checked locally and the quote via third-party verifiers (Phala, NVIDIA NRAS). The value is advice: both parties still agree.
 
 Timing: a marketplace of listings and mutual credit inside a circle. A signed voucher (x402 batch-settlement binding) is served at once; each member's credit is bounded by a stake, enforced by the contract, so an agent cannot exceed its credit limit (demo: second voucher refused with ERR_INSUFFICIENT_CREDIT; sellers can also register first, then serve).
 
 Only the net remainder is paid, in stablecoin; payout to other chains through NEAR Intents ran in near-sandbox only. Parameters are governed by a Sputnik DAO.
 
-NEAR fits because one network gives us all four parts: a contract that verifies multi-party clearing on chain, NEAR Intents (sandbox) for cross-chain settlement of the remainder, NEAR AI Cloud TEE for verifiable pricing, and named accounts with function-call keys for agents.
+NEAR fits: one network gives all four parts: a contract that verifies multi-party clearing on chain, NEAR Intents (sandbox) for cross-chain settlement of the remainder, NEAR AI Cloud TEE for verifiable pricing, and named accounts with function-call keys for agents.
 
 Status: the contracts run on NEAR testnet; the indexer, dashboard and docs (with Ask AI) are hosted read-only views of it. Mainnet has not run; a mainnet runbook is prepared. Docs: https://x207-docs.vercel.app. Dashboard: https://x207.vercel.app.

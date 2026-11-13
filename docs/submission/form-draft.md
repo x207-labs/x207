@@ -16,7 +16,7 @@ Numbers below are the ones of the README and of the hosted read API on 2026-11-0
 | `nearAddress` | FILL: the prize account; the hackathon rules ask for a NEAR **mainnet** account (`name.near` or a 64-character implicit account) that the team makes in any wallet. Not `x207-v013.testnet`, not an account of the project keys | owner |
 | `projectUrl` | `https://github.com/x207-labs/x207` (the umbrella repository; the six product repositories are its submodules and are public too: `contracts`, `sdk`, `backend`, `frontend`, `solver`, `agents`) | ready |
 | `demoUrl` | FILL: the public post on X that the owner publishes (draft in [x-post.md](x-post.md)) | owner |
-| `idea` | the text of [idea.txt](idea.txt), 1,999 characters (limit 20 to 2,000) | ready |
+| `idea` | the text of [idea.txt](idea.txt), 1,992 characters (limit 20 to 2,000) | ready |
 | `consent` | `true` only after the owner has read the notice: "I agree that the organizers may use these details to review our submission and contact us about this hackathon." | owner |
 | `website` | **never send it** (spam trap: any value rejects the submission) | |
 

@@ -16,9 +16,11 @@ Attach: the video ([video-script.md](video-script.md)), or three screenshots: th
 
 ## Thread, optional (replies under the post)
 
-1. `Problem: x402 settles every call on its own. 1,000 small payments = 1,000 transfers, and a channel per seller needs a deposit per seller, sized in advance. x207 adds one stake per member (limit at most the stake) and a clearing step at the end of each epoch. It does not save NEAR gas; it cuts the value that has to move (7.75 of 41.35 in epoch 8).`
-2. `How: agents pay with signed vouchers, served at once. The contract nets every member's position in ONE on-chain transaction and only the net is paid in USDT; an open solver also cancels debt cycles in the gross record (no change to who pays in the MVP). A default is covered from the stake.`
-3. `Hosted, read-only, no key: dashboard https://x207.vercel.app/stats · MCP https://mcp.x207.boxd.sh/mcp · local with no account: npm run demo:quick, npm run demo:mcp`
+Each tweet is at most 280 characters with links counted as 23. In the ring demo one team script signs for all three agents.
+
+1. `1/ Matching. Alice has a Mapbox quota, Bob a JetBrains licence, Dan FastNEAR RPC access. No pair wants each other's asset, so they trade in a ring. The contract nets every position: of 81 credit traded, only 8 USDT moves. Testnet, epoch 184: https://x207.vercel.app/stats?epoch=184&circle=v018`
+2. `2/ Pricing. An appraiser on NEAR AI Cloud (TEE) values the asset in credit. Signature checked locally; quote checked via third-party verifiers (Phala, NVIDIA NRAS). The value is advice, the contract does not read it. https://v018.x207.boxd.sh/x207/appraisals/apr_6edab5eac2b78e65d41ea3b2`
+3. `3/ Timing. Agents trade on mutual credit backed by a stake. A second 75-credit voucher over the limit is refused on chain: ERR_INSUFFICIENT_CREDIT. Testnet only, mainnet has not run. Docs: https://x207-docs.vercel.app Code: https://github.com/x207-labs/x207`
 4. `Honest limits: testnet only, mock USDT, no mainnet transaction; NEAR Intents ran only in near-sandbox; our keeper moves epochs until 2026-11-30. Every claim has a test or a transaction: CLAIMS.md in the repo.`
 
 ## Rules for the text

@@ -16,7 +16,9 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const DEFAULT_API = "https://x207.boxd.sh/x207/circles/agents-main";
-export const FILES = ["README.md", "CLAIMS.md", "docs/submission/idea.txt", "docs/submission/form-draft.md", "docs/submission/video-script.md", "docs/submission/x-post.md", "docs/submission/judge-faq.md"];
+// UM-203: docs/submission/idea.txt and docs/submission/video-script.md now tell the barter ring of epoch 184 (circle v018), not epoch 8,
+// so they are not in this list; their figures (81 / 72 / 8) come from agents/docs/demo-barter-cycle.md.
+export const FILES = ["README.md", "CLAIMS.md", "docs/submission/form-draft.md", "docs/submission/x-post.md", "docs/submission/judge-faq.md"];
 
 export const DEFAULT_RPC = "https://rpc.testnet.fastnear.com";
 export const PARAMS_FILE = "docs/testnet-params.json";
