@@ -72,7 +72,7 @@ const params = flattenParams(record);
 
 test("the record of get_params gives 600, 60 and 900 seconds, so one cycle is 26 minutes", () => {
   assert.equal([params.epoch_length, params.proposal_window, params.payment_window].join(), "600,60,900");
-  assert.equal(params.clearing_fee_bps, 10);
+  assert.equal(params.clearing_fee_bps, 0); // fee 0 from epoch 48 by DAO proposal 5 (UM-158)
   assert.equal(cycleMinutes(params), 26);
 });
 
@@ -91,6 +91,6 @@ test("a stale parameter or cycle is reported (the text 1 hour reads as 1); words
 
 test("the record and the chain are compared by name", () => {
   assert.deepEqual(compareParams(record.get_params, structuredClone(record.get_params)), []);
-  const live = { ...record.get_params, epoch_length: 3600, fees: { clearing_fee_bps: 10, solver_fee_bps: 6 } };
-  assert.deepEqual(compareParams(record.get_params, live), ["get_params epoch_length: record 600, chain 3600", "get_params solver_fee_bps: record 5, chain 6"]);
+  const live = { ...record.get_params, epoch_length: 3600, fees: { clearing_fee_bps: 0, solver_fee_bps: 6 } };
+  assert.deepEqual(compareParams(record.get_params, live), ["get_params epoch_length: record 600, chain 3600", "get_params solver_fee_bps: record 0, chain 6"]);
 });

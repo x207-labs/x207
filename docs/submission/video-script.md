@@ -27,22 +27,22 @@ Every number has a source in the "Source" line of its scene; nothing here is a c
 
 > Pricing. An API quota or a licence has no market price.
 > So x207 asks an appraiser on NEAR AI Cloud, running inside a TEE, to value the asset in credit.
-> Each listing carries a badge, and the proof panel shows what was checked.
+> An appraised listing carries a badge, and the proof panel shows what was checked.
 > Signature checked locally; quote checked via third-party verifiers, Phala and NVIDIA NRAS.
 > The value is advice only. The contract never reads it.
 
-**Source:** [README.md](../../README.md) section "Asset appraiser on NEAR AI Cloud (TEE)"; appraisal `apr_6edab5eac2b78e65d41ea3b2` on the v018 backend.
+**Source:** [README.md](../../README.md) section "Asset appraiser on NEAR AI Cloud (TEE)"; the appraisal shown is the ring's own Mapbox appraisal `apr_4d97a431de9635c442083c67` on the v018 backend (market price 30, value 24 credit, the same value as in Scene 3; `agents/docs/demo-barter-cycle.md`).
 
 ## Scene 3. Matching (0:50–1:40)
 
 **Screen:** the dashboard at `/stats?epoch=184&circle=v018`, the ring of epoch 184.
 
 > Matching. Three agents each hold something another one wants, but no pair wants each other's asset.
-> Alice has a Mapbox geocoding quota, valued at 24 credit. Bob has a JetBrains licence, 32. Dan has FastNEAR RPC access, 25.
+> Alice lists a Mapbox geocoding quota, appraised at 24 credit. Bob lists a JetBrains licence, 32. Dan lists FastNEAR RPC access, 25.
 > A team script signs for all three.
 > They trade in a ring: alice to bob, bob to dan, dan to alice. 81 credit of trade.
 > The circle contract nets every position, so only 8 USDT actually moves.
-> The solver's proposal removes 72 of the 81 from the gross record.
+> A clearing proposal removes 72 of the 81 from the gross record. Only credit moved; no asset was delivered in this run.
 
 **Source:** `agents/docs/demo-barter-cycle.md` (`x207-v018.testnet`, epoch 184): values 24 / 32 / 25; gross 81; cancelled 72 (88.9%); 8 USDT moved.
 
@@ -54,7 +54,7 @@ Every number has a source in the "Source" line of its scene; nothing here is a c
 > So agents trade on mutual credit: a signed voucher is served at once, and settled at the end of the epoch, backed by a stake.
 > What stops an agent from overspending?
 > Bob signed two vouchers of 75 credit, with room for only 125. The contract registered the first, and refused the second with insufficient credit.
-> A seller can also register first, then serve: that is the register-first mode.
+> By default a seller serves before the chain answers; the register-first mode closes that gap.
 
 **Source:** `contracts/docs/testnet-epochs/ct132-overspend-run.json` (`x207-v018.testnet`, epoch 183): headroom 125, two vouchers of 75; the second fails with `ERR_INSUFFICIENT_CREDIT`.
 
@@ -63,7 +63,7 @@ Every number has a source in the "Source" line of its scene; nothing here is a c
 **Screen:** the docs site `https://x207-docs.vercel.app`, the Ask AI box, then the one-line client setup in the README.
 
 > For developers: the docs site has an Ask AI box.
-> An agent that already uses x402 adds one line to its client, and a voucher pays any seller in the circle.
+> After joining and staking, an agent that already uses x402 adds one line to its client, and pays sellers that accept x207.
 
 **Source:** [README.md](../../README.md) section "Adding x207 to an agent that uses `@x402/fetch`".
 
@@ -71,8 +71,8 @@ Every number has a source in the "Source" line of its scene; nothing here is a c
 
 **Screen:** the README status lines on GitHub.
 
-> Everything you saw is live on NEAR testnet, with a mock USDT.
-> Mainnet has not run yet. The runbook is ready.
+> Everything you saw ran on NEAR testnet, with a mock USDT.
+> Mainnet has not run yet. A runbook is prepared.
 > The code, the evidence and the docs are linked below. Thank you.
 
 **Source:** [README.md](../../README.md): "Mainnet has not run: no mainnet transaction has been sent"; [docs/mainnet-runbook.md](../mainnet-runbook.md).
