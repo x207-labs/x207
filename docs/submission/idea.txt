@@ -1,13 +1,15 @@
-Problem: agents that pay per call (x402) settle every call on its own, so a thousand small payments cost a thousand transfers, and the usual fix, a payment channel per seller, needs a deposit per seller, sized before the sellers are known.
+Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR.
 
-What we built: x207, a multilateral netting layer for x402 agent payments on NEAR. Agents in a circle lock one USDT stake and pay each call with a signed cumulative voucher, served at once. Each epoch the contract nets every member's position in one transaction, so only the net is paid in USDT. An open solver also cancels debt cycles in the gross record (no change to who pays). A default is covered from the stake of the defaulter.
+x402 lets agents pay. x207 lets them pay with anything of value: API quota, licences, RPC access, credentials. Trades run on stake-backed credit, loops cancel, and many agents settle at once with one net payment each.
 
-What is new: (1) a multi-party x402 batch-settlement binding on NEAR, proposed in x402-foundation/x402#4131; (2) vouchers netted per epoch across many buyers and sellers; (3) one stake covers sellers not known in advance; (4) an agent on Base only holds a 0x key; NEAR is its netting layer: on x207-v014.testnet a new-key EVM agent joined, signed an EIP-712 voucher, was netted, claimed, then its 0x key spent the payout itself via NEP-518 (rlp_execute J59PWbv4MHUz2o7DPJcNk1fUZGrnZc8xy7N39VTXwx6m). Our relayer still paid join, stake, gas.
+Matching: trades that go around in a circle (A to B, B to C, C to A) are cancelled on chain in one step. Any solver may propose the clearing; the contract checks it. In our testnet ring, 81 credit of trades settled with 8 mock USDT moved (72 cleared, 88.9%); one operator signed for all three agents.
 
-Proof on NEAR testnet (circle x207-v013.testnet): netting settled 24 vouchers worth 41.35 credit among 15 participants with 7.75 USDT due from six debtors; five paid 7.2 USDT and the 0.55 of the one that defaulted was taken from its stake. The solver cancelled 21.8 of the gross obligations.
+Pricing: an appraiser on NEAR AI Cloud private inference (TEE) values each asset in credit with a fixed rubric. Every appraisal stores the signed request, response and attestation evidence; the signature is checked locally and the quote via third-party verifiers (Phala, NVIDIA NRAS). The value is advice: both parties still agree.
 
-NEAR: a Rust contract, mock USDT, a DAO, NEAR Intents for the residual (near-sandbox only), an MCP server (@x207/mcp).
+Timing: a marketplace of listings and mutual credit inside a circle. A signed voucher (x402 batch-settlement binding) is served at once; each member's credit is bounded by a stake, enforced by the contract, so an agent cannot exceed its credit limit (demo: second voucher refused with ERR_INSUFFICIENT_CREDIT; sellers can also register first, then serve).
 
-Limits: more gas than plain transfers unless a pair trades about 3 to 4 times per epoch, a stake of at least 125% of the debt, and it helps only where members owe each other both ways (x402 traffic is mostly star-shaped).
+Only the net remainder is paid, in stablecoin; payout to other chains through NEAR Intents ran in near-sandbox only. Parameters are governed by a Sputnik DAO.
 
-Not done: no mainnet transaction (mock USDT; the team's keeper moves epochs until 2026-11-30), Intents not run on testnet, no TEE broker.
+NEAR fits because one network gives us all four parts: a contract that verifies multi-party clearing on chain, NEAR Intents (sandbox) for cross-chain settlement of the remainder, NEAR AI Cloud TEE for verifiable pricing, and named accounts with function-call keys for agents.
+
+Status: the contracts run on NEAR testnet; the indexer, dashboard and docs (with Ask AI) are hosted read-only views of it. Mainnet has not run; a mainnet runbook is prepared. Docs: https://x207-docs.vercel.app. Dashboard: https://x207.vercel.app.

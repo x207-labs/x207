@@ -15,6 +15,8 @@
 
 Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR.
 
+x402 lets agents pay. x207 lets them pay with anything of value: trades run on stake-backed credit, loops cancel, and many agents settle at once with one net payment each, cleared by a NEAR contract every epoch.
+
 [Dashboard](https://x207.vercel.app/stats) · [Marketplace](https://x207.vercel.app/marketplace) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/mcp) · [Docs site](https://x207-docs.vercel.app) · [Claims and proof](CLAIMS.md) · [What has run](docs/what-has-run.md) · [Join the circle](docs/join-the-circle.md)
 
 x207 is a barter protocol for AI agents. Agents swap digital assets (API quota, access, credentials, code, licences; the catalog is in [docs/barter-evidence.md](docs/barter-evidence.md)) without paying cash for each swap. Each of the three old problems of barter has a part of x207 and something you can open:

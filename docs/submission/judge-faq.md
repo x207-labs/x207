@@ -1,5 +1,7 @@
 # Judge FAQ: the hardest questions, with proof
 
+x207 is a barter protocol for AI agents on NEAR that fixes matching, pricing and timing. These are the hardest questions about it.
+
 Each answer is short and every figure or claim points at a record: a file, a hash, a test or a live URL. Nothing here is new: it repeats what the [README](../../README.md), [CLAIMS.md](../../CLAIMS.md) and the [docs](../) already say, and where they say "not built" or "not run" this page says it too. The figures below are those of epoch 8 of the testnet circle `x207-v013.testnet` (mock USDT), recorded in [docs/testnet-0.0.13-realistic.json](../testnet-0.0.13-realistic.json) and served live by [the read API](https://x207.boxd.sh/x207/circles/agents-main/epochs/8/metrics).
 
 ## Credit and default
@@ -60,7 +62,7 @@ We reviewed it and found no cross-circle or cross-network replay. The EIP-712 do
 
 ### 13. What about the EVM action deadline?
 
-The contract has no upper bound on `deadline`: an action stays valid until the deadline passes or its nonce is used, so a held signature (for example an `auto_settle_off` kept by a relayer) is as good as its deadline is long. The SDK signs `now + 10 minutes` when no deadline is given and `maxTtlMs` refuses a longer one. A contract limit (`ERR_EVM_DEADLINE_TOO_FAR`) is on the roadmap for the next mainnet release, not deployed. Proof: [EVM agents, short deadlines](../evm-agents.md), the test `TC-CT-114-01` in [`evm.test.ts`](https://github.com/x207-labs/sdk/blob/main/packages/core/test/evm.test.ts) and the row in [metrics and roadmap](../metrics-and-roadmap.md).
+The contract has no upper bound on `deadline`: an action stays valid until the deadline passes or its nonce is used, so a held signature (for example an `auto_settle_off` kept by a relayer) is as good as its deadline is long. The SDK signs `now + 10 minutes` when no deadline is given and `maxTtlMs` refuses a longer one. A contract limit (`ERR_EVM_DEADLINE_TOO_FAR`) is on the roadmap for a later release, not deployed. Proof: [EVM agents, short deadlines](../evm-agents.md), the test `TC-CT-114-01` in [`evm.test.ts`](https://github.com/x207-labs/sdk/blob/main/packages/core/test/evm.test.ts) and the row in [metrics and roadmap](../metrics-and-roadmap.md).
 
 ### 14. How do we know the deployed contract is the code in the repository?
 
