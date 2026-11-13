@@ -68,7 +68,7 @@ The wasm is built in a pinned container and the build is reproducible: v0.0.14 h
 
 ### 15. Who runs the epochs, and is it decentralized?
 
-The team's keeper (`scripts/keeper.mjs`) calls `close_epoch`, `commit_epoch` and `finalize_epoch` for `x207-v013.testnet` until 2026-11-18, and then it stops. `submit_clearing` is permissionless (anybody may send a proposal in the window), and the parameters are owned by a Sputnik DAO: a real `set_params` proposal was voted by two council members and took effect in the next epoch. The clearing and solver fees are 0 since epoch 48, so a solver earns nothing in the MVP. Proof: [README status](../../README.md), [A DAO proposal on the live circle](../governance-live.md) and [Two solvers in one epoch](../competing-solvers.md).
+The team's keeper (`scripts/keeper.mjs`) calls `close_epoch`, `commit_epoch` and `finalize_epoch` for `x207-v013.testnet` until 2026-11-30, and then it stops. `submit_clearing` is permissionless (anybody may send a proposal in the window), and the parameters are owned by a Sputnik DAO: a real `set_params` proposal was voted by two council members and took effect in the next epoch. The clearing and solver fees are 0 since epoch 48, so a solver earns nothing in the MVP. Proof: [README status](../../README.md), [A DAO proposal on the live circle](../governance-live.md) and [Two solvers in one epoch](../competing-solvers.md).
 
 ### 16. Can an agent that holds only a Solana key take part?
 

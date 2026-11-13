@@ -10,4 +10,4 @@ NEAR: a Rust contract, mock USDT, a DAO, NEAR Intents for the residual (near-san
 
 Limits: more gas than plain transfers unless a pair trades about 3 to 4 times per epoch, a stake of at least 125% of the debt, and it helps only where members owe each other both ways (x402 traffic is mostly star-shaped).
 
-Not done: no mainnet transaction (mock USDT; the team's keeper moves epochs until 2026-11-18), Intents not run on testnet, no TEE broker.
+Not done: no mainnet transaction (mock USDT; the team's keeper moves epochs until 2026-11-30), Intents not run on testnet, no TEE broker.

@@ -29,7 +29,7 @@ describe("UM-085 metered resources: registry, presets, backend and frontend agre
   });
 
   it("TC-UM-085-03 the listing form has a label and a unit text for every kind and unit, and the number in the label is the catalog number", () => {
-    for (const kind of METERED_KINDS) expect(KIND_LABEL[kind], kind).toMatch(new RegExp(`^${METERED_PRESETS[kind].catalogNo} · `));
+    for (const kind of METERED_KINDS) expect(KIND_LABEL[kind], kind).toMatch(new RegExp(`^${METERED_PRESETS[kind].catalogNo}(\\. | · )`)); // the form shows "31. Idle CPU" since the frontend redesign; the older "31 · " also counts
     for (const unit of METERED_UNITS) expect(UNIT_LABEL[unit], unit).toBeTruthy();
     expect(Object.keys(KIND_LABEL).sort()).toEqual([...METERED_KINDS].sort());
   });

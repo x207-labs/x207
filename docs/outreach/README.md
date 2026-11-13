@@ -19,7 +19,7 @@ Only these. Each is in [what-has-run.md](../what-has-run.md) or [join-the-circle
 - It runs on **NEAR testnet** (circle `x207-v013.testnet`, circle id `agents-main`). **No mainnet transaction has been sent.**
 - The stake token is a **mock USDT** (`usdt.x207-deployer.testnet`). Anybody can mint it. It has no value.
 - It is **not a gas saving.** [gas-epoch8-vs-transfers.md](../gas-epoch8-vs-transfers.md): epoch 8 burns more gas than 24 plain transfers. What clearing reduces is the value that has to move (epoch 8: 21.8 of 41.35 credit cleared, 7.75 USDT left to pay).
-- The circle is shared. The team's keeper moves its epochs until 2026-11-18; after that anybody can move them by hand ([join-the-circle.md](../join-the-circle.md)).
+- The circle is shared. The team's keeper moves its epochs until 2026-11-30; after that anybody can move them by hand ([join-the-circle.md](../join-the-circle.md)).
 - No outside adopter is known ([adoption.md](../adoption.md), "First pilot"). Do not write "used by", "trusted by" or "in production".
 
 ## Before sending

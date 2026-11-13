@@ -26,7 +26,7 @@ On NEAR testnet, in the circle `x207-v013.testnet` (contract release v0.0.13), a
 - **It does not save gas on NEAR.** The epoch burnt 109.7 Tgas against 54.9 Tgas for 24 plain transfers. What netting reduces is the value that has to move: 7.75 USDT of 41.35 credit of obligations (the solver separately cancelled 21.8 of the gross obligations, which does not change that figure).
 - **It is not credit without cash.** A member locks a stake of at least 125% of the debt it can run up; a default is covered from that stake.
 - **It only helps where debts go in cycles.** A star graph, where everybody owes one hub, gains nothing.
-- **The team's keeper moves the epochs of the testnet circle until 2026-11-18.** After that anybody can move them by hand.
+- **The team's keeper moves the epochs of the testnet circle until 2026-11-30.** After that anybody can move them by hand.
 
 ## Try it
 
