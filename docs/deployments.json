@@ -1,0 +1,14 @@
+{
+  "about": "UM-208: the one place that says which x207 circle is active. Change `active` here, run `npm run sync:deployments`, commit the generated copies in frontend and docs-site, and `npm run check:deployments` passes again. Release-specific facts (wasm sha256, code hash, runs) stay in docs/what-has-run.md and the docs site Deployments page.",
+  "network": "testnet",
+  "circleId": "agents-main",
+  "active": "v018",
+  "circles": [
+    { "key": "v018", "contract": "x207-v018.testnet", "interface": "0.0.18", "apiUrl": "https://v018.x207.boxd.sh", "owner": "x207-v18-own.testnet", "ownerKind": "team", "note": "account sales, barter ring of epoch 184" },
+    { "key": "v017", "contract": "x207-v017.testnet", "interface": "0.0.17", "apiUrl": "https://v017.x207.boxd.sh", "owner": null, "ownerKind": null, "note": "auto-settle, relayer fee" },
+    { "key": "v016", "contract": "x207-v016.testnet", "interface": "0.0.16", "apiUrl": null, "owner": null, "ownerKind": null, "note": "relayer fee on claim_evm, no hosted read API" },
+    { "key": "v015", "contract": "x207-v015.testnet", "interface": "0.0.15", "apiUrl": "https://v015.x207.boxd.sh", "owner": null, "ownerKind": null, "note": "auto-settle" },
+    { "key": "v014", "contract": "x207-v014.testnet", "interface": "0.0.14", "apiUrl": "https://v014.x207.boxd.sh", "owner": null, "ownerKind": null, "note": "EVM agents" },
+    { "key": "v013", "contract": "x207-v013.testnet", "interface": "0.0.13", "apiUrl": "https://x207.boxd.sh", "owner": "x207v8.sputnikv2.testnet", "ownerKind": "dao", "note": "history, epoch 8" }
+  ]
+}

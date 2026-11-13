@@ -7,6 +7,7 @@ The [README](../README.md) keeps the short version. This page holds the long par
 - **Interface 0.0.13, release v0.0.13:** the first contract release, the circle `x207-v013.testnet`. It is the circle behind epoch 8 and the Read API at `x207.boxd.sh`.
 - **Contract 0.0.18, circle `v018`:** the latest release, the circle `x207-v018.testnet` (tag `v0.0.18`). The barter ring of epoch 184 and the marketplace ran on it. In the dashboard URL, `circle=v018` selects this circle.
 - The versions in between (v014 to v017) are circles of their own on testnet, listed below.
+- **Which circle is active** is written in one place, [`deployments.json`](deployments.json) (`active`). To switch: change `active` (and add the new circle), run `npm run sync:deployments`, commit the generated `src/deployments.generated.ts` in the frontend and `src/lib/deployments.generated.ts` in the docs site, then run `npm run check:deployments`. The dashboard then opens on the new circle by default and the docs pages that use the `%ACTIVE_...%` tokens follow; the check lists every sentence that still calls an older circle active or current (release-specific text, such as the Deployments page and the "newest" line of the README, is updated by hand).
 
 ## What is new
 
