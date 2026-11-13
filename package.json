@@ -22,6 +22,8 @@
     "metrics:adoption": "node scripts/adoption-metrics.mjs",
     "check:links": "node scripts/check-links.mjs",
     "submission:draft": "node scripts/submission-payload.mjs --draft",
+    "build:sdk": "npm run build -w @x207/core -w @x207/scheme",
+    "pretest": "npm run build:sdk",
     "test": "npm test --workspaces --if-present && npm run test:integration",
     "test:integration":"X207_SANDBOX=1 vitest run",
     "demo:quick": "node scripts/demo-quick.mjs --release-wasm",
