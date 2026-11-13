@@ -46,7 +46,10 @@ function checkPackageJson(file, root, errors) {
   const rel = relative(root, file);
   const pkg = JSON.parse(readFileSync(file, "utf8"));
   for (const section of NPM_SECTIONS) {
-    for (const [name, spec] of Object.entries(pkg[section] ?? {})) {
+    for (const [name, raw] of Object.entries(pkg[section] ?? {})) {
+      // UM-202: an npm alias ("npm:<package>@<version>") is pinned when the version after the last "@" is exact.
+      const alias = /^npm:(?:@[^/@]+\/)?[^@]+@(.+)$/.exec(raw);
+      const spec = alias ? alias[1] : raw;
       if (!NPM_EXACT.test(spec)) errors.push(`${rel}: ${name}@${spec} in ${section} is not an exact version`);
       const want = PETA_MODUL.npm[name];
       if (want && NPM_EXACT.test(spec) && spec !== want) errors.push(`${rel}: ${name}@${spec} differs from Peta Modul (${want})`);

@@ -78,6 +78,13 @@ test("TC-UM-007-03 tilde, range, and tag fail", () => {
   }
 });
 
+test("TC-UM-202-01 an npm alias passes with an exact version and fails with a range", () => {
+  for (const [spec, n] of [["npm:@fumadocs/base-ui@16.19.0", 0], ["npm:typescript@7.0.2", 0], ["npm:@fumadocs/base-ui@^16.19.0", 1], ["npm:typescript@latest", 1]]) {
+    const pkg = { ...PKG, dependencies: { ...PKG.dependencies, alias: spec } };
+    withFixture({ pkg }, (root) => assert.equal(run(root).length, n, spec));
+  }
+});
+
 test("TC-UM-007-03b a Peta Modul package pinned to another exact version fails", () => {
   const pkg = { ...PKG, dependencies: { ...PKG.dependencies, "@x402/fetch": "2.27.0" } };
   withFixture({ pkg }, (root) => {
