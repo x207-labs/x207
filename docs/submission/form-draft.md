@@ -12,7 +12,7 @@ Numbers below are the ones of the README and of the hosted read API on 2026-11-0
 | `leadName` | FILL | owner |
 | `email` | FILL (unique, max 160 characters) | owner |
 | `size` | FILL, exactly one of `1`, `2 - 4`, `4 - 6`, `6 - 8`, `8+` | owner |
-| `tracks` | `["swarms", "agents", "privacy", "security", "defi", "social", "business", "realworld", "open"]`, the owner's decision of 2026-11-14 (nine tracks: the eight-track list plus `privacy`; it replaces the four tracks of 2026-11-13; see "Tracks" below) | owner decided |
+| `tracks` | `["swarms", "agents", "security", "defi", "social", "business", "realworld", "open"]`, the owner's decision of 2026-11-14 (the eight-track list; `privacy` is left to Snacc, the team's other submission, so the two share no track; it replaces the four tracks of 2026-11-13; see "Tracks" below) | owner decided |
 | `nearAddress` | FILL: the prize account; the hackathon rules ask for a NEAR **mainnet** account (`name.near` or a 64-character implicit account) that the team makes in any wallet. Not `x207-v013.testnet`, not an account of the project keys | owner |
 | `projectUrl` | `https://github.com/x207-labs/x207` (the umbrella repository; the six product repositories are its submodules and are public too: `contracts`, `sdk`, `backend`, `frontend`, `solver`, `agents`) | ready |
 | `demoUrl` | FILL: the public post on X that the owner publishes (draft in [x-post.md](x-post.md)) | owner |
@@ -56,7 +56,7 @@ Barter, then matching, pricing and timing, then limits, in this order in the vid
 
 ## Tracks
 
-Decided by the owner on 2026-11-14: the form sends nine tracks, `["swarms", "agents", "privacy", "security", "defi", "social", "business", "realworld", "open"]`: the eight-track list (UM-053) plus `privacy`. Every row in the table below is now a ticked track. Earlier, on 2026-11-13, the owner had chosen four (`agents`, `swarms`, `privacy`, `security`); the nine-track decision replaces it.
+Decided by the owner on 2026-11-14: the form sends eight tracks, `["swarms", "agents", "security", "defi", "social", "business", "realworld", "open"]` (the UM-053 list). `privacy` is not ticked: Snacc, the team's other submission (`Q-015`), enters it, and the two projects share no track. The `privacy` row below stays as background evidence only. Earlier, on 2026-11-13, the owner had chosen four (`agents`, `swarms`, `privacy`, `security`); the nine-track decision replaces it.
 
 History: six tracks were locked on 2026-11-04, and a seventh, `open`, was added on 2026-11-05 after the EVM run (its row follows `defi`); the decision of 2026-11-13 replaced that list. The six were: `swarms` (the main one), `realworld`, `social`, `agents`, `business`, `defi`, in this order. The hints of a track are "hints and wishes, not requirements". Every claim below links to what shows it and must stay true in each track's reading; the same table with the demo steps is Appendix A of [appendices.md](../appendices.md). Gas is not claimed in any track: x207 burns more gas than 24 plain transfers and saves the value that has to move ([gas-epoch8-vs-transfers.md](../gas-epoch8-vs-transfers.md)).
 
@@ -72,7 +72,7 @@ History: six tracks were locked on 2026-11-04, and a seventh, `open`, was added 
 | Privacy (`privacy`), added 2026-11-13 | Asset pricing runs in private inference: the appraiser on NEAR AI Cloud runs inside a TEE, and every appraisal stores the signed request, response and attestation evidence | [README.md](../../README.md#asset-appraiser-on-near-ai-cloud-tee); signature checked locally, quote checked via third-party verifiers (Phala, NVIDIA NRAS) | **The ledger is not private:** who trades with whom is visible on chain ([judge-faq.md](judge-faq.md) Q10); confidential settlement is roadmap, not built |
 | Security (`security`), added 2026-11-13 | Credit is bounded by stake and enforced on chain: a voucher over the limit is refused, a default is paid from the debtor's stake, and the clearing proposal is verified by the contract | CT-132 overspend run on `x207-v018.testnet`: the second 75-credit voucher fails with `ERR_INSUFFICIENT_CREDIT`; [security-and-limits.md](../security-and-limits.md) (threat model) | The reviews are internal, not a third-party audit; testnet only |
 
-Not ticked: `thesis`, `games`, `nfts`, `memecoins`. Ticking more tracks does not make a claim stronger; the rows above are the claims.
+Not ticked: `privacy` (Snacc's track), `thesis`, `games`, `nfts`, `memecoins`. Ticking more tracks does not make a claim stronger; the rows above are the claims.
 
 ## Order of the steps (owner)
 

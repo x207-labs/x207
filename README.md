@@ -220,7 +220,7 @@ The six product repositories are git submodules of this one. `vault`, the design
 
 ## Tracks and hints
 
-Four tracks are ticked on the form: `agents`, `swarms`, `privacy`, `security` (the owner's choice of 2026-11-13). A hint is a wish of the track, not a requirement, so the table says for each hint how far x207 meets it; the rows of `realworld`, `defi`, `open`, `business` and `social` are background, those tracks are not ticked. The claim of each track, its evidence and what weakens it are in [docs/submission/form-draft.md](docs/submission/form-draft.md#tracks).
+Eight tracks are ticked on the form: `swarms`, `agents`, `security`, `defi`, `social`, `business`, `realworld`, `open` (the owner's choice of 2026-11-14). A hint is a wish of the track, not a requirement, so the table says for each hint how far x207 meets it. `privacy` is not ticked: it belongs to Snacc, the team's other submission; its row is background. The claim of each track, its evidence and what weakens it are in [docs/submission/form-draft.md](docs/submission/form-draft.md#tracks).
 
 | Track (`id`) | Hint | How x207 meets it |
 | --- | --- | --- |
@@ -240,5 +240,7 @@ Four tracks are ticked on the form: `agents`, `swarms`, `privacy`, `security` (t
 **Code written with AI help.** The code, tests and documents of this project were written with AI coding assistants: Claude Code (Anthropic) in several parallel sessions, each working on one repository under a human owner who set the design, reviewed the results and decided what to publish. Many commits carry a `Co-Authored-By: Claude` trailer. Every number in this README comes from a run or a file named next to it; where a run did not happen, the text says so.
 
 **Code start.** All code of the project was written from 2026-11-01, inside the build window. The first commit of the umbrella is `c708b8a` (2026-11-01); the first commits of `contracts` and `sdk` are `1d908c4` and `5580759` (both 2026-11-01).
+
+**Other submission (`Q-015`).** The same team also submits **Snacc** (https://github.com/Snacc-near/snacc), a separate project in different tracks. Separate GitHub orgs, separate NEAR accounts, zero shared code.
 
 **License.** Apache-2.0 for every repository of the project: see [LICENSE](LICENSE). **Third-party code:** all open source, used as libraries or hosted endpoints, none copied in; the list is in [docs/third-party.md](docs/third-party.md).
