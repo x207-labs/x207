@@ -4,7 +4,7 @@
 
 Key result, with its qualifiers: in epoch 245 on `x207-v018.testnet`, three agents traded three mock NFTs in a ring through contract escrow: 81 credit of trade, 72 cancelled in the loop, 8 mock USDT moved. The operator set those prices and ran all three agents. In epoch 8 on `x207-v013.testnet` (15 members, 24 vouchers), clearing cancelled 21.8 of 41.35 credit of debt. 85 kinds of digital assets can be offered in the barter catalog (plus 9 refused kinds); 13 of them have a testnet transaction that shows them. The catalog is registered, not proven, kind by kind.
 
-Barter failed for three reasons; x207 answers each: matching (a ring trades when no pair wants each other's asset), pricing (a TEE appraiser values an asset in credit and keeps the signed request, response and attestation), timing (a signed voucher is served at once; credit is capped by the stake, and the contract refuses a voucher over the limit with `ERR_INSUFFICIENT_CREDIT`).
+Barter failed for three reasons; x207 answers each, and each answer has run on NEAR testnet (no single run shows all three yet): matching (a ring trades when no pair wants each other's asset), pricing (a TEE appraiser values an asset in credit and keeps the signed request, response and attestation), timing (a signed voucher is served at once; credit is capped by the stake, and the contract refuses a voucher over the limit with `ERR_INSUFFICIENT_CREDIT`).
 
 ## Start here
 - [README](https://github.com/x207-labs/x207/blob/main/README.md): the product page, "Try it in 2 minutes" (read-only, no install) and "Run it locally (5 minutes)"
@@ -27,7 +27,7 @@ Barter failed for three reasons; x207 answers each: matching (a ring trades when
 - MCP server, Streamable HTTP, read-only, no key: `claude mcp add --transport http x207 https://mcp.x207.boxd.sh/mcp` (a GET answers 405; health check: https://mcp.x207.boxd.sh/healthz)
 - [MCP server on Glama](https://glama.ai/mcp/servers/x207-labs/sdk)
 
-## Repositories (all public, Apache-2.0)
+## Repositories (all public, Apache-2.0; the docs site is in https://github.com/x207-labs/docs)
 - [x207](https://github.com/x207-labs/x207): umbrella, docs, demos; the six below are its submodules
 - [contracts](https://github.com/x207-labs/contracts): `x207-circle` NEAR contract (Rust): stakes, vouchers, on-chain check of the clearing, settlement; `x207-locker`; Sputnik DAO scripts
 - [sdk](https://github.com/x207-labs/sdk): TypeScript packages on npm: `@x207/core`, `@x207/scheme` (x402 batch-settlement binding on the network `x207:<circleId>`), `@x207/mcp`

@@ -8,6 +8,8 @@ The barter catalog of the design notes (90 kinds) is data in [scripts/lib/asset-
 
 ## How much of the catalog is real (UM-085)
 
+Read the counts below as code, not as runs: "built" means the pipeline of the kind is written against the real components, not that it ran. What ran, kind by kind, is counted in [barter-evidence.md](barter-evidence.md): 13 of 85 kinds on testnet, 26 (testnet plus sandbox) against the real components without a mock provider, and 57 with a pipeline that ran end to end in a test (the 26 plus 31 with a mock).
+
 Generated from the `status` of every entry by `scripts/catalog-coverage.mjs`; nothing in this section is written by hand.
 
 <!-- coverage:start -->

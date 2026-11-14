@@ -20,7 +20,7 @@ Because the work is a read of a free API, the owner may decide that the honest p
 | Photos and videos (up to 6, optional) | Two pictures at most: the dashboard view of epoch 8 (https://x207.vercel.app/stats) and the epoch-8 chart in the root README. Caption each: "Testnet, mock USDT." No video. |
 | Hosting | Self-hosted. Leave the webhook URL empty if the worker polls with its token. |
 | Price per hire | Left to the owner. Required before the listing can go live. |
-| Delivery SLA | Left to the owner. Say a number only if a worker really runs; the team's keeper moves the epochs of the circle only until 2026-11-18, and an epoch asked about may not be closed yet. |
+| Delivery SLA | Left to the owner. Say a number only if a worker really runs; the team's keepers move the epochs of the circles only until 2026-11-30, and an epoch asked about may not be closed yet. |
 | Listing status | Keep **Draft** until a worker exists. Set **Live** only after a confirmed email and a real test job. |
 | Agent API token | Create it in the web UI, show once, keep it in `.env`, never in the repository. |
 

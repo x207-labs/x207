@@ -14,7 +14,7 @@ Where this README answers each judging criterion. The evidence column lists only
 | Originality | [problem and gap](problem-and-gap.md) and [competitor landscape](competitor-landscape.md) | Comparison table, and the table that sets x207 next to x402 as published. Barter bundles and a seeker paid inside the bundle are in the sandbox demo; we did not survey every x402 layer. |
 | Sustainability | [Metrics and roadmap](metrics-and-roadmap.md), [security and limits](security-and-limits.md) | Fee flow and risk table. The seeker share and the cashback come out of the discount that the listing agent sets, so F9 needs no subsidy. No revenue data. |
 
-Tracks. The owner locked six tracks on 2026-11-04 (UM-126) and added a seventh, `open`, on 2026-11-05 after the EVM run (UM-162); the six are, in this order: `swarms` (the main one), `realworld`, `social`, `agents`, `business`, `defi`. A track is claimed only for what is in the repository today, and each row says what is not shown. Gas is not claimed anywhere: x207 burns more gas than 24 plain transfers; what it saves is the value that has to move ([gas-epoch8-vs-transfers.md](gas-epoch8-vs-transfers.md)).
+Tracks. The submission (2026-11-14) ticks eight tracks: `swarms` (the main one), `agents`, `security`, `defi`, `social`, `business`, `realworld` and `open`. `privacy` is not ticked: it belongs to the team's other submission, Snacc. A track is claimed only for what is in the repository today, and each row says what is not shown. Gas is not claimed anywhere: x207 burns more gas than 24 plain transfers; what it saves is the value that has to move ([gas-epoch8-vs-transfers.md](gas-epoch8-vs-transfers.md)).
 
 | Track | Feature | Demo step | Evidence now | Not shown |
 | --- | --- | --- | --- | --- |

@@ -25,7 +25,13 @@
 
 **x402 lets agents pay. x207 lets them pay with digital assets like API quota or licences.** Trades run on stake-backed credit, loops cancel, and many agents settle at once with one net payment each, cleared by a NEAR contract every epoch.
 
-Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR.
+<h2 align="center">81 credit of trade · 72 cancelled in the loop · 8 mock USDT moved</h2>
+
+<p align="center"><sub>epoch 245 · <code>x207-v018.testnet</code> · mock tokens · prices set by the operator · testnet only</sub><br><sub>three agents, three mock NFTs, one ring: 9 credit was left on the edges after the loop cancelled 72, and netting moved 8 (alice paid 1, dan2 paid 7, bob claimed 8)</sub></p>
+
+Why barter: an agent rich in API quota can pay with it instead of cash. It locks one stake that backs its credit with every seller, and only its net position is paid: in the testnet ring, 81 credit of trade needed 8 mock USDT.
+
+Barter failed for three reasons: matching, pricing, timing. x207 answers each, and each answer has run on NEAR testnet.
 
 <table>
   <tr>
@@ -39,12 +45,12 @@ Barter failed for three reasons: matching, pricing, timing. x207 fixes all three
     <td valign="top"><sub><b>Problem in barter</b></sub><br>The other side cannot deliver now.</td>
   </tr>
   <tr>
-    <td valign="top"><sub><b>What x207 does</b></sub><br>Multilateral cycle clearing: debts that go around in a circle (A owes B, B owes C, C owes A) are cancelled on chain in one step, and an open solver proposes the clearing, which the contract checks.</td>
+    <td valign="top"><sub><b>What x207 does</b></sub><br>Agents trade in a ring on credit: each sells to one member and buys from another, so no pair has to want each other's asset. At the end of the epoch an open solver proposes the clearing of the loops (A owes B, B owes C, C owes A), the contract checks it on chain, and each agent settles one net payment.</td>
     <td valign="top"><sub><b>What x207 does</b></sub><br>An appraiser on NEAR AI Cloud (TEE) values an asset in credit with a fixed rubric and stores proof that anyone can check again. The value is advice only.</td>
     <td valign="top"><sub><b>What x207 does</b></sub><br>A marketplace of listings, and mutual credit inside a circle: a signed voucher is served at once and settled at the end of the epoch, backed by a stake.</td>
   </tr>
   <tr>
-    <td valign="top"><sub><b>Testnet proof</b></sub><br>In epoch 184 no pair wanted each other's asset and the ring still traded, 81 credit netted to 8 mock USDT. <a href="https://x207.vercel.app/stats?epoch=184&circle=v018">Epoch 184 on the dashboard</a>.</td>
+    <td valign="top"><sub><b>Testnet proof</b></sub><br>In epoch 245 no pair wanted each other's asset, yet three mock NFTs moved to their buyers through contract escrow, and 81 credit of trade needed 8 mock USDT. <a href="https://x207.vercel.app/stats?epoch=245&circle=v018">Epoch 245 on the dashboard</a> (an earlier ring, credit only: <a href="https://x207.vercel.app/stats?epoch=184&circle=v018">epoch 184</a>).</td>
     <td valign="top"><sub><b>Testnet proof</b></sub><br>The live appraisal <a href="https://v018.x207.boxd.sh/x207/appraisals/apr_6edab5eac2b78e65d41ea3b2"><code>apr_6edab5eac2b78e65d41ea3b2</code></a>; badge on the <a href="https://x207.vercel.app/marketplace">marketplace</a> (circle v018).</td>
     <td valign="top"><sub><b>Testnet proof</b></sub><br>The sale of a NEAR account through a locker (<a href="https://testnet.nearblocks.io/txns/JRzSghiDSF9oF8AmzgauJVKUkMUnua7rMsFUF7HJV7K">transaction</a>); a debtor who missed its due was covered from its stake (<a href="https://testnet.nearblocks.io/txns/FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek">transaction</a>).</td>
   </tr>
@@ -63,42 +69,46 @@ x207 is a barter protocol for AI agents. Agents swap digital assets (API quota, 
 
 </details>
 
-<h2 align="center">81 credit of trade · 72 cancelled in the loop · 8 mock USDT moved</h2>
-
-<p align="center"><sub>epoch 245 · <code>x207-v018.testnet</code> · mock tokens · prices set by the operator · testnet only</sub></p>
-
-Why barter: an agent rich in API quota but short of cash can still buy. In the testnet ring, 81 credit of trade needed 8 mock USDT of cash.
-
 | Ring | What happened | Check it |
 | --- | --- | --- |
 | **Epoch 245** | In epoch 245 three mock NFTs moved to their buyers through contract escrow: 81 credit of trade, the loop cancelled 72, and 8 mock USDT moved, at prices the operator set | [`complete_escrow`](https://testnet.nearblocks.io/txns/GWF3npguAhQALgfAjb7evpeDhGYHdWzD1yLwm3yGrp9K), [demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md), [asset ring on the dashboard](https://x207.vercel.app/stats?epoch=245&circle=v018), [check the NFT owners on chain](#try-it-in-2-minutes) with one command |
-| **Epoch 184** | An earlier ring in epoch 184 traded three appraised assets as one signed bundle, credit only, no asset changed hands | [`submit_clearing`](https://testnet.nearblocks.io/txns/AAUVpLjAY2TrcJNDjVSyimXUDififQdttiX7oceQHvFc), [`commit_bundle`](https://testnet.nearblocks.io/txns/3sTW11uEqDFa3Zzs1qkTSrDFmShmLgqMrHAhTqB3fjpm), [settle](https://testnet.nearblocks.io/txns/5gd31nuATR78nXTaJ476CWC2HAg9UK51aGK31diXSsb5), [the ring step by step](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-cycle.md) |
+| **Epoch 184** | An earlier ring in epoch 184 priced three assets with the appraiser and signed the trades as one bundle; only credit moved, no asset was delivered | [`submit_clearing`](https://testnet.nearblocks.io/txns/AAUVpLjAY2TrcJNDjVSyimXUDififQdttiX7oceQHvFc), [`commit_bundle`](https://testnet.nearblocks.io/txns/3sTW11uEqDFa3Zzs1qkTSrDFmShmLgqMrHAhTqB3fjpm), [settle](https://testnet.nearblocks.io/txns/5gd31nuATR78nXTaJ476CWC2HAg9UK51aGK31diXSsb5), [the ring step by step](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-cycle.md) |
 
 > [!IMPORTANT]
 > **All of it ran on testnet. Mainnet has not run: no mainnet transaction has been sent and a mainnet deployment is still being prepared.** Each fix has run on NEAR testnet; no single run shows all three yet. One operator signed all three identities in both rings. The USDT on testnet is a **mock USDT** (`usdt.x207-deployer.testnet`): anybody can mint it, so no amount in this README is real money. What is proven, and what is not, kind by kind: [What is proven, and what is not](#what-is-proven-and-what-is-not).
 
-Try it: [in 2 minutes](#try-it-in-2-minutes) (read-only), [the appraiser](#asset-appraiser-on-near-ai-cloud-tee) (one `GET`), [locally](#run-it-locally-5-minutes) (a sandbox, 5 minutes). Docs: [docs site](https://x207-docs.vercel.app).
+How it works, with one diagram: [The idea in one breath](#the-idea-in-one-breath). Try it: [in 2 minutes](#try-it-in-2-minutes) (read-only), [the appraiser](#asset-appraiser-on-near-ai-cloud-tee) (one `GET`), [locally](#run-it-locally-5-minutes) (a sandbox, 5 minutes). Docs: [docs site](https://x207-docs.vercel.app).
 
 ## Try it in 2 minutes
 
 Four read-only steps, with nothing to install, no account and no key. The circle is shared testnet and anybody can add epochs, so the newest ones change; epoch 8 is fixed.
 
-1. **Dashboard:** open the barter ring directly, <https://x207.vercel.app/stats?epoch=184&circle=v018> (members, obligation graph, clearing statistics, risk).
+1. **Dashboard:** open the asset ring directly, <https://x207.vercel.app/stats?epoch=245&circle=v018> (members, obligation graph, assets delivered, clearing statistics). The earlier credit-only ring is epoch 184.
 2. **Check the barter yourself:** in the ring of epoch 245 three mock NFTs moved to their buyers through contract escrow. Ask the chain who owns them now (expected: bob, dan2, alice):
 
    ```bash
    for t in license ticket game-item; do curl -s https://rpc.testnet.near.org -H 'content-type: application/json' -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"query\",\"params\":{\"request_type\":\"call_function\",\"finality\":\"final\",\"account_id\":\"nft.x207-b1-aux.testnet\",\"method_name\":\"nft_token\",\"args_base64\":\"$(printf '{"token_id":"ag055-1794613317-%s"}' $t | base64)\"}}" | python3 -c 'import sys,json;print(bytes(json.load(sys.stdin)["result"]["result"]).decode())'; done
    ```
 
-   The sellers and the transactions are in [the demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md); the clearing is at <https://x207.vercel.app/stats?epoch=245&circle=v018>.
-3. **Read API** (the same data as JSON, circle `agents-main` on `x207-v013.testnet`):
+   The sellers and the transactions are in [the demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md); the clearing is at <https://x207.vercel.app/stats?epoch=245&circle=v018>. The explorer links may refuse scripts; any transaction hash can also be read from an RPC node, for example the `complete_escrow` of the ring (expected: `FINAL x207-v018.testnet ['complete_escrow']`):
+
+   ```bash
+   curl -s https://archival-rpc.testnet.fastnear.com -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"tx","params":{"tx_hash":"GWF3npguAhQALgfAjb7evpeDhGYHdWzD1yLwm3yGrp9K","sender_account_id":"bob.x207-v18-own.testnet","wait_until":"FINAL"}}' | python3 -c 'import sys,json;r=json.load(sys.stdin)["result"];print(r["final_execution_status"],r["transaction"]["receiver_id"],[a["FunctionCall"]["method_name"] for a in r["transaction"]["actions"]])'
+   ```
+3. **Read API**, the ring of epoch 245 as JSON (circle `agents-main` on `x207-v018.testnet`; expect `totalVoucherValue` 81000000, `cleared` 72000000, `netDebt` 8000000, 6 decimals):
+
+   ```bash
+   curl -s https://v018.x207.boxd.sh/x207/circles/agents-main/epochs/245/metrics
+   ```
+
+   An older run, 15 agents paying each other on circle `x207-v013.testnet`:
 
    ```bash
    curl -s https://x207.boxd.sh/x207/circles/agents-main/epochs
    curl -s https://x207.boxd.sh/x207/circles/agents-main/epochs/8/metrics
    ```
 
-   The second call returns the numbers in the next section. `docs/testnet-0.0.13-realistic.json` is the recorded run behind them.
+   The last call returns the numbers in [What epoch 8 showed](#what-epoch-8-showed). `docs/testnet-0.0.13-realistic.json` is the recorded run behind them.
 4. **Connect your AI agent** to the hosted MCP server (Streamable HTTP, read-only: six read tools, no key, no signing) and ask "Give me the report of epoch 8 of the x207 circle":
 
    ```bash
@@ -236,11 +246,11 @@ Hackathon prototype for NEAR HACKATHON (1–14 Nov 2026). **No mainnet transacti
 
 | Circle | Contract | What ran on it |
 | --- | --- | --- |
-| `x207-v018.testnet` (`circle=v018` in the dashboard URL) | The newest, contract 0.0.18 | The barter ring of epoch 184 and the marketplace |
+| `x207-v018.testnet` (`circle=v018` in the dashboard URL) | The newest, contract 0.0.18 | The barter ring of epoch 184, the asset ring of epoch 245, and the marketplace |
 | `x207-v013.testnet` (`circle=v013`) | The first release, interface 0.0.13 | The circle behind epoch 8 and the default Read API |
 | v014 to v017 | The circles in between | Listed in [docs/readme-details.md](docs/readme-details.md#status-of-every-circle) |
 
-The team's keeper moves the epochs of `x207-v013.testnet` until 2026-11-30; after that anybody can move an epoch ([how](docs/join-the-circle.md#move-the-epoch-yourself)).
+The team's keepers move the epochs of `x207-v013.testnet` and of `x207-v014`, `v015`, `v017` and `x207-v018.testnet` (one systemd unit per circle on the team's boxd machine) until 2026-11-30; after that anybody can move an epoch ([how](docs/join-the-circle.md#move-the-epoch-yourself)). The keepers do not run a solver: on testnet, `submit_clearing` for the rings was sent by the team's demo scripts.
 
 ## Adding x207 to an agent that uses `@x402/fetch`
 
@@ -260,7 +270,7 @@ const client = new x402Client().register("x207:agents-main", new X207SchemeClien
 A member can opt in with `set_auto_settle(true)` (1 yocto; an EVM member signs `set_auto_settle_evm`). If it then misses its `due`, `finalize_epoch` pays the `due` from its own stake, the member stays `active` and the creditors claim in full (unless another debtor of that epoch defaults with a shortfall), instead of the default path (suspension, limit 0).
 
 <details>
-<summary><b>Read more: the limits, where it runs, and the testnet run SD-094</b></summary>
+<summary><b>Read more: the limits, where it runs, and the testnet run</b></summary>
 
 - **Limits.** It does not raise `settled_history`; only a cash settlement does. It applies only when the free stake covers the `due` and the flag was set at or before the commit of that epoch, so opting in after the `due` is known does not avoid a default. It moves money from the debtor's stake; it does not create credit.
 - **Where it is.** It is in contract 0.0.15 on `x207-v015.testnet` (code hash `Hhs82yW5iJD2QH4juP6Ud5u7ApHGhcw8Zo5xCK1hxmoj` (since the redeploy of 2026-11-05; the SD-094 transactions ran on the earlier build, code hash `4eZhZF16ySGGv9ux3gzbxnH6znVxcHNQYivVFdfpuHz5`, sha256 `3632861b…`)) and is checked by unit tests, a security review and one run on testnet (SD-094, epoch 2, mock USDT):
@@ -306,13 +316,13 @@ See [docs/barter-evidence.md](docs/barter-evidence.md). A test shows that a defe
 | What | Result | Where to check |
 | --- | --- | --- |
 | Epoch 8 on testnet | Figures above; three of the eight creditors claimed | [docs/testnet.md](docs/testnet.md), [docs/testnet-0.0.13-realistic.json](docs/testnet-0.0.13-realistic.json) |
-| Six named agents, a circle of their own (UM-124) | Not epoch 8. The six agents (`x207r-translator`, `x207r-summarizer`, `x207r-scraper`, `x207r-image`, `x207r-cleaner`, `x207r-gpu`) ran one epoch on a separate testnet circle, `x207-swarm.x207r-deploy.testnet` (circle id `swarm-demo`): 15 vouchers carrying 114 credit, clearing ratio 0.8684 (13 clearing edges), three debtors paid and three creditors claimed. The agents run in rule or mock mode, not as a swarm of language models | [docs/testnet-swarm.md](docs/testnet-swarm.md), [docs/testnet-swarm.json](docs/testnet-swarm.json) |
+| Six named agents, a circle of their own | Not epoch 8. The six agents (`x207r-translator`, `x207r-summarizer`, `x207r-scraper`, `x207r-image`, `x207r-cleaner`, `x207r-gpu`) ran one epoch on a separate testnet circle, `x207-swarm.x207r-deploy.testnet` (circle id `swarm-demo`): 15 vouchers carrying 114 credit, clearing ratio 0.8684 (13 clearing edges), three debtors paid and three creditors claimed. The agents run in rule or mock mode, not as a swarm of language models | [docs/testnet-swarm.md](docs/testnet-swarm.md), [docs/testnet-swarm.json](docs/testnet-swarm.json) |
 | Load test, epoch 2 | 210 obligations, four transactions: `submit_clearing` 28.0 Tgas, `commit_epoch` 69.4 Tgas | [contracts/docs/gas-and-cost.md](https://github.com/x207-labs/contracts/blob/main/docs/gas-and-cost.md) |
 | The released contract | v0.0.13, wasm sha256 `b9327f2b5d64b1180ba76dd619c6091ae57b48964f520a784e366c131e787054`, reproducible build, code hash on chain `DTw5rUUdJSbWjD361MmBxKW4nm4ETnNkex63mfUCjsjh` | [release v0.0.13](https://github.com/x207-labs/contracts/releases/tag/v0.0.13) |
 | The released contracts with EVM members and settling from the stake | v0.0.14 (`x207-v014.testnet`, wasm sha256 and code hash on chain `9ShmoHDuE6QT3AAj6jYdW2Wo6pr53h5JFfs8ea7pYg6L` = `7d731dfb15db44aa3a1ca95c28616a6e2faecbf11b87de538940991da33d39f9`) and v0.0.15 (`x207-v015.testnet`, code hash on chain `Hhs82yW5iJD2QH4juP6Ud5u7ApHGhcw8Zo5xCK1hxmoj` = wasm sha256 `f832e53f01bf6b0739efb54bf0977d70544dd9bcece2234abd3e18525b4900de`); both were redeployed on 2026-11-05 from the reproducible build of the tag, and the release asset equals the code on chain | [release v0.0.14](https://github.com/x207-labs/contracts/releases/tag/v0.0.14), [release v0.0.15](https://github.com/x207-labs/contracts/releases/tag/v0.0.15) |
-| A Solana key as an agent (SD-098) | Epoch 20 of `x207-v015.testnet`, mock USDT: a new Solana key joined (`4fL9QXeRHK3xJ3szTCDFme6cXMKMKZWnUL354kZz5dhN`), staked, signed a voucher and received one from an EVM agent, paid its residual of 30000 (`GrZpuZ5o2qYdvU9P6QTy1qHXE8xooFFYsmm5hmUo8Gee`), and the EVM agent claimed (`DrbrNnD8eAintZHkxwCC9rLRanBgF927gi57mLQCyyrp`). `total_cleared` stayed 0 (two members, netted in the positions, not by the solver); no Solana transaction was sent; our helper paid the gas, so the agent was not autonomous | [docs/solana-agents.md](docs/solana-agents.md), [record](docs/testnet-epochs/sd098-solana-agent-run.json) |
+| A Solana key as an agent | Epoch 20 of `x207-v015.testnet`, mock USDT: a new Solana key joined (`4fL9QXeRHK3xJ3szTCDFme6cXMKMKZWnUL354kZz5dhN`), staked, signed a voucher and received one from an EVM agent, paid its residual of 30000 (`GrZpuZ5o2qYdvU9P6QTy1qHXE8xooFFYsmm5hmUo8Gee`), and the EVM agent claimed (`DrbrNnD8eAintZHkxwCC9rLRanBgF927gi57mLQCyyrp`). `total_cleared` stayed 0 (two members, netted in the positions, not by the solver); no Solana transaction was sent; our helper paid the gas, so the agent was not autonomous | [docs/solana-agents.md](docs/solana-agents.md), [record](docs/testnet-epochs/sd098-solana-agent-run.json) |
 | An ERC-8004 identity on Base Sepolia | One identity, `agentId` 10597, registered with `register(agentURI)` in transaction `0x347fb05ab7325bb33c0e6144423ef46aa2fd42ff549b27aad0e545f19a72975d` (block 54794990). It says that an address registered a file listing the read-only MCP server and read API (`x402Support: false`); it is not a reputation, and there is no x402 Bazaar listing | [docs/discovery.md](docs/discovery.md) |
-| Contract 0.0.18: sale of a NEAR account through a locker (P1, barter kinds #11 and #14), fixes of the internal review, `near-sdk` 5.30.1 | Built and tested on the branch `p1-0.0.18` of `contracts`: a locker that holds the sold account and releases a full-access key to the buyer only when the circle says so, an escrow of kind `account`, `near-sandbox` tests of both sales, and the fix of internal review finding A-CT-01 (`remove_pending`, `make_room`). **On testnet:** `x207-v018.testnet` (tag `v0.0.18`, circle wasm sha256 `4701ecce4168d18b0674b6b4af9f789219afc33be99d89c09f3a433c0bd0d198`); a #11 sale was delivered (`JRzSghiDSF9oF8AmzgauJVKUkMUnua7rMsFUF7HJV7K`) and a #14 member-account delivery waited for final epochs, refused the old voucher key and accepted the buyer's (`ABuXLGoii1E3qvoDevmzZWWMDyb9nPzsEdB85JJAvZ6C`). **Not shown on testnet:** the rotation under a second concurrent sale, and `remove_pending` at 64 squatters (sandbox only). Kinds #12 and #13 are design only. Contract tests were logged by the contracts session, not re-run for this README. Every hash, the first-build limit and the second run: [docs/readme-details.md](docs/readme-details.md#contract-0018-sale-of-a-near-account-through-a-locker) | [docs/barter-evidence.md](docs/barter-evidence.md), `contracts/docs/adr-0.0.18.md` (on the branch) |
+| Contract 0.0.18: sale of a NEAR account through a locker (P1, barter kinds #11 and #14), fixes of the internal review, `near-sdk` 5.30.1 | Released as `v0.0.18` (tag) of `contracts` and deployed on `x207-v018.testnet`: a locker that holds the sold account and releases a full-access key to the buyer only when the circle says so, an escrow of kind `account`, `near-sandbox` tests of both sales, and the fix of internal review finding A-CT-01 (`remove_pending`, `make_room`). **On testnet:** `x207-v018.testnet` (tag `v0.0.18`, circle wasm sha256 `4701ecce4168d18b0674b6b4af9f789219afc33be99d89c09f3a433c0bd0d198`); a #11 sale was delivered (`JRzSghiDSF9oF8AmzgauJVKUkMUnua7rMsFUF7HJV7K`) and a #14 member-account delivery waited for final epochs, refused the old voucher key and accepted the buyer's (`ABuXLGoii1E3qvoDevmzZWWMDyb9nPzsEdB85JJAvZ6C`). **Not shown on testnet:** the rotation under a second concurrent sale, and `remove_pending` at 64 squatters (sandbox only). Kinds #12 and #13 are design only. The contract tests were run when the release was built, not re-run for this README. Every hash, the first-build limit and the second run: [docs/readme-details.md](docs/readme-details.md#contract-0018-sale-of-a-near-account-through-a-locker) | [docs/barter-evidence.md](docs/barter-evidence.md), `contracts/docs/adr-0.0.18.md` (in the tag `v0.0.18`) |
 | Relayer fee | Live on `x207-v016.testnet` (contract 0.0.16, testnet only): one run, claim with signed `maxFee` 250000 paid the relayer 0.25 credit (`5z7MukAhhmLNrBsJvzYfSqgvbQR4yv7AZVtTXBLVewH4`), `maxFee` 0 paid nothing, a stake withdrawal paid 0.1 credit. Contract 0.0.17 (`x207-v017.testnet`, CT-118) extends the fee to `request_exit_evm` and `set_auto_settle_evm`, taken from the free stake (`KLgwiuyygQcSoNrxXDK8s2U1KrYsTCSH7UzLGjaFN2Q`, `A8BqrTX4XSNYs5eWwKFtxz76z4hFtS8Ke28bHRQYXgWn`), and its `join_evm` refuses a `maxFee` above 0. The failed-fee path (the transfer to the relayer fails, the stake is credited back) is covered by contract tests `TC-CT-118-01..05`, not by a transaction: on testnet the mock USDT registers the receiver, so the fee was paid. Not in v0.0.14 or v0.0.15 | [docs/evm-agents.md](docs/evm-agents.md#who-pays-the-relayer-the-facilitator-role), [run record](docs/testnet-epochs/ct117-relayer-fee-run.json) |
 | 1Click quote | A withdrawal of 5 credit to USDC on Base was quoted live on 2026-11-04 with `dry: true` (BE-090): 4.989148 USDC out, no deposit address, no funds moved | [backend reference](https://github.com/x207-labs/backend/blob/main/docs/reference.md#live-quote-of-1click-be-090) |
 | NEAR Intents | The residual of three debtors paid in one `execute_intents` of the real Intents contract (the wasm of `intents.near`) in `near-sandbox` | `tests/residual-batch.sandbox.test.ts` |
@@ -334,7 +344,7 @@ Its **NEAR access key** is needed only for `join`, `settle` and `claim`, because
 
 **Now.** The circle settles in NEP-141 USDT. On testnet that is a mock token, `usdt.x207-deployer.testnet` (6 decimals, handed out by the x207 faucet). The mainnet target is `usdt.tether-token.near`. Nothing has run on mainnet.
 
-**Roadmap: native Circle USDC.** **Status:** not started. It is planned after the hackathon.
+**Roadmap: native Circle USDC.** **Status:** not started. It is planned after the hackathon, together with a mainnet deployment (announced on X as the next step; no date).
 
 <details>
 <summary><b>Read more: why USDC, how the token is chosen, what the move needs</b></summary>
@@ -374,7 +384,7 @@ Its **NEAR access key** is needed only for `join`, `settle` and `claim`, because
 
 ## Tracks and hints
 
-Eight tracks are ticked on the form: `swarms`, `agents`, `security`, `defi`, `social`, `business`, `realworld`, `open` (the owner's choice of 2026-11-14). A hint is a wish of the track, not a requirement, so the table says for each hint how far x207 meets it. `privacy` is not ticked: it belongs to Snacc, the team's other submission; its row is background. The claim of each track, its evidence and what weakens it are in [docs/submission/form-draft.md](docs/submission/form-draft.md#tracks).
+Eight tracks are ticked on the form: `swarms`, `agents`, `security`, `defi`, `social`, `business`, `realworld`, `open`. A hint is a wish of the track, not a requirement, so the table says for each hint how far x207 meets it. `privacy` is not ticked: it belongs to Snacc, the team's other submission; its row is background. The claim of each track, its evidence and what weakens it are in [docs/submission/form-draft.md](docs/submission/form-draft.md#tracks).
 
 | Track (`id`) | Hint | How x207 meets it |
 | --- | --- | --- |
@@ -382,11 +392,14 @@ Eight tracks are ticked on the form: `swarms`, `agents`, `security`, `defi`, `so
 | AI Swarms (`swarms`) | Sub-Accounts | Used only for lease accounts |
 | Agent Economy (`agents`) | Agent Commerce | The whole project: vouchers over x402, an MCP server, marketplace and barter between agents |
 | Agent Economy (`agents`) | NEAR Intents | Met only in `near-sandbox` (`intents.testnet` has no code); no payment through Intents ran |
+| Real-World Money (`realworld`) | none named | Invoices in installments, USDT settlement, credit limits from stake: `npm run demo:realworld` leaves a residual of 40 of 240 (sandbox); in epoch 8 five of six debtors paid their residual in mock USDT (7.2 of 7.75) and the sixth was covered from its stake |
 | Real-World Money (`realworld`) | Meta Transactions | Not a focus; a relayer submits the transactions of EVM agents, and the x402 `exact` scheme on NEAR uses NEP-366 delegate actions |
+| Unstoppable DeFi (`defi`) | none named | A clearing protocol with stake as collateral and default handling, no custodian: in epoch 8, 7.75 USDT was due after netting and settled in mock USDT, with 21.8 of the gross obligations cancelled by the solver. Weakness: NEAR Intents on testnet and a 1Click payment have not run |
 | Unstoppable DeFi (`defi`) | Chain Signatures | Not used |
 | Open (`open`) | Chain Abstraction | An agent that holds only a `0x` key takes part in a circle on NEAR (testnet, relayer-assisted, mock USDT) |
-| Autonomous Business (`business`), Social (`social`) | none named | See the form draft |
-| Privacy (`privacy`) | none named | Asset pricing runs in private inference: the appraiser on NEAR AI Cloud runs inside a TEE ([appraiser](#asset-appraiser-on-near-ai-cloud-tee)). Weakness: the ledger is public, so who trades with whom is visible on chain; confidential settlement is roadmap, not built |
+| Autonomous Business (`business`) | none named | Agents that sell services over x402 and pay suppliers; the owner's limits are enforced before a voucher is signed (sandbox demo: 3 purchases approved, 3 refused by the limits). No cross-chain payment ran |
+| Social (`social`) | none named | Members guard a shared circle: a default is paid from the debtor's stake (epoch 8: one default, 0.55 credit from its stake, creditors paid), and a Sputnik DAO owns `x207-v013.testnet` and votes its parameters |
+| Privacy (`privacy`), not ticked: Snacc's track | none named | Asset pricing runs in private inference: the appraiser on NEAR AI Cloud runs inside a TEE ([appraiser](#asset-appraiser-on-near-ai-cloud-tee)). Weakness: the ledger is public, so who trades with whom is visible on chain; confidential settlement is roadmap, not built |
 | Security (`security`) | none named | Credit is bounded by stake and enforced on chain: the CT-132 run refused a voucher over the limit with `ERR_INSUFFICIENT_CREDIT`, and a default is paid from the stake. Weakness: the reviews are internal, not a third-party audit; testnet only |
 
 ## Hackathon disclosures
@@ -413,6 +426,6 @@ Eight tracks are ticked on the form: `swarms`, `agents`, `security`, `defi`, `so
 | [solver](https://github.com/x207-labs/solver) | The open clearing solver, barter matching and the seeker |
 | [agents](https://github.com/x207-labs/agents) | The demo agents and their scenarios |
 
-The six product repositories are git submodules of this one. `vault`, the design notes, is private.
+The six product repositories are git submodules of this one. The docs site has its own public repository, [docs](https://github.com/x207-labs/docs) ([x207-docs.vercel.app](https://x207-docs.vercel.app)). `vault`, the design notes, is private.
 
 <p align="center"><sub>Built at NEAR HACKATHON · testnet · Apache-2.0</sub></p>

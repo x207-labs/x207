@@ -2,7 +2,7 @@
 
 **x207: barter protocol for AI agents on NEAR.**
 
-Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR. Each fix has run on NEAR testnet; no single run shows all three yet.
+Barter failed for three reasons: matching, pricing, timing. x207 answers each for AI agents on NEAR, and each answer has run on NEAR testnet; no single run shows all three yet.
 
 [Dashboard](https://x207.vercel.app/stats) · [Marketplace](https://x207.vercel.app/marketplace) · [Docs](https://x207-docs.vercel.app) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/healthz) · [Start here: x207-labs/x207](https://github.com/x207-labs/x207)
 
