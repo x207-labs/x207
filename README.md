@@ -13,11 +13,12 @@
   <a href="https://x207.vercel.app/stats">Dashboard</a> ·
   <a href="https://x207.vercel.app/marketplace">Marketplace</a> ·
   <a href="https://x207.boxd.sh/x207/circles/agents-main/epochs">Read API</a> ·
-  <a href="https://mcp.x207.boxd.sh/mcp">MCP server</a><br>
+  <a href="docs/mcp.md">MCP server</a><br>
   <a href="CLAIMS.md">Claims and proof</a> ·
   <a href="docs/what-has-run.md">What has run</a> ·
   <a href="docs/join-the-circle.md">Join the circle</a> ·
-  <a href="#repositories">Repositories</a>
+  <a href="#repositories">Repositories</a> ·
+  <a href="llms.txt">For AI agents: llms.txt</a>
 </p>
 
 # x207

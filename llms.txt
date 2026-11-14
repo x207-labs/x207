@@ -1,0 +1,44 @@
+# x207
+
+> x207 is a barter protocol for AI agents on NEAR. Agents pay with digital assets they already own (API quota, licences, access keys, NFTs) instead of cash. Trades run on stake-backed credit, an appraiser in a TEE (NEAR AI Cloud) can price an asset, and at the end of each epoch a NEAR contract cancels the trade loops so every agent settles one net payment. Testnet only, mock tokens. Built at NEAR HACKATHON (2026-11-01 to 2026-11-14).
+
+Key result, with its qualifiers: in epoch 245 on `x207-v018.testnet`, three agents traded three mock NFTs in a ring through contract escrow: 81 credit of trade, 72 cancelled in the loop, 8 mock USDT moved. The operator set those prices and ran all three agents. In epoch 8 on `x207-v013.testnet` (15 members, 24 vouchers), clearing cancelled 21.8 of 41.35 credit of debt. 85 kinds of digital assets can be offered in the barter catalog (plus 9 refused kinds); 13 of them have a testnet transaction that shows them. The catalog is registered, not proven, kind by kind.
+
+Barter failed for three reasons; x207 answers each: matching (a ring trades when no pair wants each other's asset), pricing (a TEE appraiser values an asset in credit and keeps the signed request, response and attestation), timing (a signed voucher is served at once; credit is capped by the stake, and the contract refuses a voucher over the limit with `ERR_INSUFFICIENT_CREDIT`).
+
+## Start here
+- [README](https://github.com/x207-labs/x207/blob/main/README.md): the product page, "Try it in 2 minutes" (read-only, no install) and "Run it locally (5 minutes)"
+- [Docs site](https://x207-docs.vercel.app): concepts, contracts, SDK, read API
+- [Docs for LLMs, one file](https://x207-docs.vercel.app/llms-full.txt): the whole docs site as plain text
+- [Demo video and thread on X](https://x.com/x207labs/status/2121600254063910974)
+
+## Verify the claims
+- [CLAIMS.md](https://github.com/x207-labs/x207/blob/main/CLAIMS.md): every claim next to its evidence (transaction, file, test)
+- [What is proven, and what is not](https://github.com/x207-labs/x207#what-is-proven-and-what-is-not)
+- [Barter evidence](https://github.com/x207-labs/x207/blob/main/docs/barter-evidence.md): the asset catalog and what ran
+- [The ring of epoch 245, step by step](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md)
+- [Security](https://github.com/x207-labs/x207/blob/main/docs/security.md): known issues; reviews are internal, not an audit
+- [Judge FAQ](https://github.com/x207-labs/x207/blob/main/docs/submission/judge-faq.md)
+
+## Live, read-only (hosted for the judging period)
+- [Dashboard, ring of epoch 245](https://x207.vercel.app/stats?epoch=245&circle=v018)
+- [Read API, epochs of circle agents-main on x207-v013.testnet](https://x207.boxd.sh/x207/circles/agents-main/epochs)
+- [Read API, live circle on x207-v018.testnet](https://v018.x207.boxd.sh/x207/circles/agents-main/epochs)
+- MCP server, Streamable HTTP, read-only, no key: `claude mcp add --transport http x207 https://mcp.x207.boxd.sh/mcp` (a GET answers 405; health check: https://mcp.x207.boxd.sh/healthz)
+- [MCP server on Glama](https://glama.ai/mcp/servers/x207-labs/sdk)
+
+## Repositories (all public, Apache-2.0)
+- [x207](https://github.com/x207-labs/x207): umbrella, docs, demos; the six below are its submodules
+- [contracts](https://github.com/x207-labs/contracts): `x207-circle` NEAR contract (Rust): stakes, vouchers, on-chain check of the clearing, settlement; `x207-locker`; Sputnik DAO scripts
+- [sdk](https://github.com/x207-labs/sdk): TypeScript packages on npm: `@x207/core`, `@x207/scheme` (x402 batch-settlement binding on the network `x207:<circleId>`), `@x207/mcp`
+- [backend](https://github.com/x207-labs/backend): indexer, read API, HTTP `207` report, settlement worker, marketplace book, `POST /x207/appraise` (asks a model on NEAR AI Cloud, inside a TEE, for a value in credit)
+- [frontend](https://github.com/x207-labs/frontend): landing and dashboard (https://x207.vercel.app)
+- [solver](https://github.com/x207-labs/solver): open clearing solver that finds trade loops, and barter matching
+- [agents](https://github.com/x207-labs/agents): six demo agents that sell services over x402 and pay each other with credit vouchers
+
+## Limits
+- NEAR testnet only, mock USDT and mock NFTs. Mainnet has not run.
+- Security reviews are internal, not an audit.
+- The appraiser's attestation shows the key was in a TEE, not which code ran; its value is advice.
+- NEAR Intents: the residual batch ran only in near-sandbox.
+- Same team, other submission: Snacc (https://github.com/Snacc-near/snacc), different tracks, no shared code.
