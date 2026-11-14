@@ -1,17 +1,14 @@
-Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR.
+AI agents now hold wallets and buy what they need the second they need it. That is also how cash leaks at machine speed: an API plan used twice, a licence opened once, paid in full. A budget caps the spend; it does not stop the waste.
 
-x402 lets agents pay. x207 lets them pay with digital assets like API quota or licences (85 kinds registered, 13 ran on testnet). Trades run on stake-backed credit (capped by the stake), loops cancel, and many agents settle at once with one net payment each.
+x207 lets agents pay with what they already own. Unused quota, a spare licence or an access key becomes payment: agents barter digital assets (85 kinds registered, 13 ran on testnet) on stake-backed credit, and at the end of each epoch a NEAR contract cancels the loops, so each agent settles one net payment.
 
-Matching: trade loops (A to B to C to A) are cancelled on chain in one step; any solver may propose it, the contract checks it. In our testnet ring, 81 credit of trades netted to 8 mock USDT moved; clearing removed 72 from the gross record. A second ring (epoch 245) moved three mock NFTs by contract escrow, at set prices. One operator signed all agents.
+Barter failed for three reasons; x207 answers each.
+Matching: no pair wants each other's asset, yet a ring trades. On NEAR testnet (epoch 245, x207-v018.testnet) three mock NFTs moved to their buyers through contract escrow; the loop cancelled 72 of 81 credit and 8 mock USDT moved. The operator set those prices and ran all three agents.
+Pricing: an appraiser on NEAR AI Cloud private inference (TEE) values each asset in credit and stores the signed request, response and attestation for anyone to re-check. The attestation shows the key was in a TEE, not which code ran. The value is advice.
+Timing: a signed voucher (x402 batch-settlement binding, proposed upstream) is served at once; credit is capped by the stake, and the contract refuses a voucher over the limit (ERR_INSUFFICIENT_CREDIT). By default a seller serves before the chain answers; register-first closes that.
 
-Pricing: an appraiser on NEAR AI Cloud private inference (TEE) values each asset in credit and stores the signed request, response and attestation; the signature is checked locally, the quote via third-party verifiers (Phala, NVIDIA NRAS). The attestation shows the key was in a TEE, not which code ran. The value is advice.
+NEAR fits: named accounts with a voucher key that cannot move funds, a contract that verifies multi-party clearing, and NEAR AI Cloud TEE for attested pricing. The net remainder is meant for NEAR Intents; a residual batch ran only in near-sandbox.
 
-Timing: a signed voucher (x402 batch-settlement binding, proposed upstream) is served at once; the contract refuses a voucher over the credit limit (ERR_INSUFFICIENT_CREDIT). By default a seller serves before the chain answers; register-first closes that.
+Limits: testnet only, mock tokens. The ledger is public. Security reviews are internal, not an audit. A Sputnik DAO owns the v013 parameters; v018 is team-owned. Mainnet has not run.
 
-The net remainder is paid in stablecoin; a residual batch ran against the real Intents contract in near-sandbox, a cross-chain payout only as a dry quote.
-
-NEAR fits: a contract verifying multi-party clearing, NEAR Intents for the remainder, NEAR AI Cloud TEE for attested pricing, and named accounts with a voucher key that cannot move funds.
-
-Limits: the ledger is public; privacy here means pricing in a TEE. Security reviews are internal, not an audit. A Sputnik DAO owns the v013 parameters; v018 is team-owned.
-
-Status: contracts on NEAR testnet; indexer, dashboard and docs are read-only views. Mainnet has not run. Docs: https://x207-docs.vercel.app. Dashboard: https://x207.vercel.app.
+Docs: https://x207-docs.vercel.app. Dashboard: https://x207.vercel.app.
