@@ -26,7 +26,7 @@ flowchart TB
 
 ## What has run
 
-On NEAR testnet, in the circle `x207-v018.testnet` (contract 0.0.18), a three-agent barter ring in epoch 184 traded 81 credit: netting left 8 mock USDT to move, and clearing removed 72 from the gross record. One operator signed all three agents, and only credit moved; no asset was delivered. Of the 85 barter kinds registered, 13 ran on testnet.
+On NEAR testnet, in the circle `x207-v018.testnet` (contract 0.0.18), a three-agent barter ring in epoch 184 traded 81 credit: netting left 8 mock USDT to move, and clearing removed 72 from the gross record. In that run only credit moved. A second ring in epoch 245 handed three mock NFTs over through contract escrow, at prices the operator set, and cleared 72 of 81 the same way ([demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md)). One operator signed all agents in both rings. Of the 85 barter kinds registered, 13 ran on testnet.
 
 In the circle `x207-v013.testnet` (contract release v0.0.13), a realistic epoch of 24 vouchers worth 41.35 credit cleared 21.8 credit (ratio 0.527) and left 7.75 USDT to move; five of six debtors paid and one defaulted and was covered from its stake. Everything is checked by scripts in the umbrella repository.
 

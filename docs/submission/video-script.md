@@ -42,9 +42,12 @@ Every number has a source in the "Source" line of its scene; nothing here is a c
 > A team script signs for all three.
 > They trade in a ring: alice to bob, bob to dan, dan to alice. 81 credit of trade.
 > The circle contract nets every position, so only 8 USDT actually moves.
-> A clearing proposal removes 72 of the 81 from the gross record. Only credit moved; no asset was delivered in this run.
+> A clearing proposal removes 72 of the 81 from the gross record. In this run only credit moved.
+> In a second ring, in epoch 245, three mock NFTs changed hands through contract escrow: each seller locks one, each buyer pays with a voucher and receives it.
 
-**Source:** `agents/docs/demo-barter-cycle.md` (`x207-v018.testnet`, epoch 184): values 24 / 32 / 25; gross 81; cancelled 72 (88.9%); 8 USDT moved.
+**Screen, second ring:** the `complete_escrow` transaction `GWF3npguAhQALgfAjb7evpeDhGYHdWzD1yLwm3yGrp9K` on testnet nearblocks.
+
+**Source:** `agents/docs/demo-barter-cycle.md` (`x207-v018.testnet`, epoch 184): values 24 / 32 / 25; gross 81; cancelled 72 (88.9%); 8 USDT moved. Second ring: `agents/docs/demo-barter-ring-assets.md` (AG-055, epoch 245): mock NFT contract, prices set by the operator, three separate `complete_escrow` transactions, gross 81, cancelled 72, 8 mock USDT moved.
 
 ## Scene 4. Timing and safety (1:40–2:15)
 

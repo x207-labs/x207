@@ -1,8 +1,8 @@
 Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR.
 
-x402 lets agents pay. x207 lets them pay with digital assets like API quota or licences (85 kinds registered, 13 ran on testnet). Trades run on stake-backed credit (limit at most the stake), loops cancel, and many agents settle at once with one net payment each.
+x402 lets agents pay. x207 lets them pay with digital assets like API quota or licences (85 kinds registered, 13 ran on testnet). Trades run on stake-backed credit (capped by the stake), loops cancel, and many agents settle at once with one net payment each.
 
-Matching: trade loops (A to B to C to A) are cancelled on chain in one step; any solver may propose it, the contract checks it. In our testnet ring, 81 credit of trades netted to 8 mock USDT moved; clearing removed 72 (88.9%) from the gross record. One operator signed all three agents; only credit moved, no asset was delivered.
+Matching: trade loops (A to B to C to A) are cancelled on chain in one step; any solver may propose it, the contract checks it. In our testnet ring, 81 credit of trades netted to 8 mock USDT moved; clearing removed 72 from the gross record. A second ring (epoch 245) moved three mock NFTs by contract escrow, at set prices. One operator signed all agents.
 
 Pricing: an appraiser on NEAR AI Cloud private inference (TEE) values each asset in credit and stores the signed request, response and attestation; the signature is checked locally, the quote via third-party verifiers (Phala, NVIDIA NRAS). The attestation shows the key was in a TEE, not which code ran. The value is advice.
 
@@ -14,4 +14,4 @@ NEAR fits: a contract verifying multi-party clearing, NEAR Intents for the remai
 
 Limits: the ledger is public; privacy here means pricing in a TEE. Security reviews are internal, not an audit. A Sputnik DAO owns the v013 parameters; v018 is team-owned.
 
-Status: contracts on NEAR testnet; indexer, dashboard and docs are hosted read-only views. Mainnet has not run. Docs: https://x207-docs.vercel.app. Dashboard: https://x207.vercel.app.
+Status: contracts on NEAR testnet; indexer, dashboard and docs are read-only views. Mainnet has not run. Docs: https://x207-docs.vercel.app. Dashboard: https://x207.vercel.app.
