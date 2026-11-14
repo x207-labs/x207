@@ -9,13 +9,15 @@
 
 1. **Problem:** AI agents cannot barter digital assets (API quota, licences, access) because no pair wants each other's asset, nobody can price them, and neither side can deliver at the same moment.
 2. **Mechanism:** x207 is a barter protocol on NEAR. Agents trade on mutual credit with signed vouchers, an appraiser in a TEE prices the asset, and at the end of an epoch the circle contract checks the clearing an open solver proposes and settles only the net.
-3. **Proof (testnet, mock USDT):** a three-agent ring in epoch 184 traded 81 credit, clearing cancelled 72, and 8 USDT moved ([`submit_clearing`](https://testnet.nearblocks.io/txns/AAUVpLjAY2TrcJNDjVSyimXUDififQdttiX7oceQHvFc), [`commit_bundle`](https://testnet.nearblocks.io/txns/3sTW11uEqDFa3Zzs1qkTSrDFmShmLgqMrHAhTqB3fjpm), [settle](https://testnet.nearblocks.io/txns/5gd31nuATR78nXTaJ476CWC2HAg9UK51aGK31diXSsb5)); only credit moved in that run. A second ring in epoch 245 handed three mock NFTs over through contract escrow and cleared 72 of 81 the same way, at prices the operator set ([`complete_escrow`](https://testnet.nearblocks.io/txns/GWF3npguAhQALgfAjb7evpeDhGYHdWzD1yLwm3yGrp9K), [demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md)). One operator signed all three identities in both rings; mainnet has not run.
+3. **Proof (testnet, mock USDT):** a three-agent ring in epoch 184 traded 81 credit, clearing cancelled 72, and 8 USDT moved ([`submit_clearing`](https://testnet.nearblocks.io/txns/AAUVpLjAY2TrcJNDjVSyimXUDififQdttiX7oceQHvFc), [`commit_bundle`](https://testnet.nearblocks.io/txns/3sTW11uEqDFa3Zzs1qkTSrDFmShmLgqMrHAhTqB3fjpm), [settle](https://testnet.nearblocks.io/txns/5gd31nuATR78nXTaJ476CWC2HAg9UK51aGK31diXSsb5)); no asset changed hands in that run. A second ring in epoch 245 handed three mock NFTs over through contract escrow and cleared 72 of 81 the same way, at prices the operator set ([`complete_escrow`](https://testnet.nearblocks.io/txns/GWF3npguAhQALgfAjb7evpeDhGYHdWzD1yLwm3yGrp9K), [demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md)). One operator signed all three identities in both rings; mainnet has not run.
 4. **Try it in 2 minutes, read-only:** the [ring on the dashboard](https://x207.vercel.app/stats?epoch=184&circle=v018), the [marketplace](https://x207.vercel.app/marketplace) (circle v018), and the live [appraisal](https://v018.x207.boxd.sh/x207/appraisals/apr_6edab5eac2b78e65d41ea3b2).
 5. **Docs:** [docs site](https://x207-docs.vercel.app), [what is proven and what is not](#what-is-proven-and-what-is-not), [the ring step by step](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-cycle.md).
 
-Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR.
+Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR. Each fix has run on NEAR testnet; no single run shows all three yet.
 
-x402 lets agents pay. x207 lets them pay with anything of value: trades run on stake-backed credit, loops cancel, and many agents settle at once with one net payment each, cleared by a NEAR contract every epoch.
+x402 lets agents pay. x207 lets them pay with digital assets like API quota or licences: trades run on stake-backed credit, loops cancel, and many agents settle at once with one net payment each, cleared by a NEAR contract every epoch.
+
+Why barter: an agent rich in API quota but short of cash can still buy. In the testnet ring, 81 credit of trade needed 8 mock USDT of cash.
 
 [Dashboard](https://x207.vercel.app/stats) · [Marketplace](https://x207.vercel.app/marketplace) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/mcp) · [Docs site](https://x207-docs.vercel.app) · [Claims and proof](CLAIMS.md) · [What has run](docs/what-has-run.md) · [Join the circle](docs/join-the-circle.md)
 
@@ -23,7 +25,7 @@ x207 is a barter protocol for AI agents. Agents swap digital assets (API quota, 
 
 | Problem of barter | What x207 does | Live evidence (testnet) |
 | --- | --- | --- |
-| **Matching** (the double coincidence of wants) | Multilateral cycle clearing: debts that go around in a circle (A owes B, B owes C, C owes A) are cancelled on chain in one step, and an open solver proposes the clearing, which the contract checks | Epoch 8: the solver cancelled 21.8 credit of the gross obligations, ratio 0.527 ([what epoch 8 showed](#what-epoch-8-showed), [`docs/testnet-0.0.13-realistic.json`](docs/testnet-0.0.13-realistic.json)). Epoch 16 was one five-member cycle, and every net position was 0 |
+| **Matching** (the double coincidence of wants) | Multilateral cycle clearing: debts that go around in a circle (A owes B, B owes C, C owes A) are cancelled on chain in one step, and an open solver proposes the clearing, which the contract checks | Barter rings on `x207-v018.testnet`: in epoch 184 no pair wanted each other's asset and the ring still traded, 81 credit netted to 8 mock USDT; in epoch 245 three mock NFTs also moved to their buyers by contract escrow ([demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md)). Epoch 8: the solver cancelled 21.8 credit of the gross obligations, ratio 0.527 ([what epoch 8 showed](#what-epoch-8-showed), [`docs/testnet-0.0.13-realistic.json`](docs/testnet-0.0.13-realistic.json)). Epoch 16 was one five-member cycle, and every net position was 0 |
 | **Pricing** (no market price for an API quota or a licence) | An appraiser on NEAR AI Cloud (TEE) values an asset in credit with a fixed rubric and stores proof that anyone can check again. The value is advice only | [Appraiser section](#asset-appraiser-on-near-ai-cloud-tee) and the live appraisal `apr_6edab5eac2b78e65d41ea3b2`; badge on the [marketplace](https://x207.vercel.app/marketplace) (circle v018) |
 | **Timing** (the other side cannot deliver now) | A marketplace of listings, and mutual credit inside a circle: a signed voucher is served at once and settled at the end of the epoch, backed by a stake | Barter kinds that ran on testnet, such as the sale of a NEAR account through a locker ([`JRzSghiDSF9oF8AmzgauJVKUkMUnua7rMsFUF7HJV7K`](https://testnet.nearblocks.io/txns/JRzSghiDSF9oF8AmzgauJVKUkMUnua7rMsFUF7HJV7K)); a debtor who missed its due was covered from its stake ([`FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek`](https://testnet.nearblocks.io/txns/FoH49TfgQuYR2iG5HjoUEjXercyDynh7pKANKAEzLVek)) |
 
@@ -55,10 +57,17 @@ One paid call as a sequence, the epoch as a state machine, and the data flow: [d
 
 ## Try it in 2 minutes
 
-Three read-only steps, with nothing to install, no account and no key. The circle is shared testnet and anybody can add epochs, so the newest ones change; epoch 8 is fixed.
+Four read-only steps, with nothing to install, no account and no key. The circle is shared testnet and anybody can add epochs, so the newest ones change; epoch 8 is fixed.
 
 1. **Dashboard:** open the barter ring directly, <https://x207.vercel.app/stats?epoch=184&circle=v018> (members, obligation graph, clearing statistics, risk). The root of the site is a landing page; the dashboard is at `/stats`. Epoch 184 was run by the team's demo script (`agents/scripts/demo-barter-cycle.ts`) from a team machine, with three member identities signed by one operator. The older epoch 8 of `circle=v013` is linked from the next section.
-2. **Read API** (the same data as JSON, circle `agents-main` on `x207-v013.testnet`):
+2. **Check the barter yourself:** in the ring of epoch 245 three mock NFTs moved to their buyers through contract escrow. Ask the chain who owns them now (expected: bob, dan2, alice):
+
+   ```bash
+   for t in license ticket game-item; do curl -s https://rpc.testnet.near.org -H 'content-type: application/json' -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"query\",\"params\":{\"request_type\":\"call_function\",\"finality\":\"final\",\"account_id\":\"nft.x207-b1-aux.testnet\",\"method_name\":\"nft_token\",\"args_base64\":\"$(printf '{"token_id":"ag055-1794613317-%s"}' $t | base64)\"}}" | python3 -c 'import sys,json;print(bytes(json.load(sys.stdin)["result"]["result"]).decode())'; done
+   ```
+
+   The sellers and the transactions are in [the demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md); the clearing is at <https://x207.vercel.app/stats?epoch=245&circle=v018>.
+3. **Read API** (the same data as JSON, circle `agents-main` on `x207-v013.testnet`):
 
    ```bash
    curl -s https://x207.boxd.sh/x207/circles/agents-main/epochs
@@ -66,7 +75,7 @@ Three read-only steps, with nothing to install, no account and no key. The circl
    ```
 
    The second call returns the numbers in the next section. `docs/testnet-0.0.13-realistic.json` is the recorded run behind them.
-3. **Connect your AI agent** to the hosted MCP server (Streamable HTTP, read-only: six read tools, no key, no signing) and ask "Give me the report of epoch 8 of the x207 circle":
+4. **Connect your AI agent** to the hosted MCP server (Streamable HTTP, read-only: six read tools, no key, no signing) and ask "Give me the report of epoch 8 of the x207 circle":
 
    ```bash
    claude mcp add --transport http x207 https://mcp.x207.boxd.sh/mcp
@@ -200,7 +209,7 @@ What is checked: signature checked locally; quote checked via third-party verifi
 | Repo | Its role in x207 |
 | --- | --- |
 | [x207](https://github.com/x207-labs/x207) | This umbrella: docs, demos, end-to-end tests, scripts |
-| [contracts](https://github.com/x207-labs/contracts) | The `x207-circle` contract in Rust (interface 0.0.13), near-sandbox tests, Sputnik DAO scripts |
+| [contracts](https://github.com/x207-labs/contracts) | The `x207-circle` contract in Rust (interface 0.0.18 on `x207-v018.testnet`; the epoch 8 history is on 0.0.13), near-sandbox tests, Sputnik DAO scripts |
 | [sdk](https://github.com/x207-labs/sdk) | `@x207/core`, `@x207/scheme`, `@x207/mcp`, the binding spec, test vectors, reference facilitator |
 | [backend](https://github.com/x207-labs/backend) | Indexer, read API, HTTP 207 report, settlement worker, marketplace book, access broker |
 | [frontend](https://github.com/x207-labs/frontend) | The dashboard and the marketplace pages |
@@ -215,7 +224,7 @@ Four tracks are ticked on the form: `agents`, `swarms`, `privacy`, `security` (t
 
 | Track (`id`) | Hint | How x207 meets it |
 | --- | --- | --- |
-| AI Swarms (`swarms`), main | Multi-Agent Systems | Many agents in one circle settle in one netting step per epoch (epoch 8: 15 members, 24 vouchers); the agents run in rule or mock mode, not as a swarm of language models |
+| AI Swarms (`swarms`) | Multi-Agent Systems | Many agents in one circle settle in one netting step per epoch (epoch 8: 15 members, 24 vouchers); `npm run demo:swarm` runs six agents trading for four epochs on a local circle. The agents run in rule or mock mode, not as a swarm of language models |
 | AI Swarms (`swarms`) | Sub-Accounts | Used only for lease accounts |
 | Agent Economy (`agents`) | Agent Commerce | The whole project: vouchers over x402, an MCP server, marketplace and barter between agents |
 | Agent Economy (`agents`) | NEAR Intents | Met only in `near-sandbox` (`intents.testnet` has no code); no payment through Intents ran |

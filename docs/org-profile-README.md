@@ -2,17 +2,17 @@
 
 **x207: barter protocol for AI agents on NEAR.**
 
-Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR.
+Barter failed for three reasons: matching, pricing, timing. x207 fixes all three for AI agents on NEAR. Each fix has run on NEAR testnet; no single run shows all three yet.
 
 [Dashboard](https://x207.vercel.app/stats) · [Marketplace](https://x207.vercel.app/marketplace) · [Docs](https://x207-docs.vercel.app) · [Read API](https://x207.boxd.sh/x207/circles/agents-main/epochs) · [MCP server](https://mcp.x207.boxd.sh/healthz) · [Start here: x207-labs/x207](https://github.com/x207-labs/x207)
 
-x402 lets agents pay. x207 lets them pay with anything of value: trades run on stake-backed credit, loops cancel, and many agents settle at once with one net payment each, cleared by a NEAR contract every epoch.
+x402 lets agents pay. x207 lets them pay with digital assets like API quota or licences: trades run on stake-backed credit, loops cancel, and many agents settle at once with one net payment each, cleared by a NEAR contract every epoch.
 
-- **Matching:** trade loops (A to B to C to A) are cancelled on chain in one step; any solver may propose the clearing, and the contract checks it.
+- **Matching:** no pair wants each other's asset, yet a ring trades: each agent sells to one and buys from another on credit, and the contract nets the ring to one payment each (on testnet, 81 credit of trade, 8 mock USDT moved). Any solver may propose the clearing of the loop, and the contract checks it.
 - **Pricing:** an appraiser on NEAR AI Cloud private inference (TEE) values each asset in credit and stores the signed request, response and attestation. The value is advice.
 - **Timing:** a signed voucher is served at once and settled at the end of the epoch; a stake bounds what each member can owe, and the contract refuses a voucher over the credit limit. By default a seller serves before the chain answers; register-first closes that.
 
-Under the hood, x207 is multilateral netting and clearing for x402 agent payments on NEAR. Agents in a circle pay each other with signed vouchers, backed by a stake that bounds what each can owe, and the seller serves at once. At the end of each epoch the circle contract nets every member's position in one on-chain step, and only the net positions settle in USDT. An open solver also removes debt cycles from the gross obligations; in the MVP that does not change who pays what. The binding of the x402 `batch-settlement` scheme is proposed upstream in [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131).
+Under the hood, x207 is multilateral netting and clearing for x402 agent payments on NEAR. Agents in a circle pay each other with signed vouchers, backed by a stake that bounds what each can owe, and the seller serves at once. At the end of each epoch the circle contract nets every member's position in one on-chain step, and only the net positions settle in USDT. An open solver also removes debt cycles from the gross record, and the contract checks its proposal; what each member pays is already fixed by netting. The binding of the x402 `batch-settlement` scheme is proposed upstream in [x402-foundation/x402#4131](https://github.com/x402-foundation/x402/issues/4131).
 
 ```mermaid
 %%{init: {"flowchart": {"nodeSpacing": 24, "rankSpacing": 28, "padding": 8}}}%%
@@ -26,7 +26,7 @@ flowchart TB
 
 ## What has run
 
-On NEAR testnet, in the circle `x207-v018.testnet` (contract 0.0.18), a three-agent barter ring in epoch 184 traded 81 credit: netting left 8 mock USDT to move, and clearing removed 72 from the gross record. In that run only credit moved. A second ring in epoch 245 handed three mock NFTs over through contract escrow, at prices the operator set, and cleared 72 of 81 the same way ([demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md)). One operator signed all agents in both rings. Of the 85 barter kinds registered, 13 ran on testnet.
+On NEAR testnet, in the circle `x207-v018.testnet` (contract 0.0.18), a three-agent barter ring in epoch 184 traded 81 credit: netting left 8 mock USDT to move, and clearing removed 72 from the gross record. No asset changed hands in that run. A second ring in epoch 245 handed three mock NFTs over through contract escrow, at prices the operator set, and cleared 72 of 81 the same way ([demo](https://github.com/x207-labs/agents/blob/main/docs/demo-barter-ring-assets.md)). One operator signed all agents in both rings. Of the 85 barter kinds registered, 13 ran on testnet.
 
 In the circle `x207-v013.testnet` (contract release v0.0.13), a realistic epoch of 24 vouchers worth 41.35 credit cleared 21.8 credit (ratio 0.527) and left 7.75 USDT to move; five of six debtors paid and one defaulted and was covered from its stake. Everything is checked by scripts in the umbrella repository.
 

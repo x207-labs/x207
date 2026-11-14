@@ -18,7 +18,7 @@ Attach: the video ([video-script.md](video-script.md)), or three screenshots: th
 
 Each tweet is at most 280 characters with links counted as 23. In the ring demo one team script signs for all three agents.
 
-1. `1/ Matching. Alice lists a Mapbox quota, Bob a JetBrains licence, Dan FastNEAR RPC access. No pair wants each other's asset, so they trade in a ring. Of 81 credit traded, only 8 USDT moves. A second ring moved 3 NFTs by escrow. Testnet: https://x207.vercel.app/stats?epoch=184&circle=v018`
+1. `1/ Matching. Three agents each want another's asset, but no pair wants each other's. So they trade in a ring: three NFTs moved to their buyers by contract escrow, paid in credit, and 81 credit of trade netted to 8 mock USDT. Testnet: https://x207.vercel.app/stats?epoch=245&circle=v018`
 2. `2/ Pricing. An appraiser on NEAR AI Cloud (TEE) values the asset in credit. Signature checked locally; quote checked via third-party verifiers (Phala, NVIDIA NRAS). The value is advice, the contract does not read it. https://v018.x207.boxd.sh/x207/appraisals/apr_4d97a431de9635c442083c67`
 3. `3/ Timing. Agents trade on mutual credit backed by a stake. A second 75-credit voucher over the limit is refused on chain: ERR_INSUFFICIENT_CREDIT. Testnet only, mainnet has not run. Docs: https://x207-docs.vercel.app Code: https://github.com/x207-labs/x207`
 4. `4/ Honest limits: testnet only, mock USDT and mock NFTs, one operator signed all ring agents, NFT ring prices set by hand. NEAR Intents ran only in near-sandbox. Security reviews are internal, not an audit. Every claim has a test or a transaction: https://github.com/x207-labs/x207/blob/main/CLAIMS.md`

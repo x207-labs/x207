@@ -42,7 +42,7 @@ Every number has a source in the "Source" line of its scene; nothing here is a c
 > A team script signs for all three.
 > They trade in a ring: alice to bob, bob to dan, dan to alice. 81 credit of trade.
 > The circle contract nets every position, so only 8 USDT actually moves.
-> A clearing proposal removes 72 of the 81 from the gross record. In this run only credit moved.
+> A clearing proposal removes 72 of the 81 from the gross record. In this run no asset changed hands.
 > In a second ring, in epoch 245, three mock NFTs changed hands through contract escrow: each seller locks one, each buyer pays with a voucher and receives it.
 
 **Screen, second ring:** the `complete_escrow` transaction `GWF3npguAhQALgfAjb7evpeDhGYHdWzD1yLwm3yGrp9K` on testnet nearblocks.
