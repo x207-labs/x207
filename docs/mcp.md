@@ -67,6 +67,5 @@ The package `@x207/mcp` is on npm and needs only Node 22.22.2 or newer. It signs
   }
 }
 ```
-```
 
 It reads the testnet RPC and the hosted read API. The tools and the write tools that stay off are listed in [sdk/packages/mcp/README.md](https://github.com/x207-labs/sdk/blob/main/packages/mcp/README.md).

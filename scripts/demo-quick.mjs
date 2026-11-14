@@ -118,7 +118,13 @@ async function sandboxBinary(opts) {
     chmodSync(bin, 0o755);
   }
   const version = spawnSync(bin, ["--version"], { encoding: "utf8" });
-  if (version.status !== 0 || !version.stdout.includes(`release ${SANDBOX_VERSION}`)) throw new DemoStop(`${bin} is not near-sandbox ${SANDBOX_VERSION}: ${(version.stdout || version.stderr).trim().slice(0, 120)}`);
+  if (version.status !== 0 || !version.stdout.includes(`release ${SANDBOX_VERSION}`)) {
+    const detail = (version.stdout || version.stderr || "").trim();
+    const needs = /GLIBC_[\d.]+/.exec(detail)?.[0];
+    throw new DemoStop(needs
+      ? `${bin} needs ${needs}, and the glibc of this system is older. Use Ubuntu 24.04, Debian 13 or the Docker image node:22.22.2-trixie, or set X207_SANDBOX_BIN to a near-sandbox ${SANDBOX_VERSION} binary of your own. The hosted read-only path in "Try it in 2 minutes" of the README needs no install.`
+      : `${bin} is not near-sandbox ${SANDBOX_VERSION}: ${detail.slice(0, 300)}`);
+  }
   console.log(`near-sandbox ${SANDBOX_VERSION}: ${bin}`);
   return bin;
 }

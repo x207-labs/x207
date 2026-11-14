@@ -161,7 +161,7 @@ npm run demo:swarm    # six agents trade for four epochs; the keeper and the sol
 | Needs | |
 | --- | --- |
 | Node and tools | Node 22.22.2 or newer, `git` and `tar` |
-| System | Linux (x64 or arm64, glibc 2.39 or newer: Ubuntu 24.04, Debian 13; the near-sandbox 2.13.4 binary needs it, so Debian 12 and the default `node:22` Docker image stop with `GLIBC_2.39 not found`, use `node:22-trixie`) or macOS on Apple silicon. On another system the script stops at once and says so; the alternatives are in [docs/sandbox-demo.md](docs/sandbox-demo.md) |
+| System | Linux (x64 or arm64, glibc 2.39 or newer: Ubuntu 24.04, Debian 13; the near-sandbox 2.13.4 binary needs it, so Debian 12 and the default `node:22` Docker image stop with `GLIBC_2.39 not found`, use `node:22-trixie`) or macOS on Apple silicon. On another system the script stops at once and says so. On an older Linux, run it in the Docker image `node:22.22.2-trixie`; the hosted read-only path in "Try it in 2 minutes" needs no install |
 
 Checks, a few seconds each:
 
